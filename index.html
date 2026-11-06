@@ -126,7 +126,7 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:ma
 .story-top{position:absolute;top:calc(var(--sat) + 12px);left:calc(var(--sal) + 14px);right:calc(var(--sar) + 14px);display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:3}
 .chip-title{background:rgba(255,250,241,.85);padding:9px 16px;border-radius:18px;font-weight:800;font-size:14px;
   box-shadow:4px 4px 10px var(--sh-d),-3px -3px 8px var(--sh-l)}
-.story-bear{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 250px);width:min(58%,250px);z-index:1}
+.story-bear{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 250px);width:min(58%,250px);z-index:1;transition:opacity .25s}
 .dlg{position:absolute;left:calc(var(--sal) + 14px);right:calc(var(--sar) + 14px);bottom:calc(var(--sab) + 16px);min-height:210px;z-index:2;
   background:#fffaf1;border-radius:28px;padding:28px 22px 24px;
   box-shadow:8px 8px 18px var(--sh-d),-6px -6px 14px var(--sh-l),inset 0 3px 0 #fff;display:flex;flex-direction:column;gap:10px}
@@ -160,7 +160,7 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:ma
 .preview.on{opacity:1;transform:none}
 .board-wrap{display:flex;justify-content:center}
 .board{width:min(100%,calc((100vh - 416px) * 1.2));width:min(100%,calc((100dvh - 416px) * 1.2));min-width:240px;padding:8px;border-radius:30px;background:var(--cream2);
-  box-shadow:inset 6px 6px 14px var(--sh-d),inset -6px -6px 14px var(--sh-l)}
+  box-shadow:inset 6px 6px 14px var(--sh-d),inset -6px -6px 14px var(--sh-l);position:relative}
 .grid{position:relative;width:100%;aspect-ratio:6/5;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(5,1fr);
   container-type:inline-size;touch-action:none}
 .tile{padding:3px;position:relative}
@@ -173,7 +173,6 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:ma
   animation:pop .55s var(--spring) both;animation-delay:calc(var(--i,0) * 55ms)}
 .tile.shake .face{animation:shake .42s ease-in-out;background:#fbd5d2}
 .tile.hint .face{animation:hintPulse .9s ease-in-out infinite;background:#fff1b8}
-.tile.dim .face{opacity:.9}
 @keyframes pop{0%{transform:scale(.7)}55%{transform:scale(1.14)}100%{transform:scale(1)}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
 @keyframes hintPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,200,60,.8)}50%{transform:scale(1.1);box-shadow:0 0 0 8px rgba(255,200,60,0)}}
@@ -204,15 +203,14 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:ma
 .bear.sway .bear-svg{animation:sway 2.4s ease-in-out}
 .bear.looking .bear-arm{animation:armLift 2s ease-in-out}
 .bear.tip .slot-hat{transform-origin:100px 64px;animation:hatTip .85s ease-in-out}
-.bear-svg.bobL{animation:bobL .42s ease-out}
-.bear-svg.bobR{animation:bobR .42s ease-out}
+.bear-svg.bobL{--tilt:-.9deg;animation:bob .42s ease-out}
+.bear-svg.bobR{--tilt:.9deg;animation:bob .42s ease-out}
 .bfloat{position:absolute;top:8%;font-size:22px;font-weight:900;line-height:1;pointer-events:none;text-shadow:0 1px 0 #fff;animation:floatUp 2.2s ease-out forwards}
 @keyframes stretch{0%,100%{transform:none}35%,65%{transform:scale(.97,1.05) translateY(-3px)}}
 @keyframes sway{0%,100%{transform:rotate(0)}25%{transform:rotate(-2.4deg)}75%{transform:rotate(2.4deg)}}
 @keyframes armLift{0%,100%{transform:rotate(0)}30%,70%{transform:rotate(-24deg)}}
 @keyframes hatTip{0%,100%{transform:none}30%,60%{transform:translate(-16px,-18px) rotate(-20deg)}}
-@keyframes bobL{0%{transform:none}30%{transform:translateY(-2px) rotate(-.9deg)}100%{transform:none}}
-@keyframes bobR{0%{transform:none}30%{transform:translateY(-2px) rotate(.9deg)}100%{transform:none}}
+@keyframes bob{0%{transform:none}30%{transform:translateY(-2px) rotate(var(--tilt))}100%{transform:none}}
 @keyframes floatUp{0%{opacity:0;transform:translate(0,12px) scale(.6)}18%{opacity:1}100%{opacity:0;transform:translate(var(--dx,0),-74px) scale(1.15)}}
 
 .chapter.daily{--ca:#dff0fb}
@@ -222,7 +220,6 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:ma
 .theme-line b{color:var(--ink);font-weight:900}
 
 /* ---------- combo + sparks ---------- */
-.board{position:relative}
 .sparks{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
 .combo{position:absolute;top:-16px;right:14px;z-index:3;background:var(--butter);color:#8a5a0a;font-weight:900;font-size:15px;padding:5px 14px;border-radius:14px;
   box-shadow:3px 3px 8px var(--sh-d),inset 0 2px 0 rgba(255,255,255,.7);opacity:0;transform:scale(.6);pointer-events:none;transition:opacity .25s,transform .25s var(--spring)}
@@ -230,7 +227,6 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:ma
 @keyframes comboPop{0%{transform:scale(.5) rotate(-8deg)}60%{transform:scale(1.2) rotate(3deg)}100%{transform:none}}
 .zring{fill:none;stroke:#f7c948;stroke-width:6;transform-box:fill-box;transform-origin:center;animation:ring .75s ease-out forwards}
 @keyframes ring{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.6);opacity:0}}
-#zLine{filter:drop-shadow(0 0 7px rgba(255,170,120,.75))}
 
 /* ---------- wardrobe ---------- */
 #screen-wardrobe{gap:6px}
@@ -328,17 +324,13 @@ body.evil .chapter,body.evil .witem{color:#3b2f55}
 @keyframes sealPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,90,130,.7)}50%{box-shadow:0 0 0 14px rgba(255,90,130,0)}}
 @keyframes sealIn{0%{transform:scale(0)}100%{transform:scale(1)}}
 
-@media (prefers-reduced-motion:reduce){.seal,.noir-fog,body.evil #app::after{animation:none}.noir-begin,.noir-hint{transition:none}}
-
 /* ---------- Evil Larry: portrait + cinematic ---------- */
-.story-bear{transition:opacity .25s}
 .story-bear.away{opacity:0}
 .story-larry{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 250px);width:min(52%,230px);z-index:1;opacity:0;pointer-events:none;transition:opacity .25s}
 .story-larry.on{opacity:1}
-@media (max-height:700px){.story-larry{bottom:calc(var(--sab) + 232px);width:min(42%,184px)}}
 .dlg-name.larry{background:#3a2a4d;color:#ffd96a}
 .larry{width:100%;line-height:0}
-.larry-svg{width:100%;height:auto;overflow:visible;display:block;transform-origin:100px 240px;animation:larryBreathe 3.2s ease-in-out infinite}
+.larry-svg{width:100%;height:auto;overflow:visible;display:block;transform-origin:100px 240px;animation:breathe 3.2s ease-in-out infinite}
 .larry-svg *{transform-box:fill-box}
 .larry-tail{transform-origin:20% 90%;animation:larryTail 2.4s ease-in-out infinite}
 .larry-eyes{transform-origin:center;transition:transform .15s}
@@ -351,7 +343,6 @@ body.evil .chapter,body.evil .witem{color:#3b2f55}
 .larry.tip .larry-cap{animation:larryTip .9s ease-in-out}
 .larry.sil .larry-svg *{fill:#05030a !important;stroke:#05030a !important}
 .larry.sil .larry-svg .glow{fill:#e8f04a !important}
-@keyframes larryBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,.99) translateY(-2px)}}
 @keyframes larryTail{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(9deg)}}
 @keyframes larryShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
 @keyframes larryTip{0%,100%{transform:none}35%,65%{transform:translate(-8px,-14px) rotate(-22deg)}}
@@ -391,7 +382,6 @@ body.evil .chapter,body.evil .witem{color:#3b2f55}
 .lf-skip{position:absolute;top:calc(var(--sat) + 12px);right:calc(var(--sar) + 14px);z-index:6;opacity:0;pointer-events:none;transition:opacity .3s}
 .lf-skip.on{opacity:1;pointer-events:auto}
 .larry-film.calm .lf-stage,.larry-film.calm .lf-bar,.larry-film.calm .lf-spot{display:none}
-@media (prefers-reduced-motion:reduce){.larry-svg,.larry-tail,.larry.l-caught .larry-svg{animation:none}.lf-title.on{transition:none}}
 
 /* ---------- map: chapter wrapper + step pips ---------- */
 .chwrap{display:flex;flex-direction:column;gap:8px;flex:none}
@@ -416,7 +406,7 @@ body.evil .chapter,body.evil .witem{color:#3b2f55}
 .zt.on .zf{background:var(--zc,#ffe3d1);box-shadow:inset 2px 2px 5px rgba(0,0,0,.08),inset -2px -2px 5px rgba(255,255,255,.5)}
 .zt.head .zf{transform:scale(.9)}
 .zt.hint .zf{animation:hintPulse .9s ease-in-out infinite;background:#fff1b8}
-#zLine{fill:none;stroke-width:34;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+#zLine{fill:none;stroke-width:34;stroke-linecap:round;stroke-linejoin:round;opacity:.85;filter:drop-shadow(0 0 7px rgba(255,170,120,.75))}
 .zcp circle{fill:#fffaf1;stroke:#8a5a3c;stroke-width:5;transition:fill .25s}
 .zcp text{font-size:36px;font-weight:900;fill:#5b4636;text-anchor:middle;dominant-baseline:central;font-family:var(--font)}
 .zcp.got circle{fill:#f7c948}
@@ -513,16 +503,19 @@ body.evil .chapter,body.evil .witem{color:#3b2f55}
 
 @media (max-height:700px){
   .story-bear{bottom:calc(var(--sab) + 232px);width:min(46%,200px)}
+  .story-larry{bottom:calc(var(--sab) + 232px);width:min(42%,184px)}
   .dlg{min-height:190px;padding:24px 18px 20px}.dlg-text{font-size:16.5px;min-height:74px}
   .title-bear{width:min(48%,190px)}
 }
 /* reduced motion = gentler feedback, not none: cross-fades and colour changes stay, slides/springs/loops go */
 @media (prefers-reduced-motion:reduce){
-  .bear.bounce,.bear-idle,.bear-arm,.logo .amp,.sparkles i,.chapter.fresh,.newbest,.dlg-caret.on,.tile.shake .face,.tile.hint .face{animation:none}
-  .tile.found .face,.slot.done,.choice,.unlock,.zl.pop,.suspect.shake,.suspect.guilty{animation:none}
+  .bear.bounce,.bear-idle,.bear-arm,.logo .amp,.sparkles i,.chapter.fresh,.newbest,.dlg-caret.on,.tile.shake .face{animation:none}
+  .tile.found .face,.slot.done,.choice,.unlock,.zl.pop{animation:none}
   .tile.hint .face,.zt.hint .zf{animation:none;background:#fff1b8;outline:3px solid #f0c040}
-  .zt.head .zf,.suspect.sel{transform:none}
+  .zt.head .zf{transform:none}
   .bear.yawn .bear-svg,.bear.sway .bear-svg,.bear.looking .bear-arm,.bear.tip .slot-hat,.bear-svg.bobL,.bear-svg.bobR{animation:none}
+  .seal,.noir-fog,body.evil #app::after{animation:none}.noir-begin,.noir-hint{transition:none}
+  .larry-svg,.larry-tail,.larry.l-caught .larry-svg{animation:none}.lf-title.on{transition:none}
   .bfloat,.zring{display:none}
   .combo.on{animation:none}
   .star.on{animation:none;transform:none}
@@ -785,6 +778,22 @@ function mulberry32(a) {                       // small seeded RNG: same seed ->
   return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 }
 const REDUCED = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+const fmtClock = secs => Math.floor(secs / 60) + ':' + pad2(secs % 60);
+const blankMatrix = N => Array.from({ length: N }, () => Array(N).fill(0));
+/* restart a CSS animation class (remove, force reflow, re-add) */
+const replayClass = (el, ...cls) => { el.classList.remove(...cls); void el.getBoundingClientRect(); el.classList.add(...cls); };   // works for SVG too
+/* add a class, drop it again after ms; the timer id is pushed into `timers` when given */
+const flashClass = (el, cls, ms, timers) => { el.classList.add(cls); const t = setTimeout(() => el.classList.remove(cls), ms); if (timers) timers.push(t); return t; };
+const setShown = (el, on) => { el.classList.toggle('show', on); el.setAttribute('aria-hidden', on ? 'false' : 'true'); };
+/* size a canvas (to w x h CSS px, default: its own box) at device pixel ratio; drawing then uses CSS pixels */
+function fitCanvas(cv, w, h) {
+  const dpr = window.devicePixelRatio || 1;
+  w = w || cv.clientWidth; h = h || cv.clientHeight;
+  cv.width = w * dpr; cv.height = h * dpr;
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, w, h, dpr };
+}
+function shuffle(arr, rng) { rng = rng || Math.random; for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
 
 /* ---------- 2. levels ----------
    Each word is [WORD, "rc rc rc ..."]: the exact path of cells (row digit, column digit).
@@ -808,20 +817,19 @@ const LEVELS = [
             ['NIGHT','40 41 42 32 33'],['STAR','23 22 11 10'],['MOON','20 21 31 30']] },
   { n: 5, title: 'The Great Cake Caper', blurb: 'One last, sweetest mystery.', theme: 'CAKE', scene: ['#fbdde6', '#f5b9cc'],
     words: [['ICING','05 04 03 13 12'],['SUGAR','02 01 00 10 20'],['PIE','14 15 25'],['BERRY','35 45 44 43 33'],
-            ['TEA','34 24 23'],['CREAM','11 22 32 42 41'],['CAKE','21 31 30 40']] }
-];
-LEVELS.push(
+            ['TEA','34 24 23'],['CREAM','11 22 32 42 41'],['CAKE','21 31 30 40']] },
   { n: 6, title: "The Vanishing Lamp", blurb: "The lighthouse has gone dark.", theme: 'BEACON', scene: ['#d8ecf5', '#a9d3e8'],
     words: [['ANCHOR','02 03 13 14 04 05'],['WAVE','15 25 24 34'],['GULL','35 45 44 43'],['PEARL','42 41 40 30 31'],['BEACON','32 33 23 22 21 20'],['SHELL','10 00 01 11 12']] },
   { n: 7, title: "The Snow Globe Heist", blurb: "Something sparkling slipped away.", theme: 'GLOBE', scene: ['#e8f0fb', '#c3d4ef'],
     words: [['COCOA','05 04 03 02 01'],['GLOBE','00 10 20 21 11'],['PINE','12 13 14 15'],['MITTEN','25 35 45 44 43 42'],['SKATE','41 40 30 31 32'],['FROST','22 23 24 34 33']] },
   { n: 8, title: "The Midnight Market", blurb: "Lanterns, spices and a striped stranger.", theme: 'SPICE', scene: ['#f9e3c9', '#eeb98a'],
+    introScene: () => LarryScene.intro(), caughtScene: () => LarryScene.caught(),          // Evil Larry's cinematics open and close this chapter
     words: [['BASKET','40 41 31 30 20 21'],['CARPET','11 10 00 01 02 03'],['COIN','04 05 15 14'],['MANGO','13 12 22 32 42'],['SPICE','43 44 45 35 34'],['SILK','33 23 24 25']] },
   { n: 9, title: "The Carnival After Dark", blurb: "The big top is far too quiet.", theme: 'CIRCUS', scene: ['#f6d5e8', '#e1a6cf'],
     words: [['CLOWN','20 30 40 41 42'],['MAGIC','32 31 21 11 10'],['TENT','00 01 02 12'],['JUGGLE','22 23 33 43 44 45'],['DRUM','35 34 24 25'],['CIRCUS','15 14 13 03 04 05']] },
   { n: 10, title: "The Last Lantern", blurb: "The final light flickers.", theme: 'LIGHT', scene: ['#fdeec2', '#f4cc7b'],
     words: [['HEART','03 02 01 00 10'],['LIGHT','11 12 13 14 04'],['SMILE','05 15 25 24 23'],['FRIEND','33 34 35 45 44 43'],['HOME','42 41 40 30'],['STORY','31 32 22 21 20']] }
-);
+];
 LEVELS.forEach(lv => {
   lv.words = lv.words.map(([w, p]) => ({ w, p: P(p), gold: w === lv.theme }));
 });
@@ -834,16 +842,13 @@ const ZIPS = [
   { size:5, word:'NIGHT', path:'20 21 11 10 00 01 02 12 22 32 31 30 40 41 42 43 44 34 33 23 24 14 13 03 04', cps:[[0,'N'],[4,''],[8,'I'],[12,'G'],[16,''],[20,'H'],[24,'T']], walls:'18-23 2-3 17-18 11-12' },
   { size:6, word:'MOLE', path:'40 50 51 52 53 54 55 45 35 34 44 43 33 23 13 14 24 25 15 05 04 03 02 01 00 10 20 30 31 41 42 32 22 12 11 21', cps:[[0,'M'],[5,''],[10,'O'],[15,''],[20,''],[25,'L'],[30,''],[35,'E']], walls:'6-7 14-15 20-21 2-8 17-23' },
   { size:6, word:'CLOCK', path:'32 22 12 02 03 04 05 15 25 35 45 55 54 44 34 24 14 13 23 33 43 42 41 31 21 11 01 00 10 20 30 40 50 51 52 53', cps:[[0,'C'],[4,''],[9,'L'],[13,''],[18,'O'],[22,''],[26,'C'],[31,''],[35,'K']], walls:'4-10' },
-  { size:6, word:'PARTY', path:'50 40 30 20 10 00 01 11 21 22 23 33 43 42 32 31 41 51 52 53 54 55 45 44 34 35 25 15 05 04 03 02 12 13 14 24', cps:[[0,'P'],[4,''],[9,'A'],[13,''],[18,'R'],[22,''],[26,'T'],[31,''],[35,'Y']], walls:'26-32 13-19 27-28' }
-];
-
-ZIPS.push(
+  { size:6, word:'PARTY', path:'50 40 30 20 10 00 01 11 21 22 23 33 43 42 32 31 41 51 52 53 54 55 45 44 34 35 25 15 05 04 03 02 12 13 14 24', cps:[[0,'P'],[4,''],[9,'A'],[13,''],[18,'R'],[22,''],[26,'T'],[31,''],[35,'Y']], walls:'26-32 13-19 27-28' },
   { size:6, word:'TIDE', path:'11 12 02 01 00 10 20 21 22 23 24 34 33 32 31 30 40 50 51 41 42 52 53 43 44 54 55 45 35 25 15 05 04 03 13 14', cps:[[0,'T'],[5,''],[10,'I'],[15,''],[20,''],[25,'D'],[30,''],[35,'E']], walls:'1-7 21-27 9-15 12-18 8-14 2-3' },
   { size:6, word:'SLEIGH', path:'23 22 12 13 14 24 25 15 05 04 03 02 01 00 10 11 21 20 30 40 50 51 52 42 41 31 32 33 43 53 54 55 45 44 34 35', cps:[[0,'S'],[4,''],[9,'L'],[13,'E'],[18,''],[22,'I'],[26,'G'],[31,''],[35,'H']], walls:'14-20 10-11 9-15 28-34 21-22 20-26 7-8' },
   { size:6, word:'MARKET', path:'31 21 22 23 24 25 15 05 04 14 13 03 02 12 11 01 00 10 20 30 40 50 51 41 42 32 33 43 44 34 35 45 55 54 53 52', cps:[[0,'M'],[4,''],[9,'A'],[13,'R'],[18,''],[22,'K'],[26,'E'],[31,''],[35,'T']], walls:'17-23 21-22' },
   { size:6, word:'TICKET', path:'21 11 10 00 01 02 12 13 03 04 05 15 14 24 25 35 34 44 45 55 54 53 52 42 43 33 23 22 32 31 41 51 50 40 30 20', cps:[[0,'T'],[4,''],[8,'I'],[12,''],[16,'C'],[19,'K'],[23,''],[27,'E'],[31,''],[35,'T']], walls:'8-14' },
   { size:6, word:'LANTERN', path:'20 30 31 21 22 23 24 34 33 32 42 41 40 50 51 52 53 43 44 54 55 45 35 25 15 05 04 14 13 03 02 12 11 01 00 10', cps:[[0,'L'],[4,''],[8,'A'],[12,'N'],[16,''],[19,'T'],[23,'E'],[27,''],[31,'R'],[35,'N']], walls:'3-4 26-32 19-25 22-28 16-17' }
-);
+];
 /* Harder "evil" trails (Barnaby Noir): same clue word, 6x6, fewer checkpoints, more walls; each also has a unique solution. */
 const EVIL_ZIPS = [
   { size:6, word:'HIVE', path:'24 14 04 05 15 25 35 34 44 45 55 54 53 52 42 32 31 41 51 50 40 30 20 10 00 01 02 03 13 12 11 21 22 23 33 43', cps:[[0,'H'],[9,'I'],[18,''],[26,'V'],[35,'E']], walls:'25-26 1-7 26-27 14-20 2-8 8-14 21-22 9-10' },
@@ -862,13 +867,7 @@ const EVIL_ZIPS = [
    clues[].c is the machine-readable constraint (used only by tests); earned = unlocked by solving the Words / Trail puzzle.
    Exactly one assignment satisfies every clue, and it does NOT stay unique without the two earned clues. The crime names only the
    ROOM; the player must work out who was in it and what they held (accusation = suspect + item). */
-const CASES = [{"n":1,"N":4,"suspects":["Bruno Bear","Pip the Bee","Wanda Wasp","Bramble Mouse"],"items":[{"name":"wooden spoon","emoji":"🥄"},{"name":"paintbrush","emoji":"🖌️"},{"name":"picnic basket","emoji":"🧺"},{"name":"candle","emoji":"🕯️"}],"places":[{"name":"pantry","emoji":"🥫"},{"name":"porch","emoji":"🏡"},{"name":"garden","emoji":"🌻"},{"name":"cellar","emoji":"🕳️"}],"crimePlace":0,"crime":"The honey jar vanished from the pantry.","clues":[{"t":"A trail of HONEY on the floorboards: Pip the Bee was in a room right next to Bramble Mouse's.","c":["next",1,3],"earned":"word","key":"HONEY"},{"t":"Whoever held the wooden spoon was in the porch or the cellar.","c":["linkEither",0,1,3],"earned":null},{"t":"Wanda Wasp had the paintbrush or the picnic basket.","c":["eitherItem",2,1,2],"earned":null},{"t":"The scent trail ends near the HIVE: Whoever held the paintbrush was in the pantry or the cellar.","c":["linkEither",1,0,3],"earned":"zip","key":"HIVE"},{"t":"Pip the Bee had the picnic basket or the candle.","c":["eitherItem",1,2,3],"earned":null},{"t":"Whoever held the candle was in the pantry.","c":["linkIP",3,0],"earned":null},{"t":"Pip the Bee was in the pantry or the cellar.","c":["eitherPlace",1,0,3],"earned":null},{"t":"Bruno Bear had the wooden spoon or the paintbrush.","c":["eitherItem",0,0,1],"earned":null},{"t":"Whoever held the picnic basket was not in the pantry.","c":["notLinkIP",2,0],"earned":null},{"t":"Whoever held the paintbrush was in the cellar.","c":["linkIP",1,3],"earned":null},{"t":"Bramble Mouse had the wooden spoon or the paintbrush.","c":["eitherItem",3,0,1],"earned":null},{"t":"Bramble Mouse was not holding the picnic basket.","c":["notItem",3,2],"earned":null}],"solution":{"item":[1,3,2,0],"place":[3,0,2,1]},"culprit":1,"culpritItem":3},{"n":2,"N":4,"suspects":["Miss Hoot","Fenn Fox","Bramble Mouse","Rufus Rabbit"],"items":[{"name":"quill","emoji":"🖋️"},{"name":"bookmark","emoji":"🔖"},{"name":"magnifying glass","emoji":"🔍"},{"name":"reading lamp","emoji":"💡"}],"places":[{"name":"reading nook","emoji":"📖"},{"name":"archive","emoji":"🗄️"},{"name":"map room","emoji":"🗺️"},{"name":"rooftop","emoji":"🌆"}],"crimePlace":0,"crime":"The library books were all shuffled in the reading nook.","clues":[{"t":"Whoever held the bookmark was not in the rooftop.","c":["notLinkIP",1,3],"earned":null},{"t":"Footprints from the dead of NIGHT: Whoever held the quill was right next door to whoever held the bookmark.","c":["itemNext",0,1],"earned":"zip","key":"NIGHT"},{"t":"Whoever held the quill was in the reading nook or the map room.","c":["linkEither",0,0,2],"earned":null},{"t":"Miss Hoot was not holding the reading lamp.","c":["notItem",0,3],"earned":null},{"t":"Whoever held the reading lamp was in the archive or the map room.","c":["linkEither",3,1,2],"earned":null},{"t":"Ink from a QUILL on the carpet: Fenn Fox's room was somewhere to the left of Bramble Mouse's.","c":["left",1,2],"earned":"word","key":"QUILL"},{"t":"Fenn Fox was in a room right next to Rufus Rabbit's.","c":["next",1,3],"earned":null},{"t":"Miss Hoot had the quill or the bookmark.","c":["eitherItem",0,0,1],"earned":null},{"t":"Rufus Rabbit had the magnifying glass or the reading lamp.","c":["eitherItem",3,2,3],"earned":null},{"t":"Fenn Fox was in the archive or the rooftop.","c":["eitherPlace",1,1,3],"earned":null},{"t":"Miss Hoot was not holding the bookmark.","c":["notItem",0,1],"earned":null},{"t":"Whoever held the reading lamp was in the map room.","c":["linkIP",3,2],"earned":null}],"solution":{"item":[0,1,2,3],"place":[0,1,3,2]},"culprit":0,"culpritItem":0},{"n":3,"N":4,"suspects":["Mabel Mole","Rufus Rabbit","Morris Mole","Pip the Bee"],"items":[{"name":"shovel","emoji":"â›️"},{"name":"watering can","emoji":"🚿"},{"name":"seed packet","emoji":"🌱"},{"name":"garden gloves","emoji":"🧤"}],"places":[{"name":"greenhouse","emoji":"🌿"},{"name":"fountain","emoji":"â›²"},{"name":"tool shed","emoji":"🏚️"},{"name":"orchard","emoji":"🍎"}],"crimePlace":3,"crime":"The tulip bed was dug up near the orchard.","clues":[{"t":"Whoever held the watering can was in the greenhouse or the fountain.","c":["linkEither",1,0,1],"earned":null},{"t":"Mabel Mole was not in the fountain.","c":["notPlace",0,1],"earned":null},{"t":"Crushed TULIP petals: Mabel Mole was in the greenhouse or the orchard.","c":["eitherPlace",0,0,3],"earned":"word","key":"TULIP"},{"t":"Whoever held the garden gloves was in the greenhouse or the fountain.","c":["linkEither",3,0,1],"earned":null},{"t":"Mabel Mole was not holding the garden gloves.","c":["notItem",0,3],"earned":null},{"t":"Morris Mole's room was somewhere to the left of Pip the Bee's.","c":["left",2,3],"earned":null},{"t":"Morris Mole was not holding the seed packet.","c":["notItem",2,2],"earned":null},{"t":"Fresh MOLE hills: Pip the Bee had the shovel or the watering can.","c":["eitherItem",3,0,1],"earned":"zip","key":"MOLE"},{"t":"Mabel Mole and Morris Mole were not in neighbouring rooms.","c":["notNext",0,2],"earned":null},{"t":"Whoever held the watering can was right next door to whoever held the seed packet.","c":["itemNext",1,2],"earned":null},{"t":"Rufus Rabbit was not in the fountain.","c":["notPlace",1,1],"earned":null},{"t":"Pip the Bee was in the fountain or the orchard.","c":["eitherPlace",3,1,3],"earned":null},{"t":"Whoever held the shovel was in the fountain or the orchard.","c":["linkEither",0,1,3],"earned":null},{"t":"Pip the Bee was not in the greenhouse.","c":["notPlace",3,0],"earned":null}],"solution":{"item":[0,2,3,1],"place":[3,2,0,1]},"culprit":0,"culpritItem":0},{"n":4,"N":4,"suspects":["The Moon","Fenny Firefly","Orson Owl","Miss Hoot"],"items":[{"name":"telescope","emoji":"🔭"},{"name":"red lantern","emoji":"🏮"},{"name":"pocket watch","emoji":"âŒš"},{"name":"night cloak","emoji":"🧥"}],"places":[{"name":"courtyard","emoji":"â›²"},{"name":"belfry","emoji":"🔔"},{"name":"clock tower","emoji":"🕰️"},{"name":"roof","emoji":"🌆"}],"crimePlace":2,"crime":"The moon went missing from the clock tower.","clues":[{"t":"Miss Hoot's room was somewhere to the left of Orson Owl's.","c":["left",3,2],"earned":null},{"t":"The CLOCK chimed thirteen: Whoever held the pocket watch was in the belfry.","c":["linkIP",2,1],"earned":"zip","key":"CLOCK"},{"t":"Silver MOON dust on the stairs: Miss Hoot was in one of the two end rooms.","c":["end",3],"earned":"word","key":"MOON"},{"t":"Whoever held the pocket watch was in the belfry or the clock tower.","c":["linkEither",2,1,2],"earned":null},{"t":"Orson Owl had the red lantern or the night cloak.","c":["eitherItem",2,1,3],"earned":null},{"t":"The Moon had the red lantern or the pocket watch.","c":["eitherItem",0,1,2],"earned":null},{"t":"Whoever held the night cloak was in the roof.","c":["linkIP",3,3],"earned":null},{"t":"Fenny Firefly had the red lantern or the pocket watch.","c":["eitherItem",1,1,2],"earned":null},{"t":"The Moon was not in the belfry.","c":["notPlace",0,1],"earned":null},{"t":"Whoever held the telescope was in the courtyard.","c":["linkIP",0,0],"earned":null},{"t":"Miss Hoot was in the courtyard or the clock tower.","c":["eitherPlace",3,0,2],"earned":null},{"t":"Orson Owl was not holding the pocket watch.","c":["notItem",2,2],"earned":null}],"solution":{"item":[1,2,3,0],"place":[2,1,3,0]},"culprit":0,"culpritItem":1},{"n":5,"N":4,"suspects":["Bramble Mouse","Miss Hoot","Fenn Fox","Bruno Bear"],"items":[{"name":"sugar bowl","emoji":"🍬"},{"name":"berry basket","emoji":"🍓"},{"name":"cake knife","emoji":"🔪"},{"name":"birthday candle","emoji":"🕯️"}],"places":[{"name":"pantry","emoji":"🥫"},{"name":"kitchen","emoji":"🍳"},{"name":"dining room","emoji":"🍽️"},{"name":"cellar","emoji":"🕳️"}],"crimePlace":2,"crime":"The birthday cake disappeared from the dining room.","clues":[{"t":"Miss Hoot was not holding the birthday candle.","c":["notItem",1,3],"earned":null},{"t":"Whoever held the birthday candle was in the pantry or the kitchen.","c":["linkEither",3,0,1],"earned":null},{"t":"Whoever held the birthday candle was in the kitchen or the cellar.","c":["linkEither",3,1,3],"earned":null},{"t":"Crumbs of CAKE: Bruno Bear was in one of the two end rooms.","c":["end",3],"earned":"word","key":"CAKE"},{"t":"Bramble Mouse had the sugar bowl or the birthday candle.","c":["eitherItem",0,0,3],"earned":null},{"t":"Fenn Fox was in the kitchen or the dining room.","c":["eitherPlace",2,1,2],"earned":null},{"t":"Whoever held the cake knife was not in the cellar.","c":["notLinkIP",2,3],"earned":null},{"t":"Fenn Fox had the berry basket or the birthday candle.","c":["eitherItem",2,1,3],"earned":null},{"t":"A confetti-covered PARTY invitation: Whoever held the sugar bowl was in the pantry or the kitchen.","c":["linkEither",0,0,1],"earned":"zip","key":"PARTY"},{"t":"Whoever held the sugar bowl was in the pantry.","c":["linkIP",0,0],"earned":null},{"t":"Fenn Fox was in the kitchen or the cellar.","c":["eitherPlace",2,1,3],"earned":null},{"t":"Bruno Bear was not in the kitchen.","c":["notPlace",3,1],"earned":null}],"solution":{"item":[0,2,3,1],"place":[0,2,1,3]},"culprit":1,"culpritItem":2},{"n":6,"N":5,"suspects":["Skipper Otter","Pearl Puffin","Gus Gull","Marina Seal","Old Barnacle"],"items":[{"name":"brass lamp","emoji":"💡"},{"name":"anchor","emoji":"âš“"},{"name":"spyglass","emoji":"🔭"},{"name":"seashell","emoji":"🐚"},{"name":"storm lantern","emoji":"🏮"}],"places":[{"name":"boathouse","emoji":"🛶"},{"name":"jetty","emoji":"🌉"},{"name":"cliff path","emoji":"â›°️"},{"name":"cove","emoji":"🏖️"},{"name":"tower stairs","emoji":"🗼"}],"crimePlace":4,"crime":"The lighthouse lamp went dark near the tower stairs.","clues":[{"t":"Skipper Otter was not in the cove.","c":["notPlace",0,3],"earned":null},{"t":"The TIDE washed away all but one clue: Pearl Puffin was in the cliff path or the cove.","c":["eitherPlace",1,2,3],"earned":"zip","key":"TIDE"},{"t":"Gus Gull had the brass lamp or the storm lantern.","c":["eitherItem",2,0,4],"earned":null},{"t":"Marina Seal was in a room right next to Gus Gull's.","c":["next",3,2],"earned":null},{"t":"Skipper Otter had the anchor or the storm lantern.","c":["eitherItem",0,1,4],"earned":null},{"t":"Whoever held the anchor was not in the tower stairs.","c":["notLinkIP",1,4],"earned":null},{"t":"The BEACON glass was warm to the touch: Skipper Otter's room was somewhere to the left of Marina Seal's.","c":["left",0,3],"earned":"word","key":"BEACON"},{"t":"Marina Seal was not holding the storm lantern.","c":["notItem",3,4],"earned":null},{"t":"Old Barnacle was not in the cove.","c":["notPlace",4,3],"earned":null},{"t":"Gus Gull was in the boathouse or the cliff path.","c":["eitherPlace",2,0,2],"earned":null},{"t":"Whoever held the seashell was in the cliff path or the cove.","c":["linkEither",3,2,3],"earned":null},{"t":"Whoever held the spyglass was right next door to whoever held the seashell.","c":["itemNext",2,3],"earned":null},{"t":"Whoever held the storm lantern was not in the boathouse.","c":["notLinkIP",4,0],"earned":null},{"t":"Marina Seal had the brass lamp or the spyglass.","c":["eitherItem",3,0,2],"earned":null},{"t":"Gus Gull was not holding the seashell.","c":["notItem",2,3],"earned":null},{"t":"Whoever held the storm lantern was in the cliff path or the tower stairs.","c":["linkEither",4,2,4],"earned":null}],"solution":{"item":[1,3,4,0,2],"place":[0,3,2,1,4]},"culprit":4,"culpritItem":2},{"n":7,"N":5,"suspects":["Flurry Rabbit","Ember Fox","Pebble Penguin","Nimbus Sheep","Hazel Hedgehog"],"items":[{"name":"crystal ball","emoji":"🔮"},{"name":"sled","emoji":"🛷"},{"name":"mittens","emoji":"🧤"},{"name":"cocoa mug","emoji":"â˜•"},{"name":"red ribbon","emoji":"🎀"}],"places":[{"name":"frozen pond","emoji":"â›¸️"},{"name":"cabin","emoji":"🏠"},{"name":"pine grove","emoji":"🌲"},{"name":"workshop","emoji":"🔨"},{"name":"ice cave","emoji":"â„️"}],"crimePlace":0,"crime":"The snow globe was lifted from the frozen pond.","clues":[{"t":"Pebble Penguin was in a room right next to Flurry Rabbit's.","c":["next",2,0],"earned":null},{"t":"Whoever held the red ribbon was in the frozen pond or the pine grove.","c":["linkEither",4,0,2],"earned":null},{"t":"Pebble Penguin was in one of the two end rooms.","c":["end",2],"earned":null},{"t":"Nimbus Sheep had the cocoa mug or the red ribbon.","c":["eitherItem",3,3,4],"earned":null},{"t":"A sparkle of GLOBE glitter in the snow: Nimbus Sheep's room was somewhere to the left of Hazel Hedgehog's.","c":["left",3,4],"earned":"word","key":"GLOBE"},{"t":"Pebble Penguin had the sled or the red ribbon.","c":["eitherItem",2,1,4],"earned":null},{"t":"Nimbus Sheep was not in the cabin.","c":["notPlace",3,1],"earned":null},{"t":"Hazel Hedgehog was not in the pine grove.","c":["notPlace",4,2],"earned":null},{"t":"Whoever held the mittens was not in the ice cave.","c":["notLinkIP",2,4],"earned":null},{"t":"Runner marks from a SLEIGH: Ember Fox's room was somewhere to the left of Hazel Hedgehog's.","c":["left",1,4],"earned":"zip","key":"SLEIGH"},{"t":"Whoever held the mittens was right next door to whoever held the cocoa mug.","c":["itemNext",2,3],"earned":null},{"t":"Whoever held the cocoa mug was in the cabin or the ice cave.","c":["linkEither",3,1,4],"earned":null},{"t":"Ember Fox was in the frozen pond or the workshop.","c":["eitherPlace",1,0,3],"earned":null},{"t":"Pebble Penguin was not holding the red ribbon.","c":["notItem",2,4],"earned":null},{"t":"Flurry Rabbit was not in the frozen pond.","c":["notPlace",0,0],"earned":null}],"solution":{"item":[0,2,1,4,3],"place":[1,3,0,2,4]},"culprit":2,"culpritItem":1},{"n":8,"N":5,"suspects":["Saffron Cat","Lotus Frog","Kettle Badger","Plum Mouse","Cinder Raccoon"],"items":[{"name":"paper lantern","emoji":"🏮"},{"name":"spice jar","emoji":"🌶️"},{"name":"silk scarf","emoji":"🧣"},{"name":"brass bell","emoji":"🔔"},{"name":"fortune card","emoji":"🃏"}],"places":[{"name":"tea stall","emoji":"🍵"},{"name":"fish cart","emoji":"🐟"},{"name":"rug tent","emoji":"â›º"},{"name":"fountain","emoji":"â›²"},{"name":"mask booth","emoji":"🎭"}],"crimePlace":4,"crime":"The night market’s golden lantern vanished from the mask booth.","clues":[{"t":"Saffron Cat was not in the fish cart.","c":["notPlace",0,1],"earned":null},{"t":"Cinder Raccoon was in the fish cart or the mask booth.","c":["eitherPlace",4,1,4],"earned":null},{"t":"Cinder Raccoon and Kettle Badger were not in neighbouring rooms.","c":["notNext",4,2],"earned":null},{"t":"A scent of SPICE on the cobbles: Plum Mouse's room was somewhere to the left of Lotus Frog's.","c":["left",3,1],"earned":"word","key":"SPICE"},{"t":"Whoever held the spice jar was right next door to whoever held the brass bell.","c":["itemNext",1,3],"earned":null},{"t":"Whoever held the paper lantern was right next door to whoever held the silk scarf.","c":["itemNext",0,2],"earned":null},{"t":"Cinder Raccoon was in the fish cart or the rug tent.","c":["eitherPlace",4,1,2],"earned":null},{"t":"Whoever held the silk scarf was in the tea stall or the fountain.","c":["linkEither",2,0,3],"earned":null},{"t":"Plum Mouse was in a room right next to Cinder Raccoon's.","c":["next",3,4],"earned":null},{"t":"Whispers in the MARKET: Saffron Cat had the paper lantern or the silk scarf.","c":["eitherItem",0,0,2],"earned":"zip","key":"MARKET"},{"t":"Kettle Badger's room was somewhere to the left of Saffron Cat's.","c":["left",2,0],"earned":null},{"t":"Lotus Frog had the paper lantern or the spice jar.","c":["eitherItem",1,0,1],"earned":null},{"t":"Whoever held the spice jar was in the rug tent or the fountain.","c":["linkEither",1,2,3],"earned":null},{"t":"Kettle Badger was not in the tea stall.","c":["notPlace",2,0],"earned":null},{"t":"Plum Mouse was in the tea stall or the mask booth.","c":["eitherPlace",3,0,4],"earned":null}],"solution":{"item":[0,1,2,4,3],"place":[4,2,3,0,1]},"culprit":0,"culpritItem":0},{"n":9,"N":5,"suspects":["Jester Fox","Pogo Rabbit","Cleo Cat","Domino Panda","Ringo Raccoon"],"items":[{"name":"top hat","emoji":"🎩"},{"name":"balloon","emoji":"🎈"},{"name":"trumpet","emoji":"🎺"},{"name":"golden ticket","emoji":"🎫"},{"name":"striped drum","emoji":"🥁"}],"places":[{"name":"big top","emoji":"🎪"},{"name":"carousel","emoji":"🎠"},{"name":"ferris wheel","emoji":"🎡"},{"name":"popcorn stand","emoji":"🍿"},{"name":"fun house","emoji":"🤡"}],"crimePlace":2,"crime":"The carnival’s star prop was taken from the ferris wheel.","clues":[{"t":"Domino Panda was in a room right next to Jester Fox's.","c":["next",3,0],"earned":null},{"t":"Pogo Rabbit was in the carousel or the ferris wheel.","c":["eitherPlace",1,1,2],"earned":null},{"t":"Sawdust from the CIRCUS ring: Cleo Cat had the trumpet or the golden ticket.","c":["eitherItem",2,2,3],"earned":"word","key":"CIRCUS"},{"t":"Whoever held the trumpet was in the ferris wheel or the fun house.","c":["linkEither",2,2,4],"earned":null},{"t":"Jester Fox's room was somewhere to the left of Cleo Cat's.","c":["left",0,2],"earned":null},{"t":"Jester Fox was in the popcorn stand or the fun house.","c":["eitherPlace",0,3,4],"earned":null},{"t":"A torn TICKET stub: Ringo Raccoon had the balloon or the striped drum.","c":["eitherItem",4,1,4],"earned":"zip","key":"TICKET"},{"t":"Jester Fox was in a room right next to Cleo Cat's.","c":["next",0,2],"earned":null},{"t":"Cleo Cat was not holding the striped drum.","c":["notItem",2,4],"earned":null},{"t":"Whoever held the balloon was in the popcorn stand.","c":["linkIP",1,3],"earned":null},{"t":"Whoever held the top hat was right next door to whoever held the balloon.","c":["itemNext",0,1],"earned":null},{"t":"Ringo Raccoon's room was somewhere to the left of Cleo Cat's.","c":["left",4,2],"earned":null},{"t":"Whoever held the golden ticket was in the carousel.","c":["linkIP",3,1],"earned":null},{"t":"Pogo Rabbit was not holding the balloon.","c":["notItem",1,1],"earned":null},{"t":"Ringo Raccoon was in the big top or the fun house.","c":["eitherPlace",4,0,4],"earned":null}],"solution":{"item":[1,3,2,0,4],"place":[3,1,4,2,0]},"culprit":3,"culpritItem":0},{"n":10,"N":5,"suspects":["Miss Hoot","Pip the Bee","Mabel Mole","Fenn Fox","The Moon"],"items":[{"name":"old lantern","emoji":"🏮"},{"name":"iron key","emoji":"🗝️"},{"name":"ancient scroll","emoji":"📜"},{"name":"silver candle","emoji":"🕯️"},{"name":"little crown","emoji":"👑"}],"places":[{"name":"great hall","emoji":"🏰"},{"name":"garden maze","emoji":"🌳"},{"name":"library","emoji":"📚"},{"name":"clock tower","emoji":"🕰️"},{"name":"lighthouse","emoji":"🗼"}],"crimePlace":0,"crime":"The Last Lantern went out in the great hall.","clues":[{"t":"Fenn Fox was not holding the old lantern.","c":["notItem",3,0],"earned":null},{"t":"Pip the Bee was in the garden maze or the library.","c":["eitherPlace",1,1,2],"earned":null},{"t":"Whoever held the old lantern was in the garden maze or the library.","c":["linkEither",0,1,2],"earned":null},{"t":"Miss Hoot's room was somewhere to the left of The Moon's.","c":["left",0,4],"earned":null},{"t":"Whoever held the silver candle was in the great hall or the library.","c":["linkEither",3,0,2],"earned":null},{"t":"Miss Hoot was in the garden maze or the clock tower.","c":["eitherPlace",0,1,3],"earned":null},{"t":"Whoever held the iron key was in the garden maze or the clock tower.","c":["linkEither",1,1,3],"earned":null},{"t":"The Moon and Pip the Bee were not in neighbouring rooms.","c":["notNext",4,1],"earned":null},{"t":"A thread of LIGHT under the door: Miss Hoot's room was somewhere to the left of Pip the Bee's.","c":["left",0,1],"earned":"word","key":"LIGHT"},{"t":"The LANTERN’s wick was still smoking: The Moon had the iron key or the little crown.","c":["eitherItem",4,1,4],"earned":"zip","key":"LANTERN"},{"t":"Mabel Mole and The Moon were not in neighbouring rooms.","c":["notNext",2,4],"earned":null},{"t":"Whoever held the iron key was right next door to whoever held the ancient scroll.","c":["itemNext",1,2],"earned":null},{"t":"Whoever held the iron key was not in the library.","c":["notLinkIP",1,2],"earned":null},{"t":"Pip the Bee had the iron key or the ancient scroll.","c":["eitherItem",1,1,2],"earned":null},{"t":"Miss Hoot was not holding the ancient scroll.","c":["notItem",0,2],"earned":null},{"t":"The Moon was in the garden maze or the lighthouse.","c":["eitherPlace",4,1,4],"earned":null}],"solution":{"item":[0,2,3,1,4],"place":[1,2,0,3,4]},"culprit":2,"culpritItem":3}];
-/* Chapter 8: Evil Larry takes the culprit's seat (suspect 0). The clue constraints use indices, so the puzzle stays uniquely solvable. */
-(function patchLarryCase() {
-  const c = CASES[7];
-  c.suspects[0] = 'Evil Larry';
-  c.clues.forEach(cl => { cl.t = cl.t.split('Saffron Cat').join('Evil Larry'); });
-})();
+const CASES = [{"n":1,"N":4,"suspects":["Bruno Bear","Pip the Bee","Wanda Wasp","Bramble Mouse"],"items":[{"name":"wooden spoon","emoji":"🥄"},{"name":"paintbrush","emoji":"🖌️"},{"name":"picnic basket","emoji":"🧺"},{"name":"candle","emoji":"🕯️"}],"places":[{"name":"pantry","emoji":"🥫"},{"name":"porch","emoji":"🏡"},{"name":"garden","emoji":"🌻"},{"name":"cellar","emoji":"🕳️"}],"crimePlace":0,"crime":"The honey jar vanished from the pantry.","clues":[{"t":"A trail of HONEY on the floorboards: Pip the Bee was in a room right next to Bramble Mouse's.","c":["next",1,3],"earned":"word","key":"HONEY"},{"t":"Whoever held the wooden spoon was in the porch or the cellar.","c":["linkEither",0,1,3],"earned":null},{"t":"Wanda Wasp had the paintbrush or the picnic basket.","c":["eitherItem",2,1,2],"earned":null},{"t":"The scent trail ends near the HIVE: Whoever held the paintbrush was in the pantry or the cellar.","c":["linkEither",1,0,3],"earned":"zip","key":"HIVE"},{"t":"Pip the Bee had the picnic basket or the candle.","c":["eitherItem",1,2,3],"earned":null},{"t":"Whoever held the candle was in the pantry.","c":["linkIP",3,0],"earned":null},{"t":"Pip the Bee was in the pantry or the cellar.","c":["eitherPlace",1,0,3],"earned":null},{"t":"Bruno Bear had the wooden spoon or the paintbrush.","c":["eitherItem",0,0,1],"earned":null},{"t":"Whoever held the picnic basket was not in the pantry.","c":["notLinkIP",2,0],"earned":null},{"t":"Whoever held the paintbrush was in the cellar.","c":["linkIP",1,3],"earned":null},{"t":"Bramble Mouse had the wooden spoon or the paintbrush.","c":["eitherItem",3,0,1],"earned":null},{"t":"Bramble Mouse was not holding the picnic basket.","c":["notItem",3,2],"earned":null}],"solution":{"item":[1,3,2,0],"place":[3,0,2,1]},"culprit":1,"culpritItem":3},{"n":2,"N":4,"suspects":["Miss Hoot","Fenn Fox","Bramble Mouse","Rufus Rabbit"],"items":[{"name":"quill","emoji":"🖋️"},{"name":"bookmark","emoji":"🔖"},{"name":"magnifying glass","emoji":"🔍"},{"name":"reading lamp","emoji":"💡"}],"places":[{"name":"reading nook","emoji":"📖"},{"name":"archive","emoji":"🗄️"},{"name":"map room","emoji":"🗺️"},{"name":"rooftop","emoji":"🌆"}],"crimePlace":0,"crime":"The library books were all shuffled in the reading nook.","clues":[{"t":"Whoever held the bookmark was not in the rooftop.","c":["notLinkIP",1,3],"earned":null},{"t":"Footprints from the dead of NIGHT: Whoever held the quill was right next door to whoever held the bookmark.","c":["itemNext",0,1],"earned":"zip","key":"NIGHT"},{"t":"Whoever held the quill was in the reading nook or the map room.","c":["linkEither",0,0,2],"earned":null},{"t":"Miss Hoot was not holding the reading lamp.","c":["notItem",0,3],"earned":null},{"t":"Whoever held the reading lamp was in the archive or the map room.","c":["linkEither",3,1,2],"earned":null},{"t":"Ink from a QUILL on the carpet: Fenn Fox's room was somewhere to the left of Bramble Mouse's.","c":["left",1,2],"earned":"word","key":"QUILL"},{"t":"Fenn Fox was in a room right next to Rufus Rabbit's.","c":["next",1,3],"earned":null},{"t":"Miss Hoot had the quill or the bookmark.","c":["eitherItem",0,0,1],"earned":null},{"t":"Rufus Rabbit had the magnifying glass or the reading lamp.","c":["eitherItem",3,2,3],"earned":null},{"t":"Fenn Fox was in the archive or the rooftop.","c":["eitherPlace",1,1,3],"earned":null},{"t":"Miss Hoot was not holding the bookmark.","c":["notItem",0,1],"earned":null},{"t":"Whoever held the reading lamp was in the map room.","c":["linkIP",3,2],"earned":null}],"solution":{"item":[0,1,2,3],"place":[0,1,3,2]},"culprit":0,"culpritItem":0},{"n":3,"N":4,"suspects":["Mabel Mole","Rufus Rabbit","Morris Mole","Pip the Bee"],"items":[{"name":"shovel","emoji":"â›️"},{"name":"watering can","emoji":"🚿"},{"name":"seed packet","emoji":"🌱"},{"name":"garden gloves","emoji":"🧤"}],"places":[{"name":"greenhouse","emoji":"🌿"},{"name":"fountain","emoji":"â›²"},{"name":"tool shed","emoji":"🏚️"},{"name":"orchard","emoji":"🍎"}],"crimePlace":3,"crime":"The tulip bed was dug up near the orchard.","clues":[{"t":"Whoever held the watering can was in the greenhouse or the fountain.","c":["linkEither",1,0,1],"earned":null},{"t":"Mabel Mole was not in the fountain.","c":["notPlace",0,1],"earned":null},{"t":"Crushed TULIP petals: Mabel Mole was in the greenhouse or the orchard.","c":["eitherPlace",0,0,3],"earned":"word","key":"TULIP"},{"t":"Whoever held the garden gloves was in the greenhouse or the fountain.","c":["linkEither",3,0,1],"earned":null},{"t":"Mabel Mole was not holding the garden gloves.","c":["notItem",0,3],"earned":null},{"t":"Morris Mole's room was somewhere to the left of Pip the Bee's.","c":["left",2,3],"earned":null},{"t":"Morris Mole was not holding the seed packet.","c":["notItem",2,2],"earned":null},{"t":"Fresh MOLE hills: Pip the Bee had the shovel or the watering can.","c":["eitherItem",3,0,1],"earned":"zip","key":"MOLE"},{"t":"Mabel Mole and Morris Mole were not in neighbouring rooms.","c":["notNext",0,2],"earned":null},{"t":"Whoever held the watering can was right next door to whoever held the seed packet.","c":["itemNext",1,2],"earned":null},{"t":"Rufus Rabbit was not in the fountain.","c":["notPlace",1,1],"earned":null},{"t":"Pip the Bee was in the fountain or the orchard.","c":["eitherPlace",3,1,3],"earned":null},{"t":"Whoever held the shovel was in the fountain or the orchard.","c":["linkEither",0,1,3],"earned":null},{"t":"Pip the Bee was not in the greenhouse.","c":["notPlace",3,0],"earned":null}],"solution":{"item":[0,2,3,1],"place":[3,2,0,1]},"culprit":0,"culpritItem":0},{"n":4,"N":4,"suspects":["The Moon","Fenny Firefly","Orson Owl","Miss Hoot"],"items":[{"name":"telescope","emoji":"🔭"},{"name":"red lantern","emoji":"🏮"},{"name":"pocket watch","emoji":"âŒš"},{"name":"night cloak","emoji":"🧥"}],"places":[{"name":"courtyard","emoji":"â›²"},{"name":"belfry","emoji":"🔔"},{"name":"clock tower","emoji":"🕰️"},{"name":"roof","emoji":"🌆"}],"crimePlace":2,"crime":"The moon went missing from the clock tower.","clues":[{"t":"Miss Hoot's room was somewhere to the left of Orson Owl's.","c":["left",3,2],"earned":null},{"t":"The CLOCK chimed thirteen: Whoever held the pocket watch was in the belfry.","c":["linkIP",2,1],"earned":"zip","key":"CLOCK"},{"t":"Silver MOON dust on the stairs: Miss Hoot was in one of the two end rooms.","c":["end",3],"earned":"word","key":"MOON"},{"t":"Whoever held the pocket watch was in the belfry or the clock tower.","c":["linkEither",2,1,2],"earned":null},{"t":"Orson Owl had the red lantern or the night cloak.","c":["eitherItem",2,1,3],"earned":null},{"t":"The Moon had the red lantern or the pocket watch.","c":["eitherItem",0,1,2],"earned":null},{"t":"Whoever held the night cloak was in the roof.","c":["linkIP",3,3],"earned":null},{"t":"Fenny Firefly had the red lantern or the pocket watch.","c":["eitherItem",1,1,2],"earned":null},{"t":"The Moon was not in the belfry.","c":["notPlace",0,1],"earned":null},{"t":"Whoever held the telescope was in the courtyard.","c":["linkIP",0,0],"earned":null},{"t":"Miss Hoot was in the courtyard or the clock tower.","c":["eitherPlace",3,0,2],"earned":null},{"t":"Orson Owl was not holding the pocket watch.","c":["notItem",2,2],"earned":null}],"solution":{"item":[1,2,3,0],"place":[2,1,3,0]},"culprit":0,"culpritItem":1},{"n":5,"N":4,"suspects":["Bramble Mouse","Miss Hoot","Fenn Fox","Bruno Bear"],"items":[{"name":"sugar bowl","emoji":"🍬"},{"name":"berry basket","emoji":"🍓"},{"name":"cake knife","emoji":"🔪"},{"name":"birthday candle","emoji":"🕯️"}],"places":[{"name":"pantry","emoji":"🥫"},{"name":"kitchen","emoji":"🍳"},{"name":"dining room","emoji":"🍽️"},{"name":"cellar","emoji":"🕳️"}],"crimePlace":2,"crime":"The birthday cake disappeared from the dining room.","clues":[{"t":"Miss Hoot was not holding the birthday candle.","c":["notItem",1,3],"earned":null},{"t":"Whoever held the birthday candle was in the pantry or the kitchen.","c":["linkEither",3,0,1],"earned":null},{"t":"Whoever held the birthday candle was in the kitchen or the cellar.","c":["linkEither",3,1,3],"earned":null},{"t":"Crumbs of CAKE: Bruno Bear was in one of the two end rooms.","c":["end",3],"earned":"word","key":"CAKE"},{"t":"Bramble Mouse had the sugar bowl or the birthday candle.","c":["eitherItem",0,0,3],"earned":null},{"t":"Fenn Fox was in the kitchen or the dining room.","c":["eitherPlace",2,1,2],"earned":null},{"t":"Whoever held the cake knife was not in the cellar.","c":["notLinkIP",2,3],"earned":null},{"t":"Fenn Fox had the berry basket or the birthday candle.","c":["eitherItem",2,1,3],"earned":null},{"t":"A confetti-covered PARTY invitation: Whoever held the sugar bowl was in the pantry or the kitchen.","c":["linkEither",0,0,1],"earned":"zip","key":"PARTY"},{"t":"Whoever held the sugar bowl was in the pantry.","c":["linkIP",0,0],"earned":null},{"t":"Fenn Fox was in the kitchen or the cellar.","c":["eitherPlace",2,1,3],"earned":null},{"t":"Bruno Bear was not in the kitchen.","c":["notPlace",3,1],"earned":null}],"solution":{"item":[0,2,3,1],"place":[0,2,1,3]},"culprit":1,"culpritItem":2},{"n":6,"N":5,"suspects":["Skipper Otter","Pearl Puffin","Gus Gull","Marina Seal","Old Barnacle"],"items":[{"name":"brass lamp","emoji":"💡"},{"name":"anchor","emoji":"âš“"},{"name":"spyglass","emoji":"🔭"},{"name":"seashell","emoji":"🐚"},{"name":"storm lantern","emoji":"🏮"}],"places":[{"name":"boathouse","emoji":"🛶"},{"name":"jetty","emoji":"🌉"},{"name":"cliff path","emoji":"â›°️"},{"name":"cove","emoji":"🏖️"},{"name":"tower stairs","emoji":"🗼"}],"crimePlace":4,"crime":"The lighthouse lamp went dark near the tower stairs.","clues":[{"t":"Skipper Otter was not in the cove.","c":["notPlace",0,3],"earned":null},{"t":"The TIDE washed away all but one clue: Pearl Puffin was in the cliff path or the cove.","c":["eitherPlace",1,2,3],"earned":"zip","key":"TIDE"},{"t":"Gus Gull had the brass lamp or the storm lantern.","c":["eitherItem",2,0,4],"earned":null},{"t":"Marina Seal was in a room right next to Gus Gull's.","c":["next",3,2],"earned":null},{"t":"Skipper Otter had the anchor or the storm lantern.","c":["eitherItem",0,1,4],"earned":null},{"t":"Whoever held the anchor was not in the tower stairs.","c":["notLinkIP",1,4],"earned":null},{"t":"The BEACON glass was warm to the touch: Skipper Otter's room was somewhere to the left of Marina Seal's.","c":["left",0,3],"earned":"word","key":"BEACON"},{"t":"Marina Seal was not holding the storm lantern.","c":["notItem",3,4],"earned":null},{"t":"Old Barnacle was not in the cove.","c":["notPlace",4,3],"earned":null},{"t":"Gus Gull was in the boathouse or the cliff path.","c":["eitherPlace",2,0,2],"earned":null},{"t":"Whoever held the seashell was in the cliff path or the cove.","c":["linkEither",3,2,3],"earned":null},{"t":"Whoever held the spyglass was right next door to whoever held the seashell.","c":["itemNext",2,3],"earned":null},{"t":"Whoever held the storm lantern was not in the boathouse.","c":["notLinkIP",4,0],"earned":null},{"t":"Marina Seal had the brass lamp or the spyglass.","c":["eitherItem",3,0,2],"earned":null},{"t":"Gus Gull was not holding the seashell.","c":["notItem",2,3],"earned":null},{"t":"Whoever held the storm lantern was in the cliff path or the tower stairs.","c":["linkEither",4,2,4],"earned":null}],"solution":{"item":[1,3,4,0,2],"place":[0,3,2,1,4]},"culprit":4,"culpritItem":2},{"n":7,"N":5,"suspects":["Flurry Rabbit","Ember Fox","Pebble Penguin","Nimbus Sheep","Hazel Hedgehog"],"items":[{"name":"crystal ball","emoji":"🔮"},{"name":"sled","emoji":"🛷"},{"name":"mittens","emoji":"🧤"},{"name":"cocoa mug","emoji":"â˜•"},{"name":"red ribbon","emoji":"🎀"}],"places":[{"name":"frozen pond","emoji":"â›¸️"},{"name":"cabin","emoji":"🏠"},{"name":"pine grove","emoji":"🌲"},{"name":"workshop","emoji":"🔨"},{"name":"ice cave","emoji":"â„️"}],"crimePlace":0,"crime":"The snow globe was lifted from the frozen pond.","clues":[{"t":"Pebble Penguin was in a room right next to Flurry Rabbit's.","c":["next",2,0],"earned":null},{"t":"Whoever held the red ribbon was in the frozen pond or the pine grove.","c":["linkEither",4,0,2],"earned":null},{"t":"Pebble Penguin was in one of the two end rooms.","c":["end",2],"earned":null},{"t":"Nimbus Sheep had the cocoa mug or the red ribbon.","c":["eitherItem",3,3,4],"earned":null},{"t":"A sparkle of GLOBE glitter in the snow: Nimbus Sheep's room was somewhere to the left of Hazel Hedgehog's.","c":["left",3,4],"earned":"word","key":"GLOBE"},{"t":"Pebble Penguin had the sled or the red ribbon.","c":["eitherItem",2,1,4],"earned":null},{"t":"Nimbus Sheep was not in the cabin.","c":["notPlace",3,1],"earned":null},{"t":"Hazel Hedgehog was not in the pine grove.","c":["notPlace",4,2],"earned":null},{"t":"Whoever held the mittens was not in the ice cave.","c":["notLinkIP",2,4],"earned":null},{"t":"Runner marks from a SLEIGH: Ember Fox's room was somewhere to the left of Hazel Hedgehog's.","c":["left",1,4],"earned":"zip","key":"SLEIGH"},{"t":"Whoever held the mittens was right next door to whoever held the cocoa mug.","c":["itemNext",2,3],"earned":null},{"t":"Whoever held the cocoa mug was in the cabin or the ice cave.","c":["linkEither",3,1,4],"earned":null},{"t":"Ember Fox was in the frozen pond or the workshop.","c":["eitherPlace",1,0,3],"earned":null},{"t":"Pebble Penguin was not holding the red ribbon.","c":["notItem",2,4],"earned":null},{"t":"Flurry Rabbit was not in the frozen pond.","c":["notPlace",0,0],"earned":null}],"solution":{"item":[0,2,1,4,3],"place":[1,3,0,2,4]},"culprit":2,"culpritItem":1},{"n":8,"N":5,"suspects":["Evil Larry","Lotus Frog","Kettle Badger","Plum Mouse","Cinder Raccoon"],"items":[{"name":"paper lantern","emoji":"🏮"},{"name":"spice jar","emoji":"🌶️"},{"name":"silk scarf","emoji":"🧣"},{"name":"brass bell","emoji":"🔔"},{"name":"fortune card","emoji":"🃏"}],"places":[{"name":"tea stall","emoji":"🍵"},{"name":"fish cart","emoji":"🐟"},{"name":"rug tent","emoji":"â›º"},{"name":"fountain","emoji":"â›²"},{"name":"mask booth","emoji":"🎭"}],"crimePlace":4,"crime":"The night market’s golden lantern vanished from the mask booth.","clues":[{"t":"Evil Larry was not in the fish cart.","c":["notPlace",0,1],"earned":null},{"t":"Cinder Raccoon was in the fish cart or the mask booth.","c":["eitherPlace",4,1,4],"earned":null},{"t":"Cinder Raccoon and Kettle Badger were not in neighbouring rooms.","c":["notNext",4,2],"earned":null},{"t":"A scent of SPICE on the cobbles: Plum Mouse's room was somewhere to the left of Lotus Frog's.","c":["left",3,1],"earned":"word","key":"SPICE"},{"t":"Whoever held the spice jar was right next door to whoever held the brass bell.","c":["itemNext",1,3],"earned":null},{"t":"Whoever held the paper lantern was right next door to whoever held the silk scarf.","c":["itemNext",0,2],"earned":null},{"t":"Cinder Raccoon was in the fish cart or the rug tent.","c":["eitherPlace",4,1,2],"earned":null},{"t":"Whoever held the silk scarf was in the tea stall or the fountain.","c":["linkEither",2,0,3],"earned":null},{"t":"Plum Mouse was in a room right next to Cinder Raccoon's.","c":["next",3,4],"earned":null},{"t":"Whispers in the MARKET: Evil Larry had the paper lantern or the silk scarf.","c":["eitherItem",0,0,2],"earned":"zip","key":"MARKET"},{"t":"Kettle Badger's room was somewhere to the left of Evil Larry's.","c":["left",2,0],"earned":null},{"t":"Lotus Frog had the paper lantern or the spice jar.","c":["eitherItem",1,0,1],"earned":null},{"t":"Whoever held the spice jar was in the rug tent or the fountain.","c":["linkEither",1,2,3],"earned":null},{"t":"Kettle Badger was not in the tea stall.","c":["notPlace",2,0],"earned":null},{"t":"Plum Mouse was in the tea stall or the mask booth.","c":["eitherPlace",3,0,4],"earned":null}],"solution":{"item":[0,1,2,4,3],"place":[4,2,3,0,1]},"culprit":0,"culpritItem":0},{"n":9,"N":5,"suspects":["Jester Fox","Pogo Rabbit","Cleo Cat","Domino Panda","Ringo Raccoon"],"items":[{"name":"top hat","emoji":"🎩"},{"name":"balloon","emoji":"🎈"},{"name":"trumpet","emoji":"🎺"},{"name":"golden ticket","emoji":"🎫"},{"name":"striped drum","emoji":"🥁"}],"places":[{"name":"big top","emoji":"🎪"},{"name":"carousel","emoji":"🎠"},{"name":"ferris wheel","emoji":"🎡"},{"name":"popcorn stand","emoji":"🍿"},{"name":"fun house","emoji":"🤡"}],"crimePlace":2,"crime":"The carnival’s star prop was taken from the ferris wheel.","clues":[{"t":"Domino Panda was in a room right next to Jester Fox's.","c":["next",3,0],"earned":null},{"t":"Pogo Rabbit was in the carousel or the ferris wheel.","c":["eitherPlace",1,1,2],"earned":null},{"t":"Sawdust from the CIRCUS ring: Cleo Cat had the trumpet or the golden ticket.","c":["eitherItem",2,2,3],"earned":"word","key":"CIRCUS"},{"t":"Whoever held the trumpet was in the ferris wheel or the fun house.","c":["linkEither",2,2,4],"earned":null},{"t":"Jester Fox's room was somewhere to the left of Cleo Cat's.","c":["left",0,2],"earned":null},{"t":"Jester Fox was in the popcorn stand or the fun house.","c":["eitherPlace",0,3,4],"earned":null},{"t":"A torn TICKET stub: Ringo Raccoon had the balloon or the striped drum.","c":["eitherItem",4,1,4],"earned":"zip","key":"TICKET"},{"t":"Jester Fox was in a room right next to Cleo Cat's.","c":["next",0,2],"earned":null},{"t":"Cleo Cat was not holding the striped drum.","c":["notItem",2,4],"earned":null},{"t":"Whoever held the balloon was in the popcorn stand.","c":["linkIP",1,3],"earned":null},{"t":"Whoever held the top hat was right next door to whoever held the balloon.","c":["itemNext",0,1],"earned":null},{"t":"Ringo Raccoon's room was somewhere to the left of Cleo Cat's.","c":["left",4,2],"earned":null},{"t":"Whoever held the golden ticket was in the carousel.","c":["linkIP",3,1],"earned":null},{"t":"Pogo Rabbit was not holding the balloon.","c":["notItem",1,1],"earned":null},{"t":"Ringo Raccoon was in the big top or the fun house.","c":["eitherPlace",4,0,4],"earned":null}],"solution":{"item":[1,3,2,0,4],"place":[3,1,4,2,0]},"culprit":3,"culpritItem":0},{"n":10,"N":5,"suspects":["Miss Hoot","Pip the Bee","Mabel Mole","Fenn Fox","The Moon"],"items":[{"name":"old lantern","emoji":"🏮"},{"name":"iron key","emoji":"🗝️"},{"name":"ancient scroll","emoji":"📜"},{"name":"silver candle","emoji":"🕯️"},{"name":"little crown","emoji":"👑"}],"places":[{"name":"great hall","emoji":"🏰"},{"name":"garden maze","emoji":"🌳"},{"name":"library","emoji":"📚"},{"name":"clock tower","emoji":"🕰️"},{"name":"lighthouse","emoji":"🗼"}],"crimePlace":0,"crime":"The Last Lantern went out in the great hall.","clues":[{"t":"Fenn Fox was not holding the old lantern.","c":["notItem",3,0],"earned":null},{"t":"Pip the Bee was in the garden maze or the library.","c":["eitherPlace",1,1,2],"earned":null},{"t":"Whoever held the old lantern was in the garden maze or the library.","c":["linkEither",0,1,2],"earned":null},{"t":"Miss Hoot's room was somewhere to the left of The Moon's.","c":["left",0,4],"earned":null},{"t":"Whoever held the silver candle was in the great hall or the library.","c":["linkEither",3,0,2],"earned":null},{"t":"Miss Hoot was in the garden maze or the clock tower.","c":["eitherPlace",0,1,3],"earned":null},{"t":"Whoever held the iron key was in the garden maze or the clock tower.","c":["linkEither",1,1,3],"earned":null},{"t":"The Moon and Pip the Bee were not in neighbouring rooms.","c":["notNext",4,1],"earned":null},{"t":"A thread of LIGHT under the door: Miss Hoot's room was somewhere to the left of Pip the Bee's.","c":["left",0,1],"earned":"word","key":"LIGHT"},{"t":"The LANTERN’s wick was still smoking: The Moon had the iron key or the little crown.","c":["eitherItem",4,1,4],"earned":"zip","key":"LANTERN"},{"t":"Mabel Mole and The Moon were not in neighbouring rooms.","c":["notNext",2,4],"earned":null},{"t":"Whoever held the iron key was right next door to whoever held the ancient scroll.","c":["itemNext",1,2],"earned":null},{"t":"Whoever held the iron key was not in the library.","c":["notLinkIP",1,2],"earned":null},{"t":"Pip the Bee had the iron key or the ancient scroll.","c":["eitherItem",1,1,2],"earned":null},{"t":"Miss Hoot was not holding the ancient scroll.","c":["notItem",0,2],"earned":null},{"t":"The Moon was in the garden maze or the lighthouse.","c":["eitherPlace",4,1,4],"earned":null}],"solution":{"item":[0,2,3,1,4],"place":[1,2,0,3,4]},"culprit":2,"culpritItem":3}];
 /* Theme hints shown above the board so the words are easier to guess (kept in evil mode too, where word lengths are hidden). */
 const THEME_HINTS = [
   'the missing honey jar - bees, bears and sweet, sticky things',
@@ -885,7 +884,7 @@ const THEME_HINTS = [
 const TRAIL_HINTS = { HIVE: 'where bees live', NIGHT: 'when the owls come out', MOLE: 'a tunnelling garden digger', CLOCK: 'it chimes the hours', PARTY: 'a birthday celebration',
   TIDE: 'what the sea does twice a day', SLEIGH: 'what Santa rides', MARKET: 'where stalls sell things', TICKET: 'you need one to get in', LANTERN: 'a light you can carry' };
 const parseZip = z => {
-  const cells = z.path.trim().split(/\s+/).map(t => [Number(t[0]), Number(t[1])]);
+  const cells = P(z.path);
   return { size: z.size, word: z.word, path: cells, cps: z.cps.map(([pi, ch], k) => ({ idx: pi, num: k + 1, letter: ch, r: cells[pi][0], c: cells[pi][1] })),
            walls: new Set(z.walls.split(/\s+/).filter(Boolean)) };
 };
@@ -972,25 +971,7 @@ const STORY_RAW = {
       { e: 'happy', t: 'They hid the cake to throw me a party. And the best detective in the world is you. Thank you, partner.' },
       { e: 'proud', t: 'Tales and tangles, solved together. Until the next mystery!' }
     ]
-  }
-};
-
-/* between the two puzzles (bridge) and before the accusation (caseIntro) */
-const STORY_EXTRA = {
-  1: { bridge:    [{ e: 'happy',    t: 'HONEY! Now we know what the thief loved. Next, the scent trail: one path through every tile, touching the numbers in order.' }],
-       caseIntro: [{ e: 'thinking', t: 'Two clues, three suspects. Who loves honey AND was found where the trail ended?' }] },
-  2: { bridge:    [{ e: 'thinking', t: 'QUILL! Ink on the floor, too. Follow the inky footprints: every tile once, numbers in order.' }],
-       caseIntro: [{ e: 'thinking', t: 'A quill, and a nocturnal habit. Which suspect fits both?' }] },
-  3: { bridge:    [{ e: 'happy',    t: 'TULIP! There are petals everywhere. Now the muddy tracks: one trail, every patch, numbers in order.' }],
-       caseIntro: [{ e: 'neutral',  t: 'A tulip lover with a digging habit. Choose carefully, partner.' }] },
-  4: { bridge:    [{ e: 'surprised', t: 'MOON! So something glowing took it. Now follow the trail to the clocktower, every step, numbers in order.' }],
-       caseIntro: [{ e: 'thinking', t: 'Something glows like the moon and lurks by the clock tower. Who could it be?' }] },
-  5: { bridge:    [{ e: 'happy',    t: 'CAKE! Crumbs! Follow the sugar trail: one path through every tile, numbers in order.' }],
-       caseIntro: [{ e: 'proud',    t: 'A cake lover who was planning something. Who fits both clues?' }] }
-};
-
-/* ---- chapters 6-10 story + reworked case intros for 1-5 (inserted by the data patch) ---- */
-Object.assign(STORY_RAW, {
+  },
   6: {
     intro: [
       { e: 'surprised', t: 'The lighthouse has gone dark, partner! Ships are bumping into each other out there. Politely, but still.' },
@@ -1072,8 +1053,20 @@ Object.assign(STORY_RAW, {
       { e: 'happy', t: 'Tales and tangles, unravelled together. Thank you, partner. A light will always be on for you.' }
     ]
   }
-});
-Object.assign(STORY_EXTRA, {
+};
+
+/* between the two puzzles (bridge) and before the accusation (caseIntro) */
+const STORY_EXTRA = {
+  1: { bridge:    [{ e: 'happy',    t: 'HONEY! Now we know what the thief loved. Next, the scent trail: one path through every tile, touching the numbers in order.' }],
+       caseIntro: [{ e: 'thinking', t: 'Four suspects, four rooms. No single clue will crack it. Cross people off in the notebook until only one story fits.' }] },
+  2: { bridge:    [{ e: 'thinking', t: 'QUILL! Ink on the floor, too. Follow the inky footprints: every tile once, numbers in order.' }],
+       caseIntro: [{ e: 'thinking', t: 'The clues are vaguer this time. Think about who could possibly be where.' }] },
+  3: { bridge:    [{ e: 'happy',    t: 'TULIP! There are petals everywhere. Now the muddy tracks: one trail, every patch, numbers in order.' }],
+       caseIntro: [{ e: 'neutral',  t: 'Mole hills, a rabbit and a bee. Who was where? The notebook knows.' }] },
+  4: { bridge:    [{ e: 'surprised', t: 'MOON! So something glowing took it. Now follow the trail to the clocktower, every step, numbers in order.' }],
+       caseIntro: [{ e: 'thinking', t: 'Something glows and something chimes. Which suspect fits every clue?' }] },
+  5: { bridge:    [{ e: 'happy',    t: 'CAKE! Crumbs! Follow the sugar trail: one path through every tile, numbers in order.' }],
+       caseIntro: [{ e: 'proud',    t: 'A cake lover with a plan. Use every clue, partner.' }] },
   6: { bridge: [{ e: 'surprised', t: 'BEACON! The glass is still warm. Now the tide has washed the harbour path: follow the numbers, touch every plank.' }],
        caseIntro: [{ e: 'thinking', t: 'Your notebook holds the clues. No single clue will crack it, so cross people off until one story fits. Who took the lamp?' }] },
   7: { bridge: [{ e: 'happy', t: 'GLOBE glitter! Next, the sleigh runner marks: one trail, every tile, numbers in order.' }],
@@ -1084,12 +1077,7 @@ Object.assign(STORY_EXTRA, {
        caseIntro: [{ e: 'thinking', t: 'The rooms along the midway matter here. Who was next to whom?' }] },
   10: { bridge: [{ e: 'proud', t: 'LIGHT under the door! Now the lantern’s own trail: every step, numbers in order.' }],
         caseIntro: [{ e: 'sad', t: 'Everyone we have met is here. Trust the notebook, partner. Who put out the last lantern?' }] }
-});
-STORY_EXTRA[1].caseIntro = [{ e: 'thinking', t: 'Four suspects, four rooms. No single clue will crack it. Cross people off in the notebook until only one story fits.' }];
-STORY_EXTRA[2].caseIntro = [{ e: 'thinking', t: 'The clues are vaguer this time. Think about who could possibly be where.' }];
-STORY_EXTRA[3].caseIntro = [{ e: 'neutral', t: 'Mole hills, a rabbit and a bee. Who was where? The notebook knows.' }];
-STORY_EXTRA[4].caseIntro = [{ e: 'thinking', t: 'Something glows and something chimes. Which suspect fits every clue?' }];
-STORY_EXTRA[5].caseIntro = [{ e: 'proud', t: 'A cake lover with a plan. Use every clue, partner.' }];
+};
 
 const REACT = {
   zipHint1Off:  { id: 'zip_nudge_off', e: 'thinking', t: 'Your trail wanders off the scent. Try backing up a little.' },
@@ -1173,10 +1161,10 @@ const Store = {
       if (u >= 1) d.unlocked = Math.min(u, LEVELS.length);
       const w = saved.wardrobe;
       if (w && Array.isArray(w.owned)) {                       // keep only items that still exist; free items are always owned
-        w.owned.forEach(id => { if (WARDROBE.some(i => i.id === id && !i.unlock) && !d.wardrobe.owned.includes(id)) d.wardrobe.owned.push(id); });   // Noir items are unlocked by evil clears, never by an old owned list
-        ['hat', 'face', 'neck'].forEach(slot => {
-          const id = w.equipped && w.equipped[slot];
-          if (id && WARDROBE.some(i => i.id === id && i.slot === slot) && (d.wardrobe.owned.includes(id) || WARDROBE.find(i => i.id === id).unlock)) d.wardrobe.equipped[slot] = id;
+        w.owned.forEach(id => { const it = WARDROBE_BY_ID[id]; if (it && !it.unlock && !d.wardrobe.owned.includes(id)) d.wardrobe.owned.push(id); });   // Noir items are unlocked by evil clears, never by an old owned list
+        SLOTS.forEach(slot => {
+          const id = w.equipped && w.equipped[slot], it = id && WARDROBE_BY_ID[id];
+          if (it && it.slot === slot) d.wardrobe.equipped[slot] = id;    // ownership is checked once below, after this.data is set
         });
       }
       const dl = saved.daily;
@@ -1185,27 +1173,25 @@ const Store = {
         d.daily.streak = dl.streak | 0; d.daily.best = dl.best | 0;
         if (dl.results && typeof dl.results === 'object') d.daily.results = dl.results;
       }
-    }
-    if (saved) {
       if (saved.perfect && typeof saved.perfect === 'object') d.perfect.streak = saved.perfect.streak | 0;
       if (saved.evil && saved.evil.cleared && typeof saved.evil.cleared === 'object') d.evil.cleared = saved.evil.cleared;
       if (saved.seen && typeof saved.seen === 'object') d.seen.larry = !!saved.seen.larry;
     }
     this.data = d;
-    ['hat', 'face', 'neck'].forEach(slot => { if (!this.owns(d.wardrobe.equipped[slot])) d.wardrobe.equipped[slot] = OUTFIT_DEFAULT[slot]; });
+    SLOTS.forEach(slot => { if (!this.owns(d.wardrobe.equipped[slot])) d.wardrobe.equipped[slot] = OUTFIT_DEFAULT[slot]; });
   },
   /* ---- stars as currency for the wardrobe: earned (cases + dailies) minus the price of everything owned ---- */
   dailyStars() { return Object.keys(this.data.daily.results).reduce((s, k) => s + (this.data.daily.results[k].stars | 0), 0); },
-  spentStars() { return this.data.wardrobe.owned.reduce((s, id) => { const it = WARDROBE.find(i => i.id === id); return s + (it ? it.cost : 0); }, 0); },
+  spentStars() { return this.data.wardrobe.owned.reduce((s, id) => { const it = WARDROBE_BY_ID[id]; return s + (it ? it.cost : 0); }, 0); },
   availableStars() { return Math.max(0, this.totalStars() + this.dailyStars() + this.evilStars() - this.spentStars()); },
-  owns(id) { const it = WARDROBE.find(i => i.id === id); return this.data.wardrobe.owned.includes(id) || !!(it && it.unlock && this.evilCount() >= it.unlock); },
+  owns(id) { const it = WARDROBE_BY_ID[id]; return this.data.wardrobe.owned.includes(id) || !!(it && it.unlock && this.evilCount() >= it.unlock); },
   evilCount() { return Object.keys(this.data.evil.cleared).length; },
   evilStars() { return this.evilCount() * 2; },                 // each cleared Noir level is worth 2 bonus stars
   markEvil(key) { this.data.evil.cleared[key] = true; this.save(); },
   /* three perfect (3-star) puzzle results in a row summon Barnaby Noir; anything less resets the count */
   notePerfect(stars) { this.data.perfect.streak = stars === 3 ? this.data.perfect.streak + 1 : 0; this.save(); return this.data.perfect.streak; },
   buy(id) {
-    const it = WARDROBE.find(i => i.id === id);
+    const it = WARDROBE_BY_ID[id];
     if (!it) return { ok: false, reason: 'unknown' };
     if (this.owns(id)) return { ok: true, already: true };
     if (it.unlock) return { ok: false, reason: 'unlock', need: it.unlock - this.evilCount() };
@@ -1215,7 +1201,7 @@ const Store = {
     return { ok: true };
   },
   equip(id) {
-    const it = WARDROBE.find(i => i.id === id);
+    const it = WARDROBE_BY_ID[id];
     if (!it || !this.owns(id)) return false;
     this.data.wardrobe.equipped[it.slot] = id; this.save();
     return true;
@@ -1305,6 +1291,23 @@ const VoiceManager = {
   }
 };
 
+const DEFAULT_SPEAKER = 'Barnaby';
+/* speakers other than Barnaby: nameClass styles the name tag, ownPortrait = Barnaby's face does not react to their lines */
+const SPEAKERS = { 'Evil Larry': { nameClass: 'larry', ownPortrait: true } };
+const SPEAKER_CLASSES = Object.values(SPEAKERS).map(s => s.nameClass).filter(Boolean);
+/* typewriter speed for a line: follow the recorded clip's length when there is one */
+const lineMs = (r, fallback) => { const c = VoiceClipManifest.clips[r.id]; return c && c.durationMs ? clamp(c.durationMs / Math.max(1, r.t.length), 12, 90) : fallback; };
+/* Barnaby says a line: face, voice clip, typed text */
+function speak(bear, typer, r, fallback) { bear.react(r.e); VoiceManager.play(r.id); typer.start(r.t, { ms: lineMs(r, fallback) }); }
+/* register each line (and each choice reply as id_cN) with the voice manifest; returns the lines */
+function registerLines(lines) {
+  lines.forEach(l => {
+    VoiceClipManifest.register(l.id, l.t, l.e);
+    (l.choices || []).forEach((c, k) => VoiceClipManifest.register(l.id + '_c' + k, c.reply.t, c.reply.e));
+  });
+  return lines;
+}
+
 /* Build the story with stable ids and register every line (story + reactions + victory) */
 const STORY = {};
 (function buildStory() {
@@ -1312,19 +1315,12 @@ const STORY = {};
     STORY[n] = {};
     Object.assign(STORY_RAW[n], STORY_EXTRA[n]);
     ['intro', 'bridge', 'caseIntro', 'outro'].forEach(part => {
-      STORY[n][part] = STORY_RAW[n][part].map((line, i) => {
-        const id = 'ch' + n + '_' + part + '_' + pad2(i + 1);
-        VoiceClipManifest.register(id, line.t, line.e);
-        if (line.choices) line.choices.forEach((ch, k) => VoiceClipManifest.register(id + '_c' + k, ch.reply.t, ch.reply.e));
-        return Object.assign({ id, who: 'Barnaby' }, line);
-      });
+      STORY[n][part] = registerLines(STORY_RAW[n][part].map((line, i) => Object.assign({ id: 'ch' + n + '_' + part + '_' + pad2(i + 1), who: DEFAULT_SPEAKER }, line)));
     });
   });
-  const reg = r => VoiceClipManifest.register(r.id, r.t, r.e);
-  [REACT.start, REACT.gold, REACT.near, REACT.hint, REACT.nohint, REACT.zipHint1Off, REACT.zipHint1Go, REACT.zipHint2, REACT.zipHint3,
-   REACT.zipOrder, REACT.zipStart, REACT.caseWrongA, REACT.caseWarn, REACT.caseHint, REACT.caseNoHint, REACT.caseRight, REACT.evilNoHelp].forEach(reg);
-  REACT.found.forEach(reg); REACT.wrong.forEach(reg);
-  Object.keys(REACT.victory).forEach(k => reg(REACT.victory[k]));
+  (function walk(v) {                                   // every { id, t } anywhere inside REACT is a spoken line
+    if (v && typeof v === 'object') { if (v.id && v.t) VoiceClipManifest.register(v.id, v.t, v.e); else Object.values(v).forEach(walk); }
+  })(REACT);
 })();
 
 /* ---------- 6. audio (all synthesized, nothing downloaded) ---------- */
@@ -1565,7 +1561,7 @@ const Music = {
 
   /* one 16th-note step of the groove */
   renderStep(E, mood, intensity, bar, step, t, rand, stepDur) {
-    const ch = mood.chords[bar % 4], tones = this.voicing(ch[0], ch[1]), bassM = 36 + ch[0];
+    const ch = mood.chords[bar % 4], tones = ch.tones || (ch.tones = this.voicing(ch[0], ch[1])), bassM = 36 + ch[0];   // voicing cached per chord
     const swing = step % 4 === 2 ? stepDur * 0.3 : 0;                  // lazy off-beats
     const tt = t + swing + (rand() - 0.5) * 0.016;                     // humanise
     const play = intensity === 'play';
@@ -1625,8 +1621,8 @@ const Music = {
   },
   setEnabled(on) { if (on) this.start(); else this.stop(); },
   scene(name, chapter, evil) {
-    const play = name === 'puzzle' || name === 'zip' || name === 'case';
-    const key = evil && (play || name === 'story') ? 'evil' : chapter > 0 && (play || name === 'story') ? 'ch' + chapter : 'title';
+    const play = name === 'puzzle' || name === 'zip' || name === 'case', inChapter = play || name === 'story';
+    const key = evil && inChapter ? 'evil' : chapter > 0 && inChapter ? 'ch' + chapter : 'title';
     this.want = { mood: key, intensity: play ? 'play' : 'calm' };
     if (this.running) this.pending = { mood: MOODS[key], intensity: this.want.intensity };
   },
@@ -1725,9 +1721,7 @@ const WARDROBE = [
     '<path d="M112 168 L127 206 L109 209 L103 173 Z" fill="#ef9a9a"/>' },
   { id: 'bandana', slot: 'neck', name: 'Bandana', cost: 3, svg:
     '<path d="M72 147 Q100 156 128 147 L100 190 Z" fill="#4fc3f7" stroke="#0288d1" stroke-width="2" stroke-linejoin="round"/>' +
-    '<circle cx="92" cy="158" r="2.6" fill="#fff"/><circle cx="108" cy="158" r="2.6" fill="#fff"/><circle cx="100" cy="171" r="2.6" fill="#fff"/><circle cx="100" cy="153" r="2.2" fill="#fff"/>' }
-];
-WARDROBE.push(
+    '<circle cx="92" cy="158" r="2.6" fill="#fff"/><circle cx="108" cy="158" r="2.6" fill="#fff"/><circle cx="100" cy="171" r="2.6" fill="#fff"/><circle cx="100" cy="153" r="2.2" fill="#fff"/>' },
   { id: 'fedora', slot: 'hat', name: 'Noir fedora', cost: 0, unlock: 1, svg:
     '<ellipse cx="100" cy="64" rx="40" ry="7" fill="#241d30"/><path d="M68 64 Q70 32 100 30 Q130 32 132 64 Z" fill="#362e46"/>' +
     '<path d="M70 55 Q100 62 130 55 L131 62 Q100 69 69 62 Z" fill="#c0392b"/>' },
@@ -1735,13 +1729,17 @@ WARDROBE.push(
     '<path d="M64 62 Q50 34 68 14 Q66 38 84 52 Z" fill="#d9363e"/><path d="M136 62 Q150 34 132 14 Q134 38 116 52 Z" fill="#d9363e"/>' },
   { id: 'cape', slot: 'neck', name: 'Noir cape', cost: 0, unlock: 5, svg:
     '<path d="M62 148 Q100 168 138 148 L150 218 Q100 198 50 218 Z" fill="#5b2a6b"/><path d="M62 148 Q100 168 138 148" stroke="#d9363e" stroke-width="5" fill="none" stroke-linecap="round"/>' }
-);
+];
+const WARDROBE_BY_ID = Object.fromEntries(WARDROBE.map(i => [i.id, i]));
+const SLOTS = Object.keys(OUTFIT_DEFAULT);
 const Outfit = {
   current: Object.assign({}, OUTFIT_DEFAULT),
-  item(slot, id) { return WARDROBE.find(i => i.slot === slot && i.id === id) || WARDROBE.find(i => i.slot === slot && i.id === OUTFIT_DEFAULT[slot]); },
+  item(slot, id) { const it = WARDROBE_BY_ID[id]; return it && it.slot === slot ? it : WARDROBE_BY_ID[OUTFIT_DEFAULT[slot]]; },
   svg(slot, id) { return this.item(slot, id).svg; }
 };
 
+const bearEye = x => '<g class="eye" style="transform-origin:' + x + 'px 94px"><ellipse cx="' + x + '" cy="94" rx="7" ry="8.5" fill="#fff"/>' +
+  '<g class="pupil-g"><circle class="iris" cx="' + x + '" cy="95" r="4.8" fill="#2d2118"/><circle cx="' + (x + 1.8) + '" cy="93" r="1.7" fill="#fff"/></g></g>';
 function bearMarkup(outfit) {
   outfit = outfit || Outfit.current;
   return '<div class="bear"><svg viewBox="0 0 200 230" class="bear-svg" role="img" aria-label="Barnaby the Detective Bear">' +
@@ -1766,10 +1764,7 @@ function bearMarkup(outfit) {
     '<circle class="fur" cx="100" cy="98" r="50" fill="url(#fur)"/>' +
     '<ellipse cx="100" cy="117" rx="26" ry="20" fill="#f3dcb8"/>' +
     '<ellipse cx="72" cy="115" rx="8" ry="5" fill="#f2a6a0" opacity=".55"/><ellipse cx="128" cy="115" rx="8" ry="5" fill="#f2a6a0" opacity=".55"/>' +
-    '<g class="eye" style="transform-origin:82px 94px"><ellipse cx="82" cy="94" rx="7" ry="8.5" fill="#fff"/>' +
-      '<g class="pupil-g"><circle class="iris" cx="82" cy="95" r="4.8" fill="#2d2118"/><circle cx="83.8" cy="93" r="1.7" fill="#fff"/></g></g>' +
-    '<g class="eye" style="transform-origin:118px 94px"><ellipse cx="118" cy="94" rx="7" ry="8.5" fill="#fff"/>' +
-      '<g class="pupil-g"><circle class="iris" cx="118" cy="95" r="4.8" fill="#2d2118"/><circle cx="119.8" cy="93" r="1.7" fill="#fff"/></g></g>' +
+    bearEye(82) + bearEye(118) +
     '<path class="brow-l" d="' + BROWS.neutral[0] + '" stroke="#4a3326" stroke-width="4" stroke-linecap="round" fill="none"/>' +
     '<path class="brow-r" d="' + BROWS.neutral[1] + '" stroke="#4a3326" stroke-width="4" stroke-linecap="round" fill="none"/>' +
     '<g class="slot-face">' + Outfit.svg('face', outfit.face) + '</g>' +
@@ -1784,7 +1779,7 @@ function bearMarkup(outfit) {
 const FLOAT_COLORS = { '♪': '#7b6bd6', '♥': '#e55a8a', z: '#6f9fd0' };
 
 const Barnaby = {
-  instances: [],
+  instances: [], lastInput: 0,
   create(host, opts) {
     host.innerHTML = bearMarkup(opts && opts.noir ? NOIR_OUTFIT : Outfit.current);
     const root = host.querySelector('.bear');
@@ -1794,7 +1789,7 @@ const Barnaby = {
       asleep: false, busy: false, purring: false, zTimer: 0, heartTimer: 0, purrStop: null, noir: false,
       browL: root.querySelector('.brow-l'), browR: root.querySelector('.brow-r'),
       mClosed: root.querySelector('.mouth-closed'), mOpen: root.querySelector('.mouth-open'),
-      pupils: Array.from(root.querySelectorAll('.pupil-g')),
+      pupils: Array.from(root.querySelectorAll('.pupil-g')), svg: root.querySelector('.bear-svg'),
       react(emo, bounce) {
         const e = BROWS[emo] ? emo : 'neutral';
         this.emotion = e;
@@ -1811,11 +1806,7 @@ const Barnaby = {
           this.talkTimer = setInterval(() => this.root.classList.toggle('open'), 115);
         } else this.rest();
       },
-      bounce() {
-        this.root.classList.remove('bounce');
-        void this.root.offsetWidth;
-        this.root.classList.add('bounce');
-      },
+      bounce() { replayClass(this.root, 'bounce'); },
       blink() {
         this.root.classList.add('blink');
         setTimeout(() => this.root.classList.remove('blink'), 140);
@@ -1829,9 +1820,8 @@ const Barnaby = {
           this.scheduleBlink();
         }, rand(2200, 5200));
       },
-      look(x, y) {
-        if (this.busy) return;
-        const r = this.root.getBoundingClientRect();
+      /* eye tracking is split into a read (rect) and a write so all bears are measured before any is changed */
+      lookAt(r, x, y) {
         if (!r.width) return;
         const dx = clamp((x - (r.left + r.width / 2)) / (r.width * 1.2), -1, 1);
         const dy = clamp((y - (r.top + r.height * 0.42)) / (r.height * 1.2), -1, 1);
@@ -1840,7 +1830,7 @@ const Barnaby = {
 
       /* ---- outfit ---- */
       dress(outfit) {
-        ['hat', 'face', 'neck'].forEach(slot => { this.root.querySelector('.slot-' + slot).innerHTML = Outfit.svg(slot, outfit[slot]); });
+        SLOTS.forEach(slot => { this.root.querySelector('.slot-' + slot).innerHTML = Outfit.svg(slot, outfit[slot]); });
       },
 
       setSkin(on) {                                      // Barnaby Noir: darker coat, red eyes, fedora and cape
@@ -1852,9 +1842,9 @@ const Barnaby = {
         const s = this.host.closest('.screen, .overlay, .noir');
         return !s || s.classList.contains('active') || s.classList.contains('show');
       },
-      touch() {                                         // any pointer input: he notices you
-        this.lastInput = performance.now();
-        this.nextAct = this.lastInput + rand(8000, 14000);
+      touch(now) {                                      // pointer input (seen by idleTick): he notices you
+        this.lastInput = now;
+        this.nextAct = now + rand(8000, 14000);
         if (this.asleep) this.wake();
       },
       float(glyph) {
@@ -1885,6 +1875,7 @@ const Barnaby = {
         }
       },
       idleTick() {
+        if (Barnaby.lastInput > this.lastInput) this.touch(Barnaby.lastInput);
         if (REDUCED || this.talkTimer || !this.visible()) return;
         const now = performance.now();
         if (!this.asleep && now - this.lastInput > 40000) { this.sleep(); return; }
@@ -1906,13 +1897,12 @@ const Barnaby = {
       },
       bob(q) {
         if (REDUCED || this.asleep) return;
-        const svg = this.root.querySelector('.bear-svg');
-        svg.classList.remove('bobL', 'bobR'); void svg.offsetWidth; svg.classList.add(q % 2 ? 'bobL' : 'bobR');
+        this.svg.classList.remove('bobL', 'bobR'); void this.svg.offsetWidth; this.svg.classList.add(q % 2 ? 'bobL' : 'bobR');
       },
 
       /* ---- pokes ---- */
       tipHat() {
-        this.root.classList.remove('tip'); void this.root.offsetWidth; this.root.classList.add('tip');
+        replayClass(this.root, 'tip');
         AudioFX.chime(2); AudioFX.chime(5, 0.1);
         setTimeout(() => this.root.classList.remove('tip'), 900);
       },
@@ -1940,9 +1930,20 @@ const Barnaby = {
     document.addEventListener('pointermove', e => {
       pending = e;
       if (raf) return;
-      raf = requestAnimationFrame(() => { raf = 0; if (pending) this.instances.forEach(b => b.look(pending.clientX, pending.clientY)); });
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        if (!pending) return;
+        const bears = this.instances.filter(b => !b.busy && b.visible());
+        const rects = bears.map(b => b.root.getBoundingClientRect());           // all reads first, then all writes
+        bears.forEach((b, i) => b.lookAt(rects[i], pending.clientX, pending.clientY));
+      });
     }, { passive: true });
-    ['pointerdown', 'pointermove'].forEach(t => document.addEventListener(t, () => this.instances.forEach(b => b.touch()), { passive: true, capture: true }));
+    /* pointer input keeps him awake: down is handled at once; moves only stamp the time (idleTick catches up), except to wake a sleeper */
+    document.addEventListener('pointerdown', () => { const now = performance.now(); this.instances.forEach(b => b.touch(now)); }, { passive: true, capture: true });
+    document.addEventListener('pointermove', () => {
+      const now = this.lastInput = performance.now();
+      this.instances.forEach(b => { if (b.asleep) b.touch(now); });
+    }, { passive: true, capture: true });
     setInterval(() => this.instances.forEach(b => b.idleTick()), 1000);
     Music.onBeat(q => this.instances.forEach(b => { if (b.visible()) b.bob(q); }));    // nod along to the lofi
   },
@@ -1984,12 +1985,12 @@ class Typer {
     this.a = document.createElement('span'); this.a.className = 'ty-a';
     this.b = document.createElement('span'); this.b.className = 'ty-b';
     el.appendChild(this.a); el.appendChild(this.b);
-    this.typing = false; this.timer = 0; this.onDone = null; this.chars = []; this.i = 0; this.ms = 26;
+    this.typing = false; this.timer = 0; this.onDone = null; this.text = ''; this.chars = []; this.i = 0; this.off = 0; this.ms = 26;
   }
   start(text, opts) {
     this.cancel();
     opts = opts || {};
-    this.chars = Array.from(text); this.i = 0; this.ms = opts.ms || 26; this.onDone = opts.onDone || null;
+    this.text = text; this.chars = Array.from(text); this.i = 0; this.off = 0; this.ms = opts.ms || 26; this.onDone = opts.onDone || null;
     this.a.textContent = ''; this.b.textContent = text;
     this.typing = true;
     if (this.bear) this.bear.talk(true);
@@ -1998,8 +1999,9 @@ class Typer {
   step() {
     if (!this.typing) return;
     const ch = this.chars[this.i++];
-    this.a.textContent = this.chars.slice(0, this.i).join('');
-    this.b.textContent = this.chars.slice(this.i).join('');
+    this.off += ch.length;                             // string offset (a char may be a surrogate pair)
+    this.a.textContent = this.text.slice(0, this.off);
+    this.b.textContent = this.text.slice(this.off);
     if (/\S/.test(ch) && this.i % 2 === 0) AudioFX.talk();
     if (this.i >= this.chars.length) { this.finishNow(); return; }
     let d = this.ms;
@@ -2008,7 +2010,7 @@ class Typer {
   }
   finishNow() {
     clearTimeout(this.timer);
-    this.a.textContent = this.chars.join(''); this.b.textContent = '';
+    this.a.textContent = this.text; this.b.textContent = '';
     this.typing = false;
     if (this.bear) this.bear.talk(false);
     const cb = this.onDone; this.onDone = null;
@@ -2045,14 +2047,13 @@ class Dialogue {
     this.waiting = false;
     this.choicesEl.innerHTML = '';
     this.caret.classList.remove('on');
-    this.nameEl.textContent = line.who || 'Barnaby';
-    this.nameEl.classList.toggle('larry', line.who === 'Evil Larry');
-    if (this.onSpeaker) this.onSpeaker(line.who || 'Barnaby', line.e || 'neutral');
-    if (line.who !== 'Evil Larry') this.bear.react(line.e || 'neutral');
-    const clip = VoiceClipManifest.clips[line.id];
+    const who = line.who || DEFAULT_SPEAKER, sp = SPEAKERS[who] || {};
+    this.nameEl.textContent = who;
+    SPEAKER_CLASSES.forEach(c => this.nameEl.classList.toggle(c, c === sp.nameClass));
+    if (this.onSpeaker) this.onSpeaker(who, line.e || 'neutral');
+    if (!sp.ownPortrait) this.bear.react(line.e || 'neutral');
     VoiceManager.play(line.id);
-    const ms = clip && clip.durationMs ? clamp(clip.durationMs / Math.max(1, line.t.length), 12, 90) : 26;
-    this.typer.start(line.t, { ms, onDone: () => this.afterType(line) });
+    this.typer.start(line.t, { ms: lineMs(line, 26), onDone: () => this.afterType(line) });
   }
   afterType(line) {
     if (line.choices) {
@@ -2073,7 +2074,7 @@ class Dialogue {
     this.choicesEl.innerHTML = '';
     this.waiting = false;
     if (this.onChoice) this.onChoice(ch);
-    this.lines.splice(this.i + 1, 0, Object.assign({ id: line.id + '_c' + idx, who: 'Barnaby' }, ch.reply));
+    this.lines.splice(this.i + 1, 0, Object.assign({ id: line.id + '_c' + idx, who: DEFAULT_SPEAKER }, ch.reply));
     this.next();
   }
   tap() {
@@ -2089,7 +2090,7 @@ class Dialogue {
     VoiceManager.stop();
     this.choicesEl.innerHTML = '';
     this.caret.classList.remove('on');
-    if (this.onSpeaker) this.onSpeaker('Barnaby', 'neutral', true);
+    if (this.onSpeaker) this.onSpeaker(DEFAULT_SPEAKER, 'neutral', true);
     const cb = this.onDone; this.onDone = null;
     if (cb) cb();
   }
@@ -2115,7 +2116,6 @@ const DAILY_WORDS = {
 };
 
 const Daily = {
-  GRID_ROWS: 5, GRID_COLS: 6,
   fmt(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); },
   today() { return this.fmt(new Date()); },
   shift(dateStr, days) { const [y, m, d] = dateStr.split('-').map(Number); return this.fmt(new Date(y, m - 1, d + days)); },
@@ -2123,39 +2123,43 @@ const Daily = {
 
   /* random Hamiltonian path via "backbite" moves, starting from a snake */
   hamiltonian(rows, cols, rand, iters) {
-    let path = [];
-    for (let r = 0; r < rows; r++) for (let k = 0; k < cols; k++) path.push([r, r % 2 ? cols - 1 - k : k]);
-    for (let it = 0; it < iters; it++) {
-      if (rand() < 0.5) path.reverse();
-      const [r, c] = path[path.length - 1];
-      const nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(d => [r + d[0], c + d[1]]).filter(([a, b]) => a >= 0 && b >= 0 && a < rows && b < cols);
-      const [nr, nc] = nb[Math.floor(rand() * nb.length)];
-      const j = path.findIndex(q => q[0] === nr && q[1] === nc);
-      if (j === path.length - 2) continue;
-      path = path.slice(0, j + 1).concat(path.slice(j + 1).reverse());
+    const n = rows * cols, path = [], pos = new Array(n), nbs = [];      // cells as codes r*cols+c; pos[code] = index in path
+    for (let r = 0; r < rows; r++) for (let k = 0; k < cols; k++) path.push(r * cols + (r % 2 ? cols - 1 - k : k));
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      nbs.push([[1, 0], [-1, 0], [0, 1], [0, -1]].map(d => [r + d[0], c + d[1]]).filter(([a, b]) => a >= 0 && b >= 0 && a < rows && b < cols).map(([a, b]) => a * cols + b));
     }
-    return path;
+    path.forEach((v, i) => { pos[v] = i; });
+    const rev = (i, j) => { for (; i < j; i++, j--) { const t = path[i]; path[i] = path[j]; path[j] = t; pos[path[i]] = i; pos[path[j]] = j; } };
+    for (let it = 0; it < iters; it++) {
+      if (rand() < 0.5) rev(0, n - 1);
+      const nb = nbs[path[n - 1]];
+      const j = pos[nb[Math.floor(rand() * nb.length)]];
+      if (j === n - 2) continue;
+      rev(j + 1, n - 1);
+    }
+    return path.map(v => [Math.floor(v / cols), v % cols]);
   },
+
+  /* cut a path into consecutive pieces of the given lengths (cells copied) */
+  chunk(path, lens) { let at = 0; return lens.map(l => path.slice(at, at += l).map(q => q.slice())); },
 
   /* a level object shaped exactly like LEVELS[i] (without zip/case) */
   generate(dateStr) {
     const rand = mulberry32(this.seed(dateStr) * 7919 + 13);
-    const rows = this.GRID_ROWS, cols = this.GRID_COLS, total = rows * cols;
-    const path = this.hamiltonian(rows, cols, rand, 2500);
+    const total = ROWS * COLS;
+    const path = this.hamiltonian(ROWS, COLS, rand, 2500);
     const lens = [];
     for (let left = total; left > 0;) {
       const opts = [3, 4, 5].filter(l => left - l === 0 || left - l >= 3);
       const l = opts[Math.floor(rand() * opts.length)];
       lens.push(l); left -= l;
     }
-    const used = new Set(), words = [];
-    let at = 0;
-    lens.forEach(l => {
-      const pool = DAILY_WORDS[l].filter(w => !used.has(w));
+    const used = new Set();
+    const words = this.chunk(path, lens).map(p => {
+      const pool = DAILY_WORDS[p.length].filter(w => !used.has(w));
       const w = pool[Math.floor(rand() * pool.length)];
       used.add(w);
-      words.push({ w, p: path.slice(at, at + l).map(q => q.slice()), gold: false });
-      at += l;
+      return { w, p, gold: false };
     });
     let gi = 0; words.forEach((w, i) => { if (w.w.length > words[gi].w.length) gi = i; });
     words[gi].gold = true;
@@ -2178,7 +2182,7 @@ const Daily = {
     const r = this.result(date);
     if (!r) return '';
     const sq = { G: '🟩', Y: '🟨', B: '🟦' };
-    return 'Tales & Tangles Daily ' + date + '\n' + '★'.repeat(r.stars) + '☆'.repeat(3 - r.stars) + ' ' + Math.floor(r.secs / 60) + ':' + pad2(r.secs % 60) +
+    return 'Tales & Tangles Daily ' + date + '\n' + '★'.repeat(r.stars) + '☆'.repeat(3 - r.stars) + ' ' + fmtClock(r.secs) +
       '\n' + r.squares.split('').map(c => sq[c] || '').join('');
   },
   share(date) {
@@ -2212,7 +2216,56 @@ const Scoring = {
   }
 };
 
-const WordPuzzle = {
+/* Shared by WordPuzzle and ZipPuzzle: timer, hint badge, Barnaby's bubble and drag input.
+   Each puzzle supplies cols/rows/hitR2, its own onDown/visit/refresh, and els.{grid,time,badge}; visit() returns true when the trace changed. */
+const PuzzleBase = {
+  start() {
+    this.running = true; this.lastTick = performance.now();
+    clearInterval(this.timerId);
+    this.timerId = setInterval(() => {
+      const now = performance.now();
+      if (this.running && !document.hidden) this.elapsed += Math.min(now - this.lastTick, 1000);
+      this.lastTick = now;
+      this.tickClock();
+    }, 250);
+  },
+  tickClock() {                                         // only touch the DOM when the shown second changes
+    const s = Math.floor(this.elapsed / 1000);
+    if (s !== this.shownSec) { this.shownSec = s; this.els.time.textContent = fmtClock(s); }
+  },
+  stop() { this.running = false; clearInterval(this.timerId); this.timerId = 0; this.tracing = false; if (this.bubble) this.bubble.cancel(); VoiceManager.stop(); },
+  updateBadge() { this.els.badge.textContent = this.freeHints; this.els.badge.classList.toggle('hide', this.freeHints <= 0); },
+  spend() { if (this.freeHints > 0) { this.freeHints--; this.updateBadge(); } else this.hints++; },
+  say(r) { this.lastSay = performance.now(); speak(this.bear, this.bubble, r, 17); },
+
+  /* grid coordinates in cell units; the grid's rect is measured once per drag (in onDown) */
+  measure() { this.rect = this.els.grid.getBoundingClientRect(); },
+  toCell(e) { const rc = this.rect; return { x: (e.clientX - rc.left) / rc.width * this.cols, y: (e.clientY - rc.top) / rc.height * this.rows }; },
+  cellAt(p, loose) {
+    const c = Math.floor(p.x), r = Math.floor(p.y);
+    if (r < 0 || r >= this.rows || c < 0 || c >= this.cols) return null;
+    if (!loose) { const dx = p.x - c - 0.5, dy = p.y - r - 0.5; if (dx * dx + dy * dy > this.hitR2) return null; }   // forgiving circle: corners are dead zones
+    return { r, c };
+  },
+  capture(e, p) {
+    this.pointerId = e.pointerId;
+    try { this.els.grid.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+    this.tracing = true; this.lastPt = p;
+  },
+  onMove(e) {
+    if (!this.tracing || e.pointerId !== this.pointerId) return;
+    e.preventDefault();
+    const p = this.toCell(e), a = this.lastPt;
+    const steps = Math.max(1, Math.ceil(Math.hypot(p.x - a.x, p.y - a.y) / 0.2));  // no skipped cells on fast swipes
+    let changed = false;
+    for (let s = 1; s <= steps && this.tracing; s++) changed = this.visit({ x: a.x + (p.x - a.x) * s / steps, y: a.y + (p.y - a.y) * s / steps }) || changed;
+    this.lastPt = p;
+    if (changed) this.refresh();
+  }
+};
+
+const WordPuzzle = Object.assign({}, PuzzleBase, {
+  cols: COLS, rows: ROWS, hitR2: 0.2304,
   lvl: null, grid: [], found: new Set(), locked: {}, trace: [], tracing: false, pointerId: null, lastPt: null,
   wrongs: 0, hints: 0, freeHints: 0, hinted: new Set(), elapsed: 0, running: false, lastTick: 0, timerId: 0,
   tiles: [], selEls: [], hintTimers: [], order: [], onWin: null, bear: null, bubble: null,
@@ -2238,10 +2291,10 @@ const WordPuzzle = {
     this.freeHints = (opts && opts.freeHints) || 0;
     this.onWin = (opts && opts.onWin) || null;
     this.found = new Set(); this.locked = {}; this.trace = []; this.tracing = false; this.pointerId = null;
-    this.wrongs = 0; this.hints = 0; this.hinted = new Set(); this.elapsed = 0; this.selEls = [];
+    this.wrongs = 0; this.hints = 0; this.hinted = new Set(); this.elapsed = 0; this.shownSec = -1; this.selEls = [];
     this.combo = 0; this.maxCombo = 0; this.bonus = 0; this.squares = []; this.sinceWrong = false; this.sinceHint = false;
     this.els.combo.classList.remove('on');
-    this.els.theme.innerHTML = '<b>Theme:</b> ' + (lvl.hint || 'cozy everyday words - nature, food, home and critters');
+    this.els.theme.innerHTML = '<b>Theme:</b> ' + lvl.hint;
     this.grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
     lvl.words.forEach((w, i) => w.p.forEach(([r, c], k) => { this.grid[r][c] = { ch: w.w[k], w: i }; }));
 
@@ -2275,26 +2328,9 @@ const WordPuzzle = {
   setLine(el, pts) { el.setAttribute('points', pts.map(p => this.center(p)).join(' ')); },
   colorsFor(i) { return this.lvl.words[i].gold ? [GOLD_FILL, GOLD_LINE] : [WORD_FILL[i % WORD_FILL.length], WORD_LINE[i % WORD_LINE.length]]; },
 
-  /* ---- timer ---- */
-  start() {
-    this.running = true; this.lastTick = performance.now();
-    clearInterval(this.timerId);
-    this.timerId = setInterval(() => {
-      const now = performance.now();
-      if (this.running && !document.hidden) this.elapsed += Math.min(now - this.lastTick, 1000);
-      this.lastTick = now;
-      this.updateStatus();
-    }, 250);
-  },
-  stop() { this.running = false; clearInterval(this.timerId); this.timerId = 0; this.tracing = false; this.bubble && this.bubble.cancel(); VoiceManager.stop(); },
   updateStatus() {
     this.els.found.textContent = this.found.size + '/' + (this.lvl ? this.lvl.words.length : 0);
-    const s = Math.floor(this.elapsed / 1000);
-    this.els.time.textContent = Math.floor(s / 60) + ':' + pad2(s % 60);
-  },
-  updateBadge() {
-    this.els.badge.textContent = this.freeHints;
-    this.els.badge.classList.toggle('hide', this.freeHints <= 0);
+    this.tickClock();
   },
 
   /* ---- tray ---- */
@@ -2310,7 +2346,7 @@ const WordPuzzle = {
       this.renderSlot(i);
     });
   },
-  renderSlot(i, animate) {
+  renderSlot(i) {
     const s = this.els.tray.querySelector('[data-w="' + i + '"]');
     if (!s) return;
     const w = this.lvl.words[i];
@@ -2325,46 +2361,16 @@ const WordPuzzle = {
     }
   },
 
-  /* ---- Barnaby bubble ---- */
-  say(r) {
-    this.bear.react(r.e);
-    VoiceManager.play(r.id);
-    const clip = VoiceClipManifest.clips[r.id];
-    this.bubble.start(r.t, { ms: clip && clip.durationMs ? clamp(clip.durationMs / r.t.length, 12, 90) : 17 });
-  },
-
-  /* ---- input ---- */
-  toCell(e) {
-    const rc = this.els.grid.getBoundingClientRect();
-    return { x: (e.clientX - rc.left) / rc.width * COLS, y: (e.clientY - rc.top) / rc.height * ROWS };
-  },
-  hit(p, loose) {
-    const c = Math.floor(p.x), r = Math.floor(p.y);
-    if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return null;
-    if (!loose) {
-      const dx = p.x - c - 0.5, dy = p.y - r - 0.5;
-      if (dx * dx + dy * dy > 0.2304) return null;      // forgiving circle: corners are dead zones
-    }
-    return { r, c };
-  },
+  /* ---- input (onMove + cellAt come from PuzzleBase) ---- */
   onDown(e) {
     if (!this.running || this.tracing || (e.pointerType === 'mouse' && e.button !== 0)) return;
     e.preventDefault();
-    const p = this.toCell(e), h = this.hit(p, true);
+    this.measure();
+    const p = this.toCell(e), h = this.cellAt(p, true);
     if (!h || this.locked[h.r * COLS + h.c] !== undefined) return;
-    this.pointerId = e.pointerId;
-    try { this.els.grid.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
-    this.tracing = true; this.trace = [h]; this.lastPt = p;
+    this.capture(e, p);
+    this.trace = [h];
     AudioFX.tick(0);
-    this.refresh();
-  },
-  onMove(e) {
-    if (!this.tracing || e.pointerId !== this.pointerId) return;
-    e.preventDefault();
-    const p = this.toCell(e), a = this.lastPt;
-    const steps = Math.max(1, Math.ceil(Math.hypot(p.x - a.x, p.y - a.y) / 0.2));  // no skipped cells on fast swipes
-    for (let s = 1; s <= steps; s++) this.visit({ x: a.x + (p.x - a.x) * s / steps, y: a.y + (p.y - a.y) * s / steps });
-    this.lastPt = p;
     this.refresh();
   },
   onUp(e, cancelled) {
@@ -2376,24 +2382,26 @@ const WordPuzzle = {
     this.evaluate(t);
   },
   visit(p) {
-    const h = this.hit(p, false);
-    if (!h) return;
-    if (this.locked[h.r * COLS + h.c] !== undefined) return;
+    const h = this.cellAt(p, false);
+    if (!h) return false;
+    if (this.locked[h.r * COLS + h.c] !== undefined) return false;
     const t = this.trace, last = t[t.length - 1];
-    if (h.r === last.r && h.c === last.c) return;
+    if (h.r === last.r && h.c === last.c) return false;
     if (t.length >= 2) {
       const prev = t[t.length - 2];
-      if (prev.r === h.r && prev.c === h.c) { t.pop(); AudioFX.tick(t.length - 1); return; }   // slide back = undo
+      if (prev.r === h.r && prev.c === h.c) { t.pop(); AudioFX.tick(t.length - 1); return true; }   // slide back = undo
     }
-    if (t.some(q => q.r === h.r && q.c === h.c)) return;
-    if (Math.max(Math.abs(h.r - last.r), Math.abs(h.c - last.c)) !== 1) return;                 // 8-way adjacency
+    if (t.some(q => q.r === h.r && q.c === h.c)) return false;
+    if (Math.max(Math.abs(h.r - last.r), Math.abs(h.c - last.c)) !== 1) return false;           // 8-way adjacency
     t.push(h);
     AudioFX.tick(t.length - 1);
+    return true;
   },
   refresh() {
-    this.selEls.forEach(el => el.classList.remove('sel'));
-    this.selEls = this.trace.map(p => this.tile(p.r, p.c));
-    this.selEls.forEach(el => el.classList.add('sel'));
+    const next = this.trace.map(p => this.tile(p.r, p.c));
+    this.selEls.forEach(el => { if (!next.includes(el)) el.classList.remove('sel'); });
+    next.forEach(el => el.classList.add('sel'));
+    this.selEls = next;
     this.setLine(this.els.trace, this.trace);
     const word = this.trace.map(p => this.grid[p.r][p.c].ch).join('');
     this.els.preview.textContent = word;
@@ -2432,7 +2440,7 @@ const WordPuzzle = {
     pl.setAttribute('points', ordered.map(p => this.center(p)).join(' '));
     pl.style.stroke = line;
     this.els.zips.appendChild(pl);
-    this.renderSlot(idx, true);
+    this.renderSlot(idx);
     this.updateStatus();
     this.combo++; this.maxCombo = Math.max(this.maxCombo, this.combo);
     if (this.combo >= 2) this.bonus += 25 * (this.combo - 1);                  // combo bonus: score only, never stars
@@ -2456,11 +2464,11 @@ const WordPuzzle = {
     Haptics.tangle();
     t.forEach(p => {
       const el = this.tile(p.r, p.c);
-      el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+      replayClass(el, 'shake');
       setTimeout(() => el.classList.remove('shake'), 450);
     });
     this.setLine(this.els.bad, t);
-    this.els.bad.classList.remove('flash'); void this.els.bad.getBoundingClientRect(); this.els.bad.classList.add('flash');
+    replayClass(this.els.bad, 'flash');
     if (t.length >= 3 || near) this.say(near ? REACT.near : pick(REACT.wrong));
   },
   /* win-state validation: found words must tile the grid exactly once, with matching letters */
@@ -2491,14 +2499,10 @@ const WordPuzzle = {
     if (this.lvl.evil && this.hints >= 1) { this.say(REACT.evilNoHelp); return; }
     const idx = this.order.find(i => !this.found.has(i));
     if (idx === undefined) { this.say(REACT.nohint); return; }
-    if (this.freeHints > 0) { this.freeHints--; this.updateBadge(); } else this.hints++;
+    this.spend();
     this.hinted.add(idx); this.sinceHint = true;
     this.renderSlot(idx);
-    this.lvl.words[idx].p.slice(0, 2).forEach(([r, c]) => {
-      const el = this.tile(r, c);
-      el.classList.add('hint');
-      this.hintTimers.push(setTimeout(() => el.classList.remove('hint'), 3200));
-    });
+    this.lvl.words[idx].p.slice(0, 2).forEach(([r, c]) => flashClass(this.tile(r, c), 'hint', 3200, this.hintTimers));
     AudioFX.chime(4);
     this.say(REACT.hint);
   },
@@ -2507,7 +2511,7 @@ const WordPuzzle = {
     const c = this.els.combo;
     if (this.combo < 2) { c.classList.remove('on'); return; }
     c.textContent = 'Combo ×' + this.combo;
-    c.classList.remove('on'); void c.offsetWidth; c.classList.add('on');
+    replayClass(c, 'on');
   },
 
   toast(text, gold) {
@@ -2517,14 +2521,15 @@ const WordPuzzle = {
     this.els.grid.appendChild(d);
     setTimeout(() => d.remove(), 1200);
   }
-};
+});
 
 /* ---------- Zip: "Scent Trail" ----------
    One continuous 4-way trail through EVERY tile, touching the numbered checkpoints in order, finishing on the last number.
    The trail persists between drags. Dragging back over your own trail rewinds it to that tile. */
 const ZIP_COLORS = ['#e8836a', '#6fbf88', '#9c88dc', '#6fb0dc', '#e57fa3'];
 
-const ZipPuzzle = {
+const ZipPuzzle = Object.assign({}, PuzzleBase, {
+  cols: 5, rows: 5, hitR2: 0.2116,
   lvl: null, z: null, n: 5, K: 0, path: [], cpAt: new Map(), cpList: [], tracing: false, pointerId: null, lastPt: null,
   hints: 0, freeHints: 0, hintStage: 0, backtracks: 0, elapsed: 0, running: false, lastTick: 0, timerId: 0,
   tiles: [], hintTimers: [], onWin: null, bear: null, bubble: null, els: {}, lastBump: 0, lastSay: 0, shownLetters: 0,
@@ -2551,7 +2556,9 @@ const ZipPuzzle = {
 
   load(lvl, opts) {
     this.stop();
-    this.lvl = lvl; this.z = lvl.zip; this.n = this.z.size; this.K = this.z.cps.length;
+    this.lvl = lvl; this.z = lvl.zip; this.n = this.cols = this.rows = this.z.size; this.K = this.z.cps.length;
+    this.sol = this.z.path.map(([r, c]) => this.code(r, c));
+    this.drawn = []; this.headEl = null; this.shownReached = -1; this.shownSec = -1;
     this.freeHints = (opts && opts.freeHints) || 0;
     this.onWin = (opts && opts.onWin) || null;
     this.path = []; this.tracing = false; this.pointerId = null;
@@ -2581,8 +2588,10 @@ const ZipPuzzle = {
     });
     svg.innerHTML = '<polyline id="zLine" points=""/><g class="zcps">' + cps + '</g><g class="zwalls">' + walls + '</g>';
     this.els.line = svg.querySelector('#zLine');
-    this.els.line.style.stroke = ZIP_COLORS[(lvl.n - 1) % ZIP_COLORS.length];
-    g.style.setProperty('--zc', ZIP_COLORS[(lvl.n - 1) % ZIP_COLORS.length] + '55');
+    this.els.cps = Array.from(svg.querySelectorAll('.zcp'));
+    const color = ZIP_COLORS[(lvl.n - 1) % ZIP_COLORS.length];
+    this.els.line.style.stroke = color;
+    g.style.setProperty('--zc', color + '55');
     this.els.clue.innerHTML = this.z.word.split('').map(() => '<span class="zl">?</span>').join('');
     this.els.theme.innerHTML = '<b>Trail word</b> (' + this.z.word.length + ' letters): ' + (lvl.trailHint || 'follow the numbers');
     this.els.title.textContent = (lvl.evil ? 'Noir Trail' : 'Scent Trail') + ' · ' + lvl.title;
@@ -2590,43 +2599,12 @@ const ZipPuzzle = {
     this.say(REACT.zipStart);
   },
 
-  /* ---- timer ---- */
-  start() {
-    this.running = true; this.lastTick = performance.now();
-    clearInterval(this.timerId);
-    this.timerId = setInterval(() => {
-      const now = performance.now();
-      if (this.running && !document.hidden) this.elapsed += Math.min(now - this.lastTick, 1000);
-      this.lastTick = now;
-      const s = Math.floor(this.elapsed / 1000);
-      this.els.time.textContent = Math.floor(s / 60) + ':' + pad2(s % 60);
-    }, 250);
-  },
-  stop() { this.running = false; clearInterval(this.timerId); this.timerId = 0; this.tracing = false; if (this.bubble) this.bubble.cancel(); VoiceManager.stop(); },
-  updateBadge() { this.els.badge.textContent = this.freeHints; this.els.badge.classList.toggle('hide', this.freeHints <= 0); },
-
-  say(r) {
-    this.lastSay = performance.now();
-    this.bear.react(r.e);
-    VoiceManager.play(r.id);
-    const clip = VoiceClipManifest.clips[r.id];
-    this.bubble.start(r.t, { ms: clip && clip.durationMs ? clamp(clip.durationMs / r.t.length, 12, 90) : 17 });
-  },
-
-  /* ---- input (same pointer-capture + interpolation approach as the word puzzle) ---- */
-  toCell(e) {
-    const rc = this.els.grid.getBoundingClientRect();
-    return { x: (e.clientX - rc.left) / rc.width * this.n, y: (e.clientY - rc.top) / rc.height * this.n };
-  },
-  hit(p, loose) {
-    const c = Math.floor(p.x), r = Math.floor(p.y);
-    if (r < 0 || r >= this.n || c < 0 || c >= this.n) return -1;
-    if (!loose) { const dx = p.x - c - 0.5, dy = p.y - r - 0.5; if (dx * dx + dy * dy > 0.2116) return -1; }
-    return r * this.n + c;
-  },
+  /* ---- input (pointer capture, interpolated onMove and cellAt come from PuzzleBase) ---- */
+  hit(p, loose) { const h = this.cellAt(p, loose); return h ? h.r * this.n + h.c : -1; },
   onDown(e) {
     if (!this.running || this.tracing || (e.pointerType === 'mouse' && e.button !== 0)) return;
     e.preventDefault();
+    this.measure();
     const p = this.toCell(e), code = this.hit(p, true);
     if (code < 0) return;
     if (!this.path.length) {
@@ -2639,18 +2617,7 @@ const ZipPuzzle = {
       this.rewindTo(idx);
     }
     this.hintStage = 0;
-    this.pointerId = e.pointerId;
-    try { this.els.grid.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
-    this.tracing = true; this.lastPt = p;
-    this.refresh();
-  },
-  onMove(e) {
-    if (!this.tracing || e.pointerId !== this.pointerId) return;
-    e.preventDefault();
-    const p = this.toCell(e), a = this.lastPt;
-    const steps = Math.max(1, Math.ceil(Math.hypot(p.x - a.x, p.y - a.y) / 0.2));
-    for (let s = 1; s <= steps && this.tracing; s++) this.visit({ x: a.x + (p.x - a.x) * s / steps, y: a.y + (p.y - a.y) * s / steps });
-    this.lastPt = p;
+    this.capture(e, p);
     this.refresh();
   },
   onUp(e) {
@@ -2665,17 +2632,17 @@ const ZipPuzzle = {
   },
   visit(p) {
     const code = this.hit(p, false);
-    if (code < 0) return;
+    if (code < 0) return false;
     const path = this.path, last = path[path.length - 1];
-    if (code === last) return;
+    if (code === last) return false;
     const idx = path.indexOf(code);
-    if (idx >= 0) { this.rewindTo(idx); AudioFX.tick(this.path.length - 1); this.hintStage = 0; return; }
-    if (!this.adjacent(last, code)) return;
-    if (this.wallBetween(last, code)) { this.bump(false); return; }
+    if (idx >= 0) { this.rewindTo(idx); AudioFX.tick(this.path.length - 1); this.hintStage = 0; return true; }
+    if (!this.adjacent(last, code)) return false;
+    if (this.wallBetween(last, code)) { this.bump(false); return false; }
     const cp = this.cpAt.get(code);
     if (cp) {
-      if (cp.num !== this.cpsReached() + 1) { this.bump(true); return; }
-      if (cp.num === this.K && path.length + 1 !== this.n * this.n) { this.bump(true); return; }   // the last number must be the last tile
+      if (cp.num !== this.cpsReached() + 1) { this.bump(true); return false; }
+      if (cp.num === this.K && path.length + 1 !== this.n * this.n) { this.bump(true); return false; }   // the last number must be the last tile
     }
     path.push(code);
     this.hintStage = 0;
@@ -2688,6 +2655,7 @@ const ZipPuzzle = {
     }
     if (cp) this.onCheckpoint(cp);
     if (path.length === this.n * this.n && cp && cp.num === this.K) { this.tracing = false; this.finish(); }
+    return true;
   },
   bump(orderMsg) {
     const now = performance.now();
@@ -2696,7 +2664,7 @@ const ZipPuzzle = {
   },
   nudgeStart() {
     const cp1 = this.z.cps[0], t = this.tiles[this.code(cp1.r, cp1.c)];
-    t.classList.remove('hint'); void t.offsetWidth; t.classList.add('hint');
+    replayClass(t, 'hint');
     this.hintTimers.push(setTimeout(() => t.classList.remove('hint'), 1600));
     AudioFX.bump();
   },
@@ -2710,23 +2678,32 @@ const ZipPuzzle = {
     if (cp.letter) { Haptics.found(); this.bear.react('happy'); }
   },
 
+  /* incremental redraw: only tiles past the common prefix with the last drawn path change; checkpoints/clue only when the count changes */
   refresh() {
-    const n = this.n, reached = this.cpsReached();
-    this.tiles.forEach(t => t.classList.remove('on', 'head'));
-    this.path.forEach(c => this.tiles[c].classList.add('on'));
-    if (this.path.length) this.tiles[this.path[this.path.length - 1]].classList.add('head');
-    this.els.line.setAttribute('points', this.path.map(c => { const [r, cc] = this.rc(c); return (cc * 100 + 50) + ',' + (r * 100 + 50); }).join(' '));
-    this.els.svg.querySelectorAll('.zcp').forEach(g => g.classList.toggle('got', Number(g.dataset.n) <= reached));
+    const n = this.n, path = this.path, prev = this.drawn;
+    let k = 0;
+    while (k < prev.length && k < path.length && prev[k] === path[k]) k++;
+    for (let i = k; i < prev.length; i++) this.tiles[prev[i]].classList.remove('on');
+    for (let i = k; i < path.length; i++) this.tiles[path[i]].classList.add('on');
+    if (this.headEl) this.headEl.classList.remove('head');
+    this.headEl = path.length ? this.tiles[path[path.length - 1]] : null;
+    if (this.headEl) this.headEl.classList.add('head');
+    this.drawn = path.slice();
+    this.els.line.setAttribute('points', path.map(c => { const [r, cc] = this.rc(c); return (cc * 100 + 50) + ',' + (r * 100 + 50); }).join(' '));
+    this.els.prog.textContent = path.length + '/' + n * n;
+    const reached = this.cpsReached();
+    if (reached === this.shownReached) return;
+    this.shownReached = reached;
+    this.els.cps.forEach(g => g.classList.toggle('got', Number(g.dataset.n) <= reached));
     const letters = this.z.cps.filter(cp => cp.letter && cp.num <= reached).map(cp => cp.letter);
     const slots = this.els.clue.children;
     for (let i = 0; i < slots.length; i++) {
       const has = i < letters.length;
       slots[i].textContent = has ? letters[i] : '?';
       slots[i].classList.toggle('on', has);
-      if (has && i >= this.shownLetters) { slots[i].classList.remove('pop'); void slots[i].offsetWidth; slots[i].classList.add('pop'); }
+      if (has && i >= this.shownLetters) replayClass(slots[i], 'pop');
     }
     this.shownLetters = letters.length;
-    this.els.prog.textContent = this.path.length + '/' + n * n;
   },
 
   /* ---- validation ---- */
@@ -2752,13 +2729,11 @@ const ZipPuzzle = {
   },
 
   /* ---- hint ladder: nudge (free) -> highlight next tiles -> extend the trail ---- */
-  prefixLen() { const sol = this.solution(); let m = 0; while (m < this.path.length && this.path[m] === sol[m]) m++; return m; },
-  solution() { return this.z.path.map(([r, c]) => this.code(r, c)); },
-  spend() { if (this.freeHints > 0) { this.freeHints--; this.updateBadge(); } else this.hints++; },
+  prefixLen() { const sol = this.sol; let m = 0; while (m < this.path.length && this.path[m] === sol[m]) m++; return m; },
   hint() {
     if (!this.running) return;
     if (this.lvl.evil && (this.hints >= 2 || this.hintStage >= 2)) { this.say(REACT.evilNoHelp); return; }
-    const sol = this.solution(), m = this.prefixLen();
+    const sol = this.sol, m = this.prefixLen();
     if (this.hintStage === 0) {
       this.hintStage = 1;
       this.say(this.path.length > m ? REACT.zipHint1Off : REACT.zipHint1Go);
@@ -2767,11 +2742,7 @@ const ZipPuzzle = {
     this.spend();
     if (this.hintStage === 1) {
       this.hintStage = 2;
-      sol.slice(m, m + 2).forEach(c => {
-        const t = this.tiles[c];
-        t.classList.add('hint');
-        this.hintTimers.push(setTimeout(() => t.classList.remove('hint'), 3200));
-      });
+      sol.slice(m, m + 2).forEach(c => flashClass(this.tiles[c], 'hint', 3200, this.hintTimers));
       AudioFX.chime(4);
       this.say(REACT.zipHint2);
       return;
@@ -2796,7 +2767,7 @@ const ZipPuzzle = {
     AudioFX.bump();
     this.refresh();
   }
-};
+});
 
 /* ---------- the cast: portrait settings by name (used by the notebook and the accusation chips) ---------- */
 const CRITTERS = {
@@ -2942,14 +2913,14 @@ const LarryScene = {
     const e = this.els;
     this.running = true; this.fast = false; this.canSkip = false;
     e.lfSkip.classList.remove('on');
-    e.larryFilm.classList.add('show'); e.larryFilm.setAttribute('aria-hidden', 'false');
+    setShown(e.larryFilm, true);
     clearTimeout(this._skipTimer);
     this._skipTimer = setTimeout(() => { this.canSkip = true; e.lfSkip.classList.add('on'); }, first ? 1500 : 300);
   },
   async close() {
     const e = this.els;
     clearTimeout(this._skipTimer);
-    e.larryFilm.classList.remove('show'); e.larryFilm.setAttribute('aria-hidden', 'true');
+    setShown(e.larryFilm, false);
     e.lfSkip.classList.remove('on'); this.canSkip = false;
     await new Promise(r => setTimeout(r, 520));
     this.running = false; this.fast = false; this._pending = null;
@@ -3059,6 +3030,11 @@ const LarryScene = {
    Rows = suspects, columns = items (tab 1) or rooms (tab 2). Tap a cell: blank -> X -> check -> blank.
    A check optionally auto-crosses the rest of its row and column (shown fainter, and removed again with the check).
    The crime names only the ROOM; the player works out who was there and what they held, then accuses (suspect + item). */
+const NOTE_KINDS = ['items', 'places', 'itemPlaces'];           // the notebook's three grids (tab order)
+const CELL_MARK = ['', '✕', '✓', '✕'];                           // cell state: 0 blank, 1 cross, 2 check, 3 auto-cross
+const LOCKED_MSG = { word: 'Solve the Words puzzle', zip: 'Follow the Scent Trail' };
+const CRITTER_SVG = {};
+const critterSvg = name => CRITTER_SVG[name] || (CRITTER_SVG[name] = critterMarkup(critterOf(name)));   // portraits are cached per name
 const CaseScreen = {
   lvl: null, run: null, notes: null, tab: 'items', bear: null, typer: null, onSolved: null,
   wrong: 0, hints: 0, done: false, selS: -1, selI: -1, els: {},
@@ -3076,25 +3052,20 @@ const CaseScreen = {
     e.items.addEventListener('click', ev => { const b = ev.target.closest('button.chip'); if (b && !this.done) { this.selI = Number(b.dataset.i); AudioFX.tick(this.selI + 3); this.renderAccuse(); } });
     e.auto.addEventListener('click', () => {
       Store.data.settings.autocross = !this.autoOn(); Store.save();
-      if (this.notes) { this.recompute(this.notes.items); this.recompute(this.notes.places); this.recompute(this.notes.itemPlaces); }
+      if (this.notes) NOTE_KINDS.forEach(k => this.recompute(this.notes[k]));
       this.render();
     });
     e.btn.addEventListener('click', () => this.accuse());
     $('#btnCHint').addEventListener('click', () => this.hint());
   },
   autoOn() { return Store.data.settings.autocross !== false; },
-  say(r) {
-    this.bear.react(r.e);
-    VoiceManager.play(r.id);
-    this.typer.start(r.t, { ms: 17 });
-  },
+  say(r) { speak(this.bear, this.typer, r, 17); },
 
   load(lvl, run, onSolved) {
     this.lvl = lvl; this.run = run; this.onSolved = onSolved;
     this.done = false; this.wrong = 0; this.hints = 0; this.selS = -1; this.selI = -1; this.tab = 'items';
     const c = lvl.case, N = c.N;
-    if (!run.notes) run.notes = { items: Array.from({ length: N }, () => Array(N).fill(0)), places: Array.from({ length: N }, () => Array(N).fill(0)), itemPlaces: Array.from({ length: N }, () => Array(N).fill(0)), struck: {} };
-    if (!run.notes.itemPlaces) run.notes.itemPlaces = Array.from({ length: N }, () => Array(N).fill(0));
+    if (!run.notes) run.notes = { items: blankMatrix(N), places: blankMatrix(N), itemPlaces: blankMatrix(N), struck: {} };
     if (!run.earned) run.earned = { word: false, zip: false };
     this.notes = run.notes;
     this.els.crime.innerHTML = '<small>THE CRIME</small>' + c.crime + ' Who was there — and what were they holding?';
@@ -3103,8 +3074,8 @@ const CaseScreen = {
     this.say(STORY[lvl.n].caseIntro[0]);
   },
 
-  render() { this.renderTabs(); this.renderGrid(); this.renderClues(); this.renderAccuse(); },
-  setTab(t) { this.tab = t; AudioFX.tick(t === 'items' ? 2 : t === 'places' ? 4 : 6); this.renderTabs(); this.renderGrid(); },
+  render() { this.renderTabs(); this.renderGrid(); this.renderClues(); this.renderAccuse(true); },
+  setTab(t) { this.tab = t; AudioFX.tick(2 + 2 * NOTE_KINDS.indexOf(t)); this.renderTabs(); this.renderGrid(); },
   renderTabs() {
     this.els.tabs.querySelectorAll('button[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === this.tab));
     this.els.auto.textContent = 'Auto-cross: ' + (this.autoOn() ? 'On' : 'Off');
@@ -3115,16 +3086,23 @@ const CaseScreen = {
     const g = this.els.grid;
     g.style.gridTemplateColumns = 'minmax(92px,1.7fr) repeat(' + N + ',minmax(0,1fr))';
     let h = '<div class="nbh corner"></div>' + cols.map(x => '<div class="nbh"><span>' + x.emoji + '</span><small>' + x.name + '</small></div>').join('');
-    const rows = kind === 'itemPlaces' ? c.items.map(x => ({ name: x.name, icon: '<span>' + x.emoji + '</span>' })) : c.suspects.map(n => ({ name: n, icon: critterMarkup(critterOf(n)) }));
+    const rows = kind === 'itemPlaces' ? c.items.map(x => ({ name: x.name, icon: '<span>' + x.emoji + '</span>' })) : c.suspects.map(n => ({ name: n, icon: critterSvg(n) }));
     rows.forEach(({ name, icon }, s) => {
       h += '<div class="nbl">' + icon + '<b>' + name + '</b></div>';
       for (let i = 0; i < N; i++) {
         const st = M[s][i];
-        h += '<button class="nbc s' + st + '" data-s="' + s + '" data-i="' + i + '" aria-label="' + name + ' / ' + cols[i].name + '">' + (st === 2 ? '✓' : st === 1 || st === 3 ? '✕' : '') + '</button>';
+        h += '<button class="nbc s' + st + '" data-s="' + s + '" data-i="' + i + '" aria-label="' + name + ' / ' + cols[i].name + '">' + CELL_MARK[st] + '</button>';
       }
     });
     g.innerHTML = h;
+    this.cellEls = Array.from(g.querySelectorAll('button.nbc'));      // row-major, N per row
   },
+  /* repaint the existing cell buttons from the matrix (no rebuild) */
+  paintCells() {
+    const M = this.notes[this.tab], N = M.length;
+    this.cellEls.forEach((b, k) => { const st = M[Math.floor(k / N)][k % N]; b.className = 'nbc s' + st; b.textContent = CELL_MARK[st]; });
+  },
+  cellEl(s, i) { return this.cellEls[s * this.notes[this.tab].length + i]; },
   /* ✓ crosses out the rest of its row and column (state 3) when auto-cross is on */
   recompute(M) {
     const N = M.length;
@@ -3137,14 +3115,13 @@ const CaseScreen = {
   },
   tapCell(s, i) {
     if (this.done) return;
-    const M = this.notes[this.tab], st = M[s][i];
-    const next = st === 0 ? 1 : st === 1 ? 2 : st === 2 ? 0 : 1;      // an auto-cross becomes a manual cross when tapped
+    const M = this.notes[this.tab];
+    const next = [1, 2, 0, 1][M[s][i]];                               // blank -> X -> check -> blank; an auto-cross becomes a manual cross when tapped
     M[s][i] = next;
     this.recompute(M);
     AudioFX.tick(next === 2 ? 7 : next === 1 ? 3 : 1);
-    this.renderGrid();
-    const btn = this.els.grid.querySelector('button[data-s="' + s + '"][data-i="' + i + '"]');
-    if (btn) { btn.classList.remove('pressed'); void btn.offsetWidth; btn.classList.add('pressed'); }
+    this.paintCells();
+    replayClass(this.cellEl(s, i), 'pressed');
   },
 
   highlight(t) { return t.replace(/\b([A-Z]{3,})\b/g, '<b>$1</b>'); },
@@ -3152,27 +3129,32 @@ const CaseScreen = {
     const c = this.lvl.case, earned = this.run.earned, struck = this.notes.struck;
     this.els.clues.innerHTML = '<div class="alabel">Barnaby’s clues <small>(tap to strike through)</small></div>' + c.clues.map((cl, k) => {
       const locked = cl.earned && !earned[cl.earned];
-      const body = locked ? '🔒 ' + (cl.earned === 'word' ? 'Solve the Words puzzle to reveal this clue.' : 'Follow the Scent Trail to reveal this clue.') : this.highlight(cl.t);
+      const body = locked ? '🔒 ' + LOCKED_MSG[cl.earned] + ' to reveal this clue.' : this.highlight(cl.t);
       return '<div class="clue-item' + (locked ? ' locked' : '') + (struck[k] && !locked ? ' done' : '') + (cl.earned && !locked ? ' earned' : '') + '" data-k="' + k + '">' + body + '</div>';
     }).join('');
   },
   tapClue(k) {
     const cl = this.lvl.case.clues[k];
-    if (cl.earned && !this.run.earned[cl.earned]) { UI.toast(cl.earned === 'word' ? 'Solve the Words puzzle to reveal it' : 'Follow the Scent Trail to reveal it'); AudioFX.bump(); return; }
+    if (cl.earned && !this.run.earned[cl.earned]) { UI.toast(LOCKED_MSG[cl.earned] + ' to reveal it'); AudioFX.bump(); return; }
     this.notes.struck[k] = !this.notes.struck[k];
     AudioFX.tick(this.notes.struck[k] ? 5 : 2);
     this.renderClues();
     if (this.notes.struck[k]) {                      // glide down so the next clue takes the struck clue's place
       const sc = this.els.clues.closest('.case-scroll'), el = this.els.clues.querySelector('.clue-item[data-k="' + k + '"]');
-      if (sc && el) sc.scrollBy({ top: el.offsetHeight + 7, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      if (sc && el) sc.scrollBy({ top: el.offsetHeight + 7, behavior: REDUCED ? 'auto' : 'smooth' });
     }
   },
 
-  renderAccuse() {
-    const c = this.lvl.case;
-    this.els.sus.innerHTML = c.suspects.map((n, s) => '<button class="chip sus' + (this.selS === s ? ' sel' : '') + '" data-s="' + s + '">' + critterMarkup(critterOf(n)) + '<b>' + n + '</b></button>').join('');
-    this.els.items.innerHTML = c.items.map((x, i) => '<button class="chip it' + (this.selI === i ? ' sel' : '') + '" data-i="' + i + '"><span>' + x.emoji + '</span><b>' + x.name + '</b></button>').join('');
-    this.els.btn.disabled = this.done || this.selS < 0 || this.selI < 0;
+  /* the chips are built once per case (rebuild); a selection change only toggles .sel */
+  renderAccuse(rebuild) {
+    const c = this.lvl.case, e = this.els;
+    if (rebuild) {
+      e.sus.innerHTML = c.suspects.map((n, s) => '<button class="chip sus" data-s="' + s + '">' + critterSvg(n) + '<b>' + n + '</b></button>').join('');
+      e.items.innerHTML = c.items.map((x, i) => '<button class="chip it" data-i="' + i + '"><span>' + x.emoji + '</span><b>' + x.name + '</b></button>').join('');
+    }
+    Array.from(e.sus.children).forEach((b, s) => b.classList.toggle('sel', s === this.selS));
+    Array.from(e.items.children).forEach((b, i) => b.classList.toggle('sel', i === this.selI));
+    e.btn.disabled = this.done || this.selS < 0 || this.selI < 0;
   },
 
   accuse() {
@@ -3188,8 +3170,7 @@ const CaseScreen = {
     } else {
       this.wrong++;
       AudioFX.thud(); Haptics.tangle();
-      this.els.sus.querySelectorAll('.sel,.chip.sel').forEach(el => { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); });
-      this.els.items.querySelectorAll('.sel').forEach(el => { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); });
+      [this.els.sus, this.els.items].forEach(box => box.querySelectorAll('.sel').forEach(el => replayClass(el, 'shake')));
       this.say(this.wrong === 2 ? REACT.caseWarn : REACT.caseWrongA);
       this.selS = -1; this.selI = -1;
       setTimeout(() => this.renderAccuse(), 450);
@@ -3209,8 +3190,7 @@ const CaseScreen = {
     this.recompute(this.notes[kind]);
     this.tab = kind;
     this.renderTabs(); this.renderGrid();
-    const btn = this.els.grid.querySelector('button[data-s="' + s + '"][data-i="' + i + '"]');
-    if (btn) { btn.classList.add('hinted'); setTimeout(() => btn.classList.remove('hinted'), 2200); }
+    flashClass(this.cellEl(s, i), 'hinted', 2200);
     AudioFX.chime(4);
     this.say(REACT.caseHint);
   },
@@ -3223,17 +3203,18 @@ const CaseScreen = {
 const EVIL_STREAK = 3;
 
 const Evil = {
+  key(kind, base) { return base.daily ? 'daily-' + base.date : kind + base.n; },   // Store.data.evil.cleared key
   word(base) {
     const rand = mulberry32(((Date.now() ^ (base.n * 7919)) >>> 0) || 1);
     const lens = base.words.map(w => w.w.length);
     let best = null;
     for (let t = 0; t < 14; t++) {                                   // keep the layout with the most turns (the twistiest paths)
-      const path = Daily.hamiltonian(Daily.GRID_ROWS, Daily.GRID_COLS, rand, 2500);
-      const order = base.words.map((_, i) => i);
-      for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
-      let at = 0, turns = 0;
-      const words = order.map(i => {
-        const p = path.slice(at, at + lens[i]).map(q => q.slice()); at += lens[i];
+      const path = Daily.hamiltonian(ROWS, COLS, rand, 2500);
+      const order = shuffle(base.words.map((_, i) => i), rand);
+      const pieces = Daily.chunk(path, order.map(i => lens[i]));
+      let turns = 0;
+      const words = order.map((i, k0) => {
+        const p = pieces[k0];
         for (let k = 2; k < p.length; k++) if (p[k][0] - p[k - 1][0] !== p[k - 1][0] - p[k - 2][0] || p[k][1] - p[k - 1][1] !== p[k - 1][1] - p[k - 2][1]) turns++;
         return { w: base.words[i].w, gold: base.words[i].gold, p };
       });
@@ -3251,14 +3232,15 @@ const NOIR_LINES = [
       { label: 'Not today.', evil: false, reply: { e: 'sad', t: 'Pity. Ask me again when you have a few more perfect clears to your name.' } }
     ] }
 ];
-NOIR_LINES.forEach(l => { VoiceClipManifest.register(l.id, l.t, l.e); (l.choices || []).forEach((c, k) => VoiceClipManifest.register(l.id + '_c' + k, c.reply.t, c.reply.e)); });
+registerLines(NOIR_LINES);
 
 /* ---------- the interactive cutscene engine ----------
    Dialogue -> break three seals (tap) -> the board shatters into 3D shards you can fling -> the shards spring back as the remixed level.
    Everything is driven by the pointer: parallax tilt, cracks, shard flicks. Always skippable; reduced-motion gets a plain dissolve. */
 const Cutscene = {
   els: {}, dlg: null, bear: null, running: false, fast: false, phase: '', opts: null, prepared: false,
-  tilt: { rx: 0, ry: 0, trx: 0, try: 0 }, ptr: { x: 0, y: 0, vx: 0, vy: 0, t: 0 }, shards: [], embers: [], raf: 0, W: 0, H: 0,
+  tilt: { rx: 0, ry: 0, trx: 0, try: 0, wrx: Infinity, wry: Infinity },   // w* = last values written to the stage
+  ptr: { x: 0, y: 0, vx: 0, vy: 0, t: 0 }, shards: [], embers: [], raf: 0, W: 0, H: 0,
   _pending: null, _beginRes: null,
 
   init() {
@@ -3283,7 +3265,7 @@ const Cutscene = {
     e.noirBegin.classList.remove('on'); e.noirHint.classList.remove('on');
     this.tilt.trx = this.tilt.try = 0;
     this.sizeCanvas();
-    e.noir.classList.add('show'); e.noir.setAttribute('aria-hidden', 'false');
+    setShown(e.noir, true);
     this.loop();
     if (!REDUCED) e.noirBear.animate([{ transform: 'translate3d(0,110%,-260px) rotateX(40deg)', opacity: 0 }, { transform: 'translate3d(0,0,70px) rotateX(0)', opacity: 1 }],
       { duration: 1100, easing: 'cubic-bezier(.2,1.25,.3,1)', fill: 'forwards' });
@@ -3317,20 +3299,27 @@ const Cutscene = {
     const nr = this.els.noir.getBoundingClientRect();
     return { nr, br: this.opts.boardEl.getBoundingClientRect() };
   },
-  buildShards() {
-    const { nr } = this.boardRects(), e = this.els;
-    const tiles = Array.from(this.opts.boardEl.querySelectorAll(this.opts.tileSel));
-    this.shards = tiles.map(t => {
-      const face = t.firstElementChild || t, r = face.getBoundingClientRect(), cs = getComputedStyle(face), sp = face.querySelector('span');
-      const el = document.createElement('div'); el.className = 'shard';
-      el.style.cssText = 'left:' + (r.left - nr.left) + 'px;top:' + (r.top - nr.top) + 'px;width:' + r.width + 'px;height:' + r.height + 'px';
-      const f = document.createElement('div'); f.className = 'sf';
-      f.style.cssText = 'background:' + cs.backgroundColor + ';box-shadow:' + cs.boxShadow + ';border-radius:' + cs.borderRadius;
-      if (sp) { f.textContent = sp.textContent; f.style.color = getComputedStyle(sp).color; f.style.fontSize = getComputedStyle(sp).fontSize; }
-      const b = document.createElement('div'); b.className = 'sb';
-      el.appendChild(f); el.appendChild(b); e.noirShards.appendChild(el);
-      return { el, f, b, w: r.width, h: r.height, cx: r.left - nr.left + r.width / 2, cy: r.top - nr.top + r.height / 2, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, rx: 0, ry: 0, rz: 0, vrx: 0, vry: 0, vrz: 0 };
+  /* read every tile's box and look in one pass (no writes in between, so layout is computed once) */
+  measureTiles(nr) {
+    return Array.from(this.opts.boardEl.querySelectorAll(this.opts.tileSel)).map(t => {
+      const face = t.firstElementChild || t, r = face.getBoundingClientRect(), cs = getComputedStyle(face), sp = face.querySelector('span'), ss = sp && getComputedStyle(sp);
+      return { left: r.left - nr.left, top: r.top - nr.top, w: r.width, h: r.height, bg: cs.backgroundColor, shadow: cs.boxShadow, radius: cs.borderRadius,
+               text: sp ? sp.textContent : null, color: ss && ss.color, fontSize: ss && ss.fontSize };
     });
+  },
+  buildShards() {
+    const { nr } = this.boardRects(), e = this.els, frag = document.createDocumentFragment();
+    this.shards = this.measureTiles(nr).map(m => {
+      const el = document.createElement('div'); el.className = 'shard';
+      el.style.cssText = 'left:' + m.left + 'px;top:' + m.top + 'px;width:' + m.w + 'px;height:' + m.h + 'px';
+      const f = document.createElement('div'); f.className = 'sf';
+      f.style.cssText = 'background:' + m.bg + ';box-shadow:' + m.shadow + ';border-radius:' + m.radius;
+      if (m.text !== null) { f.textContent = m.text; f.style.color = m.color; f.style.fontSize = m.fontSize; }
+      const b = document.createElement('div'); b.className = 'sb';
+      el.appendChild(f); el.appendChild(b); frag.appendChild(el);
+      return { el, f, b, w: m.w, h: m.h, cx: m.left + m.w / 2, cy: m.top + m.h / 2, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, rx: 0, ry: 0, rz: 0, vrx: 0, vry: 0, vrz: 0 };
+    });
+    e.noirShards.appendChild(frag);
     this.opts.boardEl.style.visibility = 'hidden';
   },
   breakSeals() {
@@ -3411,26 +3400,24 @@ const Cutscene = {
       requestAnimationFrame(step);
     });
   },
-  physics(dt) {
+  physics(dt) {                                                      // shards only move while shattered (reassembly is driven by WAAPI)
+    if (this.phase !== 'shatter') return;
     const gravity = 0.16;
     this.shards.forEach(s => {
-      if (this.phase === 'shatter') {
-        s.vy += gravity * dt; s.vx *= 0.993; s.vy *= 0.996; s.vz *= 0.99;
-        s.x += s.vx * dt; s.y += s.vy * dt; s.z += s.vz * dt;
-        s.rx += s.vrx * dt; s.ry += s.vry * dt; s.rz += s.vrz * dt;
-        s.vrx *= 0.99; s.vry *= 0.99; s.vrz *= 0.99;
-        const lim = this.W * 0.95, limY = this.H * 0.95;                 // keep the pieces on screen: soft walls
-        const ax = s.cx + s.x, ay = s.cy + s.y;
-        if (ax < 10 || ax > this.W - 10) { s.vx *= -0.6; s.x = clamp(ax, 10, this.W - 10) - s.cx; }
-        if (ay < 10 || ay > this.H - 10) { s.vy *= -0.6; s.y = clamp(ay, 10, this.H - 10) - s.cy; }
-        s.z = clamp(s.z, -200, 260);
-      }
+      s.vy += gravity * dt; s.vx *= 0.993; s.vy *= 0.996; s.vz *= 0.99;
+      s.x += s.vx * dt; s.y += s.vy * dt; s.z += s.vz * dt;
+      s.rx += s.vrx * dt; s.ry += s.vry * dt; s.rz += s.vrz * dt;
+      s.vrx *= 0.99; s.vry *= 0.99; s.vrz *= 0.99;
+      const ax = s.cx + s.x, ay = s.cy + s.y;                         // keep the pieces on screen: soft walls
+      if (ax < 10 || ax > this.W - 10) { s.vx *= -0.6; s.x = clamp(ax, 10, this.W - 10) - s.cx; }
+      if (ay < 10 || ay > this.H - 10) { s.vy *= -0.6; s.y = clamp(ay, 10, this.H - 10) - s.cy; }
+      s.z = clamp(s.z, -200, 260);
       s.el.style.transform = 'translate3d(' + s.x.toFixed(1) + 'px,' + s.y.toFixed(1) + 'px,' + s.z.toFixed(1) + 'px) rotateX(' + s.rx.toFixed(1) + 'deg) rotateY(' + s.ry.toFixed(1) + 'deg) rotateZ(' + s.rz.toFixed(1) + 'deg)';
     });
   },
   /* flick: a moving finger pushes nearby shards; a tap sends a shock wave */
   onMove(ev) {
-    const nr = this.els.noir.getBoundingClientRect(), x = ev.clientX - nr.left, y = ev.clientY - nr.top, now = performance.now(), p = this.ptr;
+    const nr = this.nr || this.els.noir.getBoundingClientRect(), x = ev.clientX - nr.left, y = ev.clientY - nr.top, now = performance.now(), p = this.ptr;
     const dtp = Math.max(1, now - p.t);
     p.vx = (x - p.x) / dtp * 16.7; p.vy = (y - p.y) / dtp * 16.7; p.x = x; p.y = y; p.t = now;
     this.tilt.try = clamp((x / nr.width - 0.5) * 2, -1, 1) * 9;
@@ -3462,19 +3449,17 @@ const Cutscene = {
       this.flash('#c77dff', 0.8, 600);
       this.prepareOnce();                                            // loads the evil level and switches the theme (board stays hidden)
       this.opts.boardEl.style.visibility = 'hidden';
-      const nr = e.noir.getBoundingClientRect();
-      const tiles = Array.from(this.opts.boardEl.querySelectorAll(this.opts.tileSel));
+      const targets = this.measureTiles(e.noir.getBoundingClientRect());   // all reads first, then the writes below
       let maxEnd = 0;
       this.shards.forEach((s, i) => {
-        const t = tiles[i];
-        if (!t) { s.el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, fill: 'forwards' }); return; }
-        const face = t.firstElementChild || t, r = face.getBoundingClientRect(), cs = getComputedStyle(face), sp = face.querySelector('span');
+        const m = targets[i];
+        if (!m) { s.el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, fill: 'forwards' }); return; }
         const curX = s.cx + s.x, curY = s.cy + s.y;                    // current centre
-        const tcx = r.left - nr.left + r.width / 2, tcy = r.top - nr.top + r.height / 2;
-        s.el.style.left = (r.left - nr.left) + 'px'; s.el.style.top = (r.top - nr.top) + 'px'; s.el.style.width = r.width + 'px'; s.el.style.height = r.height + 'px';
-        s.b.style.cssText = 'background:' + cs.backgroundColor + ';border-radius:' + cs.borderRadius;
-        s.b.textContent = sp ? sp.textContent : '';
-        if (sp) { s.b.style.fontSize = getComputedStyle(sp).fontSize; s.b.style.color = getComputedStyle(sp).color; }
+        const tcx = m.left + m.w / 2, tcy = m.top + m.h / 2;
+        s.el.style.left = m.left + 'px'; s.el.style.top = m.top + 'px'; s.el.style.width = m.w + 'px'; s.el.style.height = m.h + 'px';
+        s.b.style.cssText = 'background:' + m.bg + ';border-radius:' + m.radius;
+        s.b.textContent = m.text !== null ? m.text : '';
+        if (m.text !== null) { s.b.style.fontSize = m.fontSize; s.b.style.color = m.color; }
         const norm = a => ((a % 360) + 540) % 360 - 180;
         const from = 'translate3d(' + (curX - tcx).toFixed(1) + 'px,' + (curY - tcy).toFixed(1) + 'px,' + s.z.toFixed(1) + 'px) rotateX(' + norm(s.rx).toFixed(1) + 'deg) rotateY(' + norm(s.ry).toFixed(1) + 'deg) rotateZ(' + norm(s.rz).toFixed(1) + 'deg)';
         const to = 'translate3d(0,0,0) rotateX(0deg) rotateY(180deg) rotateZ(0deg)';
@@ -3503,7 +3488,7 @@ const Cutscene = {
     const e = this.els;
     this.prepareOnce();
     this.opts.boardEl.style.visibility = '';
-    e.noir.classList.remove('show'); e.noir.setAttribute('aria-hidden', 'true');
+    setShown(e.noir, false);
     await new Promise(r => setTimeout(r, 420));
     e.noirShards.innerHTML = ''; e.noirSeals.innerHTML = ''; e.noirCracks.innerHTML = ''; this.shards = [];
     this.running = false; this.phase = '';
@@ -3539,10 +3524,9 @@ const Cutscene = {
     requestAnimationFrame(step);
   },
   sizeCanvas() {
-    const c = this.els.noirEmbers, dpr = window.devicePixelRatio || 1;
     this.W = this.els.noir.clientWidth; this.H = this.els.noir.clientHeight;
-    c.width = this.W * dpr; c.height = this.H * dpr;
-    c.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.ctx = fitCanvas(this.els.noirEmbers, this.W, this.H).ctx;
+    this.nr = this.els.noir.getBoundingClientRect();                 // cached for pointer moves (the overlay is fixed)
   },
   addEmbers(x, y, n) {
     if (REDUCED) return;
@@ -3558,18 +3542,26 @@ const Cutscene = {
       const dt = Math.min(2.2, (now - last) / 16.7); last = now;
       const t = this.tilt;
       t.rx += (t.trx - t.rx) * 0.12 * dt; t.ry += (t.try - t.ry) * 0.12 * dt;
-      this.els.noirStage.style.setProperty('--rx', t.rx.toFixed(2) + 'deg'); this.els.noirStage.style.setProperty('--ry', t.ry.toFixed(2) + 'deg');
+      if (Math.abs(t.rx - t.wrx) > 0.01 || Math.abs(t.ry - t.wry) > 0.01) {     // skip the restyle once the tilt has settled
+        t.wrx = t.rx; t.wry = t.ry;
+        this.els.noirStage.style.setProperty('--rx', t.rx.toFixed(2) + 'deg'); this.els.noirStage.style.setProperty('--ry', t.ry.toFixed(2) + 'deg');
+      }
       this.physics(dt);
-      const ctx = this.els.noirEmbers.getContext('2d');
+      const ctx = this.ctx;
       ctx.clearRect(0, 0, this.W, this.H);
       if (!REDUCED && this.phase !== 'dialog' && Math.random() < 0.7) this.embers.push({ x: rand(0, this.W), y: this.H + 6, vx: rand(-0.4, 0.4), vy: rand(-1.8, -0.7), life: 0, max: rand(90, 160), s: rand(1, 2.6) });
-      this.embers = this.embers.filter(p => p.life < p.max);
-      this.embers.forEach(p => {
+      const em = this.embers;
+      let k = 0;
+      for (let i = 0; i < em.length; i++) {                                   // update, draw and compact in place (no per-frame array)
+        const p = em[i];
+        if (p.life >= p.max) continue;
+        em[k++] = p;
         p.life += dt; p.x += p.vx * dt + Math.sin(p.life * 0.1) * 0.3; p.y += p.vy * dt;
         const a = 1 - p.life / p.max;
         ctx.globalAlpha = Math.max(0, a); ctx.fillStyle = a > 0.55 ? '#ffd29a' : '#ff6a5a';
         ctx.beginPath(); ctx.arc(p.x, p.y, p.s * (0.5 + a * 0.5), 0, Math.PI * 2); ctx.fill();
-      });
+      }
+      em.length = k;
       ctx.globalAlpha = 1;
       this.raf = requestAnimationFrame(frame);
     };
@@ -3579,11 +3571,11 @@ const Cutscene = {
   light(fn) {
     return new Promise(res => {
       const e = this.els;
-      e.noir.classList.add('show', 'lightmode'); e.noir.setAttribute('aria-hidden', 'false');
+      e.noir.classList.add('lightmode'); setShown(e.noir, true);
       e.noirFlash.style.background = '#fff6e0';
       setTimeout(fn, 260);
       e.noirFlash.animate([{ opacity: 0 }, { opacity: 1, offset: 0.4 }, { opacity: 0 }], { duration: 720 }).onfinish = () => {
-        e.noir.classList.remove('show', 'lightmode'); e.noir.setAttribute('aria-hidden', 'true'); res();
+        e.noir.classList.remove('lightmode'); setShown(e.noir, false); res();
       };
       AudioFX.chime(9); AudioFX.chime(12, 0.1);
     });
@@ -3620,22 +3612,15 @@ const Wardrobe = {
     });
   },
   tap(item, card) {
-    if (!Store.owns(item.id) && item.unlock) {
-      card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+    const r = Store.buy(item.id);                                    // already owned -> ok; Noir items -> reason 'unlock'
+    if (!r.ok) {
+      replayClass(card, 'shake');
       AudioFX.thud(); Haptics.tangle();
-      UI.toast('Clear ' + (item.unlock - Store.evilCount()) + ' more Noir level' + (item.unlock - Store.evilCount() === 1 ? '' : 's') + ' to unlock this');
+      UI.toast(r.reason === 'unlock' ? 'Clear ' + r.need + ' more Noir level' + (r.need === 1 ? '' : 's') + ' to unlock this'
+                                     : 'Need ' + r.need + ' more ★ — solve cases or the daily to earn stars');
       return;
     }
-    if (!Store.owns(item.id)) {
-      const r = Store.buy(item.id);
-      if (!r.ok) {
-        card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
-        AudioFX.thud(); Haptics.tangle();
-        UI.toast('Need ' + r.need + ' more ★ — solve cases or the daily to earn stars');
-        return;
-      }
-      AudioFX.chime(5); AudioFX.chime(7, 0.1); AudioFX.chime(9, 0.2);
-    }
+    if (!r.already) { AudioFX.chime(5); AudioFX.chime(7, 0.1); AudioFX.chime(9, 0.2); }
     Store.equip(item.id);
     Outfit.current = Object.assign({}, Store.data.wardrobe.equipped);
     Barnaby.dressAll(Outfit.current);
@@ -3652,11 +3637,11 @@ const Wardrobe = {
 const Sparks = {
   create(canvas) {
     const em = {
-      cv: canvas, parts: [], raf: 0, w: 0, h: 0,
+      cv: canvas, ctx: null, parts: [], raf: 0, w: 0, h: 0,
       fit() {
-        const dpr = window.devicePixelRatio || 1, w = this.cv.clientWidth, h = this.cv.clientHeight;
+        const w = this.cv.clientWidth, h = this.cv.clientHeight;
         if (!w || !h) return false;
-        if (this.w !== w || this.h !== h) { this.w = w; this.h = h; this.cv.width = w * dpr; this.cv.height = h * dpr; this.cv.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0); }
+        if (this.w !== w || this.h !== h) { this.w = w; this.h = h; this.ctx = fitCanvas(this.cv, w, h).ctx; }
         return true;
       },
       burst(points, colors, perPoint) {
@@ -3668,22 +3653,27 @@ const Sparks = {
           }
         });
         if (this.parts.length > 400) this.parts.splice(0, this.parts.length - 400);
-        if (!this.raf) this.raf = requestAnimationFrame(() => this.loop());
+        if (!this.raf) this.raf = requestAnimationFrame(this.loop);
       },
       loop() {
-        const ctx = this.cv.getContext('2d');
+        const ctx = this.ctx, ps = this.parts;
         ctx.clearRect(0, 0, this.w, this.h);
-        this.parts = this.parts.filter(p => p.life < p.max);
-        this.parts.forEach(p => {
+        let k = 0;
+        for (let i = 0; i < ps.length; i++) {                            // update, draw and compact in place
+          const p = ps[i];
+          if (p.life >= p.max) continue;
+          ps[k++] = p;
           p.life++; p.vy += 0.09; p.vx *= 0.985; p.x += p.vx; p.y += p.vy;
           ctx.globalAlpha = 1 - p.life / p.max; ctx.fillStyle = p.c;
           ctx.beginPath(); ctx.arc(p.x, p.y, p.s * (1 - p.life / p.max * 0.5), 0, Math.PI * 2); ctx.fill();
-        });
+        }
+        ps.length = k;
         ctx.globalAlpha = 1;
-        this.raf = this.parts.length ? requestAnimationFrame(() => this.loop()) : 0;
-        if (!this.parts.length) ctx.clearRect(0, 0, this.w, this.h);
+        this.raf = k ? requestAnimationFrame(this.loop) : 0;
+        if (!k) ctx.clearRect(0, 0, this.w, this.h);
       }
     };
+    em.loop = em.loop.bind(em);                                          // one bound callback, not a new closure per frame
     return em;
   }
 };
@@ -3694,11 +3684,8 @@ const Confetti = {
   burst(canvas) {
     if (REDUCED) return;
     cancelAnimationFrame(this.raf);
-    const dpr = window.devicePixelRatio || 1, w = canvas.clientWidth, h = canvas.clientHeight;
-    canvas.width = w * dpr; canvas.height = h * dpr;
-    const ctx = canvas.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const colors = ['#f7b39f', '#a6dcb4', '#c6b8f0', '#f6d482', '#a3d1ee', '#f5adc6'];
+    const { ctx, w, h, dpr } = fitCanvas(canvas);
+    const colors = WORD_FILL.slice(0, 6);
     const parts = Array.from({ length: 120 }, () => ({
       x: w / 2 + rand(-w * 0.15, w * 0.15), y: h * 0.38, vx: rand(-5, 5), vy: rand(-13, -4),
       s: rand(6, 11), r: rand(0, 6), vr: rand(-0.3, 0.3), c: pick(colors)
@@ -3709,10 +3696,14 @@ const Confetti = {
       let alive = false;
       parts.forEach(p => {
         p.vy += 0.3; p.vx *= 0.995; p.x += p.vx; p.y += p.vy; p.r += p.vr;
-        if (p.y < h + 20) alive = true;
-        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
-        ctx.fillRect(-p.s / 2, -p.s / 3, p.s, p.s * 0.6); ctx.restore();
+        if (p.y >= h + 20) return;                                     // fallen off the bottom: nothing to draw
+        alive = true;
+        const cos = Math.cos(p.r) * dpr, sin = Math.sin(p.r) * dpr;   // one setTransform instead of save/translate/rotate/restore
+        ctx.setTransform(cos, sin, -sin, cos, p.x * dpr, p.y * dpr);
+        ctx.fillStyle = p.c;
+        ctx.fillRect(-p.s / 2, -p.s / 3, p.s, p.s * 0.6);
       });
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       if (alive && now - t0 < 5000) this.raf = requestAnimationFrame(loop); else ctx.clearRect(0, 0, w, h);
     };
     this.raf = requestAnimationFrame(loop);
@@ -3726,7 +3717,7 @@ const UI = {
   show(name) {
     document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === 'screen-' + name));
     this.current = name;
-    const run = typeof Game !== 'undefined' ? Game.run : null;
+    const run = Game.run;
     Music.scene(name, run ? (run.moodChapter || run.n) : 0, !!(run && run.evil));
   },
   toast(msg) {
@@ -3768,7 +3759,7 @@ const Victory = {
     $('#vUnlock').innerHTML = o.unlock;
     $('#vContinue').textContent = o.continueLabel;
     $('#vReplay').textContent = o.replayLabel || 'Replay';
-    el.classList.add('show'); el.setAttribute('aria-hidden', 'false');
+    setShown(el, true);
     AudioFX.fanfare();
     Haptics.win();
     this.bear.react('proud');
@@ -3783,19 +3774,31 @@ const Victory = {
     requestAnimationFrame(tick);
     const line = REACT.victory[result.stars];
     setTimeout(() => {
-      if (!el.classList.contains('show')) return;
-      this.bear.react(line.e);
-      VoiceManager.play(line.id);
-      this.typer.start(line.t, { ms: 22 });
+      if (el.classList.contains('show')) speak(this.bear, this.typer, line, 22);
     }, 700);
   },
   hide() {
-    const el = $('#victory');
-    el.classList.remove('show'); el.setAttribute('aria-hidden', 'true');
+    setShown($('#victory'), false);
     this.typer.cancel(); VoiceManager.stop();
     Confetti.stop($('#confetti'));
   }
 };
+
+/* the two puzzle steps of a chapter: which engine, screen and board they use, and where "Continue" goes next */
+const PUZZLE_KINDS = {
+  word: { obj: WordPuzzle, screen: 'puzzle', board: '#grid', tileSel: '.tile', title: 'Clue Found!', nextLabel: 'Follow the trail',
+          next: g => g.playBridge(), evil: base => Evil.word(base) },
+  zip:  { obj: ZipPuzzle, screen: 'zip', board: '#zGrid', tileSel: '.zt', title: 'Trail Followed!', nextLabel: 'To the suspects',
+          next: g => g.toCase(), evil: base => Object.assign({}, base, { zip: base.evilZip, evil: true }) }
+};
+
+/* title-screen toggles: Store.data.settings key -> button, label, side effect */
+const SETTINGS = {
+  music: { btn: '#btnMusic', label: 'Music', blip: true, after: on => Music.setEnabled(on) },
+  sound: { btn: '#btnSound', label: 'Sound', blip: true },
+  voice: { btn: '#btnVoice', label: 'Voice', after: on => { if (!on) VoiceManager.stop(); } }
+};
+const TOPBAR_MUSIC = ['#btnPzSound', '#btnZSound'];
 
 /* ---------- game flow ----------
    One chapter (a "case") = intro -> Words (clue 1) -> bridge -> Scent Trail (clue 2) -> Suspects -> outro.
@@ -3862,7 +3865,7 @@ const Game = {
     LarryScene.init();
     this.larry = Larry.create($('#storyLarry'));
     this.story.defaultSpeaker = (who, e, reset) => {          // swap the portrait when Evil Larry speaks
-      const isLarry = who === 'Evil Larry' && !reset;
+      const isLarry = !reset && !!(SPEAKERS[who] && SPEAKERS[who].ownPortrait);
       $('#storyLarry').classList.toggle('on', isLarry);
       $('#storyBear').classList.toggle('away', isLarry);
       if (isLarry) this.larry.react(e);
@@ -3880,9 +3883,7 @@ const Game = {
       AudioFX.unlock();
       if (!Store.hasProgress()) this.startChapter(1); else this.toMap();
     });
-    $('#btnSound').addEventListener('click', () => { this.toggleSound(); });
-    $('#btnMusic').addEventListener('click', () => { this.toggleMusic(); });
-    $('#btnVoice').addEventListener('click', () => { Store.data.settings.voice = !Store.data.settings.voice; Store.save(); this.syncToggles(); if (!Store.data.settings.voice) VoiceManager.stop(); });
+    Object.keys(SETTINGS).forEach(key => $(SETTINGS[key].btn).addEventListener('click', () => this.toggleSetting(key)));
     let resetArmed = 0;
     $('#btnReset').addEventListener('click', e => {
       if (!resetArmed) {
@@ -3902,8 +3903,7 @@ const Game = {
     $('#btnPzBack').addEventListener('click', () => { WordPuzzle.stop(); this.toMap(); });
     $('#btnZBack').addEventListener('click', () => { ZipPuzzle.stop(); this.toMap(); });
     $('#btnCBack').addEventListener('click', () => { CaseScreen.stop(); this.toMap(); });
-    $('#btnPzSound').addEventListener('click', () => this.toggleMusic(true));   // the topbar note button = music on/off
-    $('#btnZSound').addEventListener('click', () => this.toggleMusic(true));
+    TOPBAR_MUSIC.forEach(sel => $(sel).addEventListener('click', () => this.toggleSetting('music', true)));   // the topbar note button = music on/off
 
     // victory
     $('#vMap').addEventListener('click', () => { Victory.hide(); this.toMap(); });
@@ -3911,27 +3911,19 @@ const Game = {
     this.syncToggles();
   },
 
-  toggleSound(announce) {
-    Store.data.settings.sound = !Store.data.settings.sound; Store.save(); this.syncToggles();
-    if (announce) UI.toast('Sound ' + (Store.data.settings.sound ? 'on' : 'off'));
-    AudioFX.blip();
-  },
-
-  toggleMusic(announce) {
-    Store.data.settings.music = !Store.data.settings.music; Store.save(); this.syncToggles();
-    Music.setEnabled(Store.data.settings.music);
-    if (announce) UI.toast('Music ' + (Store.data.settings.music ? 'on' : 'off'));
-    AudioFX.blip();
+  toggleSetting(key, announce) {
+    const s = Store.data.settings, cfg = SETTINGS[key];
+    s[key] = !s[key]; Store.save(); this.syncToggles();
+    if (cfg.after) cfg.after(s[key]);
+    if (announce) UI.toast(cfg.label + ' ' + (s[key] ? 'on' : 'off'));
+    if (cfg.blip) AudioFX.blip();
   },
 
   syncToggles() {
     const s = Store.data.settings;
-    $('#btnMusic').textContent = 'Music: ' + (s.music ? 'On' : 'Off');
-    $('#btnSound').textContent = 'Sound: ' + (s.sound ? 'On' : 'Off');
-    $('#btnVoice').textContent = 'Voice: ' + (s.voice ? 'On' : 'Off');
-    $('#btnVoice').hidden = !VoiceClipManifest.ids().some(c => c.hasAudio);   // no voice clips shipped yet -> nothing to toggle
-    $('#btnPzSound').style.opacity = s.music ? 1 : 0.5;
-    $('#btnZSound').style.opacity = s.music ? 1 : 0.5;
+    Object.keys(SETTINGS).forEach(key => { $(SETTINGS[key].btn).textContent = SETTINGS[key].label + ': ' + (s[key] ? 'On' : 'Off'); });
+    $('#btnVoice').hidden = !Object.values(VoiceClipManifest.clips).some(c => c.src);   // no voice clips shipped yet -> nothing to toggle
+    TOPBAR_MUSIC.forEach(sel => { $(sel).style.opacity = s.music ? 1 : 0.5; });
   },
 
   toMap() {
@@ -3962,7 +3954,7 @@ const Game = {
       b.style.setProperty('--ca', lv.scene[0]);
       b.disabled = locked;
       b.innerHTML = '<span class="ch-num">' + (locked ? '🔒' : lv.n) + '</span>' +
-        '<span class="ch-info"><b>' + lv.title + (Store.data.evil.cleared['word' + lv.n] || Store.data.evil.cleared['zip' + lv.n] ? ' \uD83D\uDE08' : '') + (fresh ? '<span class="newtag">NEW</span>' : '') + '</b><small>' +
+        '<span class="ch-info"><b>' + lv.title + (Store.data.evil.cleared[Evil.key('word', lv)] || Store.data.evil.cleared[Evil.key('zip', lv)] ? ' \uD83D\uDE08' : '') + (fresh ? '<span class="newtag">NEW</span>' : '') + '</b><small>' +
         (locked ? 'Solve the previous case to unlock' : lv.blurb + (ch.solved ? ' &middot; best ' + Store.score(lv.n) : '')) + '</small></span>' +
         '<span class="ch-stars">' + (locked ? '' : UI.starsHTML(Store.stars(lv.n))) + '</span>';
       b.addEventListener('click', () => { AudioFX.unlock(); this.startChapter(lv.n); });
@@ -3978,11 +3970,11 @@ const Game = {
           p.addEventListener('click', () => { AudioFX.unlock(); this.playStep(lv.n, kind); });
           pips.appendChild(p);
         });
-        if (lv.n === 8 && Store.data.seen.larry) {
+        if (lv.introScene && Store.data.seen.larry) {             // rewatch the chapter's cinematic once it has been seen
           const p = document.createElement('button');
           p.className = 'pip';
           p.textContent = '🎬 Larry';
-          p.addEventListener('click', () => { AudioFX.unlock(); LarryScene.intro(); });
+          p.addEventListener('click', () => { AudioFX.unlock(); lv.introScene(); });
           pips.appendChild(p);
         }
         wrap.appendChild(pips);
@@ -4011,59 +4003,42 @@ const Game = {
     this.showStory(lv, 'Chapter ' + n + ' · ' + lv.title);
     const begin = () => this.story.play(STORY[n].intro, {
       onChoice: ch => { if (ch.gift) { this.run.freeHints++; UI.toast('+1 free hint added to your notebook'); AudioFX.chime(6); } },
-      onDone: () => this.startWord()
+      onDone: () => this.startPuzzle('word')
     });
-    if (n === 8) LarryScene.intro().then(begin); else begin();    // Evil Larry's cinematic opens the Midnight Market
+    if (lv.introScene) lv.introScene().then(begin); else begin();   // e.g. Evil Larry's cinematic opens the Midnight Market
   },
 
   playStep(n, kind) {
     this.run = this.newRun(n, true);
-    if (kind === 'word') this.startWord(); else if (kind === 'zip') this.startZip();
+    if (PUZZLE_KINDS[kind]) this.startPuzzle(kind);
     else { this.run.earned = { word: true, zip: true }; this.toCase(); }          // a solved chapter has already earned both clues
   },
 
-  startWord() {
-    UI.show('puzzle');
-    WordPuzzle.load(this.lv(), { freeHints: this.run.freeHints, onWin: r => this.onWordWin(r) });
-    WordPuzzle.start();
+  /* kind: 'word' | 'zip' (see PUZZLE_KINDS) */
+  startPuzzle(kind) {
+    const k = PUZZLE_KINDS[kind];
+    UI.show(k.screen);
+    k.obj.load(this.lv(), { freeHints: this.run.freeHints, onWin: r => this.onPuzzleWin(kind, r) });
+    k.obj.start();
   },
 
-  onWordWin(result) {
-    const run = this.run, lv = this.lv();
-    run.freeHints = WordPuzzle.freeHints; run.earned.word = true;
-    const rec = Store.recordPuzzle(run.n, 'word', result);
+  onPuzzleWin(kind, result) {
+    const run = this.run, k = PUZZLE_KINDS[kind];
+    run.freeHints = k.obj.freeHints; run.earned[kind] = true;
+    const rec = Store.recordPuzzle(run.n, kind, result);
     this.noteResult(result.stars);
     Victory.show({
-      title: 'Clue Found!', result, rec, unlock: 'New clue in your notebook<b>' + this.earnedText('word') + '</b>',
-      continueLabel: run.replay ? 'Back to case files' : 'Follow the trail', replayLabel: 'Replay',
-      onContinue: () => this.gate('word', () => run.replay ? this.toMap() : this.playBridge()),
-      onReplay: () => this.startWord()
+      title: k.title, result, rec, unlock: 'New clue in your notebook<b>' + this.earnedText(kind) + '</b>',
+      continueLabel: run.replay ? 'Back to case files' : k.nextLabel, replayLabel: 'Replay',
+      onContinue: () => this.gate(kind, () => run.replay ? this.toMap() : k.next(this)),
+      onReplay: () => this.startPuzzle(kind)
     });
   },
 
   playBridge() {
     const lv = this.lv();
     this.showStory(lv, 'Chapter ' + lv.n + ' · The Scent Trail');
-    this.story.play(STORY[lv.n].bridge, { onDone: () => this.startZip() });
-  },
-
-  startZip() {
-    UI.show('zip');
-    ZipPuzzle.load(this.lv(), { freeHints: this.run.freeHints, onWin: r => this.onZipWin(r) });
-    ZipPuzzle.start();
-  },
-
-  onZipWin(result) {
-    const run = this.run, lv = this.lv();
-    run.freeHints = ZipPuzzle.freeHints; run.earned.zip = true;
-    const rec = Store.recordPuzzle(run.n, 'zip', result);
-    this.noteResult(result.stars);
-    Victory.show({
-      title: 'Trail Followed!', result, rec, unlock: 'New clue in your notebook<b>' + this.earnedText('zip') + '</b>',
-      continueLabel: run.replay ? 'Back to case files' : 'To the suspects', replayLabel: 'Replay',
-      onContinue: () => this.gate('zip', () => run.replay ? this.toMap() : this.toCase()),
-      onReplay: () => this.startZip()
-    });
+    this.story.play(STORY[lv.n].bridge, { onDone: () => this.startPuzzle('zip') });
   },
 
   toCase() {
@@ -4081,9 +4056,10 @@ const Game = {
       unlock: next ? 'Story unlocked<b>Chapter ' + next.n + ': ' + next.title + '</b>' : 'Every mystery solved<b>You are a true detective!</b>',
       continueLabel: run.replay ? 'Back to case files' : (next ? 'Continue the story' : 'Hear the ending'), replayLabel: 'Replay case',
       onContinue: () => run.replay ? this.toMap() : this.playOutro(n),
-      onReplay: () => { this.run = this.newRun(n, false); this.startWord(); }
+      onReplay: () => { this.run = this.newRun(n, false); this.startPuzzle('word'); }
     });
-    if (n === 8) LarryScene.caught().then(card); else card();    // Evil Larry is caught red-pawed first
+    const lv = LEVELS[n - 1];
+    if (lv.caughtScene) lv.caughtScene().then(card); else card();   // e.g. Evil Larry is caught red-pawed first
   },
 
   /* ----- Barnaby Noir: three perfect results in a row -> an evil remix of the puzzle you just solved ----- */
@@ -4101,27 +4077,23 @@ const Game = {
     if (!this.pendingEvil || (this.run && this.run.evil)) return next();
     this.pendingEvil = false;
     Store.data.perfect.streak = 0; Store.save();
-    const base = this.run.daily || (this.run.n ? this.lv() : Daily.generate(Daily.today())), zip = kind === 'zip';
+    const base = this.run.daily || (this.run.n ? this.lv() : Daily.generate(Daily.today())), k = PUZZLE_KINDS[kind];
     Cutscene.play({
-      boardEl: zip ? $('#zGrid') : $('#grid'), tileSel: zip ? '.zt' : '.tile',
+      boardEl: $(k.board), tileSel: k.tileSel,
       prepare: () => this.beginEvil(kind, base)
     }).then(res => {
       if (res === 'declined') { next(); return; }
       this.evilReturn = next;
-      if (zip) ZipPuzzle.start(); else WordPuzzle.start();
+      k.obj.start();
     });
   },
   beginEvil(kind, base) {
     this.evilKind = kind; this.evilBase = base;
     this.setEvil(true);
-    if (kind === 'zip') {
-      ZipPuzzle.load(Object.assign({}, base, { zip: base.evilZip, evil: true }), { freeHints: 0, onWin: r => this.onEvilWin(r) });
-    } else {
-      WordPuzzle.load(Evil.word(base), { freeHints: 0, onWin: r => this.onEvilWin(r) });
-    }
+    PUZZLE_KINDS[kind].obj.load(PUZZLE_KINDS[kind].evil(base), { freeHints: 0, onWin: r => this.onEvilWin(r) });
   },
   onEvilWin(result) {
-    const base = this.evilBase, kind = this.evilKind, key = base.daily ? 'daily-' + base.date : kind + base.n;
+    const base = this.evilBase, kind = this.evilKind, key = Evil.key(kind, base);
     const first = !Store.data.evil.cleared[key];
     Store.markEvil(key);
     const count = Store.evilCount(), item = WARDROBE.find(i => i.unlock === count);
@@ -4131,7 +4103,7 @@ const Game = {
       unlock: first ? 'Evil level cleared<b>+2 bonus stars for the wardrobe</b>' : 'Evil level<b>Already cleared — this was practice</b>',
       continueLabel: 'Back to the light', replayLabel: 'Another remix',
       onContinue: () => this.leaveEvil(),
-      onReplay: () => { this.beginEvil(this.evilKind, this.evilBase); if (this.evilKind === 'zip') ZipPuzzle.start(); else WordPuzzle.start(); }
+      onReplay: () => { this.beginEvil(this.evilKind, this.evilBase); PUZZLE_KINDS[this.evilKind].obj.start(); }
     });
   },
   leaveEvil() {
@@ -4186,7 +4158,7 @@ const PWA = {
 /* ---------- boot ---------- */
 function boot() {
   Game.init();
-  PWA.init();
+  (window.requestIdleCallback || (fn => setTimeout(fn, 200)))(() => PWA.init());   // icon drawing + PNG encoding stays off the first frame
 
   // voice hookup: uncomment after adding files to ./voices/ (see VoiceClipManifest notes above)
   // VoiceClipManifest.attachByConvention();
