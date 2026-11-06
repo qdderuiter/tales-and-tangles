@@ -3202,7 +3202,12 @@ const CaseScreen = {
   highlight(t) { return t.replace(/\b([A-Z]{3,})\b/g, '<b>$1</b>'); },
   renderClues() {
     const c = this.lvl.case, earned = this.run.earned, struck = this.notes.struck;
-    this.els.clues.innerHTML = '<div class="alabel">Barnaby’s clues <small>(tap to strike through)</small></div>' + c.clues.map((cl, k) => {
+    const isStruck = k => { const cl = c.clues[k]; return !!struck[k] && !(cl.earned && !earned[cl.earned]); };
+    const order = c.clues.map((_, k) => k);
+    const open = order.filter(k => !isStruck(k));
+    const crossed = order.filter(isStruck).sort((a, b) => (Number(struck[a]) || 1) - (Number(struck[b]) || 1) || a - b);
+    this.els.clues.innerHTML = '<div class="alabel">Barnaby’s clues <small>(tap to strike through)</small></div>' + open.concat(crossed).map(k => {
+      const cl = c.clues[k];
       const locked = cl.earned && !earned[cl.earned];
       const body = locked ? '🔒 ' + LOCKED_MSG[cl.earned] + ' to reveal this clue.' : this.highlight(cl.t);
       return '<div class="clue-item' + (locked ? ' locked' : '') + (struck[k] && !locked ? ' done' : '') + (cl.earned && !locked ? ' earned' : '') + '" data-k="' + k + '">' + body + '</div>';
@@ -3211,13 +3216,19 @@ const CaseScreen = {
   tapClue(k) {
     const cl = this.lvl.case.clues[k];
     if (cl.earned && !this.run.earned[cl.earned]) { UI.toast(LOCKED_MSG[cl.earned] + ' to reveal it'); AudioFX.bump(); return; }
-    this.notes.struck[k] = !this.notes.struck[k];
-    AudioFX.tick(this.notes.struck[k] ? 5 : 2);
+    const st = this.notes.struck;                    // value = strike order, so the newest strike sits at the very bottom
+    st[k] = st[k] ? 0 : Object.values(st).reduce((m, v) => Math.max(m, Number(v) || 0), 0) + 1;
+    AudioFX.tick(st[k] ? 5 : 2);
+    const before = {};
+    this.els.clues.querySelectorAll('.clue-item').forEach(el => { before[el.dataset.k] = el.getBoundingClientRect().top; });
     this.renderClues();
-    if (this.notes.struck[k]) {                      // glide down so the next clue takes the struck clue's place
-      const sc = this.els.clues.closest('.case-scroll'), el = this.els.clues.querySelector('.clue-item[data-k="' + k + '"]');
-      if (sc && el) sc.scrollBy({ top: el.offsetHeight + 7, behavior: REDUCED ? 'auto' : 'smooth' });
-    }
+    if (REDUCED) return;
+    const moved = [];                                // FLIP: slide each clue from its old spot to the new one
+    this.els.clues.querySelectorAll('.clue-item').forEach(el => {
+      const d = before[el.dataset.k] - el.getBoundingClientRect().top;
+      if (d) { el.style.transition = 'none'; el.style.transform = 'translateY(' + d + 'px)'; moved.push(el); }
+    });
+    if (moved.length) requestAnimationFrame(() => requestAnimationFrame(() => moved.forEach(el => { el.style.transition = ''; el.style.transform = ''; })));
   },
 
   /* the chips are built once per case (rebuild); a selection change only toggles .sel */
