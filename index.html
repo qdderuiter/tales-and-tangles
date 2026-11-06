@@ -432,57 +432,62 @@ body.evil .chapter,body.evil .witem{color:#3b2f55}
 /* ---------- case: notebook ---------- */
 .spacer{width:46px;flex:none}
 #screen-case{gap:8px}
-.case-scroll{flex:1;min-height:0;overflow-y:auto;touch-action:pan-y;overscroll-behavior:contain;display:flex;flex-direction:column;gap:10px;padding:2px 4px 22px;margin:0 -4px}
-.crime{background:var(--lav);border-radius:18px;padding:9px 14px;font-weight:800;font-size:14px;line-height:1.35;flex:none;
-  box-shadow:inset 3px 3px 7px rgba(120,100,180,.25),inset -3px -3px 7px rgba(255,255,255,.6)}
-.crime small,.hall small{display:block;font-size:10.5px;font-weight:900;letter-spacing:.1em;color:#6a5a96;margin-bottom:1px}
-.nb-tabs{display:flex;gap:8px;flex:none;align-items:center;flex-wrap:wrap}
+.case-scroll{flex:1;min-height:0;overflow-y:auto;touch-action:pan-y;overscroll-behavior:contain;display:flex;flex-direction:column;gap:16px;padding:2px 4px 28px;margin:0 -4px}
+/* calm surfaces: one flat paper card with a single soft shadow; colour only where it carries meaning */
+.crime,.clist,.accuse-panel{background:#fffaf1;border-radius:20px;box-shadow:0 1px 2px rgba(110,70,30,.06),0 4px 14px rgba(110,70,30,.07)}
+.crime{padding:12px 16px;font-weight:600;font-size:14px;line-height:1.45;flex:none}
+.crime small,.hall small{display:block;font-size:12px;font-weight:700;letter-spacing:.01em;color:var(--ink-soft);margin-bottom:2px}
+.nb-tabs{display:flex;gap:2px;flex:none;padding:3px;border-radius:14px;background:var(--cream2)}
 .nbl span{font-size:20px;flex:none;width:26px;text-align:center}
-.nb-tabs button{padding:8px 16px;border-radius:14px;background:var(--cream2);font-weight:900;font-size:14px;color:var(--ink-soft);
-  box-shadow:inset 3px 3px 6px var(--sh-d),inset -3px -3px 6px var(--sh-l);transition:transform .25s var(--spring),background .2s}
-.nb-tabs button.on{background:var(--butter);color:var(--ink);box-shadow:3px 3px 7px var(--sh-d),-3px -3px 7px var(--sh-l),inset 0 2px 0 rgba(255,255,255,.6)}
-.nb-tabs button:active{transform:scale(.95);transition-duration:70ms}
-.nb-tabs .auto{margin-left:auto;font-size:12px;padding:7px 10px}
-.nb{display:grid;gap:5px;flex:none;background:var(--cream2);border-radius:22px;padding:8px;
-  box-shadow:inset 5px 5px 12px var(--sh-d),inset -5px -5px 12px var(--sh-l)}
+.nb-tabs button{flex:1;padding:8px 6px;border-radius:11px;background:transparent;font-weight:700;font-size:13.5px;color:var(--ink-soft);
+  transition:transform .25s var(--spring),background .2s,color .2s,box-shadow .2s}
+.nb-tabs button.on{background:#fffaf1;color:var(--ink);box-shadow:0 1px 3px rgba(110,70,30,.16)}
+.nb-tabs button:active{transform:scale(.97);transition-duration:70ms}
+.nb-foot{display:flex;justify-content:flex-end;margin-top:-10px}
+.nb-foot .auto{background:none;font-size:12.5px;font-weight:700;color:var(--ink-soft);padding:4px 6px;border-radius:8px}
+.nb-foot .auto:active{opacity:.6}
+.nb{display:grid;gap:5px;flex:none;background:#f6ead6;border-radius:18px;padding:8px}
 .nbh{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:46px;text-align:center;line-height:1.05}
 .nbh span{font-size:20px}
-.nbh small{font-size:9.5px;font-weight:800;color:var(--ink-soft);margin-top:1px;word-break:break-word}
+.nbh small{font-size:9.5px;font-weight:700;color:var(--ink-soft);margin-top:1px;word-break:break-word}
 .nbl{display:flex;align-items:center;gap:5px;min-width:0}
 .nbl .critter{width:26px;height:auto;flex:none}
-.nbl b{font-size:11px;font-weight:900;line-height:1.1;min-width:0;word-break:break-word}
-.nbc{height:42px;border-radius:12px;background:#fffaf1;font-size:19px;font-weight:900;color:var(--ink-soft);
-  box-shadow:2px 2px 6px var(--sh-d),-2px -2px 6px var(--sh-l),inset 0 2px 0 #fff;transition:transform .25s var(--spring),background .15s}
-.nbc:active{transform:scale(.9);transition-duration:70ms}
+.nbl b{font-size:11px;font-weight:700;line-height:1.1;min-width:0;word-break:break-word}
+.nbc{height:42px;border-radius:12px;background:#fffaf1;font-size:19px;font-weight:700;color:var(--ink-soft);
+  box-shadow:inset 0 0 0 1px rgba(139,117,97,.10);transition:transform .25s var(--spring),background .15s}
+.nbc:active{transform:scale(.92);transition-duration:70ms}
 .nbc.s1{color:#c46a6a}
-.nbc.s2{background:var(--mint);color:#2f7a4a;box-shadow:inset 2px 2px 5px rgba(60,140,90,.25),inset -2px -2px 5px rgba(255,255,255,.6)}
+.nbc.s2{background:var(--mint);color:#2f7a4a;box-shadow:none}
 .nbc.s3{color:rgba(196,106,106,.38);background:#faf1e4}
 .nbc.pressed{animation:pop .4s var(--spring)}
 .nbc.hinted{animation:hintPulse .9s ease-in-out infinite;background:#fff1b8}
-.hall{background:var(--butter);border-radius:16px;padding:7px 12px;font-size:12px;font-weight:800;display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;flex:none;
-  box-shadow:inset 3px 3px 6px rgba(190,150,40,.25),inset -3px -3px 6px rgba(255,255,255,.7)}
-.hall small{width:100%;color:#a07a14}
-.hall i{font-style:normal;color:#a07a14;font-weight:900}
+.hall{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;flex:none;margin-top:-10px;padding:0 4px;font-size:12px;font-weight:600;color:var(--ink-soft)}
+.hall small{width:100%;margin:0}
+.hall i{font-style:normal;opacity:.6}
 .hallchip{white-space:nowrap}
-.clist{display:flex;flex-direction:column;gap:7px;flex:none}
-.alabel{font-size:12px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);padding:2px 2px 0}
-.alabel small{text-transform:none;letter-spacing:0;font-weight:700}
-.clue-item{background:#fffaf1;border-radius:16px;padding:9px 13px;font-size:13.5px;line-height:1.35;font-weight:700;
-  box-shadow:3px 3px 8px var(--sh-d),-2px -2px 6px var(--sh-l),inset 0 2px 0 #fff;transition:transform .25s var(--spring),opacity .2s}
-.clue-item:active{transform:scale(.98);transition-duration:70ms}
-.clue-item b{color:#b4540e}
-.clue-item.earned{background:var(--butter)}
-.clue-item.done{opacity:.5;text-decoration:line-through}
-.clue-item.locked{background:var(--cream2);color:var(--ink-soft);font-style:italic;box-shadow:inset 3px 3px 6px var(--sh-d),inset -3px -3px 6px var(--sh-l)}
-.accuse-panel{display:flex;flex-direction:column;gap:8px;flex:none;background:#fffaf1;border-radius:24px;padding:12px;
-  box-shadow:5px 5px 12px var(--sh-d),-4px -4px 10px var(--sh-l),inset 0 3px 0 #fff}
+.clist{display:flex;flex-direction:column;flex:none;padding:2px 0}
+.alabel{font-size:12px;font-weight:700;letter-spacing:.01em;color:var(--ink-soft);padding:0 6px}
+.alabel small{font-weight:600;opacity:.8}
+.clist-head{margin-bottom:-10px}
+.clue-item{padding:11px 16px;font-size:13.5px;line-height:1.45;font-weight:600;border-top:1px solid rgba(139,117,97,.12);
+  transition:transform .25s var(--spring),opacity .2s,background .2s}
+.clue-item:first-child{border-top:0}
+.clue-item:active{background:rgba(139,117,97,.06);transition-duration:70ms}
+.clue-item b{color:#b4540e;font-weight:700}
+.clue-item.earned{box-shadow:inset 3px 0 0 var(--butter)}
+.clue-item.done{opacity:.45;text-decoration:line-through}
+.clue-item.locked{color:var(--ink-soft);font-style:italic}
+.clue-item.hinted{animation:cluePulse 1s ease-in-out infinite;background:#fff1b8}
+@keyframes cluePulse{0%,100%{box-shadow:inset 0 0 0 0 rgba(240,192,64,0)}50%{box-shadow:inset 0 0 0 3px rgba(240,192,64,.95)}}
+.accuse-panel{display:flex;flex-direction:column;gap:10px;flex:none;padding:14px}
+.accuse-panel .alabel{padding:0 2px}
 .chips{display:flex;flex-wrap:wrap;gap:7px}
-.chip{display:flex;align-items:center;gap:5px;padding:5px 10px 5px 6px;border-radius:14px;background:var(--cream2);font-size:12px;font-weight:800;
-  box-shadow:2px 2px 6px var(--sh-d),-2px -2px 6px var(--sh-l);transition:transform .25s var(--spring),background .2s}
-.chip:active{transform:scale(.94);transition-duration:70ms}
+.chip{display:flex;align-items:center;gap:5px;padding:5px 10px 5px 6px;border-radius:14px;background:var(--cream2);font-size:12px;font-weight:700;
+  transition:transform .25s var(--spring),background .2s,box-shadow .2s}
+.chip:active{transform:scale(.96);transition-duration:70ms}
 .chip .critter{width:26px;height:auto}
 .chip span{font-size:17px}
-.chip.sel{background:var(--lav);box-shadow:inset 0 0 0 3px #9c88dc;transform:translateY(-2px)}
+.chip.sel{background:var(--lav);box-shadow:inset 0 0 0 2px #9c88dc}
 .chip.shake{animation:shake .42s ease-in-out}
 .accuse{align-self:center;margin-top:4px}
 
@@ -528,6 +533,7 @@ body.evil .chapter,body.evil .witem{color:#3b2f55}
   .bear.bounce,.bear-idle,.bear-arm,.logo .amp,.sparkles i,.chapter.fresh,.newbest,.dlg-caret.on,.tile.shake .face{animation:none}
   .tile.found .face,.slot.done,.choice,.unlock,.zl.pop{animation:none}
   .tile.hint .face,.zt.hint .zf{animation:none;background:#fff1b8;outline:3px solid #f0c040}
+  .clue-item.hinted{animation:none;box-shadow:inset 0 0 0 3px #f0c040}
   .zt.head .zf{transform:none}
   .bear.yawn .bear-svg,.bear.sway .bear-svg,.bear.looking .bear-arm,.bear.tip .slot-hat,.bear-svg.bobL,.bear-svg.bobR{animation:none}
   .seal,.noir-fog,body.evil #app::after{animation:none}.noir-begin,.noir-hint{transition:none}
@@ -663,7 +669,7 @@ body.evil .chapter,body.evil .witem{color:#3b2f55}
   <section id="screen-case" class="screen" aria-label="Case notebook">
     <div class="topbar">
       <button class="btn round" id="btnCBack" aria-label="Back to case files">&#8592;</button>
-      <div class="topmid"><b>Case Notebook</b><small>Cross things off, then accuse</small></div>
+      <div class="topmid"><b>Case Notebook</b></div>
       <button class="btn round butter" id="btnCHint" aria-label="Hint">?</button>
     </div>
     <div class="case-scroll">
@@ -676,10 +682,11 @@ body.evil .chapter,body.evil .witem{color:#3b2f55}
         <button data-tab="items" class="on">Items</button>
         <button data-tab="places">Rooms</button>
         <button data-tab="itemPlaces">Item ↔ Room</button>
-        <button class="auto" id="cAuto">Auto-cross: On</button>
       </div>
       <div class="nb" id="cGrid"></div>
+      <div class="nb-foot"><button class="auto" id="cAuto">Auto-cross: On</button></div>
       <div class="hall" id="cHall"></div>
+      <div class="alabel clist-head">Barnaby’s clues <small>· tap to strike through</small></div>
       <div class="clist" id="cClues"></div>
       <div class="accuse-panel">
         <div class="alabel">Who did it?</div>
@@ -890,10 +897,10 @@ const EVIL_ZIPS = [
 ];
 
 /* Murdle-style cases (generated + verified offline). N suspects, N items, N places; the places run left to right along a hallway.
-   clues[].c is the machine-readable constraint (used only by tests); earned = unlocked by solving the Words / Trail puzzle.
+   clues[].c is the machine-readable constraint (evaluated by caseFits for notebook hints; isPlace/isItem are plain facts about one suspect); earned =unlocked by solving the Words / Trail puzzle.
    Exactly one assignment satisfies every clue, and it does NOT stay unique without the two earned clues. The crime names only the
    ROOM; the player must work out who was in it and what they held (accusation = suspect + item). */
-const CASES = [{"n":1,"N":4,"suspects":["Bruno Bear","Pip the Bee","Wanda Wasp","Bramble Mouse"],"items":[{"name":"wooden spoon","emoji":"🥄"},{"name":"paintbrush","emoji":"🖌️"},{"name":"picnic basket","emoji":"🧺"},{"name":"candle","emoji":"🕯️"}],"places":[{"name":"pantry","emoji":"🥫"},{"name":"porch","emoji":"🏡"},{"name":"garden","emoji":"🌻"},{"name":"cellar","emoji":"🕳️"}],"crimePlace":0,"crime":"The honey jar vanished from the pantry.","clues":[{"t":"A trail of HONEY on the floorboards: Pip the Bee was in a room right next to Bramble Mouse's.","c":["next",1,3],"earned":"word","key":"HONEY"},{"t":"Whoever held the wooden spoon was in the porch or the cellar.","c":["linkEither",0,1,3],"earned":null},{"t":"Wanda Wasp had the paintbrush or the picnic basket.","c":["eitherItem",2,1,2],"earned":null},{"t":"The scent trail ends near the HIVE: Whoever held the paintbrush was in the pantry or the cellar.","c":["linkEither",1,0,3],"earned":"zip","key":"HIVE"},{"t":"Pip the Bee had the picnic basket or the candle.","c":["eitherItem",1,2,3],"earned":null},{"t":"Whoever held the candle was in the pantry.","c":["linkIP",3,0],"earned":null},{"t":"Pip the Bee was in the pantry or the cellar.","c":["eitherPlace",1,0,3],"earned":null},{"t":"Bruno Bear had the wooden spoon or the paintbrush.","c":["eitherItem",0,0,1],"earned":null},{"t":"Whoever held the picnic basket was not in the pantry.","c":["notLinkIP",2,0],"earned":null},{"t":"Whoever held the paintbrush was in the cellar.","c":["linkIP",1,3],"earned":null},{"t":"Bramble Mouse had the wooden spoon or the paintbrush.","c":["eitherItem",3,0,1],"earned":null},{"t":"Bramble Mouse was not holding the picnic basket.","c":["notItem",3,2],"earned":null}],"solution":{"item":[1,3,2,0],"place":[3,0,2,1]},"culprit":1,"culpritItem":3},{"n":2,"N":4,"suspects":["Miss Hoot","Fenn Fox","Bramble Mouse","Rufus Rabbit"],"items":[{"name":"quill","emoji":"🖋️"},{"name":"bookmark","emoji":"🔖"},{"name":"magnifying glass","emoji":"🔍"},{"name":"reading lamp","emoji":"💡"}],"places":[{"name":"reading nook","emoji":"📖"},{"name":"archive","emoji":"🗄️"},{"name":"map room","emoji":"🗺️"},{"name":"rooftop","emoji":"🌆"}],"crimePlace":0,"crime":"The library books were all shuffled in the reading nook.","clues":[{"t":"Whoever held the bookmark was not in the rooftop.","c":["notLinkIP",1,3],"earned":null},{"t":"Footprints from the dead of NIGHT: Whoever held the quill was right next door to whoever held the bookmark.","c":["itemNext",0,1],"earned":"zip","key":"NIGHT"},{"t":"Whoever held the quill was in the reading nook or the map room.","c":["linkEither",0,0,2],"earned":null},{"t":"Miss Hoot was not holding the reading lamp.","c":["notItem",0,3],"earned":null},{"t":"Whoever held the reading lamp was in the archive or the map room.","c":["linkEither",3,1,2],"earned":null},{"t":"Ink from a QUILL on the carpet: Fenn Fox's room was somewhere to the left of Bramble Mouse's.","c":["left",1,2],"earned":"word","key":"QUILL"},{"t":"Fenn Fox was in a room right next to Rufus Rabbit's.","c":["next",1,3],"earned":null},{"t":"Miss Hoot had the quill or the bookmark.","c":["eitherItem",0,0,1],"earned":null},{"t":"Rufus Rabbit had the magnifying glass or the reading lamp.","c":["eitherItem",3,2,3],"earned":null},{"t":"Fenn Fox was in the archive or the rooftop.","c":["eitherPlace",1,1,3],"earned":null},{"t":"Miss Hoot was not holding the bookmark.","c":["notItem",0,1],"earned":null},{"t":"Whoever held the reading lamp was in the map room.","c":["linkIP",3,2],"earned":null}],"solution":{"item":[0,1,2,3],"place":[0,1,3,2]},"culprit":0,"culpritItem":0},{"n":3,"N":4,"suspects":["Mabel Mole","Rufus Rabbit","Morris Mole","Pip the Bee"],"items":[{"name":"shovel","emoji":"â›️"},{"name":"watering can","emoji":"🚿"},{"name":"seed packet","emoji":"🌱"},{"name":"garden gloves","emoji":"🧤"}],"places":[{"name":"greenhouse","emoji":"🌿"},{"name":"fountain","emoji":"â›²"},{"name":"tool shed","emoji":"🏚️"},{"name":"orchard","emoji":"🍎"}],"crimePlace":3,"crime":"The tulip bed was dug up near the orchard.","clues":[{"t":"Whoever held the watering can was in the greenhouse or the fountain.","c":["linkEither",1,0,1],"earned":null},{"t":"Mabel Mole was not in the fountain.","c":["notPlace",0,1],"earned":null},{"t":"Crushed TULIP petals: Mabel Mole was in the greenhouse or the orchard.","c":["eitherPlace",0,0,3],"earned":"word","key":"TULIP"},{"t":"Whoever held the garden gloves was in the greenhouse or the fountain.","c":["linkEither",3,0,1],"earned":null},{"t":"Mabel Mole was not holding the garden gloves.","c":["notItem",0,3],"earned":null},{"t":"Morris Mole's room was somewhere to the left of Pip the Bee's.","c":["left",2,3],"earned":null},{"t":"Morris Mole was not holding the seed packet.","c":["notItem",2,2],"earned":null},{"t":"Fresh MOLE hills: Pip the Bee had the shovel or the watering can.","c":["eitherItem",3,0,1],"earned":"zip","key":"MOLE"},{"t":"Mabel Mole and Morris Mole were not in neighbouring rooms.","c":["notNext",0,2],"earned":null},{"t":"Whoever held the watering can was right next door to whoever held the seed packet.","c":["itemNext",1,2],"earned":null},{"t":"Rufus Rabbit was not in the fountain.","c":["notPlace",1,1],"earned":null},{"t":"Pip the Bee was in the fountain or the orchard.","c":["eitherPlace",3,1,3],"earned":null},{"t":"Whoever held the shovel was in the fountain or the orchard.","c":["linkEither",0,1,3],"earned":null},{"t":"Pip the Bee was not in the greenhouse.","c":["notPlace",3,0],"earned":null}],"solution":{"item":[0,2,3,1],"place":[3,2,0,1]},"culprit":0,"culpritItem":0},{"n":4,"N":4,"suspects":["The Moon","Fenny Firefly","Orson Owl","Miss Hoot"],"items":[{"name":"telescope","emoji":"🔭"},{"name":"red lantern","emoji":"🏮"},{"name":"pocket watch","emoji":"âŒš"},{"name":"night cloak","emoji":"🧥"}],"places":[{"name":"courtyard","emoji":"â›²"},{"name":"belfry","emoji":"🔔"},{"name":"clock tower","emoji":"🕰️"},{"name":"roof","emoji":"🌆"}],"crimePlace":2,"crime":"The moon went missing from the clock tower.","clues":[{"t":"Miss Hoot's room was somewhere to the left of Orson Owl's.","c":["left",3,2],"earned":null},{"t":"The CLOCK chimed thirteen: Whoever held the pocket watch was in the belfry.","c":["linkIP",2,1],"earned":"zip","key":"CLOCK"},{"t":"Silver MOON dust on the stairs: Miss Hoot was in one of the two end rooms.","c":["end",3],"earned":"word","key":"MOON"},{"t":"Whoever held the pocket watch was in the belfry or the clock tower.","c":["linkEither",2,1,2],"earned":null},{"t":"Orson Owl had the red lantern or the night cloak.","c":["eitherItem",2,1,3],"earned":null},{"t":"The Moon had the red lantern or the pocket watch.","c":["eitherItem",0,1,2],"earned":null},{"t":"Whoever held the night cloak was in the roof.","c":["linkIP",3,3],"earned":null},{"t":"Fenny Firefly had the red lantern or the pocket watch.","c":["eitherItem",1,1,2],"earned":null},{"t":"The Moon was not in the belfry.","c":["notPlace",0,1],"earned":null},{"t":"Whoever held the telescope was in the courtyard.","c":["linkIP",0,0],"earned":null},{"t":"Miss Hoot was in the courtyard or the clock tower.","c":["eitherPlace",3,0,2],"earned":null},{"t":"Orson Owl was not holding the pocket watch.","c":["notItem",2,2],"earned":null}],"solution":{"item":[1,2,3,0],"place":[2,1,3,0]},"culprit":0,"culpritItem":1},{"n":5,"N":4,"suspects":["Bramble Mouse","Miss Hoot","Fenn Fox","Bruno Bear"],"items":[{"name":"sugar bowl","emoji":"🍬"},{"name":"berry basket","emoji":"🍓"},{"name":"cake knife","emoji":"🔪"},{"name":"birthday candle","emoji":"🕯️"}],"places":[{"name":"pantry","emoji":"🥫"},{"name":"kitchen","emoji":"🍳"},{"name":"dining room","emoji":"🍽️"},{"name":"cellar","emoji":"🕳️"}],"crimePlace":2,"crime":"The birthday cake disappeared from the dining room.","clues":[{"t":"Miss Hoot was not holding the birthday candle.","c":["notItem",1,3],"earned":null},{"t":"Whoever held the birthday candle was in the pantry or the kitchen.","c":["linkEither",3,0,1],"earned":null},{"t":"Whoever held the birthday candle was in the kitchen or the cellar.","c":["linkEither",3,1,3],"earned":null},{"t":"Crumbs of CAKE: Bruno Bear was in one of the two end rooms.","c":["end",3],"earned":"word","key":"CAKE"},{"t":"Bramble Mouse had the sugar bowl or the birthday candle.","c":["eitherItem",0,0,3],"earned":null},{"t":"Fenn Fox was in the kitchen or the dining room.","c":["eitherPlace",2,1,2],"earned":null},{"t":"Whoever held the cake knife was not in the cellar.","c":["notLinkIP",2,3],"earned":null},{"t":"Fenn Fox had the berry basket or the birthday candle.","c":["eitherItem",2,1,3],"earned":null},{"t":"A confetti-covered PARTY invitation: Whoever held the sugar bowl was in the pantry or the kitchen.","c":["linkEither",0,0,1],"earned":"zip","key":"PARTY"},{"t":"Whoever held the sugar bowl was in the pantry.","c":["linkIP",0,0],"earned":null},{"t":"Fenn Fox was in the kitchen or the cellar.","c":["eitherPlace",2,1,3],"earned":null},{"t":"Bruno Bear was not in the kitchen.","c":["notPlace",3,1],"earned":null}],"solution":{"item":[0,2,3,1],"place":[0,2,1,3]},"culprit":1,"culpritItem":2},{"n":6,"N":5,"suspects":["Skipper Otter","Pearl Puffin","Gus Gull","Marina Seal","Old Barnacle"],"items":[{"name":"brass lamp","emoji":"💡"},{"name":"anchor","emoji":"âš“"},{"name":"spyglass","emoji":"🔭"},{"name":"seashell","emoji":"🐚"},{"name":"storm lantern","emoji":"🏮"}],"places":[{"name":"boathouse","emoji":"🛶"},{"name":"jetty","emoji":"🌉"},{"name":"cliff path","emoji":"â›°️"},{"name":"cove","emoji":"🏖️"},{"name":"tower stairs","emoji":"🗼"}],"crimePlace":4,"crime":"The lighthouse lamp went dark near the tower stairs.","clues":[{"t":"Skipper Otter was not in the cove.","c":["notPlace",0,3],"earned":null},{"t":"The TIDE washed away all but one clue: Pearl Puffin was in the cliff path or the cove.","c":["eitherPlace",1,2,3],"earned":"zip","key":"TIDE"},{"t":"Gus Gull had the brass lamp or the storm lantern.","c":["eitherItem",2,0,4],"earned":null},{"t":"Marina Seal was in a room right next to Gus Gull's.","c":["next",3,2],"earned":null},{"t":"Skipper Otter had the anchor or the storm lantern.","c":["eitherItem",0,1,4],"earned":null},{"t":"Whoever held the anchor was not in the tower stairs.","c":["notLinkIP",1,4],"earned":null},{"t":"The BEACON glass was warm to the touch: Skipper Otter's room was somewhere to the left of Marina Seal's.","c":["left",0,3],"earned":"word","key":"BEACON"},{"t":"Marina Seal was not holding the storm lantern.","c":["notItem",3,4],"earned":null},{"t":"Old Barnacle was not in the cove.","c":["notPlace",4,3],"earned":null},{"t":"Gus Gull was in the boathouse or the cliff path.","c":["eitherPlace",2,0,2],"earned":null},{"t":"Whoever held the seashell was in the cliff path or the cove.","c":["linkEither",3,2,3],"earned":null},{"t":"Whoever held the spyglass was right next door to whoever held the seashell.","c":["itemNext",2,3],"earned":null},{"t":"Whoever held the storm lantern was not in the boathouse.","c":["notLinkIP",4,0],"earned":null},{"t":"Marina Seal had the brass lamp or the spyglass.","c":["eitherItem",3,0,2],"earned":null},{"t":"Gus Gull was not holding the seashell.","c":["notItem",2,3],"earned":null},{"t":"Whoever held the storm lantern was in the cliff path or the tower stairs.","c":["linkEither",4,2,4],"earned":null}],"solution":{"item":[1,3,4,0,2],"place":[0,3,2,1,4]},"culprit":4,"culpritItem":2},{"n":7,"N":5,"suspects":["Flurry Rabbit","Ember Fox","Pebble Penguin","Nimbus Sheep","Hazel Hedgehog"],"items":[{"name":"crystal ball","emoji":"🔮"},{"name":"sled","emoji":"🛷"},{"name":"mittens","emoji":"🧤"},{"name":"cocoa mug","emoji":"â˜•"},{"name":"red ribbon","emoji":"🎀"}],"places":[{"name":"frozen pond","emoji":"â›¸️"},{"name":"cabin","emoji":"🏠"},{"name":"pine grove","emoji":"🌲"},{"name":"workshop","emoji":"🔨"},{"name":"ice cave","emoji":"â„️"}],"crimePlace":0,"crime":"The snow globe was lifted from the frozen pond.","clues":[{"t":"Pebble Penguin was in a room right next to Flurry Rabbit's.","c":["next",2,0],"earned":null},{"t":"Whoever held the red ribbon was in the frozen pond or the pine grove.","c":["linkEither",4,0,2],"earned":null},{"t":"Pebble Penguin was in one of the two end rooms.","c":["end",2],"earned":null},{"t":"Nimbus Sheep had the cocoa mug or the red ribbon.","c":["eitherItem",3,3,4],"earned":null},{"t":"A sparkle of GLOBE glitter in the snow: Nimbus Sheep's room was somewhere to the left of Hazel Hedgehog's.","c":["left",3,4],"earned":"word","key":"GLOBE"},{"t":"Pebble Penguin had the sled or the red ribbon.","c":["eitherItem",2,1,4],"earned":null},{"t":"Nimbus Sheep was not in the cabin.","c":["notPlace",3,1],"earned":null},{"t":"Hazel Hedgehog was not in the pine grove.","c":["notPlace",4,2],"earned":null},{"t":"Whoever held the mittens was not in the ice cave.","c":["notLinkIP",2,4],"earned":null},{"t":"Runner marks from a SLEIGH: Ember Fox's room was somewhere to the left of Hazel Hedgehog's.","c":["left",1,4],"earned":"zip","key":"SLEIGH"},{"t":"Whoever held the mittens was right next door to whoever held the cocoa mug.","c":["itemNext",2,3],"earned":null},{"t":"Whoever held the cocoa mug was in the cabin or the ice cave.","c":["linkEither",3,1,4],"earned":null},{"t":"Ember Fox was in the frozen pond or the workshop.","c":["eitherPlace",1,0,3],"earned":null},{"t":"Pebble Penguin was not holding the red ribbon.","c":["notItem",2,4],"earned":null},{"t":"Flurry Rabbit was not in the frozen pond.","c":["notPlace",0,0],"earned":null}],"solution":{"item":[0,2,1,4,3],"place":[1,3,0,2,4]},"culprit":2,"culpritItem":1},{"n":8,"N":5,"suspects":["Evil Larry","Lotus Frog","Kettle Badger","Plum Mouse","Cinder Raccoon"],"items":[{"name":"paper lantern","emoji":"🏮"},{"name":"spice jar","emoji":"🌶️"},{"name":"silk scarf","emoji":"🧣"},{"name":"brass bell","emoji":"🔔"},{"name":"fortune card","emoji":"🃏"}],"places":[{"name":"tea stall","emoji":"🍵"},{"name":"fish cart","emoji":"🐟"},{"name":"rug tent","emoji":"â›º"},{"name":"fountain","emoji":"â›²"},{"name":"mask booth","emoji":"🎭"}],"crimePlace":4,"crime":"The night market’s golden lantern vanished from the mask booth.","clues":[{"t":"Evil Larry was not in the fish cart.","c":["notPlace",0,1],"earned":null},{"t":"Cinder Raccoon was in the fish cart or the mask booth.","c":["eitherPlace",4,1,4],"earned":null},{"t":"Cinder Raccoon and Kettle Badger were not in neighbouring rooms.","c":["notNext",4,2],"earned":null},{"t":"A scent of SPICE on the cobbles: Plum Mouse's room was somewhere to the left of Lotus Frog's.","c":["left",3,1],"earned":"word","key":"SPICE"},{"t":"Whoever held the spice jar was right next door to whoever held the brass bell.","c":["itemNext",1,3],"earned":null},{"t":"Whoever held the paper lantern was right next door to whoever held the silk scarf.","c":["itemNext",0,2],"earned":null},{"t":"Cinder Raccoon was in the fish cart or the rug tent.","c":["eitherPlace",4,1,2],"earned":null},{"t":"Whoever held the silk scarf was in the tea stall or the fountain.","c":["linkEither",2,0,3],"earned":null},{"t":"Plum Mouse was in a room right next to Cinder Raccoon's.","c":["next",3,4],"earned":null},{"t":"Whispers in the MARKET: Evil Larry had the paper lantern or the silk scarf.","c":["eitherItem",0,0,2],"earned":"zip","key":"MARKET"},{"t":"Kettle Badger's room was somewhere to the left of Evil Larry's.","c":["left",2,0],"earned":null},{"t":"Lotus Frog had the paper lantern or the spice jar.","c":["eitherItem",1,0,1],"earned":null},{"t":"Whoever held the spice jar was in the rug tent or the fountain.","c":["linkEither",1,2,3],"earned":null},{"t":"Kettle Badger was not in the tea stall.","c":["notPlace",2,0],"earned":null},{"t":"Plum Mouse was in the tea stall or the mask booth.","c":["eitherPlace",3,0,4],"earned":null}],"solution":{"item":[0,1,2,4,3],"place":[4,2,3,0,1]},"culprit":0,"culpritItem":0},{"n":9,"N":5,"suspects":["Jester Fox","Pogo Rabbit","Cleo Cat","Domino Panda","Ringo Raccoon"],"items":[{"name":"top hat","emoji":"🎩"},{"name":"balloon","emoji":"🎈"},{"name":"trumpet","emoji":"🎺"},{"name":"golden ticket","emoji":"🎫"},{"name":"striped drum","emoji":"🥁"}],"places":[{"name":"big top","emoji":"🎪"},{"name":"carousel","emoji":"🎠"},{"name":"ferris wheel","emoji":"🎡"},{"name":"popcorn stand","emoji":"🍿"},{"name":"fun house","emoji":"🤡"}],"crimePlace":2,"crime":"The carnival’s star prop was taken from the ferris wheel.","clues":[{"t":"Domino Panda was in a room right next to Jester Fox's.","c":["next",3,0],"earned":null},{"t":"Pogo Rabbit was in the carousel or the ferris wheel.","c":["eitherPlace",1,1,2],"earned":null},{"t":"Sawdust from the CIRCUS ring: Cleo Cat had the trumpet or the golden ticket.","c":["eitherItem",2,2,3],"earned":"word","key":"CIRCUS"},{"t":"Whoever held the trumpet was in the ferris wheel or the fun house.","c":["linkEither",2,2,4],"earned":null},{"t":"Jester Fox's room was somewhere to the left of Cleo Cat's.","c":["left",0,2],"earned":null},{"t":"Jester Fox was in the popcorn stand or the fun house.","c":["eitherPlace",0,3,4],"earned":null},{"t":"A torn TICKET stub: Ringo Raccoon had the balloon or the striped drum.","c":["eitherItem",4,1,4],"earned":"zip","key":"TICKET"},{"t":"Jester Fox was in a room right next to Cleo Cat's.","c":["next",0,2],"earned":null},{"t":"Cleo Cat was not holding the striped drum.","c":["notItem",2,4],"earned":null},{"t":"Whoever held the balloon was in the popcorn stand.","c":["linkIP",1,3],"earned":null},{"t":"Whoever held the top hat was right next door to whoever held the balloon.","c":["itemNext",0,1],"earned":null},{"t":"Ringo Raccoon's room was somewhere to the left of Cleo Cat's.","c":["left",4,2],"earned":null},{"t":"Whoever held the golden ticket was in the carousel.","c":["linkIP",3,1],"earned":null},{"t":"Pogo Rabbit was not holding the balloon.","c":["notItem",1,1],"earned":null},{"t":"Ringo Raccoon was in the big top or the fun house.","c":["eitherPlace",4,0,4],"earned":null}],"solution":{"item":[1,3,2,0,4],"place":[3,1,4,2,0]},"culprit":3,"culpritItem":0},{"n":10,"N":5,"suspects":["Miss Hoot","Pip the Bee","Mabel Mole","Fenn Fox","The Moon"],"items":[{"name":"old lantern","emoji":"🏮"},{"name":"iron key","emoji":"🗝️"},{"name":"ancient scroll","emoji":"📜"},{"name":"silver candle","emoji":"🕯️"},{"name":"little crown","emoji":"👑"}],"places":[{"name":"great hall","emoji":"🏰"},{"name":"garden maze","emoji":"🌳"},{"name":"library","emoji":"📚"},{"name":"clock tower","emoji":"🕰️"},{"name":"lighthouse","emoji":"🗼"}],"crimePlace":0,"crime":"The Last Lantern went out in the great hall.","clues":[{"t":"Fenn Fox was not holding the old lantern.","c":["notItem",3,0],"earned":null},{"t":"Pip the Bee was in the garden maze or the library.","c":["eitherPlace",1,1,2],"earned":null},{"t":"Whoever held the old lantern was in the garden maze or the library.","c":["linkEither",0,1,2],"earned":null},{"t":"Miss Hoot's room was somewhere to the left of The Moon's.","c":["left",0,4],"earned":null},{"t":"Whoever held the silver candle was in the great hall or the library.","c":["linkEither",3,0,2],"earned":null},{"t":"Miss Hoot was in the garden maze or the clock tower.","c":["eitherPlace",0,1,3],"earned":null},{"t":"Whoever held the iron key was in the garden maze or the clock tower.","c":["linkEither",1,1,3],"earned":null},{"t":"The Moon and Pip the Bee were not in neighbouring rooms.","c":["notNext",4,1],"earned":null},{"t":"A thread of LIGHT under the door: Miss Hoot's room was somewhere to the left of Pip the Bee's.","c":["left",0,1],"earned":"word","key":"LIGHT"},{"t":"The LANTERN’s wick was still smoking: The Moon had the iron key or the little crown.","c":["eitherItem",4,1,4],"earned":"zip","key":"LANTERN"},{"t":"Mabel Mole and The Moon were not in neighbouring rooms.","c":["notNext",2,4],"earned":null},{"t":"Whoever held the iron key was right next door to whoever held the ancient scroll.","c":["itemNext",1,2],"earned":null},{"t":"Whoever held the iron key was not in the library.","c":["notLinkIP",1,2],"earned":null},{"t":"Pip the Bee had the iron key or the ancient scroll.","c":["eitherItem",1,1,2],"earned":null},{"t":"Miss Hoot was not holding the ancient scroll.","c":["notItem",0,2],"earned":null},{"t":"The Moon was in the garden maze or the lighthouse.","c":["eitherPlace",4,1,4],"earned":null}],"solution":{"item":[0,2,3,1,4],"place":[1,2,0,3,4]},"culprit":2,"culpritItem":3}];
+const CASES = [{"n":1,"N":4,"suspects":["Bruno Bear","Pip the Bee","Wanda Wasp","Bramble Mouse"],"items":[{"name":"wooden spoon","emoji":"🥄"},{"name":"paintbrush","emoji":"🖌️"},{"name":"picnic basket","emoji":"🧺"},{"name":"candle","emoji":"🕯️"}],"places":[{"name":"pantry","emoji":"🥫"},{"name":"porch","emoji":"🏡"},{"name":"garden","emoji":"🌻"},{"name":"cellar","emoji":"🕳️"}],"crimePlace":0,"crime":"The honey jar vanished from the pantry.","clues":[{"t":"Wanda Wasp had the picnic basket.","c":["isItem",2,2],"earned":null},{"t":"Wanda Wasp was in the garden.","c":["isPlace",2,2],"earned":null},{"t":"A trail of HONEY on the floorboards: Pip the Bee was in a room right next to Bramble Mouse's.","c":["next",1,3],"earned":"word","key":"HONEY"},{"t":"Whoever held the wooden spoon was in the porch or the cellar.","c":["linkEither",0,1,3],"earned":null},{"t":"The scent trail ends near the HIVE: Whoever held the paintbrush was in the pantry or the cellar.","c":["linkEither",1,0,3],"earned":"zip","key":"HIVE"},{"t":"Pip the Bee had the picnic basket or the candle.","c":["eitherItem",1,2,3],"earned":null},{"t":"Whoever held the candle was in the pantry.","c":["linkIP",3,0],"earned":null},{"t":"Pip the Bee was in the pantry or the cellar.","c":["eitherPlace",1,0,3],"earned":null},{"t":"Bruno Bear had the wooden spoon or the paintbrush.","c":["eitherItem",0,0,1],"earned":null},{"t":"Whoever held the picnic basket was not in the pantry.","c":["notLinkIP",2,0],"earned":null},{"t":"Whoever held the paintbrush was in the cellar.","c":["linkIP",1,3],"earned":null},{"t":"Bramble Mouse had the wooden spoon or the paintbrush.","c":["eitherItem",3,0,1],"earned":null},{"t":"Bramble Mouse was not holding the picnic basket.","c":["notItem",3,2],"earned":null}],"solution":{"item":[1,3,2,0],"place":[3,0,2,1]},"culprit":1,"culpritItem":3},{"n":2,"N":4,"suspects":["Miss Hoot","Fenn Fox","Bramble Mouse","Rufus Rabbit"],"items":[{"name":"quill","emoji":"🖋️"},{"name":"bookmark","emoji":"🔖"},{"name":"magnifying glass","emoji":"🔍"},{"name":"reading lamp","emoji":"💡"}],"places":[{"name":"reading nook","emoji":"📖"},{"name":"archive","emoji":"🗄️"},{"name":"map room","emoji":"🗺️"},{"name":"rooftop","emoji":"🌆"}],"crimePlace":0,"crime":"The library books were all shuffled in the reading nook.","clues":[{"t":"Rufus Rabbit was in the map room.","c":["isPlace",3,2],"earned":null},{"t":"Rufus Rabbit had the reading lamp.","c":["isItem",3,3],"earned":null},{"t":"Bramble Mouse had the magnifying glass or the reading lamp.","c":["eitherItem",2,2,3],"earned":null},{"t":"Footprints from the dead of NIGHT: Whoever held the quill was right next door to whoever held the bookmark.","c":["itemNext",0,1],"earned":"zip","key":"NIGHT"},{"t":"Whoever held the quill was in the reading nook or the map room.","c":["linkEither",0,0,2],"earned":null},{"t":"Miss Hoot was not holding the reading lamp.","c":["notItem",0,3],"earned":null},{"t":"Whoever held the reading lamp was in the archive or the map room.","c":["linkEither",3,1,2],"earned":null},{"t":"Ink from a QUILL on the carpet: Fenn Fox's room was somewhere to the left of Bramble Mouse's.","c":["left",1,2],"earned":"word","key":"QUILL"},{"t":"Fenn Fox was in a room right next to Rufus Rabbit's.","c":["next",1,3],"earned":null},{"t":"Miss Hoot had the quill or the bookmark.","c":["eitherItem",0,0,1],"earned":null},{"t":"Fenn Fox was in the archive or the rooftop.","c":["eitherPlace",1,1,3],"earned":null},{"t":"Miss Hoot was not holding the bookmark.","c":["notItem",0,1],"earned":null},{"t":"Whoever held the reading lamp was in the map room.","c":["linkIP",3,2],"earned":null}],"solution":{"item":[0,1,2,3],"place":[0,1,3,2]},"culprit":0,"culpritItem":0},{"n":3,"N":4,"suspects":["Mabel Mole","Rufus Rabbit","Morris Mole","Pip the Bee"],"items":[{"name":"shovel","emoji":"⛏️"},{"name":"watering can","emoji":"🚿"},{"name":"seed packet","emoji":"🌱"},{"name":"garden gloves","emoji":"🧤"}],"places":[{"name":"greenhouse","emoji":"🌿"},{"name":"fountain","emoji":"⛲"},{"name":"tool shed","emoji":"🏚️"},{"name":"orchard","emoji":"🍎"}],"crimePlace":3,"crime":"The tulip bed was dug up near the orchard.","clues":[{"t":"Morris Mole was in the greenhouse.","c":["isPlace",2,0],"earned":null},{"t":"Pip the Bee was in the fountain.","c":["isPlace",3,1],"earned":null},{"t":"Whoever held the watering can was in the greenhouse or the fountain.","c":["linkEither",1,0,1],"earned":null},{"t":"Mabel Mole was not in the fountain.","c":["notPlace",0,1],"earned":null},{"t":"Crushed TULIP petals: Mabel Mole was in the greenhouse or the orchard.","c":["eitherPlace",0,0,3],"earned":"word","key":"TULIP"},{"t":"Whoever held the garden gloves was in the greenhouse or the fountain.","c":["linkEither",3,0,1],"earned":null},{"t":"Mabel Mole was not holding the garden gloves.","c":["notItem",0,3],"earned":null},{"t":"Morris Mole's room was somewhere to the left of Pip the Bee's.","c":["left",2,3],"earned":null},{"t":"Morris Mole was not holding the seed packet.","c":["notItem",2,2],"earned":null},{"t":"Fresh MOLE hills: Pip the Bee had the shovel or the watering can.","c":["eitherItem",3,0,1],"earned":"zip","key":"MOLE"},{"t":"Mabel Mole and Morris Mole were not in neighbouring rooms.","c":["notNext",0,2],"earned":null},{"t":"Whoever held the watering can was right next door to whoever held the seed packet.","c":["itemNext",1,2],"earned":null},{"t":"Rufus Rabbit was not in the fountain.","c":["notPlace",1,1],"earned":null},{"t":"Whoever held the shovel was in the fountain or the orchard.","c":["linkEither",0,1,3],"earned":null}],"solution":{"item":[0,2,3,1],"place":[3,2,0,1]},"culprit":0,"culpritItem":0},{"n":4,"N":4,"suspects":["The Moon","Fenny Firefly","Orson Owl","Miss Hoot"],"items":[{"name":"telescope","emoji":"🔭"},{"name":"red lantern","emoji":"🏮"},{"name":"pocket watch","emoji":"⌚"},{"name":"night cloak","emoji":"🧥"}],"places":[{"name":"courtyard","emoji":"⛲"},{"name":"belfry","emoji":"🔔"},{"name":"clock tower","emoji":"🕰️"},{"name":"roof","emoji":"🌆"}],"crimePlace":2,"crime":"The moon went missing from the clock tower.","clues":[{"t":"Orson Owl was in the roof.","c":["isPlace",2,3],"earned":null},{"t":"Fenny Firefly was in the belfry.","c":["isPlace",1,1],"earned":null},{"t":"Miss Hoot's room was somewhere to the left of Orson Owl's.","c":["left",3,2],"earned":null},{"t":"The CLOCK chimed thirteen: Whoever held the pocket watch was in the belfry.","c":["linkIP",2,1],"earned":"zip","key":"CLOCK"},{"t":"Silver MOON dust on the stairs: Miss Hoot was in one of the two end rooms.","c":["end",3],"earned":"word","key":"MOON"},{"t":"Whoever held the pocket watch was in the belfry or the clock tower.","c":["linkEither",2,1,2],"earned":null},{"t":"Orson Owl had the red lantern or the night cloak.","c":["eitherItem",2,1,3],"earned":null},{"t":"The Moon had the red lantern or the pocket watch.","c":["eitherItem",0,1,2],"earned":null},{"t":"Whoever held the night cloak was in the roof.","c":["linkIP",3,3],"earned":null},{"t":"Fenny Firefly had the red lantern or the pocket watch.","c":["eitherItem",1,1,2],"earned":null},{"t":"The Moon was not in the belfry.","c":["notPlace",0,1],"earned":null},{"t":"Whoever held the telescope was in the courtyard.","c":["linkIP",0,0],"earned":null},{"t":"Miss Hoot was in the courtyard or the clock tower.","c":["eitherPlace",3,0,2],"earned":null},{"t":"Orson Owl was not holding the pocket watch.","c":["notItem",2,2],"earned":null}],"solution":{"item":[1,2,3,0],"place":[2,1,3,0]},"culprit":0,"culpritItem":1},{"n":5,"N":4,"suspects":["Bramble Mouse","Miss Hoot","Fenn Fox","Bruno Bear"],"items":[{"name":"sugar bowl","emoji":"🍬"},{"name":"berry basket","emoji":"🍓"},{"name":"cake knife","emoji":"🔪"},{"name":"birthday candle","emoji":"🕯️"}],"places":[{"name":"pantry","emoji":"🥫"},{"name":"kitchen","emoji":"🍳"},{"name":"dining room","emoji":"🍽️"},{"name":"cellar","emoji":"🕳️"}],"crimePlace":2,"crime":"The birthday cake disappeared from the dining room.","clues":[{"t":"Bramble Mouse was in the pantry.","c":["isPlace",0,0],"earned":null},{"t":"Fenn Fox had the birthday candle.","c":["isItem",2,3],"earned":null},{"t":"Miss Hoot was not holding the birthday candle.","c":["notItem",1,3],"earned":null},{"t":"Whoever held the birthday candle was in the pantry or the kitchen.","c":["linkEither",3,0,1],"earned":null},{"t":"Whoever held the birthday candle was in the kitchen or the cellar.","c":["linkEither",3,1,3],"earned":null},{"t":"Crumbs of CAKE: Bruno Bear was in one of the two end rooms.","c":["end",3],"earned":"word","key":"CAKE"},{"t":"Bramble Mouse had the sugar bowl or the birthday candle.","c":["eitherItem",0,0,3],"earned":null},{"t":"Fenn Fox was in the kitchen or the dining room.","c":["eitherPlace",2,1,2],"earned":null},{"t":"Miss Hoot had the sugar bowl or the cake knife.","c":["eitherItem",1,0,2],"earned":null},{"t":"A confetti-covered PARTY invitation: Whoever held the sugar bowl was in the pantry or the kitchen.","c":["linkEither",0,0,1],"earned":"zip","key":"PARTY"},{"t":"Whoever held the sugar bowl was in the pantry.","c":["linkIP",0,0],"earned":null},{"t":"Fenn Fox was in the kitchen or the cellar.","c":["eitherPlace",2,1,3],"earned":null},{"t":"Bruno Bear was not in the kitchen.","c":["notPlace",3,1],"earned":null}],"solution":{"item":[0,2,3,1],"place":[0,2,1,3]},"culprit":1,"culpritItem":2},{"n":6,"N":5,"suspects":["Skipper Otter","Pearl Puffin","Gus Gull","Marina Seal","Old Barnacle"],"items":[{"name":"brass lamp","emoji":"💡"},{"name":"anchor","emoji":"⚓"},{"name":"spyglass","emoji":"🔭"},{"name":"seashell","emoji":"🐚"},{"name":"storm lantern","emoji":"🏮"}],"places":[{"name":"boathouse","emoji":"🛶"},{"name":"jetty","emoji":"🌉"},{"name":"cliff path","emoji":"⛰️"},{"name":"cove","emoji":"🏖️"},{"name":"tower stairs","emoji":"🗼"}],"crimePlace":4,"crime":"The lighthouse lamp went dark near the tower stairs.","clues":[{"t":"Marina Seal was in the jetty.","c":["isPlace",3,1],"earned":null},{"t":"Old Barnacle was in the boathouse or the tower stairs.","c":["eitherPlace",4,0,4],"earned":null},{"t":"The TIDE washed away all but one clue: Pearl Puffin was in the cliff path or the cove.","c":["eitherPlace",1,2,3],"earned":"zip","key":"TIDE"},{"t":"Gus Gull had the brass lamp or the storm lantern.","c":["eitherItem",2,0,4],"earned":null},{"t":"Marina Seal was in a room right next to Gus Gull's.","c":["next",3,2],"earned":null},{"t":"Skipper Otter had the anchor or the storm lantern.","c":["eitherItem",0,1,4],"earned":null},{"t":"Whoever held the anchor was not in the tower stairs.","c":["notLinkIP",1,4],"earned":null},{"t":"The BEACON glass was warm to the touch: Skipper Otter's room was somewhere to the left of Marina Seal's.","c":["left",0,3],"earned":"word","key":"BEACON"},{"t":"Marina Seal was not holding the storm lantern.","c":["notItem",3,4],"earned":null},{"t":"Old Barnacle was not in the cove.","c":["notPlace",4,3],"earned":null},{"t":"Gus Gull was in the boathouse or the cliff path.","c":["eitherPlace",2,0,2],"earned":null},{"t":"Whoever held the seashell was in the cliff path or the cove.","c":["linkEither",3,2,3],"earned":null},{"t":"Whoever held the spyglass was right next door to whoever held the seashell.","c":["itemNext",2,3],"earned":null},{"t":"Whoever held the storm lantern was not in the boathouse.","c":["notLinkIP",4,0],"earned":null},{"t":"Marina Seal had the brass lamp or the spyglass.","c":["eitherItem",3,0,2],"earned":null},{"t":"Gus Gull was not holding the seashell.","c":["notItem",2,3],"earned":null},{"t":"Whoever held the storm lantern was in the cliff path or the tower stairs.","c":["linkEither",4,2,4],"earned":null}],"solution":{"item":[1,3,4,0,2],"place":[0,3,2,1,4]},"culprit":4,"culpritItem":2},{"n":7,"N":5,"suspects":["Flurry Rabbit","Ember Fox","Pebble Penguin","Nimbus Sheep","Hazel Hedgehog"],"items":[{"name":"crystal ball","emoji":"🔮"},{"name":"sled","emoji":"🛷"},{"name":"mittens","emoji":"🧤"},{"name":"cocoa mug","emoji":"☕"},{"name":"red ribbon","emoji":"🎀"}],"places":[{"name":"frozen pond","emoji":"⛸️"},{"name":"cabin","emoji":"🏠"},{"name":"pine grove","emoji":"🌲"},{"name":"workshop","emoji":"🔨"},{"name":"ice cave","emoji":"❄️"}],"crimePlace":0,"crime":"The snow globe was lifted from the frozen pond.","clues":[{"t":"Flurry Rabbit had the crystal ball.","c":["isItem",0,0],"earned":null},{"t":"Nimbus Sheep had the red ribbon.","c":["isItem",3,4],"earned":null},{"t":"Pebble Penguin was in a room right next to Flurry Rabbit's.","c":["next",2,0],"earned":null},{"t":"Whoever held the red ribbon was in the frozen pond or the pine grove.","c":["linkEither",4,0,2],"earned":null},{"t":"Pebble Penguin was in one of the two end rooms.","c":["end",2],"earned":null},{"t":"A sparkle of GLOBE glitter in the snow: Nimbus Sheep's room was somewhere to the left of Hazel Hedgehog's.","c":["left",3,4],"earned":"word","key":"GLOBE"},{"t":"Pebble Penguin had the sled or the red ribbon.","c":["eitherItem",2,1,4],"earned":null},{"t":"Nimbus Sheep was not in the cabin.","c":["notPlace",3,1],"earned":null},{"t":"Hazel Hedgehog was not in the pine grove.","c":["notPlace",4,2],"earned":null},{"t":"Whoever held the mittens was not in the ice cave.","c":["notLinkIP",2,4],"earned":null},{"t":"Runner marks from a SLEIGH: Ember Fox's room was somewhere to the left of Hazel Hedgehog's.","c":["left",1,4],"earned":"zip","key":"SLEIGH"},{"t":"Whoever held the mittens was right next door to whoever held the cocoa mug.","c":["itemNext",2,3],"earned":null},{"t":"Whoever held the cocoa mug was in the cabin or the ice cave.","c":["linkEither",3,1,4],"earned":null},{"t":"Ember Fox was in the frozen pond or the workshop.","c":["eitherPlace",1,0,3],"earned":null},{"t":"Pebble Penguin was not holding the red ribbon.","c":["notItem",2,4],"earned":null},{"t":"Flurry Rabbit was not in the frozen pond.","c":["notPlace",0,0],"earned":null}],"solution":{"item":[0,2,1,4,3],"place":[1,3,0,2,4]},"culprit":2,"culpritItem":1},{"n":8,"N":5,"suspects":["Evil Larry","Lotus Frog","Kettle Badger","Plum Mouse","Cinder Raccoon"],"items":[{"name":"paper lantern","emoji":"🏮"},{"name":"spice jar","emoji":"🌶️"},{"name":"silk scarf","emoji":"🧣"},{"name":"brass bell","emoji":"🔔"},{"name":"fortune card","emoji":"🃏"}],"places":[{"name":"tea stall","emoji":"🍵"},{"name":"fish cart","emoji":"🐟"},{"name":"rug tent","emoji":"⛺"},{"name":"fountain","emoji":"⛲"},{"name":"mask booth","emoji":"🎭"}],"crimePlace":4,"crime":"The night market’s golden lantern vanished from the mask booth.","clues":[{"t":"Lotus Frog had the spice jar.","c":["isItem",1,1],"earned":null},{"t":"Cinder Raccoon was in the fish cart.","c":["isPlace",4,1],"earned":null},{"t":"Evil Larry was in the fish cart or the mask booth.","c":["eitherPlace",0,1,4],"earned":null},{"t":"Cinder Raccoon and Kettle Badger were not in neighbouring rooms.","c":["notNext",4,2],"earned":null},{"t":"A scent of SPICE on the cobbles: Plum Mouse's room was somewhere to the left of Lotus Frog's.","c":["left",3,1],"earned":"word","key":"SPICE"},{"t":"Whoever held the spice jar was right next door to whoever held the brass bell.","c":["itemNext",1,3],"earned":null},{"t":"Whoever held the paper lantern was right next door to whoever held the silk scarf.","c":["itemNext",0,2],"earned":null},{"t":"Whoever held the silk scarf was in the tea stall or the fountain.","c":["linkEither",2,0,3],"earned":null},{"t":"Plum Mouse was in a room right next to Cinder Raccoon's.","c":["next",3,4],"earned":null},{"t":"Whispers in the MARKET: Evil Larry had the paper lantern or the silk scarf.","c":["eitherItem",0,0,2],"earned":"zip","key":"MARKET"},{"t":"Kettle Badger's room was somewhere to the left of Evil Larry's.","c":["left",2,0],"earned":null},{"t":"Whoever held the spice jar was in the rug tent or the fountain.","c":["linkEither",1,2,3],"earned":null},{"t":"Kettle Badger was not in the tea stall.","c":["notPlace",2,0],"earned":null},{"t":"Plum Mouse was in the tea stall or the mask booth.","c":["eitherPlace",3,0,4],"earned":null}],"solution":{"item":[0,1,2,4,3],"place":[4,2,3,0,1]},"culprit":0,"culpritItem":0},{"n":9,"N":5,"suspects":["Jester Fox","Pogo Rabbit","Cleo Cat","Domino Panda","Ringo Raccoon"],"items":[{"name":"top hat","emoji":"🎩"},{"name":"balloon","emoji":"🎈"},{"name":"trumpet","emoji":"🎺"},{"name":"golden ticket","emoji":"🎫"},{"name":"striped drum","emoji":"🥁"}],"places":[{"name":"big top","emoji":"🎪"},{"name":"carousel","emoji":"🎠"},{"name":"ferris wheel","emoji":"🎡"},{"name":"popcorn stand","emoji":"🍿"},{"name":"fun house","emoji":"🤡"}],"crimePlace":2,"crime":"The carnival’s star prop was taken from the ferris wheel.","clues":[{"t":"Domino Panda was in a room right next to Jester Fox's.","c":["next",3,0],"earned":null},{"t":"Pogo Rabbit was in the carousel or the ferris wheel.","c":["eitherPlace",1,1,2],"earned":null},{"t":"Sawdust from the CIRCUS ring: Cleo Cat had the trumpet or the golden ticket.","c":["eitherItem",2,2,3],"earned":"word","key":"CIRCUS"},{"t":"Whoever held the trumpet was in the ferris wheel or the fun house.","c":["linkEither",2,2,4],"earned":null},{"t":"Jester Fox's room was somewhere to the left of Cleo Cat's.","c":["left",0,2],"earned":null},{"t":"Jester Fox was in the popcorn stand or the fun house.","c":["eitherPlace",0,3,4],"earned":null},{"t":"A torn TICKET stub: Ringo Raccoon had the balloon or the striped drum.","c":["eitherItem",4,1,4],"earned":"zip","key":"TICKET"},{"t":"Jester Fox was in a room right next to Cleo Cat's.","c":["next",0,2],"earned":null},{"t":"Domino Panda was in the big top or the ferris wheel.","c":["eitherPlace",3,0,2],"earned":null},{"t":"Whoever held the balloon was in the popcorn stand.","c":["linkIP",1,3],"earned":null},{"t":"Whoever held the top hat was right next door to whoever held the balloon.","c":["itemNext",0,1],"earned":null},{"t":"Ringo Raccoon's room was somewhere to the left of Cleo Cat's.","c":["left",4,2],"earned":null},{"t":"Whoever held the golden ticket was in the carousel.","c":["linkIP",3,1],"earned":null},{"t":"Pogo Rabbit was not holding the balloon.","c":["notItem",1,1],"earned":null},{"t":"Ringo Raccoon was in the big top or the fun house.","c":["eitherPlace",4,0,4],"earned":null}],"solution":{"item":[1,3,2,0,4],"place":[3,1,4,2,0]},"culprit":3,"culpritItem":0},{"n":10,"N":5,"suspects":["Miss Hoot","Pip the Bee","Mabel Mole","Fenn Fox","The Moon"],"items":[{"name":"old lantern","emoji":"🏮"},{"name":"iron key","emoji":"🗝️"},{"name":"ancient scroll","emoji":"📜"},{"name":"silver candle","emoji":"🕯️"},{"name":"little crown","emoji":"👑"}],"places":[{"name":"great hall","emoji":"🏰"},{"name":"garden maze","emoji":"🌳"},{"name":"library","emoji":"📚"},{"name":"clock tower","emoji":"🕰️"},{"name":"lighthouse","emoji":"🗼"}],"crimePlace":0,"crime":"The Last Lantern went out in the great hall.","clues":[{"t":"Pip the Bee was in the library.","c":["isPlace",1,2],"earned":null},{"t":"Fenn Fox was not holding the old lantern.","c":["notItem",3,0],"earned":null},{"t":"Whoever held the old lantern was in the garden maze or the library.","c":["linkEither",0,1,2],"earned":null},{"t":"Miss Hoot's room was somewhere to the left of The Moon's.","c":["left",0,4],"earned":null},{"t":"Whoever held the silver candle was in the great hall or the library.","c":["linkEither",3,0,2],"earned":null},{"t":"Miss Hoot was in the garden maze or the clock tower.","c":["eitherPlace",0,1,3],"earned":null},{"t":"Whoever held the iron key was in the garden maze or the clock tower.","c":["linkEither",1,1,3],"earned":null},{"t":"The Moon and Pip the Bee were not in neighbouring rooms.","c":["notNext",4,1],"earned":null},{"t":"A thread of LIGHT under the door: Miss Hoot's room was somewhere to the left of Pip the Bee's.","c":["left",0,1],"earned":"word","key":"LIGHT"},{"t":"The LANTERN’s wick was still smoking: The Moon had the iron key or the little crown.","c":["eitherItem",4,1,4],"earned":"zip","key":"LANTERN"},{"t":"Mabel Mole and The Moon were not in neighbouring rooms.","c":["notNext",2,4],"earned":null},{"t":"Whoever held the iron key was right next door to whoever held the ancient scroll.","c":["itemNext",1,2],"earned":null},{"t":"Whoever held the silver candle was in the great hall or the lighthouse.","c":["linkEither",3,0,4],"earned":null},{"t":"Pip the Bee had the iron key or the ancient scroll.","c":["eitherItem",1,1,2],"earned":null},{"t":"Miss Hoot was not holding the ancient scroll.","c":["notItem",0,2],"earned":null},{"t":"The Moon was in the garden maze or the lighthouse.","c":["eitherPlace",4,1,4],"earned":null}],"solution":{"item":[0,2,3,1,4],"place":[1,2,0,3,4]},"culprit":2,"culpritItem":3}];
 /* Theme hints shown above the board so the words are easier to guess (kept in evil mode too, where word lengths are hidden). */
 const THEME_HINTS = [
   'the missing honey jar - bees, bears and sweet, sticky things',
@@ -3110,9 +3117,113 @@ const CELL_MARK = ['', '✕', '✓', '✕'];                           // cell s
 const LOCKED_MSG = { word: 'Solve the Words puzzle', zip: 'Follow the Scent Trail' };
 const CRITTER_SVG = {};
 const critterSvg = name => CRITTER_SVG[name] || (CRITTER_SVG[name] = critterMarkup(critterOf(name)));   // portraits are cached per name
+
+/* ---------- notebook hint engine (pure logic; CaseScreen drives the UI) ----------
+   An "assignment" is { item[s], place[s] }: the item suspect s held and the room they were in. */
+/* HINT-ENGINE-START */
+const caseAdj = (a, b) => Math.abs(a - b) === 1;
+function caseFits(N, item, place, c) {
+  switch (c[0]) {
+    case 'next': return caseAdj(place[c[1]], place[c[2]]);
+    case 'left': return place[c[1]] < place[c[2]];
+    case 'end': return place[c[1]] === 0 || place[c[1]] === N - 1;
+    case 'notNext': return !caseAdj(place[c[1]], place[c[2]]);
+    case 'eitherPlace': return place[c[1]] === c[2] || place[c[1]] === c[3];
+    case 'notPlace': return place[c[1]] !== c[2];
+    case 'eitherItem': return item[c[1]] === c[2] || item[c[1]] === c[3];
+    case 'notItem': return item[c[1]] !== c[2];
+    case 'linkIP': return place[item.indexOf(c[1])] === c[2];
+    case 'notLinkIP': return place[item.indexOf(c[1])] !== c[2];
+    case 'linkEither': { const p = place[item.indexOf(c[1])]; return p === c[2] || p === c[3]; }
+    case 'itemNext': return caseAdj(place[item.indexOf(c[1])], place[item.indexOf(c[2])]);
+    case 'isPlace': return place[c[1]] === c[2];
+    case 'isItem': return item[c[1]] === c[2];
+  }
+  return true;
+}
+/* is notebook cell (kind, row s, column v) true in assignment a? rows of 'itemPlaces' are items */
+const caseCell = (a, kind, s, v) => kind === 'items' ? a.item[s] === v : kind === 'places' ? a.place[s] === v : a.place[a.item.indexOf(s)] === v;
+const CASE_ASSIGN = {};
+function caseAssignments(N) {                                   // every item arrangement x every room arrangement (576 for 4, 14400 for 5)
+  if (CASE_ASSIGN[N]) return CASE_ASSIGN[N];
+  const perms = [], rec = (a, used) => { if (a.length === N) { perms.push(a.slice()); return; } for (let i = 0; i < N; i++) if (!used[i]) { used[i] = 1; a.push(i); rec(a, used); a.pop(); used[i] = 0; } };
+  rec([], []);
+  const out = [];
+  perms.forEach(item => perms.forEach(place => out.push({ item, place })));
+  return (CASE_ASSIGN[N] = out);
+}
+/* Decide what the next hint points at, from the player's own marks (✕ = 1, ✓ = 2; auto-crosses are derived, so ignored):
+     { type:'fix',    kind, s, v }                          a mark that contradicts the solution
+     { type:'done' }                                        every answer is already checked
+     { type:'deduce', ks, elim, target }                    clue indices ks (empty = plain elimination) force the blank cell target = [kind,s,v,isCheck]
+     { type:'none' }                                        nothing can be deduced yet (clues still locked) */
+function planCaseHint(c, notes, earned) {
+  const N = c.N, sol = c.solution;
+  const marks = [];
+  NOTE_KINDS.forEach(kind => notes[kind].forEach((row, s) => row.forEach((st, v) => { if (st === 1 || st === 2) marks.push([kind, s, v, st === 2]); })));
+  const wrong = marks.filter(([kind, s, v, on]) => caseCell(sol, kind, s, v) !== on);
+  if (wrong.length) { const [kind, s, v] = pick(wrong); return { type: 'fix', kind, s, v }; }
+  const answers = [];
+  for (let s = 0; s < N; s++) answers.push(['items', s, sol.item[s]], ['places', s, sol.place[s]], ['itemPlaces', sol.item[s], sol.place[s]]);
+  if (answers.every(([kind, s, v]) => notes[kind][s][v] === 2)) return { type: 'done' };
+
+  const base = caseAssignments(N).filter(a => marks.every(([kind, s, v, on]) => caseCell(a, kind, s, v) === on));
+  const masks = {};                                              // per clue: which assignments in base satisfy it (built only when a clue is tried)
+  const maskOf = k => masks[k] || (masks[k] = base.map(a => caseFits(N, a.item, a.place, c.clues[k].c)));
+  const forced = (ks, skip) => {                                 // blank cells that every assignment in base passing clues ks agrees on
+    const ms = ks.map(maskOf), cnt = NOTE_KINDS.map(() => Array.from({ length: N }, () => new Array(N).fill(0)));
+    let total = 0;
+    base.forEach((a, i) => {
+      if (!ms.every(m => m[i])) return;
+      total++;
+      for (let s = 0; s < N; s++) { cnt[0][s][a.item[s]]++; cnt[1][s][a.place[s]]++; cnt[2][a.item[s]][a.place[s]]++; }
+    });
+    const out = [];
+    if (!total) return out;
+    NOTE_KINDS.forEach((kind, ki) => { for (let s = 0; s < N; s++) for (let v = 0; v < N; v++) {
+      const n = cnt[ki][s][v];
+      if ((n === total || n === 0) && notes[kind][s][v] === 0 && !(skip && skip.has(kind + s + v))) out.push([kind, s, v, n > 0]);
+    } });
+    return out;
+  };
+  const byElimination = forced([]), known = new Set(byElimination.map(([kind, s, v]) => kind + s + v));
+  const visible = c.clues.map((_, k) => k).filter(k => !(c.clues[k].earned && !earned[c.clues[k].earned]));
+  const plan = (ks, cells, elim) => { const crosses = cells.filter(x => !x[3]); return { type: 'deduce', ks, elim: !!elim, target: pick(crosses.length ? crosses : cells) }; };
+  const pairs = () => visible.flatMap((a, i) => visible.slice(i + 1).map(b => [a, b]));
+
+  // one clue alone, then a clue the player already crossed out, then two together (each group is only built if the one before found nothing)
+  const groups = [() => visible.filter(k => !notes.struck[k]).map(k => [k]), () => visible.filter(k => notes.struck[k]).map(k => [k]), pairs];
+  for (const group of groups) {
+    let best = null;
+    for (const ks of group()) {
+      const cells = forced(ks, known);
+      if (cells.length && (!best || cells.length > best.cells.length || (cells.length === best.cells.length && Math.random() < 0.5))) best = { ks, cells };
+    }
+    if (best) return plan(best.ks, best.cells);
+  }
+  if (byElimination.length) return plan([], byElimination, true);
+  const all = forced(visible, known);
+  return all.length ? plan([], all) : { type: 'none' };
+}
+/* HINT-ENGINE-END */
+
+/* Barnaby's hint lines for the notebook (dynamic text, so no pre-recorded voice id) */
+const HINT_PAGE = { items: 'Items', places: 'Rooms', itemPlaces: 'Item ↔ Room' };
+const CASE_HINT = {
+  clue:   { id: '', e: 'thinking', t: 'Look at the clue I lit up. Read it again, slowly.' },
+  pair:   { id: '', e: 'thinking', t: 'No single clue is enough here. Read the two I lit up side by side.' },
+  elim:   { id: '', e: 'neutral',  t: 'A row or a column has only one choice left. Check your pages for it.' },
+  combo:  { id: '', e: 'thinking', t: 'Nothing jumps out from one clue alone. Put several clues together.' },
+  locked: { id: '', e: 'sad',      t: 'I need more clues first. Solve the other puzzles to open the locked ones!' },
+  focus:  (kind, name) => ({ id: '', e: 'happy', t: kind === 'items' ? 'Think about what ' + name + ' could have been holding.' : kind === 'places' ? 'Think about where ' + name + ' could have been.' : 'Think about which room the ' + name + ' could be in.' }),
+  fixRow: (kind, name) => ({ id: '', e: 'thinking', t: 'Hmm, something on the ' + HINT_PAGE[kind] + ' page does not add up. Check the row for ' + (kind === 'itemPlaces' ? 'the ' : '') + name + ' again.' }),
+  fixCol: name => ({ id: '', e: 'thinking', t: 'Look closely at the ' + name + ' column in that row.' }),
+  fixed:  { id: '', e: 'proud', t: 'There. I wiped the wrong mark away. The rest is up to you!' }
+};
+
 const CaseScreen = {
   lvl: null, run: null, notes: null, tab: 'items', bear: null, typer: null, onSolved: null,
-  wrong: 0, hints: 0, done: false, selS: -1, selI: -1, els: {},
+  wrong: 0, hints: 0, done: false, selS: -1, selI: -1, els: {}, hintPlan: null, hintTimer: 0,
 
   init(bear) {
     this.bear = bear;
@@ -3138,12 +3249,12 @@ const CaseScreen = {
 
   load(lvl, run, onSolved) {
     this.lvl = lvl; this.run = run; this.onSolved = onSolved;
-    this.done = false; this.wrong = 0; this.hints = 0; this.selS = -1; this.selI = -1; this.tab = 'items';
+    this.done = false; this.wrong = 0; this.hints = 0; this.selS = -1; this.selI = -1; this.tab = 'items'; this.hintPlan = null; clearTimeout(this.hintTimer);
     const c = lvl.case, N = c.N;
     if (!run.notes) run.notes = { items: blankMatrix(N), places: blankMatrix(N), itemPlaces: blankMatrix(N), struck: {} };
     if (!run.earned) run.earned = { word: false, zip: false };
     this.notes = run.notes;
-    this.els.crime.innerHTML = '<small>THE CRIME</small>' + c.crime + ' Who was there — and what were they holding?';
+    this.els.crime.innerHTML = '<small>The crime</small>' + c.crime + ' Who was there — and what were they holding?';
     this.els.hall.innerHTML = '<small>Rooms, left to right</small>' + c.places.map(p => '<span class="hallchip">' + p.emoji + ' ' + p.name + '</span>').join('<i>›</i>');
     this.render();
     this.say(STORY[lvl.n].caseIntro[0]);
@@ -3206,7 +3317,7 @@ const CaseScreen = {
     const order = c.clues.map((_, k) => k);
     const open = order.filter(k => !isStruck(k));
     const crossed = order.filter(isStruck).sort((a, b) => (Number(struck[a]) || 1) - (Number(struck[b]) || 1) || a - b);
-    this.els.clues.innerHTML = '<div class="alabel">Barnaby’s clues <small>(tap to strike through)</small></div>' + open.concat(crossed).map(k => {
+    this.els.clues.innerHTML = open.concat(crossed).map(k => {
       const cl = c.clues[k];
       const locked = cl.earned && !earned[cl.earned];
       const body = locked ? '🔒 ' + LOCKED_MSG[cl.earned] + ' to reveal this clue.' : this.highlight(cl.t);
@@ -3263,24 +3374,62 @@ const CaseScreen = {
     }
   },
 
-  /* hint: mark one correct check for the player (counts as a hint) */
+  /* hint ladder, indirect on purpose. Repeating it without changing the notebook goes one step further each time:
+       1 (free)  light up the clue (or the two clues) that lets you make progress, or say which page/row holds a wrong mark
+       2         name the row to think about and open its page
+       3         fill in one cell (a ✕ when possible), or wipe the wrong mark
+     Steps 2-3 together cost one hint (two hints cost the case a star). Changing any mark starts a fresh ladder. */
   hint() {
     if (this.done) return;
-    const c = this.lvl.case, N = c.N, sol = c.solution, todo = [];
-    ['items', 'places'].forEach(kind => { const ans = kind === 'items' ? sol.item : sol.place; for (let s = 0; s < N; s++) if (this.notes[kind][s][ans[s]] !== 2) todo.push([kind, s, ans[s]]); });
-    for (let s = 0; s < N; s++) if (this.notes.itemPlaces[sol.item[s]][sol.place[s]] !== 2) todo.push(['itemPlaces', sol.item[s], sol.place[s]]);
-    if (!todo.length) { this.say(REACT.caseNoHint); return; }
-    const [kind, s, i] = pick(todo);
-    this.hints++;
-    this.notes[kind][s][i] = 2;
-    this.recompute(this.notes[kind]);
-    this.tab = kind;
-    this.renderTabs(); this.renderGrid();
-    flashClass(this.cellEl(s, i), 'hinted', 2200);
-    AudioFX.chime(4);
-    this.say(REACT.caseHint);
+    const c = this.lvl.case, { earned } = this.run, { struck } = this.notes;
+    // everything the plan depends on: the player's marks, which clues are unlocked, which are crossed out
+    const sig = NOTE_KINDS.map(k => this.notes[k].map(r => r.map(st => (st === 1 || st === 2 ? st : 0)).join('')).join('.')).join('|')
+      + '#' + !!earned.word + !!earned.zip + '#' + c.clues.map((_, k) => struck[k] ? 1 : 0).join('');
+    let plan = this.hintPlan;
+    if (plan && plan.sig === sig) plan.stage = Math.min(3, plan.stage + 1);
+    else plan = this.hintPlan = Object.assign(planCaseHint(c, this.notes, earned), { sig, stage: 1, charged: false });
+
+    if (plan.type === 'done') { this.say(REACT.caseNoHint); return; }
+    if (plan.type === 'none') { this.say(CASE_HINT.locked); return; }
+    if (plan.stage >= 2 && !plan.charged) { plan.charged = true; this.hints++; }
+
+    const names = (kind, i) => kind === 'items' ? c.items[i].name : c.places[i].name;     // column label
+    const rowName = (kind, s) => kind === 'itemPlaces' ? c.items[s].name : c.suspects[s];
+    const showTab = kind => { this.tab = kind; this.renderTabs(); this.renderGrid(); };
+    const setCell = (kind, s, v, mark, line) => {                 // step 3: change one cell, show it, and say so
+      this.notes[kind][s][v] = mark; this.recompute(this.notes[kind]);
+      showTab(kind); flashClass(this.cellEl(s, v), 'hinted', 2200); AudioFX.chime(4);
+      this.say(line);
+    };
+
+    if (plan.type === 'fix') {
+      const { kind, s, v } = plan;
+      if (plan.stage === 1) { showTab(kind); this.say(CASE_HINT.fixRow(kind, rowName(kind, s))); }
+      else if (plan.stage === 2) { showTab(kind); this.say(CASE_HINT.fixCol(names(kind, v))); }
+      else setCell(kind, s, v, 0, CASE_HINT.fixed);
+      return;
+    }
+
+    const [kind, s, v, isCheck] = plan.target;
+    if (plan.stage === 1) {
+      this.glowClues(plan.ks);
+      this.say(plan.ks.length === 2 ? CASE_HINT.pair : plan.ks.length === 1 ? CASE_HINT.clue : plan.elim ? CASE_HINT.elim : CASE_HINT.combo);
+    } else if (plan.stage === 2) {
+      this.glowClues(plan.ks);
+      showTab(kind);
+      this.say(CASE_HINT.focus(kind, rowName(kind, s)));
+    } else setCell(kind, s, v, isCheck ? 2 : 1, REACT.caseHint);
   },
-  stop() { this.typer.cancel(); VoiceManager.stop(); }
+  /* pulse the given clue rows in the list and scroll the first into view */
+  glowClues(ks) {
+    clearTimeout(this.hintTimer);
+    this.els.clues.querySelectorAll('.clue-item.hinted').forEach(el => el.classList.remove('hinted'));
+    const els = ks.map(k => this.els.clues.querySelector('.clue-item[data-k="' + k + '"]')).filter(Boolean);
+    els.forEach(el => el.classList.add('hinted'));
+    if (els[0]) els[0].scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
+    this.hintTimer = setTimeout(() => els.forEach(el => el.classList.remove('hinted')), 4500);
+  },
+  stop() { this.typer.cancel(); VoiceManager.stop(); clearTimeout(this.hintTimer); }
 };
 
 /* ---------- Barnaby Noir: the evil remix ----------
