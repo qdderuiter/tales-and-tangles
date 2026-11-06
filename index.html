@@ -187,6 +187,8 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:ma
 .word-toast{position:absolute;left:50%;top:42%;transform:translate(-50%,0);font-weight:900;font-size:30px;letter-spacing:3px;color:var(--brown);
   text-shadow:0 2px 0 #fff,0 6px 14px rgba(0,0,0,.2);pointer-events:none;animation:toastUp 1.1s ease-out forwards;white-space:nowrap}
 .word-toast.gold{color:#d99a0b;font-size:36px}
+.word-toast.bonus{color:#6a5a96;font-size:26px}
+.word-toast.bonus small{display:block;font-size:12px;letter-spacing:1.5px;color:var(--ink-soft);text-align:center;margin-top:-2px}
 @keyframes toastUp{0%{opacity:0;transform:translate(-50%,16px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.15)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-46px) scale(1)}}
 .tray{flex:1;min-height:0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-content:flex-start;overflow-y:auto;touch-action:pan-y;padding:4px 2px}
 .slot{padding:7px 12px;border-radius:14px;background:var(--cream2);font-weight:900;font-size:13px;letter-spacing:2px;color:var(--ink-soft);
@@ -214,6 +216,20 @@ button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:ma
 @keyframes floatUp{0%{opacity:0;transform:translate(0,12px) scale(.6)}18%{opacity:1}100%{opacity:0;transform:translate(var(--dx,0),-74px) scale(1.15)}}
 
 .chapter.daily{--ca:#dff0fb}
+.chapter.badges{--ca:#f1e6fb}
+
+/* ---------- detective badges ---------- */
+.badge-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bcard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;padding:14px 10px;border-radius:22px;background:var(--cream2);
+  box-shadow:6px 6px 13px var(--sh-d),-5px -5px 11px var(--sh-l),inset 0 3px 0 rgba(255,255,255,.55)}
+.bcard .bicon{width:54px;height:54px;border-radius:50%;background:#fffaf1;display:grid;place-items:center;font-size:28px;
+  box-shadow:inset 3px 3px 7px var(--sh-d),inset -3px -3px 7px var(--sh-l)}
+.bcard b{font-size:14px;font-weight:900;color:var(--ink)}
+.bcard small{font-size:12px;font-weight:600;line-height:1.3;color:var(--ink-soft)}
+.bcard .bdate{font-size:11px;font-weight:800;color:#6a5a96}
+.bcard.locked{opacity:.6}
+.bcard.locked .bicon{filter:grayscale(1)}
+.bcard.new{animation:fresh 1.2s var(--spring) 2}
 .unlock .note{display:block;font-size:12px;font-weight:700;color:#6a5a96;margin-top:2px}
 
 .theme-line{flex:none;text-align:center;font-size:13px;font-weight:800;line-height:1.3;color:var(--ink-soft);padding:0 8px}
@@ -686,6 +702,16 @@ body.evil .chapter,body.evil .witem{color:#3b2f55}
     <div class="scroll" id="wSlots"></div>
   </section>
 
+  <!-- BADGES -->
+  <section id="screen-badges" class="screen" aria-label="Detective badges">
+    <div class="head">
+      <button class="btn round" id="btnBBack" aria-label="Back">&#8592;</button>
+      <h2>Detective Badges</h2>
+      <div class="starcount" id="bCount">0/0</div>
+    </div>
+    <div class="scroll"><div class="badge-grid" id="bGrid"></div></div>
+  </section>
+
   <!-- VICTORY -->
   <div class="overlay" id="victory" aria-hidden="true">
     <canvas id="confetti"></canvas>
@@ -1108,6 +1134,12 @@ const REACT = {
     { id: 'puzzle_wrong_03', e: 'thinking', t: 'Not quite. Untangle and retry!' }
   ],
   near:     { id: 'puzzle_near',     e: 'thinking', t: 'That IS a clue word, but its tangle runs a different way. Try another route!' },
+  bonus: [
+    { id: 'puzzle_bonus_01', e: 'surprised', t: 'Ooh, a hidden word! Not a clue, but a fine find.' },
+    { id: 'puzzle_bonus_02', e: 'happy',     t: 'A secret word! Bonus points for the sharp-eyed.' },
+    { id: 'puzzle_bonus_03', e: 'proud',     t: 'Not part of the case, but well spotted, partner!' }
+  ],
+  bonusAgain: { id: 'puzzle_bonus_again', e: 'neutral', t: 'You already found that hidden word. Try a different one!' },
   hint:     { id: 'puzzle_hint',     e: 'happy',    t: 'Look for the glowing letters. That is where a word begins.' },
   nohint:   { id: 'puzzle_nohint',   e: 'neutral',  t: 'You have found every word already!' },
   victory: {
@@ -1127,7 +1159,8 @@ const Store = {
       unlocked: 1, chapters: {}, settings: { sound: true, voice: true, music: true },
       wardrobe: { owned: WARDROBE.filter(i => i.cost === 0 && !i.unlock).map(i => i.id), equipped: Object.assign({}, OUTFIT_DEFAULT) },
       daily: { lastDate: null, streak: 0, best: 0, results: {} },
-      perfect: { streak: 0 }, evil: { cleared: {} }, seen: { larry: false }
+      perfect: { streak: 0 }, evil: { cleared: {} }, seen: { larry: false },
+      badges: {}, bonusWords: []
     };
   },
   blankChapter() { return { word: { done: false, stars: 0, best: 0 }, zip: { done: false, stars: 0, best: 0 }, solved: false, penalty: 0 }; },
@@ -1176,6 +1209,10 @@ const Store = {
       if (saved.perfect && typeof saved.perfect === 'object') d.perfect.streak = saved.perfect.streak | 0;
       if (saved.evil && saved.evil.cleared && typeof saved.evil.cleared === 'object') d.evil.cleared = saved.evil.cleared;
       if (saved.seen && typeof saved.seen === 'object') d.seen.larry = !!saved.seen.larry;
+      if (saved.badges && typeof saved.badges === 'object') {          // keep only badges that still exist
+        BADGES.forEach(b => { if (typeof saved.badges[b.id] === 'string') d.badges[b.id] = saved.badges[b.id]; });
+      }
+      if (Array.isArray(saved.bonusWords)) d.bonusWords = [...new Set(saved.bonusWords.filter(w => typeof w === 'string' && BONUS_DICT.has(w)))];
     }
     this.data = d;
     SLOTS.forEach(slot => { if (!this.owns(d.wardrobe.equipped[slot])) d.wardrobe.equipped[slot] = OUTFIT_DEFAULT[slot]; });
@@ -1188,6 +1225,7 @@ const Store = {
   evilCount() { return Object.keys(this.data.evil.cleared).length; },
   evilStars() { return this.evilCount() * 2; },                 // each cleared Noir level is worth 2 bonus stars
   markEvil(key) { this.data.evil.cleared[key] = true; this.save(); },
+  noteBonusWord(w) { if (!this.data.bonusWords.includes(w)) { this.data.bonusWords.push(w); this.save(); } },
   /* three perfect (3-star) puzzle results in a row summon Barnaby Noir; anything less resets the count */
   notePerfect(stars) { this.data.perfect.streak = stars === 3 ? this.data.perfect.streak + 1 : 0; this.save(); return this.data.perfect.streak; },
   buy(id) {
@@ -1730,7 +1768,9 @@ const WARDROBE = [
   { id: 'cape', slot: 'neck', name: 'Noir cape', cost: 0, unlock: 5, svg:
     '<path d="M62 148 Q100 168 138 148 L150 218 Q100 198 50 218 Z" fill="#5b2a6b"/><path d="M62 148 Q100 168 138 148" stroke="#d9363e" stroke-width="5" fill="none" stroke-linecap="round"/>' }
 ];
-const WARDROBE_BY_ID = Object.fromEntries(WARDROBE.map(i => [i.id, i]));
+let layoutEpoch = 0;                                   // bumped on resize so cached grid rects get re-measured
+window.addEventListener('resize', () => { layoutEpoch++; });
+const WARDROBE_BY_ID = Object.assign(Object.create(null), Object.fromEntries(WARDROBE.map(i => [i.id, i])));   // null-proto: ids like 'constructor' from a corrupted save don't resolve
 const SLOTS = Object.keys(OUTFIT_DEFAULT);
 const Outfit = {
   current: Object.assign({}, OUTFIT_DEFAULT),
@@ -1998,8 +2038,9 @@ class Typer {
   }
   step() {
     if (!this.typing) return;
+    if (!this.chars.length) { this.finishNow(); return; }
     const ch = this.chars[this.i++];
-    this.off += ch.length;                             // string offset (a char may be a surrogate pair)
+    this.off += ch.length;                            // string offset (a char may be a surrogate pair)
     this.a.textContent = this.text.slice(0, this.off);
     this.b.textContent = this.text.slice(this.off);
     if (/\S/.test(ch) && this.i % 2 === 0) AudioFX.talk();
@@ -2114,6 +2155,18 @@ const DAILY_WORDS = {
       'FIELD GRASS BLOOM ROBIN FINCH OTTER KOALA PANDA SHEEP HORSE MOUSE KITTY PUPPY BUNNY SNAIL SCARF SOCKS HOUSE PORCH WATER SPOON PLATE CANDY MOCHA ' +
       'LATTE COCOA HAZEL WINDY SUNNY FROST SPARK MAGIC CHARM TREAT CANOE').split(' ')
 };
+
+/* Hidden bonus words: any real word traced that is NOT one of the grid's clue words earns bonus score (never stars).
+   DAILY_WORDS + the chapter words + this list. Short, common words only, so a lucky trace feels fair. */
+const BONUS_EXTRA = ('ANT APE ARM ART BAG BAT BIG BIT BUG BUN BUS BUT CAN CAP CAR COT CRY DAD DEN DIG DIP DOT DRY EAR EAT EGG END FAR FIN FIT FLY FUN GAP GUM GUT HAM HID HIP HOP HOT HUG HUT ' +
+  'JET JOG LEG LID LIP MAD MAT MEN MIX MOM NAP NOD NOW OIL OLD ONE OUR OWN PAD PET PIN POP POT RAN RAT RED RIB RID RIM ROD ROW RUB RUN SAD SAT SET SIT SIX SKI SUM TAG TAN TAP TEN TIP TOP TRY TUB TWO USE VAN WET WIN YES ZIP ' +
+  'ARCH ARMS BAKE BALL BAND BANK BATH BEAD BEAM BEAT BELT BEND BEST BIKE BIRD BITE BLOW BLUE BOAT BOLD BONE BOOT BOWL BUSY CAMP CART CASE CAVE CHIP CITY CLAP CLUB COAT COIL COOK COOL COPY CRAB CROW CUBE CURL DARK DASH DAWN DESK DISH DIVE DOLL DOOR DOVE DOWN DRAW DRIP EACH EARN EAST EASY EDGE FACE FAIR FALL FAST FEET FELL FILM FIND FINE FIRE FISH FLAG FLAT FLIP FLOW FOAM FOLD FOOD FOOT FORK FORM FREE FUZZ GIFT GIRL GLAD GOLD GOOD GRIN GROW HAIR HALF HALL HAND HARD HEAD HEAR HEAT HELP HIDE HIGH HOLD HOLE HOME HOOK HOOP HOUR HUNT JUMP KEEP KICK KISS LACE LAMB LAND LAZY LEAP LEFT LIFT LIKE LINE LION LIST LOCK LONG LOOK LOUD LUCK MAIL MAKE MANY MASK MEAL MEET MELT MESS MIND MINE MISS MOVE NAME NECK NEED NEXT NICE NINE NOSE OPEN OVER PACK PAGE PAIR PALM PARK PASS PAST PEEK PICK PILE PINE PINK PLAN PLAY POEM POET PUFF PULL PUSH QUIT RACE READ REAL RICE RIDE RING RISE ROAD ROLL ROOM ROPE ROSY RUBY RULE SAFE SAIL SAND SEAT SEEK SELF SEND SHIP SHOE SHOP SHOW SHUT SICK SIDE SIGN SILK SING SINK SIZE SKIP SLED SLIM SLOW SNAP SOAP SOLO SOON SORT SPIN SPOT STEM STEP STOP SWIM TAKE TALK TALL TAME TEAM TELL TENT TEST THEN TIDE TIDY TINY TOWN TRAP TRIP TRUE TURN TWIN UNDO VASE VIEW WAIT WAKE WALK WALL WASH WAVY WEAR WELL WEST WHAT WHEN WIDE WILD WISH WITH WOLF WORD WORK YARD YAWN YEAR YELL ZERO ZOOM ' +
+  'ANGEL BADGE BEACH BEARD BEGIN BIRTH BLACK BLANK BLAZE BLEND BLINK BLOCK BLOOM BOARD BRAIN BRAVE BREAK BRICK BRIDE BRIEF BRING BROOM BRUSH BUILD CABIN CARRY CATCH CHAIN CHAIR CHALK CHASE CHEER CHESS CHILD CLEAN CLEAR CLIMB CLOSE COACH COAST COUNT COVER CRAFT CRANE CRISP CROWN DRAWN DRESS DRINK DRIVE EAGLE EARLY EARTH EIGHT EMPTY ENJOY ENTER EQUAL FAIRY FANCY FIRST FLAME FLASH FLOAT FLOOR FOCUS FORCE FRESH FRONT FRUIT GHOST GIANT GLASS GLOBE GREAT GREEN GUESS GUIDE HEART HEAVY HOTEL IMAGE JELLY JEWEL JOLLY JUMBO KNEEL KNIFE LARGE LEARN LEAVE LEVEL LUNCH MARCH MATCH MAYBE MIDST MONEY MONTH MOTOR MOUNT NIGHT NOBLE NORTH NURSE OFFER ORBIT OTHER PAINT PAPER PEARL PHONE PIECE PILOT PLACE PLAIN PLANT PLUSH POINT POUND POWER PRIZE PROUD QUEEN QUICK QUIET QUILT RADIO RAISE RANCH REACH RELAX ROUND ROYAL SCALE SCARE SENSE SHADE SHAKE SHAPE SHARE SHARP SHELL SHINE SHIRT SHORE SHORT SKATE SKIRT SLEEP SLIDE SMALL SMART SMELL SMOKE SNAKE SOLID SOUND SOUTH SPACE SPEAK SPEED SPELL SPEND SPLASH STAGE STAIR STAND START STEAM STICK STILL STORM STRAW STUDY STUFF SUGAR SWEET SWING TABLE TEACH THANK THEME THING THINK THROW TIGER TOAST TODAY TOOTH TOUCH TOWER TRACK TRAIN TRUCK TRUST TRUTH TWIST UNDER UNION UNTIL UPSET USUAL VALUE VIDEO VOICE WAGON WATCH WHEEL WHITE WHOLE WORLD WORTH WRITE YOUNG YOUTH ' +
+  'BASKET BUTTON CANDLE CASTLE CIRCLE COOKIE COPPER DINNER DONKEY DRAGON FAMILY FLOWER FOREST GARDEN GINGER GOLDEN HAMMER HELPER JACKET JUNGLE KITTEN LADDER LAUNCH LIZARD MARBLE MEADOW MIRROR MITTEN MUFFIN ORANGE PEPPER PICNIC PILLOW PLANET POCKET PUDDLE RABBIT RIBBON ROCKET SADDLE SILVER SPIDER SPRING SQUARE STREAM SUMMER SUNSET TICKET TURTLE WINDOW WINTER WIZARD').split(' ');
+const BONUS_DICT = new Set([
+  ...DAILY_WORDS[3], ...DAILY_WORDS[4], ...DAILY_WORDS[5], ...BONUS_EXTRA,
+  ...LEVELS.flatMap(l => l.words.map(w => w.w))
+]);
 
 const Daily = {
   fmt(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); },
@@ -2239,8 +2292,8 @@ const PuzzleBase = {
   say(r) { this.lastSay = performance.now(); speak(this.bear, this.bubble, r, 17); },
 
   /* grid coordinates in cell units; the grid's rect is measured once per drag (in onDown) */
-  measure() { this.rect = this.els.grid.getBoundingClientRect(); },
-  toCell(e) { const rc = this.rect; return { x: (e.clientX - rc.left) / rc.width * this.cols, y: (e.clientY - rc.top) / rc.height * this.rows }; },
+  measure() { this.rect = this.els.grid.getBoundingClientRect(); this.rectEpoch = layoutEpoch; },
+  toCell(e) { if (this.rectEpoch !== layoutEpoch) this.measure(); const rc = this.rect; return { x: (e.clientX - rc.left) / rc.width * this.cols, y: (e.clientY - rc.top) / rc.height * this.rows }; },
   cellAt(p, loose) {
     const c = Math.floor(p.x), r = Math.floor(p.y);
     if (r < 0 || r >= this.rows || c < 0 || c >= this.cols) return null;
@@ -2293,6 +2346,7 @@ const WordPuzzle = Object.assign({}, PuzzleBase, {
     this.found = new Set(); this.locked = {}; this.trace = []; this.tracing = false; this.pointerId = null;
     this.wrongs = 0; this.hints = 0; this.hinted = new Set(); this.elapsed = 0; this.shownSec = -1; this.selEls = [];
     this.combo = 0; this.maxCombo = 0; this.bonus = 0; this.squares = []; this.sinceWrong = false; this.sinceHint = false;
+    this.bonusFound = new Set();
     this.els.combo.classList.remove('on');
     this.els.theme.innerHTML = '<b>Theme:</b> ' + lvl.hint;
     this.grid = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
@@ -2449,7 +2503,7 @@ const WordPuzzle = Object.assign({}, PuzzleBase, {
     AudioFX.wordFound(w.w.length, this.combo);
     Haptics.found();
     this.showCombo();
-    this.els.sparks.burst(ordered.map(p => ({ x: (p.c + 0.5) / COLS, y: (p.r + 0.5) / ROWS })), [fill, line, '#fff'], 7 + Math.min(this.combo, 5) * 2);
+    this.els.sparks.burst(this.sparkPts(ordered), [fill, line, '#fff'], 7 + Math.min(this.combo, 5) * 2);
     this.toast(w.w, w.gold);
     this.say(w.gold ? REACT.gold : pick(REACT.found));
     if (this.found.size === this.lvl.words.length) this.finishIfSolved();
@@ -2458,6 +2512,12 @@ const WordPuzzle = Object.assign({}, PuzzleBase, {
     const spelled = t.map(p => this.grid[p.r][p.c].ch).join('');
     const rev = spelled.split('').reverse().join('');
     const near = this.lvl.words.some((w, i) => !this.found.has(i) && (w.w === spelled || w.w === rev));
+    const isClue = this.lvl.words.some(w => w.w === spelled || w.w === rev);       // a clue word (even an already-found one) is never a hidden bonus
+    if (t.length >= 3 && !isClue && BONUS_DICT.has(spelled)) {          // a real word that isn't a clue: bonus, never a mistake
+      if (this.bonusFound.has(spelled)) { this.say(REACT.bonusAgain); this.toast('Already found!', false, 'bonus'); }
+      else this.bonusWord(spelled, t);
+      return;
+    }
     if (t.length >= 3) { this.wrongs++; this.sinceWrong = true; }
     this.combo = 0; this.els.combo.classList.remove('on');
     AudioFX.thud();
@@ -2470,6 +2530,20 @@ const WordPuzzle = Object.assign({}, PuzzleBase, {
     this.setLine(this.els.bad, t);
     replayClass(this.els.bad, 'flash');
     if (t.length >= 3 || near) this.say(near ? REACT.near : pick(REACT.wrong));
+  },
+  sparkPts(cells) { return cells.map(p => ({ x: (p.c + 0.5) / COLS, y: (p.r + 0.5) / ROWS })); },
+  /* a real word that is not one of the grid's clue words: score only (like the combo bonus), never stars */
+  bonusWord(word, t) {
+    const pts = 30 * word.length;
+    this.bonusFound.add(word);
+    this.bonus += pts;
+    this.els.sparks.burst(this.sparkPts(t), ['#d9d0f0', '#a3d1ee', '#fff'], 8);
+    AudioFX.chime(5);
+    Haptics.found();
+    this.toast(word, false, 'bonus', '+' + pts + ' hidden word');
+    this.say(pick(REACT.bonus));
+    Store.noteBonusWord(word);
+    Badges.check();
   },
   /* win-state validation: found words must tile the grid exactly once, with matching letters */
   validateSolved() {
@@ -2489,7 +2563,7 @@ const WordPuzzle = Object.assign({}, PuzzleBase, {
     this.running = false;
     clearInterval(this.timerId);
     const result = Scoring.compute({ elapsedMs: this.elapsed, wrongs: this.wrongs, hints: this.hints, bonus: this.bonus });
-    result.squares = this.squares.join(''); result.maxCombo = this.maxCombo;
+    result.squares = this.squares.join(''); result.maxCombo = this.maxCombo; result.bonusWords = this.bonusFound.size;
     setTimeout(() => { if (this.onWin) this.onWin(result); }, 1000);
   },
 
@@ -2514,10 +2588,11 @@ const WordPuzzle = Object.assign({}, PuzzleBase, {
     replayClass(c, 'on');
   },
 
-  toast(text, gold) {
+  toast(text, gold, extra, sub) {
     const d = document.createElement('div');
-    d.className = 'word-toast' + (gold ? ' gold' : '');
+    d.className = 'word-toast' + (gold ? ' gold' : '') + (extra ? ' ' + extra : '');
     d.textContent = text;
+    if (sub) { const s = document.createElement('small'); s.textContent = sub; d.appendChild(s); }
     this.els.grid.appendChild(d);
     setTimeout(() => d.remove(), 1200);
   }
@@ -3254,6 +3329,7 @@ const Cutscene = {
     e.noirBegin.addEventListener('click', () => { if (this._beginRes) this._beginRes(); });
     e.noir.addEventListener('pointermove', ev => this.onMove(ev));
     e.noir.addEventListener('pointerdown', ev => this.onDown(ev));
+    window.addEventListener('resize', () => { if (this.running) this.sizeCanvas(); });   // keep the cached rect fresh on rotate / URL-bar collapse
   },
 
   /* opts: { boardEl, tileSel, prepare() }  ->  Promise<'declined' | 'done'> */
@@ -3622,6 +3698,7 @@ const Wardrobe = {
     }
     if (!r.already) { AudioFX.chime(5); AudioFX.chime(7, 0.1); AudioFX.chime(9, 0.2); }
     Store.equip(item.id);
+    if (!r.already) Badges.check();
     Outfit.current = Object.assign({}, Store.data.wardrobe.equipped);
     Barnaby.dressAll(Outfit.current);
     this.bear.bounce(); this.bear.react('happy', false);
@@ -3784,6 +3861,69 @@ const Victory = {
   }
 };
 
+/* ---------- detective badges ----------
+   test(d, ev): d = Store.data; ev = the puzzle result event { type:'puzzle', kind, result } when one just happened (else undefined). */
+const BADGES = [
+  { id: 'rookie',     icon: '🔎', name: 'Rookie Detective',   desc: 'Solve your first case.',                       test: () => Store.chapter(1).solved },
+  { id: 'master',     icon: '🕵️', name: 'Master Detective',   desc: 'Solve all ten cases.',                         test: () => LEVELS.every(lv => Store.chapter(lv.n).solved) },
+  { id: 'sharp',      icon: '👁️', name: 'Sharp Eyes',         desc: 'Win a puzzle with no hints and no mistakes.',  test: (d, ev) => !!ev && ev.result.hints === 0 && ev.result.wrongs === 0 },
+  { id: 'chain',      icon: '⛓️', name: 'Chain Reaction',     desc: 'Reach a ×5 combo in a Words puzzle.',          test: (d, ev) => !!ev && ev.kind === 'word' && ev.result.maxCombo >= 5 },
+  { id: 'quick',      icon: '⚡', name: 'Quick Paws',         desc: 'Finish a Words puzzle in under a minute.',     test: (d, ev) => !!ev && ev.kind === 'word' && ev.result.secs < 60 },
+  { id: 'bythebook',  icon: '📖', name: 'By the Book',        desc: 'Solve a whole case with three stars.',         test: () => LEVELS.some(lv => Store.stars(lv.n) === 3) },
+  { id: 'daily1',     icon: '📰', name: 'Morning Paper',      desc: 'Solve a Daily Case.',                          test: d => Object.keys(d.daily.results).length > 0 },
+  { id: 'streak7',    icon: '🔥', name: 'Week of Wonders',    desc: 'Reach a 7-day Daily streak.',                  test: d => d.daily.best >= 7 },
+  { id: 'noir1',      icon: '🌑', name: 'Into the Shadows',   desc: 'Clear a Barnaby Noir level.',                  test: () => Store.evilCount() >= 1 },
+  { id: 'noir5',      icon: '😈', name: 'Noir Nemesis',       desc: 'Clear five Barnaby Noir levels.',              test: () => Store.evilCount() >= 5 },
+  { id: 'larry',      icon: '🐱', name: 'Gotcha, Larry!',     desc: 'Catch Evil Larry at the Midnight Market.',     test: () => Store.chapter(8).solved },
+  { id: 'sniffer',    icon: '🐽', name: 'Word Sniffer',       desc: 'Find a hidden bonus word.',                    test: d => d.bonusWords.length >= 1 },
+  { id: 'dictionary', icon: '📚', name: 'Walking Dictionary', desc: 'Find 25 different hidden words.',              test: d => d.bonusWords.length >= 25 },
+  { id: 'dapper',     icon: '🎩', name: 'Dapper Bear',        desc: 'Own every item in the Wardrobe shop.',         test: () => WARDROBE.filter(i => i.cost > 0).every(i => Store.owns(i.id)) }
+];
+
+const Badges = {
+  queue: [], busy: false, fresh: new Set(),
+  earned(id) { return !!Store.data.badges[id]; },
+  count() { return BADGES.filter(b => this.earned(b.id)).length; },
+  /* award every badge whose test passes; silent = no toasts (used once at startup so old saves catch up quietly) */
+  check(ev, silent) {
+    let any = false;
+    BADGES.forEach(b => {
+      if (this.earned(b.id)) return;
+      if (!b.test(Store.data, ev)) return;
+      Store.data.badges[b.id] = Daily.today(); any = true;
+      if (!silent) { this.fresh.add(b.id); this.queue.push(b); }
+    });
+    if (any) Store.save();
+    if (this.queue.length && !this.busy) this.drain(1500);
+  },
+  drain(delay) {                                       // one toast at a time, starting after any victory fanfare
+    this.busy = true;
+    setTimeout(() => {
+      const b = this.queue.shift();
+      if (!b) { this.busy = false; return; }
+      UI.toast('🏅 Badge earned: ' + b.name);
+      AudioFX.chime(6);
+      this.drain(1800);
+    }, delay);
+  },
+  open() { this.render(); UI.show('badges'); },
+  render() {
+    $('#bCount').textContent = '🏅 ' + this.count() + '/' + BADGES.length;
+    const grid = $('#bGrid');
+    grid.innerHTML = '';
+    BADGES.forEach(b => {
+      const got = Store.data.badges[b.id], c = document.createElement('div');
+      c.className = 'bcard' + (got ? '' : ' locked') + (this.fresh.has(b.id) ? ' new' : '');
+      c.innerHTML = '<span class="bicon" aria-hidden="true">' + b.icon + '</span><b></b><small></small>' + (got ? '<span class="bdate"></span>' : '');
+      c.querySelector('b').textContent = b.name;
+      c.querySelector('small').textContent = b.desc;
+      if (got) c.querySelector('.bdate').textContent = 'Earned ' + got;
+      grid.appendChild(c);
+    });
+    this.fresh.clear();
+  }
+};
+
 /* the two puzzle steps of a chapter: which engine, screen and board they use, and where "Continue" goes next */
 const PUZZLE_KINDS = {
   word: { obj: WordPuzzle, screen: 'puzzle', board: '#grid', tileSel: '.tile', title: 'Clue Found!', nextLabel: 'Follow the trail',
@@ -3831,6 +3971,7 @@ const Game = {
   onDailyWin(result) {
     const date = this.run.date, rec = Daily.record(date, result);
     if (rec.first) this.noteResult(result.stars);
+    Badges.check({ type: 'puzzle', kind: 'word', result });
     this.dailyCard(date, rec.stored, rec.streak, rec.first);
   },
   showDailyResult() {
@@ -3841,6 +3982,7 @@ const Game = {
 
   init() {
     Store.load();
+    Badges.check(null, true);                                   // old saves catch up quietly, no toasts
     Outfit.current = Object.assign({}, Store.data.wardrobe.equipped);
     Barnaby.init();
     this.titleBear = Barnaby.create($('#titleBear'));
@@ -3891,13 +4033,14 @@ const Game = {
         resetArmed = setTimeout(() => { resetArmed = 0; e.target.textContent = 'Reset progress'; }, 3000);
       } else {
         clearTimeout(resetArmed); resetArmed = 0;
-        Store.reset(); this.syncToggles(); e.target.textContent = 'Reset progress'; UI.toast('Progress erased');
+        Store.reset(); Badges.queue.length = 0; Badges.fresh.clear(); this.syncToggles(); e.target.textContent = 'Reset progress'; UI.toast('Progress erased');
         Outfit.current = Object.assign({}, Store.data.wardrobe.equipped); Barnaby.dressAll(Outfit.current);
       }
     });
 
     // map
     $('#btnMapBack').addEventListener('click', () => UI.show('title'));
+    $('#btnBBack').addEventListener('click', () => this.toMap());
 
     // the three playing screens
     $('#btnPzBack').addEventListener('click', () => { WordPuzzle.stop(); this.toMap(); });
@@ -3945,6 +4088,12 @@ const Game = {
       '<span class="ch-stars">' + (done ? UI.starsHTML(done.stars) : '') + '</span>';
     dc.addEventListener('click', () => { AudioFX.unlock(); if (done) this.showDailyResult(); else this.startDaily(); });
     list.appendChild(dc);
+    const bc = document.createElement('button');
+    bc.className = 'chapter badges';
+    bc.innerHTML = '<span class="ch-num">🏅</span><span class="ch-info"><b>Detective Badges</b><small>' +
+      Badges.count() + '/' + BADGES.length + ' earned &middot; hidden words found: ' + Store.data.bonusWords.length + '</small></span>';
+    bc.addEventListener('click', () => { AudioFX.unlock(); Badges.open(); });
+    list.appendChild(bc);
     LEVELS.forEach(lv => {
       const ch = Store.chapter(lv.n), locked = lv.n > Store.data.unlocked, fresh = this.justUnlocked === lv.n;
       const wrap = document.createElement('div');
@@ -4027,8 +4176,11 @@ const Game = {
     run.freeHints = k.obj.freeHints; run.earned[kind] = true;
     const rec = Store.recordPuzzle(run.n, kind, result);
     this.noteResult(result.stars);
+    Badges.check({ type: 'puzzle', kind, result });
+    const bw = result.bonusWords | 0;
     Victory.show({
-      title: k.title, result, rec, unlock: 'New clue in your notebook<b>' + this.earnedText(kind) + '</b>',
+      title: k.title, result, rec, unlock: 'New clue in your notebook<b>' + this.earnedText(kind) + '</b>' +
+        (bw ? '<small class="note">+' + bw + ' hidden word' + (bw === 1 ? '' : 's') + ' found</small>' : ''),
       continueLabel: run.replay ? 'Back to case files' : k.nextLabel, replayLabel: 'Replay',
       onContinue: () => this.gate(kind, () => run.replay ? this.toMap() : k.next(this)),
       onReplay: () => this.startPuzzle(kind)
@@ -4051,13 +4203,13 @@ const Game = {
     Store.recordSolved(n, penalty);
     this.justUnlocked = next ? next.n : 0;
     const result = { stars: Store.stars(n), score: Store.score(n) };
-    const card = () => Victory.show({
+    const card = () => { Badges.check(); Victory.show({          // badges after any cinematic, so their toasts don't land mid-scene
       title: 'Case Solved!', result, rec: { isBest: false, prevBest: 0 },
       unlock: next ? 'Story unlocked<b>Chapter ' + next.n + ': ' + next.title + '</b>' : 'Every mystery solved<b>You are a true detective!</b>',
       continueLabel: run.replay ? 'Back to case files' : (next ? 'Continue the story' : 'Hear the ending'), replayLabel: 'Replay case',
       onContinue: () => run.replay ? this.toMap() : this.playOutro(n),
       onReplay: () => { this.run = this.newRun(n, false); this.startPuzzle('word'); }
-    });
+    }); };
     const lv = LEVELS[n - 1];
     if (lv.caughtScene) lv.caughtScene().then(card); else card();   // e.g. Evil Larry is caught red-pawed first
   },
@@ -4096,6 +4248,7 @@ const Game = {
     const base = this.evilBase, kind = this.evilKind, key = Evil.key(kind, base);
     const first = !Store.data.evil.cleared[key];
     Store.markEvil(key);
+    Badges.check({ type: 'puzzle', kind: this.evilKind, result });
     const count = Store.evilCount(), item = WARDROBE.find(i => i.unlock === count);
     if (first && item) setTimeout(() => UI.toast('New Noir item unlocked: ' + item.name), 1400);
     Victory.show({
