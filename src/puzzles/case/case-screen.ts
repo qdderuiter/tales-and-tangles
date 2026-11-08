@@ -27,7 +27,8 @@ export const HINT_PAGE: Record<NoteKind, string> = { items: 'Items', places: 'Ro
 export const CASE_HINT = {
   clue:   { id: '', e: 'thinking', t: 'Look at the clue I lit up. Read it again, slowly.' },
   pair:   { id: '', e: 'thinking', t: 'No single clue is enough here. Read the two I lit up side by side.' },
-  elim:   { id: '', e: 'neutral',  t: 'A row or a column has only one choice left. Check your pages for it.' },
+  elim:   (kind: NoteKind) => ({ id: '', e: 'neutral', t: 'On the ' + HINT_PAGE[kind] + ' page, a row or a column has only one choice left.' }),
+  link:   (kind: NoteKind) => ({ id: '', e: 'thinking', t: 'What you already know on one page settles something on another. Look at the ' + HINT_PAGE[kind] + ' page.' }),
   combo:  { id: '', e: 'thinking', t: 'Nothing jumps out from one clue alone. Put several clues together.' },
   locked: { id: '', e: 'sad',      t: 'I need more clues first. Solve the other puzzles to open the locked ones!' },
   focus:  (kind: NoteKind, name: string) => ({ id: '', e: 'happy', t: kind === 'items' ? 'Think about what ' + name + ' could have been holding.' : kind === 'places' ? 'Think about where ' + name + ' could have been.' : 'Think about which room the ' + name + ' could be in.' }),
@@ -235,7 +236,7 @@ export const CaseScreen = {
     const [kind, s, v, isCheck] = plan.target;
     if (plan.stage === 1) {
       this.glowClues(plan.ks);
-      this.say(plan.ks.length === 2 ? CASE_HINT.pair : plan.ks.length === 1 ? CASE_HINT.clue : plan.elim ? CASE_HINT.elim : CASE_HINT.combo);
+      this.say(plan.ks.length === 2 ? CASE_HINT.pair : plan.ks.length === 1 ? CASE_HINT.clue : plan.elim ? (plan.link ? CASE_HINT.link(kind) : CASE_HINT.elim(kind)) : CASE_HINT.combo);
     } else if (plan.stage === 2) {
       this.glowClues(plan.ks);
       showTab(kind);
