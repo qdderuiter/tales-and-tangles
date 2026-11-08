@@ -1,0 +1,10 @@
+# Keep LF in the repository and in working copies, whatever core.autocrlf says (no more "LF will be replaced by CRLF" warnings)
+* text=auto eol=lf
+
+# binary files are never converted
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary
+*.mp3 binary
+*.ogg binary
