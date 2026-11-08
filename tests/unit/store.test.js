@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LEVELS } from '../../src/data/levels.js';
-import { migrate, sanitize } from '../../src/state/migrations.js';
+import { blankChapter, migrate, sanitize } from '../../src/state/migrations.js';
 import { Store } from '../../src/state/store.js';
 
 /* localStorage is a plain object here: no DOM, no jsdom */
@@ -69,8 +69,8 @@ describe('loading', () => {
   it('chapter records with the wrong shape become blank chapters; numbers are coerced to whole numbers', () => {
     put(Store.KEY, { chapters: { 1: null, 2: 'x', 3: { word: { done: 1, stars: '2', best: 12.9 }, zip: 'no', solved: 'yes', penalty: 1.7 } } });
     const d = load();
-    expect(d.chapters[1]).toEqual(Store.blankChapter());
-    expect(d.chapters[2]).toEqual(Store.blankChapter());
+    expect(d.chapters[1]).toEqual(blankChapter());
+    expect(d.chapters[2]).toEqual(blankChapter());
     expect(d.chapters[3].word).toEqual({ done: true, stars: 2, best: 12 });
     expect(d.chapters[3].solved).toBe(true);
     expect(d.chapters[3].penalty).toBe(1);
@@ -154,6 +154,15 @@ describe('migrate / sanitize on their own', () => {
   });
   it('sanitize of nothing is the defaults, unchanged', () => {
     expect(sanitize(null, Store.defaults())).toEqual(Store.defaults());
+  });
+  it('sanitize alone resets an unowned equipped item to the default', () => {
+    const d = sanitize({ wardrobe: { owned: [], equipped: { hat: 'party', face: 'none', neck: 'tie' } } }, Store.defaults());
+    expect(d.wardrobe.equipped.hat).toBe('deerstalker');
+  });
+  it('sanitize alone keeps a Noir item once the evil-clear count meets its unlock', () => {
+    const saved = hat => ({ wardrobe: { owned: [], equipped: { hat } }, evil: { cleared: { word1: true } } });
+    expect(sanitize(saved('fedora'), Store.defaults()).wardrobe.equipped.hat).toBe('fedora');
+    expect(sanitize({ wardrobe: { owned: [], equipped: { hat: 'fedora' } } }, Store.defaults()).wardrobe.equipped.hat).toBe('deerstalker');
   });
 });
 

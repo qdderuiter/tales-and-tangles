@@ -3,6 +3,7 @@ import { Daily } from '../../src/puzzles/daily.js';
 import { formatDate, generateDaily, shiftDate } from '../../src/puzzles/daily-generator.js';
 import { Store } from '../../src/state/store.js';
 import { buildGrid, isSolved } from '../../src/puzzles/word/word-rules.js';
+import { allFound } from './helpers/word-level.js';
 
 describe('dates', () => {
   it('formatDate pads month and day', () => {
@@ -33,7 +34,7 @@ describe('generateDaily', () => {
   it('always tiles the grid, with words 3-5 letters long, no repeats and one gold word', () => {
     for (let day = 1; day <= 40; day++) {
       const lv = generateDaily(shiftDate('2025-01-01', day));
-      expect(isSolved(lv, new Set(lv.words.map((_, i) => i)), buildGrid(lv)), lv.date).toBe(true);
+      expect(isSolved(lv, allFound(lv), buildGrid(lv)), lv.date).toBe(true);
       for (const w of lv.words) {
         expect(w.w.length).toBeGreaterThanOrEqual(3);
         expect(w.w.length).toBeLessThanOrEqual(5);

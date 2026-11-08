@@ -1,10 +1,12 @@
-import { pick } from '../../core/util.js';
+import { blankMatrix, pick } from '../../core/util.js';
 
 /* ---------- the notebook: a Murdle-style logic grid ----------
    Rows = suspects, columns = items (tab 1) or rooms (tab 2). Tap a cell: blank -> X -> check -> blank.
    A check optionally auto-crosses the rest of its row and column (shown fainter, and removed again with the check).
    The crime names only the ROOM; the player works out who was there and what they held, then accuses (suspect + item). */
 export const NOTE_KINDS = ['items', 'places', 'itemPlaces'];           // the notebook's three grids (tab order)
+/* a fresh notebook for an N-suspect case: an N x N board of 0 per grid kind, and no clues struck out */
+export const blankNotes = N => ({ ...Object.fromEntries(NOTE_KINDS.map(k => [k, blankMatrix(N)])), struck: {} });
 
 /* ---------- notebook hint engine (pure logic; CaseScreen drives the UI) ----------
    An "assignment" is { item[s], place[s] }: the item suspect s held and the room they were in. */

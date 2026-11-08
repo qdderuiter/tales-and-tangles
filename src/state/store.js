@@ -1,6 +1,6 @@
 import { LEVELS } from '../data/levels.js';
-import { OUTFIT_DEFAULT, SLOTS, WARDROBE, WARDROBE_BY_ID } from '../data/wardrobe.js';
-import { blankChapter, migrate, sanitize } from './migrations.js';
+import { OUTFIT_DEFAULT, WARDROBE, WARDROBE_BY_ID } from '../data/wardrobe.js';
+import { blankChapter, migrate, ownsItem, sanitize } from './migrations.js';
 
 export const Store = {
   KEY: 'tales_tangles_v2',
@@ -15,19 +15,15 @@ export const Store = {
       badges: {}, bonusWords: []
     };
   },
-  blankChapter,
   read(key) { try { const v = JSON.parse(localStorage.getItem(key)); return v && typeof v === 'object' ? v : null; } catch { return null; } },
   load() {
-    const saved = migrate(this.read(this.KEY), () => this.read(this.OLD_KEY));
-    const d = sanitize(saved, this.defaults());
-    this.data = d;
-    SLOTS.forEach(slot => { if (!this.owns(d.wardrobe.equipped[slot])) d.wardrobe.equipped[slot] = OUTFIT_DEFAULT[slot]; });
+    this.data = sanitize(migrate(this.read(this.KEY), () => this.read(this.OLD_KEY)), this.defaults());
   },
   /* ---- stars as currency for the wardrobe: earned (cases + dailies) minus the price of everything owned ---- */
   dailyStars() { return Object.keys(this.data.daily.results).reduce((s, k) => s + (this.data.daily.results[k].stars | 0), 0); },
   spentStars() { return this.data.wardrobe.owned.reduce((s, id) => { const it = WARDROBE_BY_ID[id]; return s + (it ? it.cost : 0); }, 0); },
   availableStars() { return Math.max(0, this.totalStars() + this.dailyStars() + this.evilStars() - this.spentStars()); },
-  owns(id) { const it = WARDROBE_BY_ID[id]; return this.data.wardrobe.owned.includes(id) || !!(it && it.unlock && this.evilCount() >= it.unlock); },
+  owns(id) { return ownsItem(this.data, id); },
   evilCount() { return Object.keys(this.data.evil.cleared).length; },
   evilStars() { return this.evilCount() * 2; },                 // each cleared Noir level is worth 2 bonus stars
   markEvil(key) { this.data.evil.cleared[key] = true; this.save(); },
@@ -51,7 +47,7 @@ export const Store = {
     return true;
   },
   save() { try { localStorage.setItem(this.KEY, JSON.stringify(this.data)); } catch { /* private mode: play on without saving */ } },
-  chapter(n) { return this.data.chapters[n] || this.blankChapter(); },
+  chapter(n) { return this.data.chapters[n] || blankChapter(); },
   /* kind: 'word' | 'zip' */
   recordPuzzle(n, kind, result) {
     const ch = this.chapter(n), prev = ch[kind];

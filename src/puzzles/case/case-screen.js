@@ -3,12 +3,12 @@ import { AudioFX } from '../../audio/sfx.js';
 import { VoiceManager } from '../../audio/voice.js';
 import { critterSvg } from '../../characters/critter-svg.js';
 import { $, flashClass, replayClass } from '../../core/dom.js';
-import { REDUCED, blankMatrix } from '../../core/util.js';
+import { REDUCED } from '../../core/util.js';
 import { REACT } from '../../data/story.js';
 import { speak } from '../../dialogue/speakers.js';
 import { STORY } from '../../dialogue/story-builder.js';
 import { Typer } from '../../dialogue/typer.js';
-import { NOTE_KINDS, planCaseHint } from './case-logic.js';
+import { NOTE_KINDS, blankNotes, planCaseHint } from './case-logic.js';
 import { Store } from '../../state/store.js';
 import { UI } from '../../ui/ui.js';
 
@@ -61,7 +61,7 @@ export const CaseScreen = {
     this.lvl = lvl; this.run = run; this.onSolved = onSolved;
     this.done = false; this.wrong = 0; this.hints = 0; this.selS = -1; this.selI = -1; this.tab = 'items'; this.hintPlan = null; clearTimeout(this.hintTimer);
     const c = lvl.case, N = c.N;
-    if (!run.notes) run.notes = { items: blankMatrix(N), places: blankMatrix(N), itemPlaces: blankMatrix(N), struck: {} };
+    if (!run.notes) run.notes = blankNotes(N);
     if (!run.earned) run.earned = { word: false, zip: false };
     this.notes = run.notes;
     this.els.crime.innerHTML = '<small>The crime</small>' + c.crime + ' Who was there — and what were they holding?';

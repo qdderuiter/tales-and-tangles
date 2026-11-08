@@ -21,6 +21,7 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { chromium } from 'playwright-core';
+import { COLS, ROWS } from '../../src/core/grid.js';
 import { LEVELS } from '../../src/data/levels.js';
 import { Store } from '../../src/state/store.js';
 
@@ -31,7 +32,6 @@ const DEV = args.includes('--dev');
 const ONLY = args.filter(a => /^[A-Z]$/.test(a));
 const CHANNEL = process.env.E2E_BROWSER_CHANNEL || 'msedge';
 const PORT = 5173;
-const COLS = 6, ROWS = 5;
 
 /* ---------- where the game is ---------- */
 let devServer = null;
@@ -62,6 +62,9 @@ async function resolveTarget() {
 
 /* ---------- saves ---------- */
 const solvedChapter = { word: { done: true, stars: 3, best: 1400 }, zip: { done: true, stars: 3, best: 1400 }, solved: true, penalty: 0 };
+
+/* chapter 1 solved, chapter 2 open: the starting point of scenarios B, C, D and F */
+const ch1Done = { unlocked: 2, chapters: { 1: solvedChapter } };
 
 /* a v2 save built from the real defaults, so it can't drift from the game; `over` replaces top-level fields */
 const makeSave = over => JSON.stringify({ ...Store.defaults(), ...over });
@@ -110,9 +113,11 @@ async function dragPath(page, boardSel, cells, rows, cols) {
   await page.mouse.up();
 }
 
+const waitForGrid = page => page.waitForFunction(n => document.querySelectorAll('#grid .tile').length === n, ROWS * COLS);
+
 async function solveWords(page, lv) {
   await onScreen(page, 'puzzle');
-  await page.waitForFunction(() => document.querySelectorAll('#grid .tile').length === 30);
+  await waitForGrid(page);
   for (const w of lv.words) await dragPath(page, '#grid', w.p, ROWS, COLS);
 }
 
@@ -147,7 +152,13 @@ function expect(actual, label) {
 }
 
 const tapNoir = page => page.locator('#noirDlg').dispatchEvent('pointerdown').catch(() => {});
-const chapterButton = (page, n) => page.locator('#mapList .chwrap').nth(n - 1).locator('.chapter');
+const chapterRow = (page, n) => page.locator('#mapList .chwrap').nth(n - 1);
+const chapterButton = (page, n) => chapterRow(page, n).locator('.chapter');
+
+/* tap Noir's dialogue (up to 40 times, 300 ms apart) until done() is true */
+async function tapNoirUntil(page, done) {
+  for (let i = 0; i < 40 && !await done(); i++) { await tapNoir(page); await page.waitForTimeout(300); }
+}
 
 /* ---------- scenarios ---------- */
 const lv1 = LEVELS[0], lv8 = LEVELS[7];
@@ -211,19 +222,19 @@ const scenarios = {
   async C({ page, shot }) {
     await page.click('#btnPlay');
     await onScreen(page, 'map');
-    await page.locator('#mapList .chwrap').nth(0).locator('.pip', { hasText: 'Words' }).click();
+    await chapterRow(page, 1).locator('.pip', { hasText: 'Words' }).click();
     await solveWords(page, lv1);                                    // a perfect result: no hints, no mistakes
     await victory(page, 'Clue Found!', 'Back to case files');
     await pressContinue(page);
     await page.waitForSelector('#noir.show');                       // the third perfect result in a row summons Barnaby Noir
     await shot('noir');
     const accept = page.locator('#noirChoices .choice', { hasText: 'Bring it on.' });
-    for (let i = 0; i < 40 && !await accept.count(); i++) { await tapNoir(page); await page.waitForTimeout(300); }   // tap through his first lines
+    await tapNoirUntil(page, () => accept.count());                 // tap through his first lines
     await page.waitForTimeout(450);                                 // a choice ignores taps for a moment after it appears
     await accept.click();
-    for (let i = 0; i < 40 && await page.locator('#noir.show').count(); i++) { await tapNoir(page); await page.waitForTimeout(300); }   // and his reply
+    await tapNoirUntil(page, async () => !await page.locator('#noir.show').count());   // and his reply
     await onScreen(page, 'puzzle');
-    await page.waitForFunction(() => document.querySelectorAll('#grid .tile').length === 30);
+    await waitForGrid(page);
     expect(await page.evaluate(() => document.body.classList.contains('evil')), 'Noir skin on').toBe(true);
     expect((await readSave(page)).perfect.streak, 'the streak starts again').toBe(0);
     await shot('noir-board');
@@ -232,9 +243,9 @@ const scenarios = {
   async D({ page, shot }) {
     await page.click('#btnPlay');
     await onScreen(page, 'map');
-    const pips = page.locator('#mapList .chwrap').nth(0).locator('.pip');
+    const pips = chapterRow(page, 1).locator('.pip');
     expect(await pips.count(), 'pips on chapter 1').toBeGreaterThan(2);
-    expect(await page.locator('#mapList .chwrap').nth(0).locator('.pip.done').count(), 'ticked pips').toBe(3);
+    expect(await chapterRow(page, 1).locator('.pip.done').count(), 'ticked pips').toBe(3);
     expect(await pips.nth(0).isEnabled(), 'Words pip enabled once solved').toBe(true);
     await shot('pips');
     await pips.nth(1).click();                                      // Trail
@@ -251,7 +262,6 @@ const scenarios = {
 
   async E({ page, shot }) {
     // chapter 1 with its own steps: no intro, no bridge, no Scent Trail, no outro
-    await page.waitForFunction(() => !!window.__LEVELS);
     await page.evaluate(() => { window.__LEVELS[0].steps = ['word', 'case']; });
     await page.click('#btnPlay');
     await solveWords(page, lv1);                                    // straight into the puzzle
@@ -286,11 +296,11 @@ const scenarios = {
 /* which save each scenario starts from (none = a brand-new player) */
 const seeds = {
   A: null,
-  B: makeSave({ unlocked: 8, chapters: { 1: solvedChapter } }),
-  C: makeSave({ unlocked: 2, chapters: { 1: solvedChapter }, perfect: { streak: 2 } }),
-  D: makeSave({ unlocked: 2, chapters: { 1: solvedChapter } }),
+  B: makeSave({ ...ch1Done, unlocked: 8 }),
+  C: makeSave({ ...ch1Done, perfect: { streak: 2 } }),
+  D: makeSave(ch1Done),
   E: null,
-  F: makeSave({ unlocked: 2, chapters: { 1: solvedChapter } })
+  F: makeSave(ch1Done)
 };
 
 /* ---------- run ---------- */

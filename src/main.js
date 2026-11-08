@@ -3,12 +3,13 @@ import './styles/index.css';
 import { Music } from './audio/music.js';
 import { AudioFX } from './audio/sfx.js';
 import { VoiceClipManifest, VoiceManager } from './audio/voice.js';
+import { LEVELS } from './data/levels.js';
 import { initGame } from './game/game.js';
 import { PWA } from './pwa.js';
 
 
 if (import.meta.env.DEV) window.VoiceClipManifest = VoiceClipManifest;   // dev console helper: VoiceClipManifest.ids()
-if (import.meta.env.DEV) import('./data/levels.js').then(m => { window.__LEVELS = m.LEVELS; });   // dev-only: lets tests/e2e give a chapter a custom `steps` list
+if (import.meta.env.DEV) window.__LEVELS = LEVELS;   // dev-only: lets tests/e2e give a chapter a custom `steps` list
 
 function boot() {
   initGame();

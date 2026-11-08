@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { LEVELS } from '../../src/data/levels.js';
-import { caseCell, NOTE_KINDS, planCaseHint } from '../../src/puzzles/case/case-logic.js';
+import { blankNotes, caseCell, planCaseHint } from '../../src/puzzles/case/case-logic.js';
 
 /* notes: per grid kind an N x N board of 0 (blank) / 1 (cross) / 2 (check); `struck` = clues the player crossed out */
-const blankNotes = N => ({ ...Object.fromEntries(NOTE_KINDS.map(k => [k, Array.from({ length: N }, () => new Array(N).fill(0))])), struck: {} });
 const allEarned = { word: true, zip: true };
 
 /* do what the hint says, like a player would */

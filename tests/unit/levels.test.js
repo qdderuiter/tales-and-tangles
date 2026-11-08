@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { COLS, ROWS } from '../../src/core/grid.js';
 import { LEVELS } from '../../src/data/levels.js';
 import { buildGrid, isSolved, matchWord } from '../../src/puzzles/word/word-rules.js';
+import { allFound, toTrace } from './helpers/word-level.js';
 
-const asTrace = p => p.map(([r, c]) => ({ r, c }));
 const adjacent = (a, b) => Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1])) === 1;   // words may run diagonally
 
 describe.each(LEVELS.map(lv => [lv.n, lv]))('level %i', (_n, lv) => {
@@ -17,7 +17,7 @@ describe.each(LEVELS.map(lv => [lv.n, lv]))('level %i', (_n, lv) => {
     expect(new Set(cells).size).toBe(ROWS * COLS);
     const grid = buildGrid(lv);
     expect(grid.flat().every(Boolean)).toBe(true);
-    expect(isSolved(lv, new Set(lv.words.map((_, i) => i)), grid)).toBe(true);
+    expect(isSolved(lv, allFound(lv), grid)).toBe(true);
   });
 
   it('every word is as long as its path, inside the grid, and each step is to a neighbouring cell (diagonals allowed)', () => {
@@ -33,9 +33,9 @@ describe.each(LEVELS.map(lv => [lv.n, lv]))('level %i', (_n, lv) => {
 
   it('every word matches its own path forwards and backwards, and is ignored once found', () => {
     lv.words.forEach((w, i) => {
-      expect(matchWord(lv, new Set(), asTrace(w.p)), `${w.w} forwards`).toBe(i);
-      expect(matchWord(lv, new Set(), asTrace(w.p).reverse()), `${w.w} backwards`).toBe(i);
-      expect(matchWord(lv, new Set([i]), asTrace(w.p)), `${w.w} once found`).toBe(-1);
+      expect(matchWord(lv, new Set(), toTrace(w.p)), `${w.w} forwards`).toBe(i);
+      expect(matchWord(lv, new Set(), toTrace(w.p).reverse()), `${w.w} backwards`).toBe(i);
+      expect(matchWord(lv, new Set([i]), toTrace(w.p)), `${w.w} once found`).toBe(-1);
     });
   });
 

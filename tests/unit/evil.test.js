@@ -3,6 +3,7 @@ import { LEVELS } from '../../src/data/levels.js';
 import { Evil } from '../../src/puzzles/evil.js';
 import { generateDaily } from '../../src/puzzles/daily-generator.js';
 import { buildGrid, isSolved } from '../../src/puzzles/word/word-rules.js';
+import { allFound } from './helpers/word-level.js';
 
 const sorted = lv => lv.words.map(w => w.w).sort();
 const layout = lv => JSON.stringify(lv.words.map(w => w.p));
@@ -17,7 +18,7 @@ describe.each([...LEVELS.map(lv => [`chapter ${lv.n}`, lv]), ['a daily', generat
     expect(evil.evil).toBe(true);
   });
   it('still tiles the grid', () => {
-    expect(isSolved(evil, new Set(evil.words.map((_, i) => i)), buildGrid(evil))).toBe(true);
+    expect(isSolved(evil, allFound(evil), buildGrid(evil))).toBe(true);
   });
   it('every path is as long as its word, so hidden-length mode cannot leak a wrong length', () => {
     for (const w of evil.words) expect(w.p.length).toBe(w.w.length);

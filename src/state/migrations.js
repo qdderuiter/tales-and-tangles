@@ -1,6 +1,6 @@
 import { BADGES } from '../data/badges.js';
 import { LEVELS } from '../data/levels.js';
-import { SLOTS, WARDROBE_BY_ID } from '../data/wardrobe.js';
+import { OUTFIT_DEFAULT, SLOTS, WARDROBE_BY_ID } from '../data/wardrobe.js';
 import { BONUS_DICT } from '../data/words.js';
 
 /* The save-file upgrade and clean-up, pure (no localStorage, no Store), so a bad edit here is caught by tests/unit/store.test.js
@@ -9,6 +9,12 @@ import { BONUS_DICT } from '../data/words.js';
      sanitize(saved, defaults) copy only the valid, still-existing fields of a saved object onto `defaults`, and return it */
 
 export const blankChapter = () => ({ word: { done: false, stars: 0, best: 0 }, zip: { done: false, stars: 0, best: 0 }, solved: false, penalty: 0 });
+
+/* owned outright, or a Noir item unlocked by enough cleared evil levels */
+export const ownsItem = (data, id) => {
+  const it = WARDROBE_BY_ID[id];
+  return data.wardrobe.owned.includes(id) || !!(it && it.unlock && Object.keys(data.evil.cleared).length >= it.unlock);
+};
 
 export function migrate(saved, readOld) {
   if (saved) return saved;
@@ -42,7 +48,7 @@ export function sanitize(saved, d) {
     w.owned.forEach(id => { const it = WARDROBE_BY_ID[id]; if (it && !it.unlock && !d.wardrobe.owned.includes(id)) d.wardrobe.owned.push(id); });   // Noir items are unlocked by evil clears, never by an old owned list
     SLOTS.forEach(slot => {
       const id = w.equipped && w.equipped[slot], it = id && WARDROBE_BY_ID[id];
-      if (it && it.slot === slot) d.wardrobe.equipped[slot] = id;    // ownership is checked once afterwards, by Store.load
+      if (it && it.slot === slot) d.wardrobe.equipped[slot] = id;    // ownership is checked at the end of sanitize
     });
   }
   const dl = saved.daily;
@@ -58,5 +64,6 @@ export function sanitize(saved, d) {
     BADGES.forEach(b => { if (typeof saved.badges[b.id] === 'string') d.badges[b.id] = saved.badges[b.id]; });
   }
   if (Array.isArray(saved.bonusWords)) d.bonusWords = [...new Set(saved.bonusWords.filter(w => typeof w === 'string' && BONUS_DICT.has(w)))];
+  SLOTS.forEach(slot => { if (!ownsItem(d, d.wardrobe.equipped[slot])) d.wardrobe.equipped[slot] = OUTFIT_DEFAULT[slot]; });
   return d;
 }

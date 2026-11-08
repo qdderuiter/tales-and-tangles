@@ -58,11 +58,19 @@ describe('layers', () => {
     expect(bad).toEqual([]);
   });
 
-  it('*-rules.js and *-generator.js stay pure: nothing from ui/, audio/, characters/ or game/', () => {
-    const forbidden = /^(ui|audio|characters|game)\//;
-    const files = importsOf(f => /-(rules|generator)\.js$/.test(f));
-    expect(files.length).toBeGreaterThanOrEqual(3);
-    const bad = files.flatMap(([f, deps]) => deps.filter(d => forbidden.test(d)).map(d => `${f} -> ${d}`));
+  /* the pure set: rules files, generators and the save migrations */
+  const isPure = f => /-(rules|generator)\.js$/.test(f) || f === 'state/migrations.js';
+  const pure = () => importsOf(isPure);
+
+  it('pure files import only data/, core/ and other pure files', () => {
+    expect(pure().length).toBeGreaterThanOrEqual(4);
+    const ok = d => d.startsWith('data/') || d.startsWith('core/') || isPure(d);
+    const bad = pure().flatMap(([f, deps]) => deps.filter(d => !ok(d)).map(d => `${f} -> ${d}`));
+    expect(bad).toEqual([]);
+  });
+
+  it('pure files never touch window, document, localStorage or sessionStorage', () => {
+    const bad = pure().map(([f]) => f).filter(f => /\b(window|document|localStorage|sessionStorage)\b/.test(stripComments(readFileSync(join(SRC, f), 'utf8'))));
     expect(bad).toEqual([]);
   });
 });
