@@ -11,7 +11,6 @@
     "lint": "biome lint src tests",
     "test:e2e": "node tests/e2e/playthrough.mjs",
     "watch": "node tests/e2e/watch.mjs",
-    "watch": "node tests/e2e/watch.mjs",
     "check": "npm run lint && npm run typecheck && npm test && npm run build && npm run test:e2e",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json"
   },
