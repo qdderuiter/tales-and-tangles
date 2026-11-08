@@ -6,6 +6,8 @@ import { Store } from '../state/store.ts';
 
 export interface NoteOpts { t?: number; dur?: number; vol?: number; attack?: number; type?: OscillatorType; slideTo?: number; lp?: number }
 
+const BABBLE_GAIN = 1.18;   // the speech beeps sit a little above the other effects
+
 export const AudioFX = {
   ctx: null as AudioContext | null, master: null as unknown as GainNode, noiseBuf: null as AudioBuffer | null, _unlocked: false, _lastTalkDuck: 0,   // master is created together with ctx
   get enabled() { return Store.data.settings.sound; },
@@ -106,7 +108,7 @@ export const AudioFX = {
     const n = babbleNote(ch, voice, Math.random(), stressed);
     const speech = Store.data.settings.speech;
     if (!n || speech <= 0) return;
-    this.note(n.hz, { type: voice.wave, vol: n.vol * speech, dur: n.dur, attack: 0.005, lp: 3000 });
+    this.note(n.hz, { type: voice.wave, vol: n.vol * speech * BABBLE_GAIN, dur: n.dur, attack: 0.005, lp: 3000 });
     const now = performance.now();
     if (now - this._lastTalkDuck > 150) { this._lastTalkDuck = now; emit('audio:duck', { ms: 450, level: 0.6 }); }   // the music sits lower while someone talks
   },
