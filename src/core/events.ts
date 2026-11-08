@@ -1,8 +1,8 @@
 /* A tiny publish/subscribe bus. Modules announce what happened (emit) and other modules react (on), so they don't have to import each other.
    Events in use:
      screen            { name }                a screen was shown (UI.show)
-     evil:changed      { on }                  Barnaby Noir mode switched on/off (game/evil-mode.js)
-     settings:changed  { key, on }             a title-screen toggle flipped (ui/settings.js)
+     evil:changed      { on }                  Barnaby Noir mode switched on/off (game/evil-mode.ts)
+     settings:changed  { key, on }             a title-screen toggle flipped (ui/settings.ts)
      puzzle:won        { kind, result, fresh } a puzzle was solved; fresh = counts toward the perfect streak (badges and Noir listen)
      progress          (nothing)               something that can earn a badge changed: case solved, bonus word found, wardrobe purchase
      audio:duck        { ms }                  dip the music for ms (fanfares)

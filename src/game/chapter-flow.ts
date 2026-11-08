@@ -17,7 +17,7 @@ import { toMap } from './nav.ts';
 import { Noir } from './noir-flow.ts';
 
 /* ---------- a chapter (a "case") ----------
-   A chapter is a list of steps (chapter-steps.js): by default intro -> Words -> bridge -> Scent Trail -> Suspects -> outro.
+   A chapter is a list of steps (chapter-steps.ts): by default intro -> Words -> bridge -> Scent Trail -> Suspects -> outro.
    run = { n, replay, freeHints, earned, notes, steps, step }; replay runs (from the map pips) skip the story and return to the map.
    The steps call back into this object: lv(), playStory(), toCase(); a step that finishes calls advance(). */
 export const Chapter = {
@@ -65,7 +65,7 @@ export const Chapter = {
     if (before) before().then(begin); else begin();
   },
 
-  /* kind: a puzzle id registered in puzzles/registry.js */
+  /* kind: a puzzle id registered in puzzles/registry.ts */
   startPuzzle(kind: string) {
     const k = PUZZLE_KINDS[kind];
     UI.show(k.screen);

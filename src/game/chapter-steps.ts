@@ -2,7 +2,7 @@ import type { Level, StoryPart } from '../data/types.ts';
 
 /* The order of a chapter (a "case") is data: a list of step ids. A level may carry its own `steps`; most use this default.
      intro -> Words (clue 1) -> bridge -> Scent Trail (clue 2) -> Suspects (the notebook) -> outro
-   A step id is either one of STEPS below (story parts and the notebook) or a puzzle kind registered in puzzles/registry.js.
+   A step id is either one of STEPS below (story parts and the notebook) or a puzzle kind registered in puzzles/registry.ts.
    To add a puzzle: register it and put its id in a level's `steps`. */
 export const DEFAULT_STEPS = ['intro', 'word', 'bridge', 'zip', 'case', 'outro'];
 

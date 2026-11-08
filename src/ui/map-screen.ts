@@ -11,7 +11,7 @@ import { Store } from '../state/store.ts';
 import { Badges } from './badges-screen.ts';
 import { UI } from './ui.ts';
 
-/* The case-files map. It only draws and reports taps: what a tap DOES is handed in by whoever sets it up (see game/game.js):
+/* The case-files map. It only draws and reports taps: what a tap DOES is handed in by whoever sets it up (see game/game.ts):
      handlers = { chapter(n), step(n, kind), daily(done), intro(lv) }
    chapter: play a chapter from the start    step: replay one step ('word' | 'zip' | 'case') of a solved chapter
    daily: open today's Daily Case (done = today's saved result, if any)    intro: rewatch a chapter's cinematic */

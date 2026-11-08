@@ -170,4 +170,4 @@ export const LarryScene = {
   }
 };
 
-scenes.larry = LarryScene;   // levels reach this cinematic through core/scenes.js
+scenes.larry = LarryScene;   // levels reach this cinematic through core/scenes.ts

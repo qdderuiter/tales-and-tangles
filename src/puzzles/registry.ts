@@ -8,7 +8,7 @@ import type { Level, TempLevel } from '../data/types.ts';
    board    selector of the board element, and tileSel its tiles (the Barnaby Noir cutscene shatters them)
    title    heading on the victory card
    evil     (level) => the harder Barnaby Noir version of that level
-   What comes after a puzzle is NOT decided here: a chapter's `steps` list does that (see game/chapter-steps.js). */
+   What comes after a puzzle is NOT decided here: a chapter's `steps` list does that (see game/chapter-steps.ts). */
 export interface LoadOpts { freeHints?: number; onWin?: (result: PuzzleResult) => void }
 export interface PuzzleEngine { load(lvl: Level | TempLevel, opts?: LoadOpts): void; start(): void; stop(): void; freeHints: number }
 export interface PuzzleDef {

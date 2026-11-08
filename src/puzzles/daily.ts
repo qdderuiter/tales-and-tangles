@@ -4,7 +4,7 @@ import { Store } from '../state/store.ts';
 import { UI } from '../ui/ui.ts';
 import { chunk, dateSeed, formatDate, generateDaily, hamiltonian, shiftDate, todayString } from './daily-generator.ts';
 
-/* The Daily Case: one generated word puzzle per day. Dates and generation are pure (daily-generator.js); this adds the saved streak/results and sharing. */
+/* The Daily Case: one generated word puzzle per day. Dates and generation are pure (daily-generator.ts); this adds the saved streak/results and sharing. */
 export const Daily = {
   fmt: formatDate, today: todayString, shift: shiftDate, seed: dateSeed, hamiltonian, chunk, generate: generateDaily,
 

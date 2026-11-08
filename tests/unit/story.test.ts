@@ -5,7 +5,7 @@ import type { RawLine } from '../../src/data/types.ts';
 import { DEFAULT_STEPS } from '../../src/game/chapter-steps.ts';
 
 /* The story parts a chapter needs follow from its steps: the story steps `intro`, `bridge` and `outro` each play their own part,
-   and the notebook (`case`) opens with `caseIntro`. (story-builder.js merges STORY_EXTRA into STORY_RAW.) */
+   and the notebook (`case`) opens with `caseIntro`. (story-builder.ts merges STORY_EXTRA into STORY_RAW.) */
 const needed = (steps: string[]): string[] => [...steps.filter(id => ['intro', 'bridge', 'outro'].includes(id)), ...(steps.includes('case') ? ['caseIntro'] : [])];
 
 describe.each(LEVELS.map(lv => [lv.n, lv]))('story of chapter %i', (_n, lv) => {

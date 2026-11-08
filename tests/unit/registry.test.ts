@@ -17,7 +17,7 @@ describe('registerPuzzle', () => {
 });
 
 describe('chapter steps', () => {
-  const puzzleIds = registeredPuzzleIds();   // see helpers/puzzle-ids.js for why this reads the source text
+  const puzzleIds = registeredPuzzleIds();   // see helpers/puzzle-ids.ts for why this reads the source text
 
   it('the game registers the word and zip puzzles', () => {
     expect(puzzleIds.sort()).toEqual(['word', 'zip']);

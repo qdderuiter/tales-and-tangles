@@ -7,7 +7,7 @@ export type Trace = { r: number; c: number }[];
 export type WordLevel = { words: WordEntry[] };
 
 /* The pure rules of the Words puzzle (no DOM, no saved data), so they can be tested on their own.
-     level    { words: [{ w: 'HONEY', p: [[r, c], ...], gold }] }   (see data/levels.js)
+     level    { words: [{ w: 'HONEY', p: [[r, c], ...], gold }] }   (see data/levels.ts)
      grid     ROWS x COLS cells { ch, w } (letter, index of the word it belongs to)
      found    Set of word indexes already found
      trace    the player's swipe: [{ r, c }, ...] */

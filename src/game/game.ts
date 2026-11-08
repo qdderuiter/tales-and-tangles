@@ -21,7 +21,7 @@ import { DailyFlow } from './daily-flow.ts';
 import { toMap } from './nav.ts';
 
 /* Start the game: load the save, build the screens and characters, and wire the buttons to the flows.
-   The flows themselves live in chapter-flow.js, daily-flow.js and noir-flow.js. */
+   The flows themselves live in chapter-flow.ts, daily-flow.ts and noir-flow.ts. */
 export function initGame() {
   Store.load();
   Badges.check(null, true);                                   // old saves catch up quietly, no toasts

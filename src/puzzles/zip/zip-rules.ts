@@ -1,7 +1,7 @@
 import type { Checkpoint, ParsedZip } from '../../data/types.ts';
 
 /* The pure rules of the Scent Trail (no DOM, no saved data), so they can be tested on their own.
-     z      a parsed trail: { size, word, path: [[r, c], ...], cps: [{ idx, num, letter, r, c }], walls: Set('a-b') }   (see parseZip in data/zips.js)
+     z      a parsed trail: { size, word, path: [[r, c], ...], cps: [{ idx, num, letter, r, c }], walls: Set('a-b') }   (see parseZip in data/zips.ts)
      path   the player's trail as cell codes: row * size + col
    A trail wins when it visits every cell once, moves one step at a time, crosses no wall, and reaches the numbered checkpoints in order, ending on the last. */
 

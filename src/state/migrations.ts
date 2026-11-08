@@ -4,7 +4,7 @@ import { LEVELS } from '../data/levels.ts';
 import { OUTFIT_DEFAULT, SLOTS, WARDROBE_BY_ID } from '../data/wardrobe.ts';
 import { BONUS_DICT } from '../data/words.ts';
 
-/* The save-file upgrade and clean-up, pure (no localStorage, no Store), so a bad edit here is caught by tests/unit/store.test.js
+/* The save-file upgrade and clean-up, pure (no localStorage, no Store), so a bad edit here is caught by tests/unit/store.test.ts
    instead of silently erasing a player's progress.
      migrate(saved, readOld)   the v2 save as stored, or, when there is none, a v1 save upgraded to the v2 shape (readOld() returns the v1 object or null)
      sanitize(saved, defaults) copy only the valid, still-existing fields of a saved object onto `defaults`, and return it */
