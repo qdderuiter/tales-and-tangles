@@ -4,7 +4,7 @@
 .dlg-name.pup{background:#2f6f5e;color:#d6fff0}
 .story-pup .pup{width:100%;line-height:0}   /* the portrait wrapper only: the name tag shares the class "pup" and must not stretch */
 .pup-svg{width:100%;height:auto;overflow:visible;display:block;transform-origin:130px 190px;animation:breathe 3.2s ease-in-out infinite}
-.pup-svg *{transform-box:fill-box}
+.pup-tail,.pup-ant,.pup-ear,.pup-eyes{transform-box:fill-box}   /* only the animated groups: a blanket rule would shift the ears' own rotate(... cx cy) attributes */
 .pup-tail{transform-origin:6% 90%;animation:pupTail 1.1s ease-in-out infinite}
 .pup-ant{transform-origin:50% 100%;animation:pupAnt 2.6s ease-in-out infinite}
 .pup-ant.a2{animation-delay:-1.3s}
