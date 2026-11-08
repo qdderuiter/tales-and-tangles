@@ -1,4 +1,5 @@
 import { setShown } from '../core/dom.ts';
+import { emit } from '../core/events.ts';
 import { REDUCED } from '../core/util.ts';
 
 /* ---------- the shared engine for scripted films (Evil Larry's cinematics, the chapter endings) ----------
@@ -7,7 +8,8 @@ import { REDUCED } from '../core/util.ts';
      snd(fn)         run an audio cue, unless the film is being skipped
      anim(el, ...)   a Web Animation, or nothing when skipped / reduced motion (so the end state is simply the CSS state)
      caption(text)   the lower-third line         flashScreen(peak, ms)   a white flash
-     open / close    fade the overlay in and out; the Skip button appears after a delay (long the first time, short on a rewatch)
+     open / close    fade the overlay in and out; the Skip button appears after a delay (long the first time, short on a rewatch);
+                     they also emit 'film' so the game music steps aside for the film's own score
    The overlay's own look (letterbox, art) is CSS; the film script decides what happens when. */
 export interface FilmEls { root: HTMLElement; skip: HTMLElement; cap: HTMLElement; flash: HTMLElement }
 
@@ -52,8 +54,10 @@ export class Film {
     setShown(this.els.root, true);
     clearTimeout(this.skipTimer);
     this.skipTimer = window.setTimeout(() => { this.canSkip = true; this.els.skip.classList.add('on'); }, first ? 1500 : 300);
+    emit('film', { on: true });
   }
   async close() {
+    emit('film', { on: false });
     clearTimeout(this.skipTimer);
     setShown(this.els.root, false);
     this.els.skip.classList.remove('on'); this.canSkip = false;

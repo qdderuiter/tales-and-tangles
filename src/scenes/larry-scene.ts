@@ -3,7 +3,6 @@ import { AudioFX } from '../audio/sfx.ts';
 import { Larry } from '../characters/larry.ts';
 import type { LarryPortrait } from '../characters/larry.ts';
 import { $ } from '../core/dom.ts';
-import { emit } from '../core/events.ts';
 import { scenes } from '../core/scenes.ts';
 import { REDUCED, late } from '../core/util.ts';
 import { Cutscene } from './cutscene.ts';
@@ -50,7 +49,6 @@ export const LarryScene = {
     if (f.running) return;
     const e = this.els, root = this.larry.root, first = !Store.data.seen.larry;
     this.reset('intro'); f.open(first);
-    emit('film', { on: true });                                   // the game music steps aside for the film's own score
     if (REDUCED) {
       f.caption(''); e.lfTitle.classList.add('on');
       await f.wait(2400); await f.close();
@@ -99,8 +97,6 @@ export const LarryScene = {
       LarryScore.stop();                                           // the drone fades (at once if the film was skipped)
       await f.close();
     }
-    LarryScore.stop();
-    emit('film', { on: false });
     Store.data.seen.larry = true; Store.save();
   },
 
@@ -109,12 +105,11 @@ export const LarryScene = {
     if (f.running) return;
     const e = this.els, root = this.larry.root;
     this.reset('caught'); f.open(false);
-    emit('film', { on: true });
     e.lfStage.style.transform = 'translateX(-41.17%) scale(1.25)';
     e.lfCat.style.opacity = '1';
     if (REDUCED) {
       e.lanterns.forEach(l => l.classList.remove('off')); e.lfGold.classList.add('on'); this.larry.react('caught');
-      f.caption('Caught red-pawed!'); await f.wait(2200); await f.close(); emit('film', { on: false }); return;
+      f.caption('Caught red-pawed!'); await f.wait(2200); await f.close(); return;
     }
     await f.wait(600);
     // spotlight snaps on
@@ -143,7 +138,6 @@ export const LarryScene = {
     f.anim(e.lfCat, [{ transform: 'none' }, { transform: 'translateX(180%)' }], { duration: 520, easing: 'ease-in', fill: 'forwards' });
     await f.wait(800);
     await f.close();
-    emit('film', { on: false });
   }
 };
 

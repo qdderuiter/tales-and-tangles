@@ -1,12 +1,10 @@
 import { PupScore } from '../audio/film-score.ts';
 import { Haptics } from '../audio/haptics.ts';
-import { AudioFX } from '../audio/sfx.ts';
 import { Pup, rocketMarkup } from '../characters/pup.ts';
 import type { PupPortrait } from '../characters/pup.ts';
 import { $ } from '../core/dom.ts';
-import { emit } from '../core/events.ts';
 import { scenes } from '../core/scenes.ts';
-import { REDUCED, late, mulberry32 } from '../core/util.ts';
+import { REDUCED, clamp, late, mulberry32 } from '../core/util.ts';
 import { Store } from '../state/store.ts';
 import { Film } from './film.ts';
 
@@ -18,9 +16,26 @@ const TAU = Math.PI * 2;
 const HILLS_H = 0.36;      // the height of the hills svg as a fraction of the stage (.pf-hills in pup.css)
 const SHIP_BELLY = 0.86;   // where the rocket's underside is, as a fraction of its height
 const PUP_FOOT = 0.95;     // where Pickle's paws are, as a fraction of his height
+const HEART_SHOWN = 'translate(-50%,-50%)';
+
+type HillId = 'pfGround' | 'pfRidge';
+
+/* the top outline of a hill path in viewBox units: y at x = 0, 1, ... 400, sampled once along the path, ignoring its straight edges
+   (the x = 0 / 400 verticals and the base line). The paths never change and the viewBox does not depend on the stage size. */
+function outline(path: SVGPathElement): Float32Array {
+  const len = path.getTotalLength(), n = 120, pts: DOMPoint[] = [];
+  for (let i = 0; i <= n; i++) { const p = path.getPointAtLength((len * i) / n); if (p.y < 199.5) pts.push(p); }
+  const ys = new Float32Array(401);
+  for (let x = 0; x <= 400; x++) {
+    let best = 200, bestDx = Infinity;
+    for (const p of pts) { const dx = Math.abs(p.x - x); if (dx < bestDx) { bestDx = dx; best = p.y; } }
+    ys[x] = best;
+  }
+  return ys;
+}
 
 export const PupScene = {
-  els: {} as Record<string, HTMLElement>, pup: late<PupPortrait>(), film: late<Film>(),
+  els: {} as Record<string, HTMLElement>, pup: late<PupPortrait>(), film: late<Film>(), outlines: {} as Partial<Record<HillId, Float32Array>>,
 
   init() {
     const e = this.els;
@@ -53,22 +68,11 @@ export const PupScene = {
 
   /* the stage y (px) of a hill's outline at stage x: the hills svg is HILLS_H of the stage tall, sits on its bottom edge and is
      stretched over a 400 x 200 viewBox, so the outline is read off the path itself and scaled (works for any aspect ratio) */
-  groundY(id: 'pfGround' | 'pfRidge', x: number): number {
-    const path = document.getElementById(id) as unknown as SVGPathElement, W = this.els.pfStage.clientWidth, H = this.els.pfStage.clientHeight;
-    const vx = Math.max(0, Math.min(400, (x / W) * 400));
-    return H * (1 - HILLS_H) + (this.curveY(path, vx) / 200) * H * HILLS_H;
-  },
-  /* the y of the top outline at viewBox x, sampled along the path and ignoring the straight edges (x = 0 / 400 verticals, the base line) */
-  curveY(path: SVGPathElement, vx: number): number {
-    const len = path.getTotalLength(), n = 120;
-    let best = 200, bestDx = Infinity;
-    for (let i = 0; i <= n; i++) {
-      const p = path.getPointAtLength((len * i) / n);
-      if (p.y >= 199.5) continue;                                  // the base line and the bottom corners
-      const dx = Math.abs(p.x - vx);
-      if (dx < bestDx) { bestDx = dx; best = p.y; }
-    }
-    return best;
+  groundY(id: HillId, x: number): number {
+    const W = this.els.pfStage.clientWidth, H = this.els.pfStage.clientHeight;
+    const ys = this.outlines[id] ??= outline(document.getElementById(id) as unknown as SVGPathElement);
+    const vx = clamp((x / W) * 400, 0, 400), i = Math.floor(vx), y = i >= 400 ? ys[400] : ys[i] + (ys[i + 1] - ys[i]) * (vx - i);
+    return H * (1 - HILLS_H) + (y / 200) * H * HILLS_H;
   },
 
   /* plant the signpost, Pickle and the contact shadows on the hills (their bottoms, not their tops, touch the ground) */
@@ -123,7 +127,7 @@ export const PupScene = {
     e.pfCount.style.opacity = ''; e.pfCount.style.transform = ''; e.pfCount.textContent = '';
     e.pfHeart.style.opacity = ''; e.pfHeart.style.transform = '';
     e.pfTitle.classList.remove('on');
-    for (const s of [e.pfShadowSign, e.pfShadowShip, e.pfShadowPup]) s.classList.remove('on');
+    this.shadows(false, false, false);
     this.layoutGround();
     this.film.caption('');
     this.pup.react('happy');
@@ -148,13 +152,14 @@ export const PupScene = {
     this.shadows(true, true, true);
     this.pup.react('happy');
   },
+  /* the end state of the lift-off: the heart of stardust in place */
+  showHeart() { const h = this.els.pfHeart; h.style.opacity = '1'; h.style.transform = HEART_SHOWN; },
 
   async intro(): Promise<void> {
     const f = this.film;
     if (f.running) return;
     const e = this.els, first = !Store.data.seen.pup;
     this.reset(); f.open(first);
-    emit('film', { on: true });                                   // the game music steps aside for the film's own score
     if (REDUCED) {
       this.settleIntro(); e.pfTitle.classList.add('on');
       await f.wait(2600); await f.close();
@@ -184,8 +189,7 @@ export const PupScene = {
       await f.wait(1300);
       f.caption('');
       f.snd(() => PupScore.fall());
-      await f.wait(1700);
-      await f.wait(500);
+      await f.wait(2200);
       // 4. plop
       f.snd(() => { PupScore.boing(); Haptics.buzz(30); });
       f.flashScreen(0.35, 500, 0.2);
@@ -215,8 +219,6 @@ export const PupScene = {
       PupScore.stop();                                             // the pad fades (at once if the film was skipped)
       await f.close();
     }
-    PupScore.stop();
-    emit('film', { on: false });
     Store.data.seen.pup = true; Store.save();
   },
 
@@ -226,7 +228,6 @@ export const PupScene = {
     if (f.running) return;
     const e = this.els;
     this.reset(); f.open(false);
-    emit('film', { on: true });
     e.pfStage.classList.add('lift');
     e.pfSign.classList.add('on'); this.shadows(true, false, false);
     e.pfShip.classList.add('open');
@@ -234,8 +235,8 @@ export const PupScene = {
     e.pfShip.style.transform = this.pose(pad);
     if (REDUCED) {
       e.pfShip.style.transform = this.pose({ x: pad.x, y: -H, r: 90 });
-      e.pfHeart.style.opacity = '1'; e.pfHeart.style.transform = 'translate(-50%,-50%)';
-      f.caption('Safe travels, Pickle!'); await f.wait(2400); await f.close(); emit('film', { on: false }); return;
+      this.showHeart();
+      f.caption('Safe travels, Pickle!'); await f.wait(2400); await f.close(); return;
     }
     PupScore.start();
     f.caption('The launch key turns. The sparklers fizz.');
@@ -263,13 +264,12 @@ export const PupScene = {
     await f.wait(3100);
     // a heart of stardust where it flew
     f.caption('Bork bork! (That means thank you.)');
-    f.snd(() => { for (let i = 0; i < 6; i++) AudioFX.chime(4 + i * 2, i * 0.09, 0.09); });
-    f.anim(e.pfHeart, [{ opacity: 0, transform: 'translate(-50%,-50%) scale(.5)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.08)', offset: 0.6 }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1)' }], { duration: 1100, easing: 'ease-out', fill: 'forwards' });
-    if (f.fast) { e.pfHeart.style.opacity = '1'; e.pfHeart.style.transform = 'translate(-50%,-50%)'; }
+    f.snd(() => PupScore.heart());
+    f.anim(e.pfHeart, [{ opacity: 0, transform: HEART_SHOWN + ' scale(.5)' }, { opacity: 1, transform: HEART_SHOWN + ' scale(1.08)', offset: 0.6 }, { opacity: 1, transform: HEART_SHOWN + ' scale(1)' }], { duration: 1100, easing: 'ease-out', fill: 'forwards' });
+    if (f.fast) this.showHeart();
     await f.wait(3000);
     PupScore.stop();
     await f.close();
-    emit('film', { on: false });
   }
 };
 

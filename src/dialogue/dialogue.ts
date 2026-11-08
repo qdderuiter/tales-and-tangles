@@ -37,7 +37,7 @@ export class Dialogue {
     this.nameEl.textContent = who;
     SPEAKER_CLASSES.forEach(c => this.nameEl.classList.toggle(c, c === sp.nameClass));
     if (this.onSpeaker) this.onSpeaker(who, line.e || 'neutral');
-    if (!sp.ownPortrait) this.bear.react(line.e || 'neutral');
+    if (!sp.portrait) this.bear.react(line.e || 'neutral');
     VoiceManager.play(line.id);
     this.typer.start(line.t, { ms: lineMs(line, 26), voice: voiceFor(who), onDone: () => this.afterType(line) });
   }

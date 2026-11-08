@@ -17,7 +17,7 @@ export const StoryScreen = {
   init(bear: Bear, portraits: Record<string, StoryPortrait>) {
     this.dialogue = new Dialogue({ nameEl: $('#dlgName'), textEl: $('#dlgText'), choicesEl: $('#dlgChoices'), caret: $('#dlgCaret'), bear });
     this.dialogue.defaultSpeaker = (who: string, e: string, reset?: boolean) => {          // swap the portrait when Evil Larry or Pickle speaks
-      const sp = SPEAKERS[who], key = !reset && sp && sp.ownPortrait ? sp.portrait : undefined;
+      const sp = SPEAKERS[who], key = reset ? undefined : sp?.portrait;
       Object.entries(portraits).forEach(([k, p]) => p.host.classList.toggle('on', k === key));
       $('#storyBear').classList.toggle('away', !!key);
       if (key && portraits[key]) portraits[key].portrait.react(e);

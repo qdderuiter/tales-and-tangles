@@ -11,17 +11,27 @@ export interface TyperBear { talk(on: boolean): void }
 /* a real voice recording is audible, so the made-up babble stays quiet */
 const recordedClipPlaying = () => { const a = VoiceManager.current; return !!a && !a.paused && !a.ended; };
 
+const emSpan = (text: string) => { const sp = document.createElement('span'); sp.className = 'ty-em'; sp.textContent = text; return sp; };
+
 /* fill node with chars[from..to), wrapping runs of stressed characters in .ty-em */
 function renderRange(node: HTMLElement, chars: string[], em: boolean[], from: number, to: number) {
   node.replaceChildren();
   let k = from;
   while (k < to) {
-    const on = em[k];
-    let run = '';
-    while (k < to && em[k] === on) run += chars[k++];
-    if (on) { const sp = document.createElement('span'); sp.className = 'ty-em'; sp.textContent = run; node.appendChild(sp); }
-    else node.appendChild(document.createTextNode(run));
+    const on = em[k], start = k;
+    while (k < to && em[k] === on) k++;
+    const run = chars.slice(start, k).join('');
+    node.appendChild(on ? emSpan(run) : document.createTextNode(run));
   }
+}
+
+/* drop the first `n` UTF-16 units from node's text (the character just typed), removing its run once it is empty */
+function shiftText(node: HTMLElement, n: number) {
+  const first = node.firstChild;
+  if (!first) return;
+  const text = first instanceof Text ? first : first.firstChild instanceof Text ? first.firstChild : null;
+  if (text) text.deleteData(0, n);
+  if (!first.textContent) first.remove();
 }
 
 export class Typer {
@@ -51,7 +61,7 @@ export class Typer {
     if (!this.chars.length) { this.finishNow(); return; }
     const k = this.i++, ch = this.chars[k], stressed = this.em[k];
     this.appendTyped(ch, stressed);
-    renderRange(this.b, this.chars, this.em, this.i, this.chars.length);
+    shiftText(this.b, ch.length);
     if (this.i % this.voice.every === 0 && !recordedClipPlaying()) AudioFX.babble(ch, this.voice, stressed);
     if (this.i >= this.chars.length) { this.finishNow(); return; }
     let d = stressed ? this.ms * 1.4 : this.ms;
@@ -64,7 +74,7 @@ export class Typer {
     const lastStressed = last instanceof HTMLElement;
     if (stressed) {
       if (lastStressed) { last.textContent += ch; return; }
-      const sp = document.createElement('span'); sp.className = 'ty-em'; sp.textContent = ch; this.a.appendChild(sp);
+      this.a.appendChild(emSpan(ch));
     } else if (last instanceof Text) last.data += ch;
     else this.a.appendChild(document.createTextNode(ch));
   }

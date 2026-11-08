@@ -154,6 +154,7 @@ async function main() {
 
     if (await has(page, '#chapterFilm.show')) { log('  chapter film'); await watchFilm(page, '#chapterFilm'); continue; }
     if (await has(page, '#larryFilm.show')) { log('  Evil Larry cinematic'); await watchFilm(page, '#larryFilm'); continue; }
+    if (await has(page, '#pupFilm.show')) { log('  Pickle cinematic'); await watchFilm(page, '#pupFilm'); continue; }
     if (await has(page, '#noir.show')) { log('  Barnaby Noir interrupts'); await playNoir(page); continue; }
 
     if (await has(page, '#victory.show')) {

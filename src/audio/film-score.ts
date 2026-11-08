@@ -64,33 +64,46 @@ const bellStrike = (semi: number, t: number, vol: number, len = 2.4) =>
   [[1, 1, 1], [2.4, 0.5, 0.7], [4.1, 0.25, 0.45]].forEach(([m, v, d]) =>
     AudioFX.note(hz(semi) * m, { t, dur: len * d, vol: vol * v, type: 'sine', attack: 0.005 }));
 
-export const LarryScore = {
-  stopDrone: null as (() => void) | null,
+/* a held chord under a whole cinematic (the only long-lived sound in a character's score, so a skip can fade it out): oscillators
+   [semitone, wave, level] through a lowpass, swelling to `vol` over `rise` s; `lfo` makes the filter breathe. Returns the fade-out. */
+function heldPad(voices: [number, OscillatorType, number][], o: { lp: number; vol: number; rise: number; lfo?: { hz: number; depth: number } }): (() => void) | null {
+  const ctx = AudioFX.enabled ? AudioFX.ensure() : null;
+  if (!ctx) return null;
+  const g = ctx.createGain(), lp = ctx.createBiquadFilter(), now = ctx.currentTime;
+  lp.type = 'lowpass'; lp.frequency.value = o.lp;
+  g.gain.setValueAtTime(0.0001, now);
+  g.gain.linearRampToValueAtTime(o.vol, now + o.rise);
+  const oscs = voices.map(([s, type, v]) => {
+    const osc = ctx.createOscillator(), og = ctx.createGain();
+    osc.type = type; osc.frequency.value = hz(s); og.gain.value = v;
+    osc.connect(og); og.connect(lp); osc.start(); return osc;
+  });
+  if (o.lfo) {
+    const lfo = ctx.createOscillator(), lg = ctx.createGain();
+    lfo.frequency.value = o.lfo.hz; lg.gain.value = o.lfo.depth;
+    lfo.connect(lg); lg.connect(lp.frequency); lfo.start(); oscs.push(lfo);
+  }
+  lp.connect(g); g.connect(AudioFX.master);
+  return () => {
+    const n = ctx.currentTime;
+    g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value, 0.0001), n); g.gain.linearRampToValueAtTime(0.0001, n + 0.6);
+    oscs.forEach(osc => osc.stop(n + 0.7));
+  };
+}
 
-  /* the drone: A1 + E2 + a soft A2 an octave up, slowly swelling; returns nothing, `stop()` fades it */
-  start() {
-    this.stop();
-    const ctx = AudioFX.enabled ? AudioFX.ensure() : null;
-    if (!ctx) return;
-    const g = ctx.createGain(), lp = ctx.createBiquadFilter(), lfo = ctx.createOscillator(), lg = ctx.createGain();
-    lp.type = 'lowpass'; lp.frequency.value = 340;
-    g.gain.setValueAtTime(0.0001, ctx.currentTime);
-    g.gain.linearRampToValueAtTime(0.085, ctx.currentTime + 2.5);
-    lfo.frequency.value = 0.25; lg.gain.value = 90;                                  // the filter breathes slowly
-    lfo.connect(lg); lg.connect(lp.frequency);
-    const oscs = [[-27, 'sawtooth', 1], [-20, 'sawtooth', 0.6], [-15, 'triangle', 0.5]].map(([s, type, v]) => {
-      const o = ctx.createOscillator(), og = ctx.createGain();
-      o.type = type as OscillatorType; o.frequency.value = hz(s as number); og.gain.value = v as number;
-      o.connect(og); og.connect(lp); o.start(); return o;
-    });
-    lfo.start(); lp.connect(g); g.connect(AudioFX.master);
-    this.stopDrone = () => {
-      const n = ctx.currentTime;
-      g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value, 0.0001), n); g.gain.linearRampToValueAtTime(0.0001, n + 0.6);
-      oscs.forEach(o => o.stop(n + 0.7)); lfo.stop(n + 0.7);
-    };
-  },
-  stop() { if (this.stopDrone) { try { this.stopDrone(); } catch { /* already stopped */ } this.stopDrone = null; } },
+/* the start / stop pair of a character score around its held pad */
+function padControl(voices: [number, OscillatorType, number][], o: Parameters<typeof heldPad>[1]) {
+  let fade: (() => void) | null = null;
+  const stop = () => { if (fade) { try { fade(); } catch { /* already stopped */ } fade = null; } };
+  return { start() { stop(); fade = heldPad(voices, o); }, stop };
+}
+
+/* a run of rising chimes, the sparkle on a happy ending */
+const sparkleRun = (t0: number, gap: number, vol: number) => { for (let i = 0; i < 6; i++) AudioFX.chime(4 + i * 2, t0 + i * gap, vol); };
+
+export const LarryScore = {
+  /* the drone: A1 + E2 + a soft A2 an octave up, slowly swelling, the filter breathing slowly; `stop()` fades it */
+  ...padControl([[-27, 'sawtooth', 1], [-20, 'sawtooth', 0.6], [-15, 'triangle', 0.5]], { lp: 340, vol: 0.085, rise: 2.5, lfo: { hz: 0.25, depth: 90 } }),
 
   /* "Midnight at the market...": three slow, low bell tolls and gusts of wind */
   midnight() {
@@ -133,29 +146,8 @@ export const LarryScore = {
    A warm pad under the whole scene (the only long-lived sound, so a skip can fade it out), then one-shot sounds timed by the scene:
    the rocket zooming by, sputtering, falling, a soft bounce, the hatch popping, Pickle's "bork", the countdown and the lift-off. */
 export const PupScore = {
-  stopPad: null as (() => void) | null,
-
-  start() {
-    this.stop();
-    const ctx = AudioFX.enabled ? AudioFX.ensure() : null;
-    if (!ctx) return;
-    const g = ctx.createGain(), lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass'; lp.frequency.value = 900;
-    g.gain.setValueAtTime(0.0001, ctx.currentTime);
-    g.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 2);
-    const oscs = [[-12, 'sine', 1], [-5, 'triangle', 0.6], [4, 'sine', 0.5], [11, 'sine', 0.3]].map(([s, type, v]) => {
-      const o = ctx.createOscillator(), og = ctx.createGain();
-      o.type = type as OscillatorType; o.frequency.value = hz(s as number); og.gain.value = v as number;
-      o.connect(og); og.connect(lp); o.start(); return o;
-    });
-    lp.connect(g); g.connect(AudioFX.master);
-    this.stopPad = () => {
-      const n = ctx.currentTime;
-      g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value, 0.0001), n); g.gain.linearRampToValueAtTime(0.0001, n + 0.6);
-      oscs.forEach(o => o.stop(n + 0.7));
-    };
-  },
-  stop() { if (this.stopPad) { try { this.stopPad(); } catch { /* already stopped */ } this.stopPad = null; } },
+  /* a warm major-seventh pad; `stop()` fades it */
+  ...padControl([[-12, 'sine', 1], [-5, 'triangle', 0.6], [4, 'sine', 0.5], [11, 'sine', 0.3]], { lp: 900, vol: 0.06, rise: 2 }),
 
   /* twinkling stars at the start: a few high glassy notes */
   twinkle() { [19, 26, 23, 31].forEach((s, i) => AudioFX.chime(s - 12, i * 0.35, 0.05)); },
@@ -193,8 +185,10 @@ export const PupScore = {
   /* the WELCOME card: a warm major chord and a sparkle */
   title() {
     [0, 4, 7, 12].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.05, dur: 2.2, vol: 0.07, type: 'triangle', attack: 0.03 }));
-    for (let i = 0; i < 6; i++) AudioFX.chime(4 + i * 2, 0.3 + i * 0.08, 0.08);
+    sparkleRun(0.3, 0.08, 0.08);
   },
+  /* the heart of stardust after the lift-off */
+  heart() { sparkleRun(0, 0.09, 0.09); },
   /* the countdown: three equal beeps and a higher one for GO */
   countdown(i: number) { AudioFX.note(i < 3 ? 440 : 880, { dur: i < 3 ? 0.22 : 0.6, vol: 0.1, type: 'triangle', lp: 2400, attack: 0.005 }); },
   /* lift-off: a rumble that opens up, a rising tone and a sparkling finish */

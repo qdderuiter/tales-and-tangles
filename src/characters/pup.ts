@@ -65,5 +65,5 @@ export function rocketInner(u: string): string {
 }
 
 export function rocketMarkup(u: string): string {
-  return '<svg viewBox="-4 -4 256 138" class="rk-svg" aria-hidden="true" style="overflow:visible">' + rocketInner(u) + '</svg>';
+  return '<svg viewBox="-4 -4 256 138" class="rk-svg" aria-hidden="true">' + rocketInner(u) + '</svg>';
 }

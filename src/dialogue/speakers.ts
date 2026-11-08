@@ -12,10 +12,10 @@ export interface Reaction { id: string; e: string; t: string }
 
 export const DEFAULT_SPEAKER = 'Barnaby';
 
-/* speakers other than Barnaby: nameClass styles the name tag, ownPortrait = Barnaby's face does not react to their lines */
-export const SPEAKERS: Record<string, { nameClass: string; ownPortrait: boolean; portrait?: string }> = {
-  'Evil Larry': { nameClass: 'larry', ownPortrait: true, portrait: 'larry' },
-  'Pickle': { nameClass: 'pup', ownPortrait: true, portrait: 'pup' }
+/* speakers other than Barnaby: nameClass styles the name tag; portrait = their own face on the story screen (Barnaby's does not react to their lines) */
+export const SPEAKERS: Record<string, { nameClass: string; portrait?: string }> = {
+  'Evil Larry': { nameClass: 'larry', portrait: 'larry' },
+  'Pickle': { nameClass: 'pup', portrait: 'pup' }
 };
 
 export const SPEAKER_CLASSES = Object.values(SPEAKERS).map(s => s.nameClass).filter(Boolean);

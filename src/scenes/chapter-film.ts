@@ -1,7 +1,6 @@
 import { FilmScore } from '../audio/film-score.ts';
 import { Haptics } from '../audio/haptics.ts';
 import { $ } from '../core/dom.ts';
-import { emit } from '../core/events.ts';
 import { scenes } from '../core/scenes.ts';
 import { REDUCED, late } from '../core/util.ts';
 import { CHAPTERS, endingLayers } from '../data/chapters.ts';
@@ -61,7 +60,6 @@ export const ChapterFilm = {
     e.chapterFilm.classList.toggle('calm', REDUCED);
 
     f.open(first);
-    emit('film', { on: true });
     FilmScore.start(ch.id);
 
     if (REDUCED) {
@@ -94,7 +92,6 @@ export const ChapterFilm = {
     }
 
     FilmScore.stop(!f.fast);
-    emit('film', { on: false });
     await f.close();
     e.cfCard.classList.remove('credits');
     this.art.textContent = ''; this.stage = null;
