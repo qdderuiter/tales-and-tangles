@@ -3,7 +3,7 @@
 .story-larry{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 250px);width:min(52%,230px);z-index:1;opacity:0;pointer-events:none;transition:opacity .25s}
 .story-larry.on{opacity:1}
 .dlg-name.larry{background:#3a2a4d;color:#ffd96a}
-.larry{width:100%;line-height:0}
+.story-larry .larry{width:100%;line-height:0}   /* the portrait wrapper only: the name tag shares the class "larry" and must not stretch */
 .larry-svg{width:100%;height:auto;overflow:visible;display:block;transform-origin:100px 240px;animation:breathe 3.2s ease-in-out infinite}
 .larry-svg *{transform-box:fill-box}
 .larry-tail{transform-origin:20% 90%;animation:larryTail 2.4s ease-in-out infinite}

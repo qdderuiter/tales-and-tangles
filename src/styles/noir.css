@@ -74,3 +74,9 @@ body.evil .witem{color:#3b2f55}
 @keyframes fogDrift{0%{transform:translateZ(-80px) scale(1.15) translateX(-2%)}100%{transform:translateZ(-80px) scale(1.2) translateX(3%)}}
 @keyframes sealPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,90,130,.7)}50%{box-shadow:0 0 0 14px rgba(255,90,130,0)}}
 @keyframes sealIn{0%{transform:scale(0)}100%{transform:scale(1)}}
+/* contrast: the combo badge keeps its light-theme brown text, which vanishes on the dark butter */
+body.evil .combo{color:#fff2d6;box-shadow:3px 3px 8px var(--sh-d),inset 0 2px 0 rgba(255,255,255,.12)}
+/* the cutscene's buttons: no light clay highlight or glow on the dark scene */
+.noir .noir-skip,.noir .noir-begin{background:#3a2c57;color:#f3e8ff;box-shadow:2px 3px 8px rgba(0,0,0,.55),inset 0 0 0 1px rgba(243,232,255,.18);filter:none}
+.noir .noir-begin{background:#7a3a52;color:#fff}
+.noir .noir-skip:active,.noir .noir-begin:active{box-shadow:inset 2px 2px 6px rgba(0,0,0,.5)}
