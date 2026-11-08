@@ -1,0 +1,23 @@
+:root{
+  --cream:#fbf3e6; --cream2:#f2e2c8; --cream3:#e9d5b6;
+  --peach:#f8cdb4; --mint:#c8e6cf; --lav:#d9d0f0; --sky:#cde3f3; --butter:#fbe5a0; --rose:#f4b6b6;
+  --brown:#8a5a3c; --ink:#5b4636; --ink-soft:#8b7561;
+  --sh-l:rgba(255,255,255,.95); --sh-d:rgba(176,140,104,.40);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+  --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px);
+  --sal:env(safe-area-inset-left,0px); --sar:env(safe-area-inset-right,0px);
+  --font:"Nunito","Baloo 2","Quicksand",ui-rounded,"SF Pro Rounded","Trebuchet MS","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;touch-action:none;
+  background:radial-gradient(circle at 30% 20%,#f7e8d0,#ead3b2);color:var(--ink);font-family:var(--font);
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-text-size-adjust:100%}
+body{display:flex;justify-content:center;align-items:center}
+button{font-family:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulation;-webkit-appearance:none;appearance:none}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+
+#app{position:relative;width:100%;max-width:460px;height:100vh;height:100dvh;overflow:hidden;
+  background:linear-gradient(180deg,#fdf6ea 0%,#f7e8d1 100%)}
+@media (min-width:520px) and (min-height:760px){
+  #app{height:min(100dvh,920px);border-radius:38px;box-shadow:0 30px 80px rgba(110,70,30,.35),0 0 0 8px rgba(255,255,255,.5)}
+}

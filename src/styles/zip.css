@@ -1,0 +1,20 @@
+/* ---------- Zip: Scent Trail ---------- */
+.clue-strip{display:flex;justify-content:center;gap:8px;min-height:40px}
+.zl{width:34px;height:38px;border-radius:12px;background:var(--cream2);display:grid;place-items:center;font-weight:900;font-size:19px;color:var(--ink-soft);
+  box-shadow:inset 3px 3px 6px var(--sh-d),inset -3px -3px 6px var(--sh-l);transition:background .25s}
+.zl.on{background:var(--butter);color:var(--ink);box-shadow:3px 3px 7px var(--sh-d),-3px -3px 7px var(--sh-l),inset 0 2px 0 rgba(255,255,255,.6)}
+.zl.pop{animation:pop .5s var(--spring)}
+.zboard{width:min(100%,calc(100vh - 426px));width:min(100%,calc(100dvh - 426px));min-width:240px}
+.zgrid{position:relative;width:100%;aspect-ratio:1/1;display:grid;touch-action:none}
+.zt{padding:2px}
+.zf{width:100%;height:100%;border-radius:12px;background:#fffaf1;box-shadow:2px 2px 6px var(--sh-d),-2px -2px 6px var(--sh-l),inset 0 2px 0 #fff;
+  transition:transform .25s var(--spring),background .2s}
+.zt.on .zf{background:var(--zc,#ffe3d1);box-shadow:inset 2px 2px 5px rgba(0,0,0,.08),inset -2px -2px 5px rgba(255,255,255,.5)}
+.zt.head .zf{transform:scale(.9)}
+.zt.hint .zf{animation:hintPulse .9s ease-in-out infinite;background:#fff1b8}
+#zLine{fill:none;stroke-width:34;stroke-linecap:round;stroke-linejoin:round;opacity:.85;filter:drop-shadow(0 0 7px rgba(255,170,120,.75))}
+.zcp circle{fill:#fffaf1;stroke:#8a5a3c;stroke-width:5;transition:fill .25s}
+.zcp text{font-size:36px;font-weight:900;fill:#5b4636;text-anchor:middle;dominant-baseline:central;font-family:var(--font)}
+.zcp.got circle{fill:#f7c948}
+.zwalls line{stroke:#6b4f3a;stroke-width:9;stroke-linecap:round}
+.zbottom{display:flex;justify-content:center;padding-top:2px}

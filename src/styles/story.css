@@ -1,0 +1,24 @@
+/* ---------- story ---------- */
+#screen-story{padding:0;background:linear-gradient(180deg,var(--scene-a,#fde9c9),var(--scene-b,#f9cfa6));overflow:hidden}
+#screen-story::before,#screen-story::after{content:"";position:absolute;border-radius:50%;pointer-events:none}
+#screen-story::before{width:150%;height:46%;left:-25%;bottom:-14%;background:rgba(255,255,255,.35)}
+#screen-story::after{width:110%;height:38%;left:-5%;bottom:-18%;background:rgba(255,255,255,.35)}
+.story-top{position:absolute;top:calc(var(--sat) + 12px);left:calc(var(--sal) + 14px);right:calc(var(--sar) + 14px);display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:3}
+.chip-title{background:rgba(255,250,241,.85);padding:9px 16px;border-radius:18px;font-weight:800;font-size:14px;
+  box-shadow:4px 4px 10px var(--sh-d),-3px -3px 8px var(--sh-l)}
+.story-bear{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 250px);width:min(58%,250px);z-index:1;transition:opacity .25s}
+.dlg{position:absolute;left:calc(var(--sal) + 14px);right:calc(var(--sar) + 14px);bottom:calc(var(--sab) + 16px);min-height:210px;z-index:2;
+  background:#fffaf1;border-radius:28px;padding:28px 22px 24px;
+  box-shadow:8px 8px 18px var(--sh-d),-6px -6px 14px var(--sh-l),inset 0 3px 0 #fff;display:flex;flex-direction:column;gap:10px}
+.dlg-name{position:absolute;top:-16px;left:22px;background:var(--peach);padding:6px 18px;border-radius:16px;font-weight:900;font-size:15px;
+  box-shadow:3px 3px 8px var(--sh-d),inset 0 2px 0 rgba(255,255,255,.6)}
+.dlg-text{font-size:18px;line-height:1.5;font-weight:700;min-height:81px}
+.ty-b{visibility:hidden}
+.dlg-choices{display:flex;flex-direction:column;gap:10px}
+.dlg-choices:empty{display:none}
+.choice{background:var(--mint);font-size:16px;padding:12px 18px;text-align:left;animation:popIn .45s var(--spring) both}
+.choice:nth-child(2){background:var(--lav)}
+.dlg-caret{position:absolute;right:20px;bottom:12px;font-size:16px;color:var(--brown);opacity:0;transition:opacity .2s}
+.dlg-caret.on{opacity:1;animation:caret 1s ease-in-out infinite}
+@keyframes caret{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+@keyframes popIn{0%{opacity:0;transform:scale(.8) translateY(10px)}100%{opacity:1;transform:none}}

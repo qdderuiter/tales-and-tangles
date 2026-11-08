@@ -1,0 +1,15 @@
+/* ---------- Barnaby ---------- */
+.bear{position:relative;width:100%;line-height:0}
+.bear-svg{width:100%;height:auto;overflow:visible;display:block}
+.bear.bounce{animation:bounce .6s var(--spring)}
+.bear-idle{transform-origin:100px 222px;animation:breathe 3.6s ease-in-out infinite}
+.bear-arm{transform-origin:150px 165px;animation:armSway 4.2s ease-in-out infinite}
+.eye{transition:transform .07s ease-out}
+.bear.blink .eye{transform:scaleY(.08)}
+.pupil-g{transition:transform .15s ease-out}
+.mouth-open{display:none}
+.bear.open .mouth-open{display:inline}
+.bear.open .mouth-closed{display:none}
+@keyframes breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,.99) translateY(-2px)}}
+@keyframes armSway{0%,100%{transform:rotate(0)}50%{transform:rotate(-5deg)}}
+@keyframes bounce{0%{transform:translateY(0) scale(1)}28%{transform:translateY(-16px) scale(.96,1.06)}58%{transform:translateY(0) scale(1.05,.94)}80%{transform:scale(.99,1.01)}100%{transform:none}}

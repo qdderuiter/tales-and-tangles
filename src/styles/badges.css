@@ -1,0 +1,16 @@
+/* ---------- detective badges ---------- */
+.badge-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bcard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;padding:14px 10px;border-radius:22px;background:var(--cream2);
+  box-shadow:6px 6px 13px var(--sh-d),-5px -5px 11px var(--sh-l),inset 0 3px 0 rgba(255,255,255,.55)}
+.bcard .bicon{width:54px;height:54px;border-radius:50%;background:#fffaf1;display:grid;place-items:center;font-size:28px;
+  box-shadow:inset 3px 3px 7px var(--sh-d),inset -3px -3px 7px var(--sh-l)}
+.bcard b{font-size:14px;font-weight:900;color:var(--ink)}
+.bcard small{font-size:12px;font-weight:600;line-height:1.3;color:var(--ink-soft)}
+.bcard .bdate{font-size:11px;font-weight:800;color:#6a5a96}
+.bcard.locked{opacity:.6}
+.bcard.locked .bicon{filter:grayscale(1)}
+.bcard.new{animation:fresh 1.2s var(--spring) 2}
+.unlock .note{display:block;font-size:12px;font-weight:700;color:#6a5a96;margin-top:2px}
+
+.theme-line{flex:none;text-align:center;font-size:13px;font-weight:800;line-height:1.3;color:var(--ink-soft);padding:0 8px}
+.theme-line b{color:var(--ink);font-weight:900}
