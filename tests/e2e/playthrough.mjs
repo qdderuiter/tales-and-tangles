@@ -6,13 +6,15 @@
      E2E_BROWSER_CHANNEL=chrome ...            installed browser to drive (default: msedge). No browser is downloaded.
      npm run test:e2e -- A C                   run only the named scenarios
 
-   Scenarios
-     A  chapter 1 start to finish, then the side screens (wardrobe, badges) and the first badge
-     B  chapter 8: Evil Larry's opening cinematic, then the chapter's puzzle
+   Scenarios ("level" = one case; a chapter groups several levels and ends with a film)
+     A  level 1 start to finish, the chapter view it returns to, then the side screens (wardrobe, badges) and the first badge
+     B  level 8: Evil Larry's opening cinematic, then the level's puzzle
      C  Barnaby Noir interrupts after three perfect results in a row
      D  replay a single puzzle from the map pips
-     E  a chapter with a custom `steps` list (dev server only: it needs the dev hook in src/main.js)
+     E  a level with a custom `steps` list (dev server only: it needs the dev hook in src/main.ts)
      F  Reset progress (two taps) erases the save
+     G  the last level of chapter 1: its ending film plays, the next chapter unlocks, the film can be rewatched (dev server only)
+     H  the chapter view: opens from its card, closes with Escape and the back button, and a locked card stays shut
 
    Answers (word paths, trail, culprit, item) are read from src/data, so the test follows the content. Anything logged with
    console.error, or any uncaught page error, fails the scenario. Screenshots go to tests/e2e/out/ (git-ignored). */
@@ -64,7 +66,7 @@ async function resolveTarget() {
 const solvedChapter = { word: { done: true, stars: 3, best: 1400 }, zip: { done: true, stars: 3, best: 1400 }, solved: true, penalty: 0 };
 
 /* chapter 1 solved, chapter 2 open: the starting point of scenarios B, C, D and F */
-const ch1Done = { unlocked: 2, chapters: { 1: solvedChapter } };
+const ch1Done = { unlocked: 2, levels: { 1: solvedChapter } };
 
 /* a v2 save built from the real defaults, so it can't drift from the game; `over` replaces top-level fields */
 const makeSave = over => JSON.stringify({ ...Store.defaults(), ...over });
@@ -152,8 +154,11 @@ function expect(actual, label) {
 }
 
 const tapNoir = page => page.locator('#noirDlg').dispatchEvent('pointerdown').catch(() => {});
-const chapterRow = (page, n) => page.locator('#mapList .chwrap').nth(n - 1);
-const chapterButton = (page, n) => chapterRow(page, n).locator('.chapter');
+/* the map is a list of chapter cards; tapping one opens its chapter view, a sheet listing that chapter's cases */
+const openChapter = async (page, id) => { await page.click(`#mapList .chcard-main[data-ch="${id}"]`); await page.waitForSelector('#chView.open'); };
+const closeChapter = async page => { await page.click('.chv-back'); await page.waitForSelector('#chView:not(.open)', { state: 'attached' }); };
+const caseRow = (page, n) => page.locator(`#chvSheet .cnode:has([data-level="${n}"])`);
+const caseButton = (page, n) => page.locator(`#chvSheet [data-level="${n}"]`);
 
 /* tap Noir's dialogue (up to 40 times, 300 ms apart) until done() is true */
 async function tapNoirUntil(page, done) {
@@ -181,11 +186,16 @@ const scenarios = {
     await pressContinue(page);
     await skipStory(page);                                          // outro
     await onScreen(page, 'map');
+    await page.waitForSelector('#chView.open');                     // the map reopens the chapter you were playing
+    expect(await caseButton(page, 2).isEnabled(), 'case 1.2 is open').toBe(true);
+    expect(await caseRow(page, 1).locator('.pip.done').count(), 'case 1.1 pips ticked').toBe(3);
+    await shot('chapter-view');
+    await closeChapter(page);
 
     const save = await readSave(page);
-    expect(save.chapters[1].solved, 'chapter 1 solved').toBe(true);
+    expect(save.levels[1].solved, 'chapter 1 solved').toBe(true);
     expect(save.unlocked, 'chapter 2 unlocked').toBe(2);
-    expect(save.chapters[1].word.done && save.chapters[1].zip.done, 'both puzzles recorded').toBe(true);
+    expect(save.levels[1].word.done && save.levels[1].zip.done, 'both puzzles recorded').toBe(true);
     expect(save.badges.rookie, 'the "Rookie Detective" badge is saved').toBeTruthy();
 
     await page.click('#btnMapWardrobe');                            // side screens, and back
@@ -193,7 +203,7 @@ const scenarios = {
     await shot('wardrobe');
     await page.click('#btnWBack');
     await onScreen(page, 'map');
-    await page.click('#mapList .chapter.badges');
+    await page.click('#mapList .mapchip.badges');
     await onScreen(page, 'badges');
     await page.waitForSelector('#bGrid > *');
     expect(await page.textContent('#bCount'), 'badge counter').toBeTruthy();
@@ -207,8 +217,9 @@ const scenarios = {
   async B({ page, shot }) {
     await page.click('#btnPlay');
     await onScreen(page, 'map');
-    await chapterButton(page, 8).click();
-    await page.waitForSelector('#larryFilm.show');                  // Evil Larry's cinematic opens the chapter
+    await openChapter(page, 'larry');
+    await caseButton(page, 8).click();
+    await page.waitForSelector('#larryFilm.show');                  // Evil Larry's cinematic opens the level
     await shot('larry');
     await page.waitForSelector('#lfSkip.on');                       // Skip appears after a moment
     await page.click('#lfSkip');
@@ -222,7 +233,8 @@ const scenarios = {
   async C({ page, shot }) {
     await page.click('#btnPlay');
     await onScreen(page, 'map');
-    await chapterRow(page, 1).locator('.pip', { hasText: 'Words' }).click();
+    await openChapter(page, 'village');
+    await caseRow(page, 1).locator('.pip', { hasText: 'Words' }).click();
     await solveWords(page, lv1);                                    // a perfect result: no hints, no mistakes
     await victory(page, 'Clue Found!', 'Back to case files');
     await pressContinue(page);
@@ -243,9 +255,10 @@ const scenarios = {
   async D({ page, shot }) {
     await page.click('#btnPlay');
     await onScreen(page, 'map');
-    const pips = chapterRow(page, 1).locator('.pip');
-    expect(await pips.count(), 'pips on chapter 1').toBeGreaterThan(2);
-    expect(await chapterRow(page, 1).locator('.pip.done').count(), 'ticked pips').toBe(3);
+    await openChapter(page, 'village');
+    const pips = caseRow(page, 1).locator('.pip');
+    expect(await pips.count(), 'pips on level 1').toBeGreaterThan(2);
+    expect(await caseRow(page, 1).locator('.pip.done').count(), 'ticked pips').toBe(3);
     expect(await pips.nth(0).isEnabled(), 'Words pip enabled once solved').toBe(true);
     await shot('pips');
     await pips.nth(1).click();                                      // Trail
@@ -253,6 +266,7 @@ const scenarios = {
     await victory(page, 'Trail Followed!', 'Back to case files');
     await pressContinue(page);
     await onScreen(page, 'map');
+    await page.waitForSelector('#chView.open');                     // back in the chapter it came from
     await pips.nth(0).click();                                      // Words
     await solveWords(page, lv1);
     await victory(page, 'Clue Found!', 'Back to case files');
@@ -277,19 +291,69 @@ const scenarios = {
   },
 
   async F({ page, shot }) {
-    expect((await readSave(page)).chapters[1].solved, 'a seeded save to erase').toBe(true);
+    expect((await readSave(page)).levels[1].solved, 'a seeded save to erase').toBe(true);
     const reset = page.locator('#btnReset');
     await reset.click();
     expect(await reset.textContent(), 'first tap arms the button').toBe('Tap again to erase all progress');
-    expect((await readSave(page)).chapters[1].solved, 'one tap erases nothing').toBe(true);
+    expect((await readSave(page)).levels[1].solved, 'one tap erases nothing').toBe(true);
     await reset.click();
     await page.waitForSelector('.toast');
     const save = await readSave(page);
-    expect(!save || (save.unlocked === 1 && Object.keys(save.chapters).length === 0), 'the save is back to defaults').toBe(true);
+    expect(!save || (save.unlocked === 1 && Object.keys(save.levels).length === 0), 'the save is back to defaults').toBe(true);
     expect(await reset.textContent(), 'button resets its label').toBe('Reset progress');
     await shot('reset');
     await page.click('#btnPlay');                                   // no progress again: a new game starts at the story
     await onScreen(page, 'story');
+  },
+
+  async G({ page, shot }) {
+    // the last level of chapter 1, trimmed to a word puzzle and the notebook (dev hook), so the chapter's ending film follows
+    const lv3 = LEVELS[2];
+    await page.evaluate(() => { window.__LEVELS[2].steps = ['word', 'case']; });
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'village');
+    await caseButton(page, 3).click();
+    await solveWords(page, lv3);
+    await victory(page, 'Clue Found!', 'To the suspects');
+    await pressContinue(page);
+    await accuse(page, lv3);
+    await victory(page, 'Case Solved!');
+    expect(await page.textContent('#vUnlock'), 'the card announces the chapter').toBe('Chapter completeVillage Days');
+    await pressContinue(page);
+    await page.waitForSelector('#chapterFilm.show');                // the chapter's ending film
+    await shot('chapter-film');
+    await page.waitForSelector('#cfSkip.on');
+    await page.waitForSelector('#cfCard.on');                       // (reduced motion: the finished scene, then the card)
+    expect(await page.textContent('#cfTitle'), 'film card title').toBe('Village Days');
+    await page.click('#cfSkip');
+    await page.waitForSelector('#chapterFilm:not(.show)');
+    await onScreen(page, 'map');
+    expect((await readSave(page)).seen.endings.village, 'the ending is marked as seen').toBe(true);
+    await page.waitForSelector('#mapList .chcard-main[data-ch="dreams"]:not([aria-disabled])');   // chapter 2 unlocks
+    expect(await page.locator('#chView.open').count(), 'the chapter list, not the chapter view, after an ending').toBe(0);
+    await shot('chapter-unlocked');
+    await page.click('#mapList .chcard-film');                      // and the film can be watched again from its card
+    await page.waitForSelector('#chapterFilm.show');
+    await page.waitForSelector('#cfSkip.on');
+    await page.click('#cfSkip');
+    await page.waitForSelector('#chapterFilm:not(.show)');
+  },
+
+  async H({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'village');                             // Escape and the back button both close the sheet
+    expect(await page.evaluate(() => document.getElementById('mapList').inert), 'the map behind is inert').toBe(true);
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('#chView:not(.open)', { state: 'attached' });
+    expect(await page.evaluate(() => document.getElementById('mapList').inert), 'the map is live again').toBe(false);
+    await openChapter(page, 'village');
+    await closeChapter(page);
+    await page.click('#mapList .chcard-main[data-ch="larry"]', { force: true });     // chapter 4 is locked: a tap explains, it does not open
+    await page.waitForSelector('.toast');
+    expect(await page.locator('#chView.open').count(), 'a locked chapter stays shut').toBe(0);
+    await shot('locked-chapter');
   }
 };
 
@@ -300,7 +364,9 @@ const seeds = {
   C: makeSave({ ...ch1Done, perfect: { streak: 2 } }),
   D: makeSave(ch1Done),
   E: null,
-  F: makeSave(ch1Done)
+  F: makeSave(ch1Done),
+  G: makeSave({ unlocked: 3, levels: { 1: solvedChapter, 2: solvedChapter } }),
+  H: makeSave(ch1Done)
 };
 
 /* ---------- run ---------- */
@@ -320,7 +386,7 @@ async function main() {
   const results = [];
   for (const id of Object.keys(scenarios)) {
     if (ONLY.length && !ONLY.includes(id)) continue;
-    if (id === 'E' && !target.dev) { console.log('- E skipped: needs the dev server (use --dev)'); continue; }
+    if ((id === 'E' || id === 'G') && !target.dev) { console.log(`- ${id} skipped: needs the dev server (use --dev)`); continue; }
     const started = Date.now();
     const session = await openPage(browser, target, { save: seeds[id], name: id });
     try {

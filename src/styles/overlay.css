@@ -37,7 +37,7 @@
 }
 /* reduced motion = gentler feedback, not none: cross-fades and colour changes stay, slides/springs/loops go */
 @media (prefers-reduced-motion:reduce){
-  .bear.bounce,.bear-idle,.bear-arm,.logo .amp,.sparkles i,.chapter.fresh,.newbest,.dlg-caret.on,.tile.shake .face{animation:none}
+  .bear.bounce,.bear-idle,.bear-arm,.logo .amp,.sparkles i,.cnode.fresh .cnode-main,.newbest,.dlg-caret.on,.tile.shake .face{animation:none}
   .tile.found .face,.slot.done,.choice,.unlock,.zl.pop{animation:none}
   .tile.hint .face,.zt.hint .zf{animation:none;background:#fff1b8;outline:3px solid #f0c040}
   .clue-item.hinted{animation:none;box-shadow:inset 0 0 0 3px #f0c040}
@@ -51,7 +51,7 @@
   .word-toast{animation:toastFade 1s ease-out forwards}
   .screen,.screen.active{transform:none;transition:opacity .2s ease,visibility 0s}
   .vcard,.overlay.show .vcard{transform:none;transition:none}
-  .face,.btn,.chapter,.badge{transition-duration:.01ms}
+  .face,.btn,.badge{transition-duration:.01ms}
 }
 @keyframes toastFade{0%{opacity:0}20%,70%{opacity:1}100%{opacity:0}}
 @media (prefers-reduced-transparency:reduce){

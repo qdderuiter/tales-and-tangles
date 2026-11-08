@@ -1,6 +1,7 @@
 import { Haptics } from '../../audio/haptics.ts';
 import { AudioFX } from '../../audio/sfx.ts';
 import { $, flashClass, replayClass } from '../../core/dom.ts';
+import { caseLabel } from '../../data/chapters.ts';
 import { emit } from '../../core/events.ts';
 import { COLS, ROWS } from '../../core/grid.ts';
 import type { PuzzleResult } from '../../core/types.ts';
@@ -81,7 +82,7 @@ export const WordPuzzle = definePuzzle({
     this.els.zips.innerHTML = '';
     this.setLine(this.els.trace, []); this.setLine(this.els.bad, []);
     this.els.preview.classList.remove('on');
-    this.els.title.textContent = lvl.evil ? 'Noir\u2019s remix \u00B7 ' + (lvl.daily ? 'Daily' : 'Chapter ' + lvl.n) : lvl.daily ? 'Daily Case · ' + lvl.date : 'Chapter ' + lvl.n + ': ' + lvl.title;
+    this.els.title.textContent = lvl.evil ? 'Noir\u2019s remix \u00B7 ' + (lvl.daily ? 'Daily' : caseLabel(lvl.n)) : lvl.daily ? 'Daily Case · ' + lvl.date : caseLabel(lvl.n) + ': ' + lvl.title;
     this.order = lvl.words.map((_, i) => i).sort((a, b) => lvl.words[a].w.length - lvl.words[b].w.length || a - b);
     this.buildTray();
     this.updateStatus();

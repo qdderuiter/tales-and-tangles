@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { LEVELS } from '../../src/data/levels.ts';
 import { STORY_EXTRA, STORY_RAW } from '../../src/data/story.ts';
 import type { RawLine } from '../../src/data/types.ts';
-import { DEFAULT_STEPS } from '../../src/game/chapter-steps.ts';
+import { DEFAULT_STEPS } from '../../src/game/level-steps.ts';
 
 /* The story parts a chapter needs follow from its steps: the story steps `intro`, `bridge` and `outro` each play their own part,
    and the notebook (`case`) opens with `caseIntro`. (story-builder.ts merges STORY_EXTRA into STORY_RAW.) */

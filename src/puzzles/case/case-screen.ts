@@ -13,7 +13,7 @@ import { STORY } from '../../dialogue/story-builder.ts';
 import { Typer } from '../../dialogue/typer.ts';
 import { NOTE_KINDS, blankNotes, planCaseHint } from './case-logic.ts';
 import type { CaseHint, NoteKind, Notes } from './case-logic.ts';
-import type { ChapterRun } from '../../state/session.ts';
+import type { LevelRun } from '../../state/session.ts';
 import { Store } from '../../state/store.ts';
 import { UI } from '../../ui/ui.ts';
 
@@ -44,7 +44,7 @@ type HintPlan = CaseHint & { sig: string; stage: number; charged: boolean };
 
 /* fields marked late() are filled by init() / load() before anything reads them */
 export const CaseScreen = {
-  lvl: late<Level>(), run: late<ChapterRun>(), notes: late<Notes>(), tab: 'items' as NoteKind, bear: late<Bear>(), typer: late<Typer>(), onSolved: null as ((penalty: number) => void) | null,
+  lvl: late<Level>(), run: late<LevelRun>(), notes: late<Notes>(), tab: 'items' as NoteKind, bear: late<Bear>(), typer: late<Typer>(), onSolved: null as ((penalty: number) => void) | null,
   wrong: 0, hints: 0, done: false, selS: -1, selI: -1, els: {} as CaseEls, hintPlan: null as HintPlan | null, hintTimer: 0, cellEls: [] as HTMLButtonElement[],
 
   init(bear: Bear) {
@@ -69,7 +69,7 @@ export const CaseScreen = {
   autoOn() { return Store.data.settings.autocross !== false; },
   say(r: Reaction) { speak(this.bear, this.typer, r, 17); },
 
-  load(lvl: Level, run: ChapterRun, onSolved: (penalty: number) => void) {
+  load(lvl: Level, run: LevelRun, onSolved: (penalty: number) => void) {
     this.lvl = lvl; this.run = run; this.onSolved = onSolved;
     this.done = false; this.wrong = 0; this.hints = 0; this.selS = -1; this.selI = -1; this.tab = 'items'; this.hintPlan = null; clearTimeout(this.hintTimer);
     const c = lvl.case, N = c.N;

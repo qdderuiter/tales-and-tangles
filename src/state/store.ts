@@ -1,6 +1,6 @@
 import { LEVELS } from '../data/levels.ts';
 import { OUTFIT_DEFAULT, WARDROBE, WARDROBE_BY_ID } from '../data/wardrobe.ts';
-import { blankChapter, migrate, ownsItem, sanitize } from './migrations.ts';
+import { blankLevel, migrate, ownsItem, sanitize } from './migrations.ts';
 import type { Json, SaveData } from './migrations.ts';
 import type { PuzzleResult } from '../core/types.ts';
 
@@ -10,10 +10,10 @@ export const Store = {
   data: null as unknown as SaveData,       // set by load() at boot, before anything reads it
   defaults(): SaveData {
     return {
-      unlocked: 1, chapters: {}, settings: { sound: true, voice: true, music: true },
+      unlocked: 1, levels: {}, settings: { sound: true, voice: true, music: true },
       wardrobe: { owned: WARDROBE.filter(i => i.cost === 0 && !i.unlock).map(i => i.id), equipped: Object.assign({}, OUTFIT_DEFAULT) },
       daily: { lastDate: null, streak: 0, best: 0, results: {} },
-      perfect: { streak: 0 }, evil: { cleared: {} }, seen: { larry: false },
+      perfect: { streak: 0 }, evil: { cleared: {} }, seen: { larry: false, endings: {} },
       badges: {}, bonusWords: []
     };
   },
@@ -49,27 +49,27 @@ export const Store = {
     return true;
   },
   save() { try { localStorage.setItem(this.KEY, JSON.stringify(this.data)); } catch { /* private mode: play on without saving */ } },
-  chapter(n: number) { return this.data.chapters[n] || blankChapter(); },
+  level(n: number) { return this.data.levels[n] || blankLevel(); },
   /* kind: 'word' | 'zip' */
   recordPuzzle(n: number, kind: 'word' | 'zip', result: Pick<PuzzleResult, 'score' | 'stars'>) {
-    const ch = this.chapter(n), prev = ch[kind];
+    const ch = this.level(n), prev = ch[kind];
     const isBest = result.score > prev.best;
     ch[kind] = { done: true, stars: Math.max(prev.stars, result.stars), best: Math.max(prev.best, result.score) };
-    this.data.chapters[n] = ch;
+    this.data.levels[n] = ch;
     this.save();
     return { isBest, prevBest: prev.best };
   },
   recordSolved(n: number, penalty: number) {                    // penalty 0/1: a star lost to wrong accusations / hints; a later cleaner solve can improve it
-    const ch = this.chapter(n);
+    const ch = this.level(n);
     ch.penalty = ch.solved ? Math.min(ch.penalty | 0, penalty | 0) : (penalty | 0);
     ch.solved = true;
-    this.data.chapters[n] = ch;
+    this.data.levels[n] = ch;
     this.data.unlocked = Math.max(this.data.unlocked, Math.min(n + 1, LEVELS.length));
     this.save();
   },
-  stars(n: number) { const ch = this.chapter(n); return ch.solved ? Math.max(1, Math.round((ch.word.stars + ch.zip.stars) / 2) - (ch.penalty | 0)) : 0; },
-  score(n: number) { const ch = this.chapter(n); return ch.word.best + ch.zip.best; },
+  stars(n: number) { const ch = this.level(n); return ch.solved ? Math.max(1, Math.round((ch.word.stars + ch.zip.stars) / 2) - (ch.penalty | 0)) : 0; },
+  score(n: number) { const ch = this.level(n); return ch.word.best + ch.zip.best; },
   totalStars() { return LEVELS.reduce((s, lv) => s + this.stars(lv.n), 0); },
-  hasProgress() { return Object.keys(this.data.chapters).length > 0; },
+  hasProgress() { return Object.keys(this.data.levels).length > 0; },
   reset() { this.data = this.defaults(); this.save(); }
 };

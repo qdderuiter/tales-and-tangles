@@ -9,7 +9,7 @@ import { PWA } from './pwa.ts';
 
 
 if (import.meta.env.DEV) window.VoiceClipManifest = VoiceClipManifest;   // dev console helper: VoiceClipManifest.ids()
-if (import.meta.env.DEV) window.__LEVELS = LEVELS;   // dev-only: lets tests/e2e give a chapter a custom `steps` list
+if (import.meta.env.DEV) window.__LEVELS = LEVELS;   // dev-only: lets tests/e2e give a level a custom `steps` list
 
 function boot() {
   initGame();

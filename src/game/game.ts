@@ -3,9 +3,11 @@ import { Outfit } from '../characters/barnaby-svg.ts';
 import { Barnaby } from '../characters/barnaby.ts';
 import { cast, createCast } from '../characters/cast.ts';
 import { $ } from '../core/dom.ts';
+import { scenes } from '../core/scenes.ts';
 import { CaseScreen } from '../puzzles/case/case-screen.ts';
 import { WordPuzzle } from '../puzzles/word/word-puzzle.ts';
 import { ZipPuzzle } from '../puzzles/zip/zip-puzzle.ts';
+import { ChapterFilm } from '../scenes/chapter-film.ts';
 import { Cutscene } from '../scenes/cutscene.ts';
 import { LarryScene } from '../scenes/larry-scene.ts';
 import { Store } from '../state/store.ts';
@@ -16,12 +18,12 @@ import { StoryScreen } from '../ui/story-screen.ts';
 import { UI } from '../ui/ui.ts';
 import { Victory } from '../ui/victory.ts';
 import { Wardrobe } from '../ui/wardrobe-screen.ts';
-import { Chapter } from './chapter-flow.ts';
+import { LevelFlow } from './level-flow.ts';
 import { DailyFlow } from './daily-flow.ts';
 import { toMap } from './nav.ts';
 
 /* Start the game: load the save, build the screens and characters, and wire the buttons to the flows.
-   The flows themselves live in chapter-flow.ts, daily-flow.ts and noir-flow.ts. */
+   The flows themselves live in level-flow.ts, daily-flow.ts and noir-flow.ts. */
 export function initGame() {
   Store.load();
   Badges.check(null, true);                                   // old saves catch up quietly, no toasts
@@ -39,21 +41,23 @@ export function initGame() {
   Victory.init(cast.v);
   Cutscene.init();
   LarryScene.init();
+  ChapterFilm.init();
   StoryScreen.init(cast.story, cast.larry);
 
   // title
   $('#btnPlay').addEventListener('click', () => {
     AudioFX.unlock();
-    if (!Store.hasProgress()) Chapter.start(1); else toMap();
+    if (!Store.hasProgress()) LevelFlow.start(1); else toMap();
   });
   Settings.init();
 
   // map: what a tap on each part does
   MapScreen.init({
-    chapter: n => Chapter.start(n),
-    step: (n, kind) => Chapter.playStep(n, kind),
+    level: n => LevelFlow.start(n),
+    step: (n, kind) => LevelFlow.playStep(n, kind),
     daily: done => DailyFlow.open(done),
-    intro: lv => { lv.introScene?.(); }
+    intro: lv => { lv.introScene?.(); },
+    ending: id => { scenes.chapterEnd?.play(id); }
   });
   $('#btnMapBack').addEventListener('click', () => UI.show('title'));
   $('#btnBBack').addEventListener('click', () => toMap());

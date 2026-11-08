@@ -6,6 +6,7 @@
      puzzle:won        { kind, result, fresh } a puzzle was solved; fresh = counts toward the perfect streak (badges and Noir listen)
      progress          (nothing)               something that can earn a badge changed: case solved, bonus word found, wardrobe purchase
      audio:duck        { ms }                  dip the music for ms (fanfares)
+     film              { on }                  a chapter film started / ended: the music steps aside for its score
    Handlers run synchronously, in the order they were registered. */
 import type { PuzzleKind, PuzzleResult } from './types.ts';
 
@@ -16,6 +17,7 @@ export interface EventMap {
   'puzzle:won': { kind: PuzzleKind; result: PuzzleResult; fresh: boolean };
   progress: undefined;
   'audio:duck': { ms: number };
+  film: { on: boolean };
 }
 type Handler<K extends keyof EventMap> = (payload: EventMap[K]) => void;
 

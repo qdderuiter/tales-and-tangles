@@ -16,7 +16,7 @@ export const DailyFlow = {
 
   start() {
     const date = Daily.today(), lvl = Daily.generate(date);
-    session.run = { n: 0, replay: true, freeHints: 0, daily: lvl, date, moodChapter: 1 + Daily.seed(date) % 5 };
+    session.run = { n: 0, replay: true, freeHints: 0, daily: lvl, date, moodLevel: 1 + Daily.seed(date) % 5 };
     UI.show('puzzle');
     WordPuzzle.load(lvl, { freeHints: 0, onWin: r => this.onWin(r) });
     WordPuzzle.start();
@@ -41,7 +41,7 @@ export const DailyFlow = {
 
   showResult() {
     const date = Daily.today();
-    session.run = { n: 0, replay: true, freeHints: 0, moodChapter: 0 };
+    session.run = { n: 0, replay: true, freeHints: 0, moodLevel: 0 };
     this.card(date, Daily.result(date)!, Daily.streak(date), true);
   }
 };

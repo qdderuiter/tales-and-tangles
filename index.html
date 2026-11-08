@@ -45,13 +45,17 @@
 
   <!-- MAP -->
   <section id="screen-map" class="screen" aria-label="Case files">
-    <div class="head">
+    <div class="map-head" id="mapHead">
       <button class="btn round" id="btnMapBack" aria-label="Back">&#8592;</button>
-      <h2>Case Files</h2>
+      <h2 class="map-head-title">Case Files</h2>
       <button class="btn small butter" id="btnMapWardrobe">Wardrobe</button>
-      <div class="starcount" id="starCount">&#9733; 0/15</div>
     </div>
     <div class="scroll" id="mapList"></div>
+    <!-- the chapter view: a sheet that grows out of the tapped chapter card (ui/chapter-view.ts) -->
+    <div class="chview" id="chView" aria-hidden="true">
+      <div class="chview-scrim" id="chvScrim"></div>
+      <div class="chview-sheet" id="chvSheet" role="dialog" aria-modal="true" aria-labelledby="chvTitle"></div>
+    </div>
   </section>
 
   <!-- STORY -->
@@ -244,6 +248,20 @@
     <div class="lf-title" id="lfTitle"><small>WANTED</small><b>EVIL LARRY</b><span>up to no good</span></div>
     <div class="lf-flash" id="lfFlash"></div>
     <button class="btn small lav lf-skip" id="lfSkip">Skip</button>
+  </div>
+
+  <!-- CHAPTER ENDINGS: the short film that closes each chapter (scenes/chapter-film.ts) -->
+  <div class="chapter-film" id="chapterFilm" aria-hidden="true" role="dialog" aria-label="Chapter ending">
+    <div class="cf-art" id="cfArt"></div>
+    <div class="cf-bar top"></div><div class="cf-bar bot"></div>
+    <div class="cf-cap" id="cfCap" aria-live="polite"></div>
+    <div class="cf-card" id="cfCard">
+      <small class="cf-kicker" id="cfKicker"></small><b class="cf-title" id="cfTitle"></b>
+      <span class="cf-stars" id="cfStars"></span><em class="cf-next" id="cfNext"></em>
+      <div class="cf-credits" id="cfCredits"></div>
+    </div>
+    <div class="cf-flash" id="cfFlash"></div>
+    <button class="btn small lav cf-skip" id="cfSkip">Skip</button>
   </div>
 
   <div id="toastLayer" aria-live="polite"></div>

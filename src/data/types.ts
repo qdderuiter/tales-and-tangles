@@ -50,11 +50,32 @@ export interface TempLevel {
   daily?: boolean; date?: string; evil?: boolean;
 }
 
+/* ---- Chapters ----
+   A chapter groups several levels ("cases") under one theme and ends with a short film (scenes/chapter-film.ts plays it).
+   The film is data: a list of beats. Each beat can move the camera, show / hide stage layers (named in FILM_LAYERS), set a caption,
+   fire an audio cue and flash the screen, then holds. The chapter's id is also the key of its synthesized score (audio/film-score.ts). */
+export type Motif = 'meadow' | 'night' | 'sea' | 'lantern';
+export type FilmCue = 'swell' | 'sparkle' | 'chime' | 'whoosh' | 'bell' | 'finale';
+export interface FilmBeat {
+  caption?: string;
+  cam?: { x: number; y?: number; scale?: number; ms: number };     // x / y in % of the stage; layers pan by their own depth
+  show?: string[]; hide?: string[];
+  cue?: FilmCue; flash?: number;                                     // flash: peak opacity 0..1
+  hold: number;                                                      // ms the beat lasts
+}
+export interface FilmScript { start: string[]; beats: FilmBeat[]; reducedCaption: string }
+export interface Chapter {
+  id: string; n: number; title: string; tagline: string;
+  levels: number[];                                                  // level numbers, in play order
+  palette: { a: string; b: string; ink: string; glow: string };
+  motif: Motif; ending: FilmScript;
+}
+
 /* ---- Badges ----
    test() gets just the slice of the save and of the Store it reads, as structural types, so data/ imports no state code. */
 export interface BadgeSave { daily: { best: number; results: Record<string, unknown> }; bonusWords: string[] }
 export interface BadgeStore {
-  chapter(n: number): { solved: boolean };
+  level(n: number): { solved: boolean };
   stars(n: number): number;
   evilCount(): number;
   owns(id: string): boolean;

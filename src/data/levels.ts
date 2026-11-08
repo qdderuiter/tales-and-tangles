@@ -28,7 +28,7 @@ const RAW_LEVELS: RawLevel[] = [
   { n: 7, title: "The Snow Globe Heist", blurb: "Something sparkling slipped away.", theme: 'GLOBE', scene: ['#e8f0fb', '#c3d4ef'],
     words: [['COCOA','05 04 03 02 01'],['GLOBE','00 10 20 21 11'],['PINE','12 13 14 15'],['MITTEN','25 35 45 44 43 42'],['SKATE','41 40 30 31 32'],['FROST','22 23 24 34 33']] },
   { n: 8, title: "The Midnight Market", blurb: "Lanterns, spices and a striped stranger.", theme: 'SPICE', scene: ['#f9e3c9', '#eeb98a'],
-    introScene: () => scenes.larry!.intro(), caughtScene: () => scenes.larry!.caught(),          // Evil Larry's cinematics open and close this chapter
+    introScene: () => scenes.larry!.intro(), caughtScene: () => scenes.larry!.caught(),          // Evil Larry's cinematics open and close this level
     words: [['BASKET','40 41 31 30 20 21'],['CARPET','11 10 00 01 02 03'],['COIN','04 05 15 14'],['MANGO','13 12 22 32 42'],['SPICE','43 44 45 35 34'],['SILK','33 23 24 25']] },
   { n: 9, title: "The Carnival After Dark", blurb: "The big top is far too quiet.", theme: 'CIRCUS', scene: ['#f6d5e8', '#e1a6cf'],
     words: [['CLOWN','20 30 40 41 42'],['MAGIC','32 31 21 11 10'],['TENT','00 01 02 12'],['JUGGLE','22 23 33 43 44 45'],['DRUM','35 34 24 25'],['CIRCUS','15 14 13 03 04 05']] },
@@ -36,7 +36,7 @@ const RAW_LEVELS: RawLevel[] = [
     words: [['HEART','03 02 01 00 10'],['LIGHT','11 12 13 14 04'],['SMILE','05 15 25 24 23'],['FRIEND','33 34 35 45 44 43'],['HOME','42 41 40 30'],['STORY','31 32 22 21 20']] }
 ];
 
-/* parse each word path, and attach the chapter's trail, evil trail, case and hints (all indexed by position) */
+/* parse each word path, and attach the level's trail, evil trail, case and hints (all indexed by position) */
 export const LEVELS: Level[] = RAW_LEVELS.map((lv, i) => ({
   ...lv,
   words: lv.words.map(([w, p]) => ({ w, p: P(p), gold: w === lv.theme })),

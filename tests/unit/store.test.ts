@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LEVELS } from '../../src/data/levels.ts';
-import { blankChapter, migrate, sanitize } from '../../src/state/migrations.ts';
+import { blankLevel, migrate, sanitize } from '../../src/state/migrations.ts';
 import type { SaveData } from '../../src/state/migrations.ts';
 import { Store } from '../../src/state/store.ts';
 
@@ -35,9 +35,9 @@ describe('loading', () => {
     const d = load();
     expect(d.unlocked).toBe(3);
     expect(d.settings.sound).toBe(false);
-    expect(d.chapters[1]).toEqual({ word: { done: true, stars: 3, best: 1200 }, zip: { done: false, stars: 0, best: 0 }, solved: false, penalty: 0 });
-    expect(d.chapters[2].word).toEqual({ done: true, stars: 2, best: 900 });
-    expect(d.chapters[3].word).toEqual({ done: false, stars: 0, best: 0 });   // a v1 chapter that was not finished keeps nothing
+    expect(d.levels[1]).toEqual({ word: { done: true, stars: 3, best: 1200 }, zip: { done: false, stars: 0, best: 0 }, solved: false, penalty: 0 });
+    expect(d.levels[2].word).toEqual({ done: true, stars: 2, best: 900 });
+    expect(d.levels[3].word).toEqual({ done: false, stars: 0, best: 0 });   // a v1 level that was not finished keeps nothing
     expect(Store.hasProgress()).toBe(true);
   });
 
@@ -62,22 +62,50 @@ describe('loading', () => {
 
   it('wrong types in every field are dropped', () => {
     put(Store.KEY, {
-      unlocked: 'abc', chapters: 'x', settings: 5, wardrobe: 'no', daily: 7, perfect: 'x', evil: 3, seen: 'y', badges: [], bonusWords: 'str'
+      unlocked: 'abc', levels: 'x', settings: 5, wardrobe: 'no', daily: 7, perfect: 'x', evil: 3, seen: 'y', badges: [], bonusWords: 'str'
     });
     expect(load()).toEqual(Store.defaults());
   });
 
-  it('chapter records with the wrong shape become blank chapters; numbers are coerced to whole numbers', () => {
-    put(Store.KEY, { chapters: { 1: null, 2: 'x', 3: { word: { done: 1, stars: '2', best: 12.9 }, zip: 'no', solved: 'yes', penalty: 1.7 } } });
+  it('level records with the wrong shape become blank levels; numbers are coerced to whole numbers', () => {
+    put(Store.KEY, { levels: { 1: null, 2: 'x', 3: { word: { done: 1, stars: '2', best: 12.9 }, zip: 'no', solved: 'yes', penalty: 1.7 } } });
     const d = load();
-    expect(d.chapters[1]).toEqual(blankChapter());
-    expect(d.chapters[2]).toEqual(blankChapter());
-    expect(d.chapters[3].word).toEqual({ done: true, stars: 2, best: 12 });
-    expect(d.chapters[3].solved).toBe(true);
-    expect(d.chapters[3].penalty).toBe(1);
+    expect(d.levels[1]).toEqual(blankLevel());
+    expect(d.levels[2]).toEqual(blankLevel());
+    expect(d.levels[3].word).toEqual({ done: true, stars: 2, best: 12 });
+    expect(d.levels[3].solved).toBe(true);
+    expect(d.levels[3].penalty).toBe(1);
   });
 
-  it('unlocked is clamped to the number of chapters and ignored below 1', () => {
+  it('a v2 save written before the rename (records under `chapters`) loads into `levels`', () => {
+    put(Store.KEY, { unlocked: 2, chapters: { 1: solved(3, 2, 1) } });
+    const d = load();
+    expect(d.levels[1].solved).toBe(true);
+    expect(d.levels[1].penalty).toBe(1);
+    expect(d.unlocked).toBe(2);
+    expect('chapters' in d).toBe(false);
+  });
+
+  it('when a save has both keys, `levels` wins', () => {
+    put(Store.KEY, { levels: { 1: solved(3, 3) }, chapters: { 2: solved(1, 1) } });
+    const d = load();
+    expect(d.levels[1].solved).toBe(true);
+    expect(d.levels[2]).toBeUndefined();
+  });
+
+  it('seen chapter endings are kept for real chapters only, and only when exactly true', () => {
+    put(Store.KEY, { seen: { larry: true, endings: { village: true, dreams: 'yes', nope: true } } });
+    const d = load();
+    expect(d.seen.larry).toBe(true);
+    expect(d.seen.endings).toEqual({ village: true });
+  });
+
+  it('a save from before endings existed gets an empty endings record', () => {
+    put(Store.KEY, { seen: { larry: true } });
+    expect(load().seen.endings).toEqual({});
+  });
+
+  it('unlocked is clamped to the number of levels and ignored below 1', () => {
     put(Store.KEY, { unlocked: 999 });
     expect(load().unlocked).toBe(LEVELS.length);
     put(Store.KEY, { unlocked: 0 });
@@ -169,7 +197,7 @@ describe('migrate / sanitize on their own', () => {
 
 describe('the wardrobe', () => {
   beforeEach(() => { load(); });
-  const earn = (n: number) => { Store.data.chapters[1] = solved(n, n); };    // chapter 1 solved at n stars = n stars to spend
+  const earn = (n: number) => { Store.data.levels[1] = solved(n, n); };    // chapter 1 solved at n stars = n stars to spend
 
   it('buy: unknown item', () => { expect(Store.buy('nope')).toEqual({ ok: false, reason: 'unknown' }); });
   it('buy: not enough stars', () => { expect(Store.buy('party')).toEqual({ ok: false, reason: 'stars', need: 3 }); });
@@ -213,26 +241,26 @@ describe('recording results', () => {
   it('recordPuzzle keeps the best score and the best stars', () => {
     expect(Store.recordPuzzle(1, 'word', { score: 1000, stars: 2 })).toEqual({ isBest: true, prevBest: 0 });
     expect(Store.recordPuzzle(1, 'word', { score: 800, stars: 3 })).toEqual({ isBest: false, prevBest: 1000 });
-    expect(Store.chapter(1).word).toEqual({ done: true, stars: 3, best: 1000 });
+    expect(Store.level(1).word).toEqual({ done: true, stars: 3, best: 1000 });
     expect(Store.recordPuzzle(1, 'word', { score: 1200, stars: 1 })).toEqual({ isBest: true, prevBest: 1000 });
-    expect(Store.chapter(1).word).toEqual({ done: true, stars: 3, best: 1200 });
+    expect(Store.level(1).word).toEqual({ done: true, stars: 3, best: 1200 });
   });
 
   it('recordPuzzle keeps word and zip apart, and saves', () => {
     Store.recordPuzzle(2, 'zip', { score: 500, stars: 1 });
-    expect(Store.chapter(2).zip.done).toBe(true);
-    expect(Store.chapter(2).word.done).toBe(false);
-    expect(JSON.parse(disk[Store.KEY]).chapters[2].zip.best).toBe(500);
+    expect(Store.level(2).zip.done).toBe(true);
+    expect(Store.level(2).word.done).toBe(false);
+    expect(JSON.parse(disk[Store.KEY]).levels[2].zip.best).toBe(500);
   });
 
   it('recordSolved keeps the lower penalty and unlocks the next chapter', () => {
     Store.recordSolved(1, 1);
-    expect(Store.chapter(1)).toMatchObject({ solved: true, penalty: 1 });
+    expect(Store.level(1)).toMatchObject({ solved: true, penalty: 1 });
     expect(Store.data.unlocked).toBe(2);
     Store.recordSolved(1, 0);
-    expect(Store.chapter(1).penalty).toBe(0);
+    expect(Store.level(1).penalty).toBe(0);
     Store.recordSolved(1, 1);
-    expect(Store.chapter(1).penalty).toBe(0);
+    expect(Store.level(1).penalty).toBe(0);
   });
 
   it('recordSolved never unlocks past the last chapter, nor re-locks', () => {
@@ -245,15 +273,15 @@ describe('recording results', () => {
 
   it('stars(n): 0 until solved, then the rounded average of both puzzles minus the penalty, never below 1', () => {
     expect(Store.stars(1)).toBe(0);
-    Store.data.chapters[1] = solved(3, 3); expect(Store.stars(1)).toBe(3);
-    Store.data.chapters[1] = solved(3, 2); expect(Store.stars(1)).toBe(3);      // 2.5 rounds up
-    Store.data.chapters[1] = solved(3, 3, 1); expect(Store.stars(1)).toBe(2);
-    Store.data.chapters[1] = solved(1, 1, 1); expect(Store.stars(1)).toBe(1);
-    Store.data.chapters[1] = solved(0, 0, 1); expect(Store.stars(1)).toBe(1);
+    Store.data.levels[1] = solved(3, 3); expect(Store.stars(1)).toBe(3);
+    Store.data.levels[1] = solved(3, 2); expect(Store.stars(1)).toBe(3);      // 2.5 rounds up
+    Store.data.levels[1] = solved(3, 3, 1); expect(Store.stars(1)).toBe(2);
+    Store.data.levels[1] = solved(1, 1, 1); expect(Store.stars(1)).toBe(1);
+    Store.data.levels[1] = solved(0, 0, 1); expect(Store.stars(1)).toBe(1);
   });
 
   it('score(n) adds both best scores, and totalStars sums every chapter', () => {
-    Store.data.chapters[1] = solved(3, 3); Store.data.chapters[2] = solved(1, 1);
+    Store.data.levels[1] = solved(3, 3); Store.data.levels[2] = solved(1, 1);
     expect(Store.score(1)).toBe(2000);
     expect(Store.totalStars()).toBe(4);
   });
@@ -276,11 +304,11 @@ describe('recording results', () => {
 describe('saving', () => {
   it('save() then load() gives equal data (round trip)', () => {
     load();
-    Store.data.chapters[1] = solved(3, 2, 1);
+    Store.data.levels[1] = solved(3, 2, 1);
     Store.recordPuzzle(2, 'word', { score: 700, stars: 2 });
     Store.data.unlocked = 3;
     Store.data.settings.music = false;
-    Store.data.chapters[1] = solved(3, 3); Store.buy('party'); Store.equip('party');
+    Store.data.levels[1] = solved(3, 3); Store.buy('party'); Store.equip('party');
     Store.data.daily = { lastDate: '2025-03-10', streak: 2, best: 5, results: { '2025-03-10': { stars: 2, score: 1300, secs: 33, squares: 'GY' } } };
     Store.data.perfect.streak = 2;
     Store.markEvil('word1');

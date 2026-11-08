@@ -9,7 +9,8 @@ Run `npm run check` (lint, typecheck, unit tests, build, browser playthrough). F
 - **Data has no code.** `src/data/` holds content only; it may import other `data/` files, `core/` and `puzzles/*-rules.ts`, nothing else.
 - **Rules files are pure.** `*-rules.ts`, `*-generator.ts` and `state/migrations.ts` use no DOM, no `window`, no `localStorage`, and import nothing from `ui/`, `audio/`, `characters/` or `game/`. Tests for them run in Node. If a test needs a DOM, extract more pure code; don't add jsdom.
 - **No import cycles.** Modules talk through `core/events.ts` (`emit` / `on`) and the puzzle registry instead of importing each other.
-- **Content is checked by tests.** After editing `data/levels.ts`, `zips.ts`, `cases.ts`, `hints.ts` or `story.ts`, `npm test` says which rule broke (tiling, trail validity, unique case solution, step ids, story parts).
+- **Content is checked by tests.** After editing `data/levels.ts`, `chapters.ts`, `zips.ts`, `cases.ts`, `hints.ts` or `story.ts`, `npm test` says which rule broke (tiling, trail validity, unique case solution, step ids, story parts, chapter grouping and film scripts).
+- **Level vs chapter.** A *level* is one case (`LEVELS`, `Store.level(n)`); a *chapter* groups levels and ends with a film (`data/chapters.ts`). Players see "Case 1.2" (`caseLabel`).
 - **Save format.** Changes to `state/migrations.ts` or `Store.load` need a case in `tests/unit/store.test.ts`; a bad edit erases players' progress.
 
 ## Conventions

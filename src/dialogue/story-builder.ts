@@ -14,6 +14,7 @@ const PARTS: StoryPart[] = ['intro', 'bridge', 'caseIntro', 'outro'];
     const raw = { ...STORY_RAW[n], ...STORY_EXTRA[n] };
     STORY[n] = {} as Story[number];
     PARTS.forEach(part => {
+      // the 'ch' prefix is historical (a level used to be called a chapter) and stays: voice clips attach to these ids by file name
       STORY[n][part] = registerLines(raw[part].map((line, i) => ({ id: 'ch' + n + '_' + part + '_' + pad2(i + 1), who: DEFAULT_SPEAKER, ...line })));
     });
   });

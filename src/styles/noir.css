@@ -36,7 +36,7 @@ body.evil .zcp.got circle{fill:#e0a32f}
 body.evil .zl{background:#2a2040;color:#c9b6e8}
 body.evil .zl.on{background:#7d5426;color:#fff2d6}
 @keyframes evilFlicker{0%,100%{opacity:1}46%{opacity:1}48%{opacity:.8}50%{opacity:1}73%{opacity:.9}}
-body.evil .chapter,body.evil .witem{color:#3b2f55}
+body.evil .witem{color:#3b2f55}
 
 .noir{position:absolute;inset:0;z-index:40;overflow:hidden;perspective:900px;perspective-origin:50% 40%;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .4s ease,visibility 0s .4s}
 .noir.show{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .4s ease,visibility 0s}

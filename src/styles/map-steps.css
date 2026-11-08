@@ -1,8 +1,0 @@
-/* ---------- map: chapter wrapper + step pips ---------- */
-.chwrap{display:flex;flex-direction:column;gap:8px;flex:none}
-.pips{display:flex;gap:8px;padding:0 10px}
-.pip{flex:1;font-size:12px;font-weight:800;padding:7px 6px;border-radius:12px;background:var(--cream2);color:var(--ink-soft);
-  box-shadow:inset 3px 3px 6px var(--sh-d),inset -3px -3px 6px var(--sh-l);transition:transform .25s var(--spring)}
-.pip.done{background:var(--mint);color:#3f6b4f}
-.pip:not(:disabled):active{transform:scale(.94);transition-duration:70ms}
-.pip:disabled{cursor:default}

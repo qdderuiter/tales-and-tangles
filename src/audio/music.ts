@@ -5,7 +5,7 @@ import { session } from '../state/session.ts';
 import { Store } from '../state/store.ts';
 
 /* ---------- 6b. lofi music (synthesized live: electric piano, bass, soft swung drums; no crackle) ----------
-   Each chapter has its own key / tempo / chord loop. "calm" = chords + bass + brushed hat (title, map, story);
+   Each level has its own key / tempo / chord loop. "calm" = chords + bass + brushed hat (title, map, story);
    "play" adds soft kick / snare / hats (puzzles, trail, suspects). Mood changes land on the next bar line.
    The voice functions take an explicit audio context so the exact same code can render offline for tests. */
 export const CHORD_Q: Record<string, number[]> = { maj7: [0, 4, 7, 11], min7: [0, 3, 7, 10], min9: [0, 3, 7, 10, 14], dom7: [0, 4, 7, 10] };
@@ -19,16 +19,16 @@ export type Intensity = 'calm' | 'play';
 
 export const MOODS: Record<string, Mood> = {   // chords: [root pitch class (C=0), quality], one chord per bar
   title: { bpm: 72, chords: [[0, 'maj7'], [9, 'min7'], [2, 'min7'], [7, 'dom7']] },
-  ch1:   { bpm: 76, chords: [[5, 'maj7'], [2, 'min7'], [7, 'min7'], [0, 'dom7']] },     // honey: F
-  ch2:   { bpm: 70, chords: [[9, 'min9'], [2, 'min9'], [4, 'min7'], [9, 'min9']] },     // library: A minor
-  ch3:   { bpm: 80, chords: [[7, 'maj7'], [4, 'min7'], [0, 'maj7'], [2, 'dom7']] },     // garden: G
-  ch4:   { bpm: 66, chords: [[2, 'min9'], [10, 'maj7'], [7, 'min9'], [9, 'dom7']] },    // moon: D minor
-  ch5:   { bpm: 84, chords: [[3, 'maj7'], [0, 'min7'], [8, 'maj7'], [10, 'dom7']] },    // cake: Eb
-  ch6:   { bpm: 74, chords: [[2, 'maj7'], [11, 'min7'], [4, 'min7'], [9, 'dom7']] },    // lighthouse: D
-  ch7:   { bpm: 68, chords: [[10, 'maj7'], [7, 'min7'], [3, 'maj7'], [5, 'dom7']] },    // snow: Bb
-  ch8:   { bpm: 78, chords: [[4, 'min9'], [9, 'min7'], [2, 'dom7'], [7, 'maj7']] },     // night market: E minor
-  ch9:   { bpm: 86, chords: [[7, 'dom7'], [0, 'maj7'], [7, 'dom7'], [2, 'min7']] },     // carnival: jazzy G7
-  ch10:  { bpm: 70, chords: [[0, 'maj7'], [9, 'min7'], [5, 'maj7'], [7, 'dom7']] },     // finale: warm C
+  lv1:   { bpm: 76, chords: [[5, 'maj7'], [2, 'min7'], [7, 'min7'], [0, 'dom7']] },     // honey: F
+  lv2:   { bpm: 70, chords: [[9, 'min9'], [2, 'min9'], [4, 'min7'], [9, 'min9']] },     // library: A minor
+  lv3:   { bpm: 80, chords: [[7, 'maj7'], [4, 'min7'], [0, 'maj7'], [2, 'dom7']] },     // garden: G
+  lv4:   { bpm: 66, chords: [[2, 'min9'], [10, 'maj7'], [7, 'min9'], [9, 'dom7']] },    // moon: D minor
+  lv5:   { bpm: 84, chords: [[3, 'maj7'], [0, 'min7'], [8, 'maj7'], [10, 'dom7']] },    // cake: Eb
+  lv6:   { bpm: 74, chords: [[2, 'maj7'], [11, 'min7'], [4, 'min7'], [9, 'dom7']] },    // lighthouse: D
+  lv7:   { bpm: 68, chords: [[10, 'maj7'], [7, 'min7'], [3, 'maj7'], [5, 'dom7']] },    // snow: Bb
+  lv8:   { bpm: 78, chords: [[4, 'min9'], [9, 'min7'], [2, 'dom7'], [7, 'maj7']] },     // night market: E minor
+  lv9:   { bpm: 86, chords: [[7, 'dom7'], [0, 'maj7'], [7, 'dom7'], [2, 'min7']] },     // carnival: jazzy G7
+  lv10:  { bpm: 70, chords: [[0, 'maj7'], [9, 'min7'], [5, 'maj7'], [7, 'dom7']] },     // finale: warm C
   evil:  { bpm: 62, heavy: true, drone: true, chords: [[0, 'min9'], [5, 'min7'], [8, 'maj7'], [7, 'dom7']] }   // Barnaby Noir: slow, minor, heavy
 };
 
@@ -191,9 +191,9 @@ export const Music = {
     if (this.G) this.G.bus.gain.setTargetAtTime(0, this.ctx!.currentTime, 0.12);
   },
   setEnabled(on: boolean) { if (on) this.start(); else this.stop(); },
-  scene(name: string, chapter: number, evil: boolean) {
-    const play = name === 'puzzle' || name === 'zip' || name === 'case', inChapter = play || name === 'story';
-    const key = evil && inChapter ? 'evil' : chapter > 0 && inChapter ? 'ch' + chapter : 'title';
+  scene(name: string, level: number, evil: boolean) {
+    const play = name === 'puzzle' || name === 'zip' || name === 'case', inLevel = play || name === 'story';
+    const key = evil && inLevel ? 'evil' : level > 0 && inLevel ? 'lv' + level : 'title';
     this.want = { mood: key, intensity: play ? 'play' : 'calm' };
     if (this.running) this.pending = { mood: MOODS[key], intensity: this.want.intensity };
   },
@@ -203,6 +203,13 @@ export const Music = {
     g.cancelScheduledValues(ctx.currentTime); g.setTargetAtTime(0.35, ctx.currentTime, 0.08);
     clearTimeout(this.duckTimer);
     this.duckTimer = setTimeout(() => g.setTargetAtTime(1, ctx.currentTime, 0.5), ms);
+  },
+  /* a chapter film brings its own score: the lofi bed fades out under it and back in after (the same node `duck` uses) */
+  setFilm(playing: boolean) {
+    if (!this.G) return;
+    const ctx = this.ctx!, g = this.G.duckG.gain;
+    clearTimeout(this.duckTimer);
+    g.cancelScheduledValues(ctx.currentTime); g.setTargetAtTime(playing ? 0 : 1, ctx.currentTime, playing ? 0.25 : 0.7);
   },
   setHidden(h: boolean) {                                        // save battery in background tabs
     if (!this.running || !this.ctx) return;
@@ -231,9 +238,10 @@ export const Music = {
 /* the music follows the screen and the Noir switch (UI.show and setEvil just announce them) */
 function syncScene() {
   const run = session.run;
-  Music.scene(session.screen, run ? (run.moodChapter || run.n) : 0, !!(run && run.evil));
+  Music.scene(session.screen, run ? (run.moodLevel || run.n) : 0, !!(run && run.evil));
 }
 on('screen', syncScene);
 on('evil:changed', syncScene);
 on('audio:duck', ({ ms }) => Music.duck(ms));
+on('film', ({ on: playing }) => Music.setFilm(playing));
 on('settings:changed', ({ key, on: enabled }) => { if (key === 'music') Music.setEnabled(enabled); });

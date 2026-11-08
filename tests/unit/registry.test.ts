@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { DEFAULT_STEPS, STEPS, stepLabel } from '../../src/game/chapter-steps.ts';
+import { DEFAULT_STEPS, STEPS, stepLabel } from '../../src/game/level-steps.ts';
 import { LEVELS } from '../../src/data/levels.ts';
 import { PUZZLE_KINDS, registerPuzzle } from '../../src/puzzles/registry.ts';
 import type { PuzzleDef } from '../../src/puzzles/registry.ts';
