@@ -4,7 +4,9 @@ import { VoiceManager } from '../../audio/voice.ts';
 import type { Bear } from '../../characters/barnaby.ts';
 import { critterSvg } from '../../characters/critter-svg.ts';
 import { $, flashClass, replayClass } from '../../core/dom.ts';
+import { on } from '../../core/events.ts';
 import { REDUCED, late } from '../../core/util.ts';
+import { caseLabel } from '../../data/chapters.ts';
 import type { Level } from '../../data/types.ts';
 import { REACT } from '../../data/story.ts';
 import { speak } from '../../dialogue/speakers.ts';
@@ -39,7 +41,7 @@ export const CASE_HINT = {
 
 interface CaseEls {
   crime: HTMLElement; tabs: HTMLElement; grid: HTMLElement; hall: HTMLElement; clues: HTMLElement;
-  sus: HTMLElement; items: HTMLElement; btn: HTMLButtonElement; auto: HTMLElement;
+  sus: HTMLElement; items: HTMLElement; btn: HTMLButtonElement; strike: HTMLElement;
 }
 type HintPlan = CaseHint & { sig: string; stage: number; charged: boolean };
 
@@ -53,16 +55,15 @@ export const CaseScreen = {
     this.typer = new Typer($('#cBubble'), bear);
     const e = this.els;
     e.crime = $('#cCrime'); e.tabs = $('#cTabs'); e.grid = $('#cGrid'); e.hall = $('#cHall'); e.clues = $('#cClues');
-    e.sus = $('#cSus'); e.items = $('#cItems'); e.btn = $<HTMLButtonElement>('#btnAccuse'); e.auto = $('#cAuto');
+    e.sus = $('#cSus'); e.items = $('#cItems'); e.btn = $<HTMLButtonElement>('#btnAccuse'); e.strike = $('#cStrikeHint');
     e.tabs.addEventListener('click', ev => { const b = (ev.target as Element).closest<HTMLElement>('button[data-tab]'); if (b) this.setTab(b.dataset.tab as NoteKind); });
     e.grid.addEventListener('click', ev => { const b = (ev.target as Element).closest<HTMLElement>('button.nbc'); if (b) this.tapCell(Number(b.dataset.s), Number(b.dataset.i)); });
     e.clues.addEventListener('click', ev => { const b = (ev.target as Element).closest<HTMLElement>('.clue-item'); if (b) this.tapClue(Number(b.dataset.k)); });
     e.sus.addEventListener('click', ev => { const b = (ev.target as Element).closest<HTMLElement>('button.chip'); if (b && !this.done) { this.selS = Number(b.dataset.s); AudioFX.tick(this.selS); this.renderAccuse(); } });
     e.items.addEventListener('click', ev => { const b = (ev.target as Element).closest<HTMLElement>('button.chip'); if (b && !this.done) { this.selI = Number(b.dataset.i); AudioFX.tick(this.selI + 3); this.renderAccuse(); } });
-    e.auto.addEventListener('click', () => {
-      Store.data.settings.autocross = !this.autoOn(); Store.save();
-      if (this.notes) NOTE_KINDS.forEach(k => this.recompute(this.notes[k]));
-      this.render();
+    on('settings:changed', ({ key }) => {                        // the Auto-cross switch lives in Settings
+      if (key !== 'autocross' || !this.notes) return;
+      NOTE_KINDS.forEach(k => this.recompute(this.notes[k]));
     });
     e.btn.addEventListener('click', () => this.accuse());
     $('#btnCHint').addEventListener('click', () => this.hint());
@@ -77,8 +78,9 @@ export const CaseScreen = {
     if (!run.notes) run.notes = blankNotes(N);
     if (!run.earned) run.earned = { word: false, zip: false };
     this.notes = run.notes;
-    this.els.crime.innerHTML = '<small>The crime</small>' + c.crime + ' Who was there — and what were they holding?';
-    this.els.hall.innerHTML = '<small>Rooms, left to right</small>' + c.places.map(p => '<span class="hallchip">' + p.emoji + ' ' + p.name + '</span>').join('<i>›</i>');
+    this.els.crime.textContent = c.crime;
+    this.els.strike.hidden = caseLabel(lvl.n) !== 'Case 1.1';     // the strike-through tip is only for the very first case
+    this.els.hall.innerHTML = c.places.map(p => '<span class="hallchip">' + p.emoji + ' ' + p.name + '</span>').join('<i>›</i>');
     this.render();
     this.say(STORY[lvl.n].caseIntro[0]);
   },
@@ -87,7 +89,6 @@ export const CaseScreen = {
   setTab(t: NoteKind) { this.tab = t; AudioFX.tick(2 + 2 * NOTE_KINDS.indexOf(t)); this.renderTabs(); this.renderGrid(); },
   renderTabs() {
     this.els.tabs.querySelectorAll<HTMLElement>('button[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === this.tab));
-    this.els.auto.textContent = 'Auto-cross: ' + (this.autoOn() ? 'On' : 'Off');
   },
 
   renderGrid() {
@@ -130,7 +131,6 @@ export const CaseScreen = {
     this.recompute(M);
     AudioFX.tick(next === 2 ? 7 : next === 1 ? 3 : 1);
     this.paintCells();
-    replayClass(this.cellEl(s, i), 'pressed');
   },
 
   highlight(t: string) { return t.replace(/\b([A-Z]{3,})\b/g, '<b>$1</b>'); },

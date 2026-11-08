@@ -5,13 +5,13 @@
 #screen-story::after{width:110%;height:38%;left:-5%;bottom:-18%;background:rgba(255,255,255,.35)}
 .story-top{position:absolute;top:calc(var(--sat) + 12px);left:calc(var(--sal) + 14px);right:calc(var(--sar) + 14px);display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:3}
 .chip-title{background:rgba(255,250,241,.85);padding:9px 16px;border-radius:18px;font-weight:800;font-size:14px;
-  box-shadow:4px 4px 10px var(--sh-d),-3px -3px 8px var(--sh-l)}
+  box-shadow:var(--card-sh)}
 .story-bear{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 250px);width:min(58%,250px);z-index:1;transition:opacity .25s}
 .dlg{position:absolute;left:calc(var(--sal) + 14px);right:calc(var(--sar) + 14px);bottom:calc(var(--sab) + 16px);min-height:210px;z-index:2;
   background:#fffaf1;border-radius:28px;padding:28px 22px 24px;
-  box-shadow:8px 8px 18px var(--sh-d),-6px -6px 14px var(--sh-l),inset 0 3px 0 #fff;display:flex;flex-direction:column;gap:10px}
+  box-shadow:var(--card-sh);display:flex;flex-direction:column;gap:10px}
 .dlg-name{position:absolute;top:-16px;left:22px;background:var(--peach);padding:6px 18px;border-radius:16px;font-weight:900;font-size:15px;
-  box-shadow:3px 3px 8px var(--sh-d),inset 0 2px 0 rgba(255,255,255,.6)}
+  border:2px solid var(--peach-e)}
 .dlg-text{font-size:18px;line-height:1.5;font-weight:700;min-height:81px}
 .ty-b{visibility:hidden}
 .ty-em{font-weight:900;color:var(--em,#c2542d);animation:emPop .5s var(--spring) both}

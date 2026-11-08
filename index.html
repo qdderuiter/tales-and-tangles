@@ -55,6 +55,12 @@
           <button class="switch" id="btnSound" role="switch" aria-checked="true" aria-labelledby="lblSound"><i></i></button>
         </div>
       </div>
+      <div class="set-group" role="group" aria-label="Notebook">
+        <div class="set-row">
+          <span class="set-text"><span class="set-name" id="lblAuto">Auto-cross</span><span class="set-sub">A ✓ crosses out the rest of its row and column</span></span>
+          <button class="switch" id="btnAuto" role="switch" aria-checked="true" aria-labelledby="lblAuto"><i></i></button>
+        </div>
+      </div>
       <div class="set-group" role="group" aria-label="Speech">
         <div class="set-row set-slider">
           <label class="set-name" for="rngSpeech">Speech volume</label>
@@ -173,15 +179,17 @@
         <button data-tab="itemPlaces">Item ↔ Room</button>
       </div>
       <div class="nb" id="cGrid"></div>
-      <div class="nb-foot"><button class="auto" id="cAuto">Auto-cross: On</button></div>
-      <div class="hall" id="cHall"></div>
-      <div class="alabel clist-head">Barnaby’s clues <small>· tap to strike through</small></div>
-      <div class="clist" id="cClues"></div>
+      <div class="clist">
+        <div class="clist-top">
+          <span class="alabel">Clues<small id="cStrikeHint"> · tap to strike through</small></span>
+          <div class="hall" id="cHall" aria-label="Rooms, left to right"></div>
+        </div>
+        <div id="cClues"></div>
+      </div>
       <div class="accuse-panel">
-        <div class="alabel">Who did it?</div>
-        <div class="chips" id="cSus"></div>
-        <div class="alabel">With what?</div>
-        <div class="chips" id="cItems"></div>
+        <div class="alabel">Accuse</div>
+        <div class="chips" id="cSus" aria-label="Suspects"></div>
+        <div class="chips" id="cItems" aria-label="Items"></div>
         <button class="btn big mint accuse" id="btnAccuse" disabled>Accuse!</button>
       </div>
     </div>

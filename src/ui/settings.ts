@@ -9,11 +9,14 @@ import { Badges } from './badges-screen.ts';
 import { UI } from './ui.ts';
 
 /* title-screen toggles: Store.data.settings key -> button, label. Flipping one emits 'settings:changed' ({ key, on }); the audio modules listen for it. */
-export type SettingKey = 'music' | 'sound';
+export type SettingKey = 'music' | 'sound' | 'autocross';
 export const SETTINGS: Record<SettingKey, { btn: string; label: string; blip?: boolean }> = {
   music: { btn: '#btnMusic', label: 'Music', blip: true },
-  sound: { btn: '#btnSound', label: 'Sound', blip: true }
+  sound: { btn: '#btnSound', label: 'Sound', blip: true },
+  autocross: { btn: '#btnAuto', label: 'Auto-cross', blip: true }
 };
+/* autocross is stored only once changed, so a missing value means on */
+const isOn = (key: SettingKey): boolean => key === 'autocross' ? Store.data.settings.autocross !== false : Store.data.settings[key];
 
 export const TOPBAR_MUSIC = ['#btnPzSound', '#btnZSound'];
 
@@ -30,16 +33,16 @@ export const Settings = {
 
   toggle(key: SettingKey, announce?: boolean) {
     const s = Store.data.settings, cfg = SETTINGS[key];
-    s[key] = !s[key]; Store.save(); this.sync();
-    emit('settings:changed', { key, on: s[key] });
-    if (announce) UI.toast(cfg.label + ' ' + (s[key] ? 'on' : 'off'));
+    const on = !isOn(key); s[key] = on; Store.save(); this.sync();
+    emit('settings:changed', { key, on });
+    if (announce) UI.toast(cfg.label + ' ' + (on ? 'on' : 'off'));
     if (cfg.blip) AudioFX.blip();
   },
 
   /* make the buttons show what is saved */
   sync() {
     const s = Store.data.settings;
-    (Object.keys(SETTINGS) as SettingKey[]).forEach(key => $(SETTINGS[key].btn).setAttribute('aria-checked', String(s[key])));
+    (Object.keys(SETTINGS) as SettingKey[]).forEach(key => $(SETTINGS[key].btn).setAttribute('aria-checked', String(isOn(key))));
     const rng = $<HTMLInputElement>('#rngSpeech');
     rng.value = String(Math.round(s.speech * 100)); this.showSpeech(rng);
     TOPBAR_MUSIC.forEach(sel => { $(sel).style.opacity = s.music ? '1' : '0.5'; });

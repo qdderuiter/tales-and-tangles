@@ -1,19 +1,18 @@
-/* ---------- clay buttons ---------- */
-.btn{background:var(--peach);border-radius:22px;padding:14px 26px;font-size:17px;font-weight:800;letter-spacing:.2px;
-  box-shadow:6px 6px 13px var(--sh-d),-5px -5px 11px var(--sh-l),inset 0 -4px 0 rgba(120,70,30,.10),inset 0 3px 0 rgba(255,255,255,.55);
-  transition:transform .25s var(--spring),box-shadow .2s ease,filter .2s}
+/* ---------- buttons: flat pastel fill + a 2px edge in a darker shade of the same hue (>=3:1 on the page) ---------- */
+.btn{--e:var(--peach-e);background:var(--peach);border:2px solid var(--e);border-radius:22px;padding:12px 24px;font-size:17px;font-weight:800;letter-spacing:.2px;
+  transition:transform .25s var(--spring),filter .2s}
 /* response: the press lands in ~1 frame; only the release springs back */
-.btn:active,.btn.pressed{transform:scale(.95) translateY(2px);filter:brightness(.98);transition-duration:70ms,70ms,70ms;
-  box-shadow:inset 4px 4px 9px var(--sh-d),inset -4px -4px 9px var(--sh-l)}
-.btn.mint{background:var(--mint)} .btn.lav{background:var(--lav)} .btn.butter{background:var(--butter)} .btn.sky{background:var(--sky)}
+.btn:active,.btn.pressed{transform:scale(.96);filter:brightness(.93);transition-duration:70ms,70ms}
+.btn:focus-visible,.linkbtn:focus-visible,.nb-tabs button:focus-visible,.chip:focus-visible,.nbc:focus-visible{outline:3px solid var(--brown);outline-offset:2px}
+.btn.mint{background:var(--mint);--e:var(--mint-e)} .btn.lav{background:var(--lav);--e:var(--lav-e)} .btn.butter{background:var(--butter);--e:var(--butter-e)} .btn.sky{background:var(--sky);--e:var(--sky-e)}
 /* Skip: a quiet, flat control instead of a pastel clay pill, so it does not outshine the scene or film it sits on */
-.btn.skip{background:rgba(91,70,54,.12);color:var(--ink-soft);font-weight:700;letter-spacing:.3px;box-shadow:none}
+.btn.skip{background:rgba(91,70,54,.12);color:var(--ink-soft);font-weight:700;letter-spacing:.3px;border-color:transparent;box-shadow:none}
 .btn.skip:active,.btn.skip.pressed{background:rgba(91,70,54,.22);box-shadow:none;filter:none}
 .btn.skip.film{background:rgba(255,255,255,.12);color:rgba(255,255,255,.85);box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .btn.skip.film:active,.btn.skip.film.pressed{background:rgba(255,255,255,.22);box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
-.btn.big{font-size:21px;padding:17px 44px;border-radius:28px}
+.btn.big{font-size:21px;padding:15px 42px;border-radius:28px}
 .btn.round{width:46px;height:46px;padding:0;border-radius:50%;display:grid;place-items:center;font-size:20px;position:relative}
-.btn.small{font-size:14px;padding:9px 16px;border-radius:16px}
+.btn.small{font-size:14px;padding:7px 14px;border-radius:16px}
 .btn:disabled{opacity:.5;pointer-events:none}
 .badge{position:absolute;top:-5px;right:-5px;min-width:20px;height:20px;border-radius:10px;background:#f08a6c;color:#fff;
   font-size:12px;font-weight:900;display:grid;place-items:center;padding:0 5px;box-shadow:0 2px 4px rgba(0,0,0,.2);
