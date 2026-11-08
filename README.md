@@ -1,6 +1,6 @@
 # Tales & Tangles
 
-A cosy detective game: Barnaby Bear solves ten cases with a word-search, a scent trail and a murdle-style notebook. The cases are grouped into four themed **chapters**, and each chapter ends with a short film. Strict TypeScript ES modules under `src/` (no framework); Vite builds them into **one self-contained `dist/index.html`**.
+A cosy detective game: Barnaby Bear solves thirteen cases with a word-search, a scent trail and a murdle-style notebook. The cases are grouped into five themed **chapters**, and each chapter ends with a short film. Strict TypeScript ES modules under `src/` (no framework); Vite builds them into **one self-contained `dist/index.html`**.
 
 **Words used in the code:** a *level* is one case (`LEVELS`, `Store.level(n)`, shown to players as "Case 1.2"); a *chapter* is a group of levels with a theme and an ending film (`data/chapters.ts`). Story line ids keep the old `ch<n>_...` prefix because voice clips attach to them by file name.
 
@@ -27,12 +27,12 @@ npm run check        # lint + typecheck + unit tests + build + browser playthrou
 |---|---|
 | `main.ts` | entry point: styles, then boot |
 | `core/` | tiny helpers with no game knowledge: `util`, `grid`, `dom`, `events` (publish/subscribe bus), `layout`, `scenes`, `spring` (pure spring / momentum / rubber-band maths) |
-| `data/` | **content only, no code**: `chapters` (the four chapters and their film scripts), `levels`, `zips`, `cases`, `hints`, `story`, `badges`, `wardrobe`, `words`, `palette`, `critters` |
+| `data/` | **content only, no code**: `chapters` (the five chapters and their film scripts), `levels`, `zips`, `cases`, `hints`, `story`, `badges`, `wardrobe`, `words`, `palette`, `critters` |
 | `puzzles/` | the three puzzles. `*-rules.ts` and `*-generator.ts` are **pure** (testable in Node); `*-puzzle.ts` / `case-screen.ts` add the DOM. `registry.ts` lists the puzzle kinds, `evil.ts` the Barnaby Noir remix, `daily*.js` the Daily Case |
 | `game/` | the flow between screens: `level-flow` runs a level (and plays a chapter's film after its last level), `level-steps` defines the step order, plus `noir-flow`, `daily-flow`, `nav`, `evil-mode` |
 | `state/` | `store.ts` (the save file and everything derived from it), `migrations.ts` (pure save upgrade and clean-up), `session.ts` (what is happening right now) |
 | `ui/` | screens: map (chapter cards), `chapter-view` (the sheet that grows out of a card), `motion` (the spring frame loop), story, wardrobe, badges, victory card, settings |
-| `scenes/`, `fx/` | cutscenes (Noir, Evil Larry, the chapter films) and confetti / sparks. `film` is the shared playback engine, `film-art` draws the layered stages (also the art on the map cards), `chapter-film` plays a chapter's script |
+| `scenes/`, `fx/` | cutscenes (Noir, Evil Larry, Pickle the space pup, the chapter films) and confetti / sparks. `film` is the shared playback engine, `film-art` draws the layered stages (also the art on the map cards), `chapter-film` plays a chapter's script |
 | `dialogue/`, `characters/`, `audio/` | dialogue engine and story lines, Barnaby and the cast, sound / music / voice / haptics. `film-score` holds the chapter films' synthesized music and cues |
 | `styles/` | CSS, one file per area |
 

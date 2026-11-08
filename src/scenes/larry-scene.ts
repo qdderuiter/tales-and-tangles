@@ -1,9 +1,11 @@
+import { LarryScore } from '../audio/film-score.ts';
 import { AudioFX } from '../audio/sfx.ts';
 import { Larry } from '../characters/larry.ts';
 import type { LarryPortrait } from '../characters/larry.ts';
 import { $ } from '../core/dom.ts';
+import { emit } from '../core/events.ts';
 import { scenes } from '../core/scenes.ts';
-import { REDUCED, late, rand } from '../core/util.ts';
+import { REDUCED, late } from '../core/util.ts';
 import { Cutscene } from './cutscene.ts';
 import { Film } from './film.ts';
 import { Store } from '../state/store.ts';
@@ -22,8 +24,6 @@ export const LarryScene = {
     this.larry = Larry.create(e.lfCat);
     this.film = new Film({ root: e.larryFilm, skip: e.lfSkip, cap: e.lfCap, flash: e.lfFlash });
   },
-
-  sneak() { [220, 261.6, 311.1, 261.6, 415.3, 392].forEach((f, i) => AudioFX.note(f, { t: i * 0.2, type: 'triangle', vol: 0.09, dur: 0.16, lp: 1800 })); },
 
   reset(mode: string) {
     const e = this.els;
@@ -50,19 +50,20 @@ export const LarryScene = {
     if (f.running) return;
     const e = this.els, root = this.larry.root, first = !Store.data.seen.larry;
     this.reset('intro'); f.open(first);
+    emit('film', { on: true });                                   // the game music steps aside for the film's own score
     if (REDUCED) {
       f.caption(''); e.lfTitle.classList.add('on');
       await f.wait(2400); await f.close();
     } else {
       root.classList.add('sil'); e.lfCat.style.opacity = '0';
-      f.snd(() => AudioFX.chime(0, 0, 0.06));
+      f.snd(() => { LarryScore.start(); LarryScore.midnight(); });
       // 1. the market at midnight
       f.anim(e.lfStage, [{ transform: 'translateX(0)' }, { transform: 'translateX(-18%)' }], { duration: 5000, easing: 'ease-in-out', fill: 'forwards' });
       f.caption('Midnight at the market...');
       await f.wait(2300);
       // 2. the lights go out, one by one
       f.caption('...and one by one, the lights go out.');
-      for (const l of e.lanterns) { if (f.fast) break; l.classList.add('off'); f.snd(() => AudioFX.tick(Math.floor(rand(0, 5)))); await f.wait(420); }
+      for (const [i, l] of e.lanterns.entries()) { if (f.fast) break; l.classList.add('off'); f.snd(() => LarryScore.lanternOut(i)); await f.wait(420); }
       e.lfC1.classList.add('cover'); e.lfC2.classList.add('cover');
       await f.wait(900);
       // 3. lightning, and a silhouette on the rooftop
@@ -70,7 +71,7 @@ export const LarryScene = {
       const cur = getComputedStyle(e.lfStage).transform;
       f.anim(e.lfStage, [{ transform: cur }, { transform: 'translateX(-41.17%)' }], { duration: 1500, easing: 'ease-in-out', fill: 'forwards' });
       await f.wait(1300);
-      f.flashScreen(0.95, 380); f.snd(() => AudioFX.thud());
+      f.flashScreen(0.95, 380); f.snd(() => LarryScore.lightning());
       e.lfCat.style.opacity = '1';
       f.caption('Someone is on the rooftop...');
       await f.wait(1300);
@@ -80,23 +81,26 @@ export const LarryScene = {
       f.anim(e.lfStage, [{ transform: 'translateX(-41.17%) scale(1)' }, { transform: 'translateX(-41.17%) scale(1.35)' }], { duration: 4600, easing: 'ease-in-out', fill: 'forwards' });
       e.lfGold.classList.add('on');
       f.caption('Evil Larry. Thief of lanterns.');
-      f.snd(() => this.sneak());
+      f.snd(() => LarryScore.sneak());
       await f.wait(1500);
       root.classList.add('tip');
       await f.wait(800);
       const o = this.sackOffset();
       f.anim(e.lfGold, [{ transform: 'none', opacity: 1 }, { transform: 'translate(' + o.dx + 'px,' + o.dy + 'px) scale(.25)', opacity: 0 }], { duration: 600, easing: 'ease-in', fill: 'forwards' });
       f.anim(root.querySelector('.larry-sack')!, [{ transform: 'scale(1)' }, { transform: 'scale(1.18)', offset: 0.6 }, { transform: 'scale(1)' }], { duration: 700, delay: 450 });
-      f.snd(() => AudioFX.chime(7, 0.5, 0.1));
+      f.snd(() => LarryScore.stolen());
       await f.wait(1300);
-      // 5. the title card
+      // 5. the WANTED title card
       f.caption('');
       e.lfTitle.classList.add('on');
-      f.snd(() => { AudioFX.thud(); AudioFX.note(110, { type: 'sawtooth', vol: 0.07, dur: 1.1, lp: 500 }); });
+      f.snd(() => LarryScore.wanted());
       if (!f.fast) Cutscene.glitch(700);
       await f.wait(2800);
+      LarryScore.stop();                                           // the drone fades (at once if the film was skipped)
       await f.close();
     }
+    LarryScore.stop();
+    emit('film', { on: false });
     Store.data.seen.larry = true; Store.save();
   },
 
@@ -105,11 +109,12 @@ export const LarryScene = {
     if (f.running) return;
     const e = this.els, root = this.larry.root;
     this.reset('caught'); f.open(false);
+    emit('film', { on: true });
     e.lfStage.style.transform = 'translateX(-41.17%) scale(1.25)';
     e.lfCat.style.opacity = '1';
     if (REDUCED) {
       e.lanterns.forEach(l => l.classList.remove('off')); e.lfGold.classList.add('on'); this.larry.react('caught');
-      f.caption('Caught red-pawed!'); await f.wait(2200); await f.close(); return;
+      f.caption('Caught red-pawed!'); await f.wait(2200); await f.close(); emit('film', { on: false }); return;
     }
     await f.wait(600);
     // spotlight snaps on
@@ -138,6 +143,7 @@ export const LarryScene = {
     f.anim(e.lfCat, [{ transform: 'none' }, { transform: 'translateX(180%)' }], { duration: 520, easing: 'ease-in', fill: 'forwards' });
     await f.wait(800);
     await f.close();
+    emit('film', { on: false });
   }
 };
 

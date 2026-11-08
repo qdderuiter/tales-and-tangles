@@ -1,11 +1,11 @@
 import { P } from '../core/grid.ts';
-import type { Level } from './types.ts';
+import type { Level, SceneId } from './types.ts';
 import { CASES } from './cases.ts';
 import { THEME_HINTS, TRAIL_HINTS } from './hints.ts';
 import { EVIL_ZIPS, ZIPS, parseZip } from './zips.ts';
 import { scenes } from '../core/scenes.ts';
 
-interface RawLevel { n: number; title: string; blurb: string; theme: string; scene: [string, string]; words: [string, string][]; introScene?: Level['introScene']; caughtScene?: Level['caughtScene'] }
+interface RawLevel { n: number; title: string; blurb: string; theme: string; scene: [string, string]; words: [string, string][]; introScene?: Level['introScene']; caughtScene?: Level['caughtScene']; sceneId?: SceneId }
 
 const RAW_LEVELS: RawLevel[] = [
   { n: 1, title: 'The Missing Honey Jar', blurb: 'Sticky pawprints lead the way.', theme: 'HONEY', scene: ['#fdeccb', '#f9cfa6'],
@@ -28,12 +28,20 @@ const RAW_LEVELS: RawLevel[] = [
   { n: 7, title: "The Snow Globe Heist", blurb: "Something sparkling slipped away.", theme: 'GLOBE', scene: ['#e8f0fb', '#c3d4ef'],
     words: [['COCOA','05 04 03 02 01'],['GLOBE','00 10 20 21 11'],['PINE','12 13 14 15'],['MITTEN','25 35 45 44 43 42'],['SKATE','41 40 30 31 32'],['FROST','22 23 24 34 33']] },
   { n: 8, title: "The Midnight Market", blurb: "Lanterns, spices and a striped stranger.", theme: 'SPICE', scene: ['#f9e3c9', '#eeb98a'],
-    introScene: () => scenes.larry!.intro(), caughtScene: () => scenes.larry!.caught(),          // Evil Larry's cinematics open and close this level
+    introScene: () => scenes.larry!.intro(), caughtScene: () => scenes.larry!.caught(), sceneId: 'larry',          // Evil Larry's cinematics open and close this level
     words: [['BASKET','40 41 31 30 20 21'],['CARPET','11 10 00 01 02 03'],['COIN','04 05 15 14'],['MANGO','13 12 22 32 42'],['SPICE','43 44 45 35 34'],['SILK','33 23 24 25']] },
   { n: 9, title: "The Carnival After Dark", blurb: "The big top is far too quiet.", theme: 'CIRCUS', scene: ['#f6d5e8', '#e1a6cf'],
     words: [['CLOWN','20 30 40 41 42'],['MAGIC','32 31 21 11 10'],['TENT','00 01 02 12'],['JUGGLE','22 23 33 43 44 45'],['DRUM','35 34 24 25'],['CIRCUS','15 14 13 03 04 05']] },
   { n: 10, title: "The Last Lantern", blurb: "The final light flickers.", theme: 'LIGHT', scene: ['#fdeec2', '#f4cc7b'],
-    words: [['HEART','03 02 01 00 10'],['LIGHT','11 12 13 14 04'],['SMILE','05 15 25 24 23'],['FRIEND','33 34 35 45 44 43'],['HOME','42 41 40 30'],['STORY','31 32 22 21 20']] }
+    words: [['HEART','03 02 01 00 10'],['LIGHT','11 12 13 14 04'],['SMILE','05 15 25 24 23'],['FRIEND','33 34 35 45 44 43'],['HOME','42 41 40 30'],['STORY','31 32 22 21 20']] },
+  { n: 11, title: 'The Falling Star', blurb: 'Something small and green just landed.', theme: 'COMET', scene: ['#dcd6f7', '#a99be0'],
+    introScene: () => scenes.pup!.intro(), sceneId: 'pup',                                  // Pickle's crash landing opens this level
+    words: [['ALIEN','00 01 10 11 21'],['COMET','02 13 23 33 44'],['BARK','03 04 05 15'],['PUPPY','12 22 32 42 41'],['BEAM','14 24 34 43'],['STAR','20 31 30 40'],['WAG','25 35 45']] },
+  { n: 12, title: 'The Stardust Shortage', blurb: 'The little rocket has an empty tank.', theme: 'GALAXY', scene: ['#d3e0f7', '#8fa8e0'],
+    words: [['GALAXY','00 01 12 13 22 33'],['ORBIT','02 03 04 15 05'],['LUNAR','10 11 20 30 21'],['PLANET','14 24 25 34 23 32'],['SOLAR','31 40 41 42 43'],['UFO','35 44 45']] },
+  { n: 13, title: 'Countdown to Home', blurb: 'One key stands between Pickle and the stars.', theme: 'ROCKET', scene: ['#e7d6f7', '#c59be0'],
+    caughtScene: () => scenes.pup!.caught(),                                                // Pickle's lift-off follows the solved case
+    words: [['WAVE','00 10 11 12'],['HELMET','01 02 13 04 15 05'],['STARS','03 14 25 24 33'],['HOME','20 31 22 32'],['HEART','21 30 40 41 42'],['ROCKET','23 34 43 44 45 35']] }
 ];
 
 /* parse each word path, and attach the level's trail, evil trail, case and hints (all indexed by position) */

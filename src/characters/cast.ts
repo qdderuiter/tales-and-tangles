@@ -3,11 +3,13 @@ import { Barnaby } from './barnaby.ts';
 import type { Bear } from './barnaby.ts';
 import { Larry } from './larry.ts';
 import type { LarryPortrait } from './larry.ts';
+import { Pup } from './pup.ts';
+import type { PupPortrait } from './pup.ts';
 
 /* The recurring characters that live on the screens, created once at boot (createCast).
      title / story / pz / z / c / v / w   Barnaby on the title, story, Words, Trail, notebook, victory and wardrobe screens
      larry                                Evil Larry's portrait on the story screen */
-export const cast = {} as { title: Bear; story: Bear; pz: Bear; z: Bear; c: Bear; v: Bear; w: Bear; larry: LarryPortrait };   // filled by createCast() at boot
+export const cast = {} as { title: Bear; story: Bear; pz: Bear; z: Bear; c: Bear; v: Bear; w: Bear; larry: LarryPortrait; pup: PupPortrait };   // filled by createCast() at boot
 
 /* the bears that switch to their Noir look while Barnaby Noir is on (the others are on screens Noir never shows) */
 const NOIR_SKINNED = ['pz', 'z', 'c', 'v'] as const;
@@ -22,6 +24,7 @@ export function createCast() {
   cast.w = Barnaby.create($('#wBear'));
   [cast.title, cast.pz, cast.z, cast.c, cast.v, cast.w].forEach(b => Barnaby.makePokeable(b));
   cast.larry = Larry.create($('#storyLarry'));
+  cast.pup = Pup.create($('#storyPup'));
 }
 
 export function setNoirSkin(on: boolean) {

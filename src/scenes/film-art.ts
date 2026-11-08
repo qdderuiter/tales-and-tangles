@@ -1,4 +1,5 @@
 import { bearMarkup } from '../characters/barnaby-svg.ts';
+import { rocketInner } from '../characters/pup.ts';
 import { FILM_LAYERS } from '../data/chapters.ts';
 import type { Motif } from '../data/types.ts';
 import { mulberry32 } from '../core/util.ts';
@@ -12,12 +13,12 @@ import type { Film } from './film.ts';
 
 const VIEW = '0 0 800 1000';
 /* the crop each motif's card shows (the whole hero scene; the sky, hills and sea run past it, so a wide card has no empty sides) */
-const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360' };
+const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400' };
 
 /* how far each layer follows the camera (0 = fixed, 1 = full) */
 const DEPTH: Record<string, number> = {
   sky: 0.1, sun: 0.15, moon: 0.15, stars: 0.18, clouds: 0.3, hills: 0.4, sea: 0.5, town: 0.5, lighthouse: 0.6, beam: 0.6, library: 0.7,
-  garden: 0.85, flowers: 0.9, lamps: 0.75, bees: 0.8, lanterns: 0.8, rooftop: 1, barnaby: 1, cake: 1, candles: 1, snow: 1, globe: 0
+  garden: 0.85, flowers: 0.9, lamps: 0.75, bees: 0.8, lanterns: 0.8, rooftop: 1, larry: 1, barnaby: 1, cake: 1, candles: 1, snow: 1, globe: 0, planet: 0.2, home: 0.2, trail: 0.6, rocket: 0.6
 };
 
 /* what the map card shows for each motif: the finished-scene layers only */
@@ -25,7 +26,8 @@ export const BAND_LAYERS: Record<Motif, string[]> = {
   meadow: ['sky', 'sun', 'hills', 'library', 'lamps'],
   night: ['sky', 'stars', 'moon', 'town'],
   sea: ['sky', 'sea', 'lighthouse', 'beam'],
-  lantern: ['sky', 'stars', 'town', 'lanterns']
+  lantern: ['sky', 'stars', 'town', 'lanterns'],
+  space: ['sky', 'stars', 'planet', 'hills', 'home', 'rocket']
 };
 
 let uid = 0;
@@ -172,7 +174,33 @@ const ART: Record<Motif, Record<string, LayerFn>> = {
       }
       return svg(out, vb);
     },
+    /* Evil Larry as a silhouette with glowing eyes and a curled tail, sitting on the roof ridge */
+    larry: (_u, vb) => svg('<g fill="#05030a"><ellipse cx="470" cy="822" rx="26" ry="20"/><circle cx="470" cy="790" r="15"/><path d="M458 782 L460 764 L469 777Z M482 782 L480 764 L471 777Z"/><path d="M494 832 Q530 830 522 800 Q518 786 506 790" fill="none" stroke="#05030a" stroke-width="8" stroke-linecap="round"/></g><ellipse cx="464" cy="789" rx="3.5" ry="2.5" fill="#e8f04a"/><ellipse cx="476" cy="789" rx="3.5" ry="2.5" fill="#e8f04a"/>', vb),
     barnaby: () => '<div class="cf-bear"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
+  },
+
+  /* ---- a night sky over Honeywick, and a small planet far away: Pickle goes home ---- */
+  space: {
+    sky: (u, vb) => svg('<defs>' + grad(u + 's', [[0.2, '#120f3a'], [0.6, '#3a2a78'], [0.92, '#c96aa0']]) + '</defs>' + skyRect(u + 's'), vb),
+    stars: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#fff6d0', 0.8) + '</defs>' + starField(60, 91, 600) + glow(u + 'g', 250, 470, 60) + '<path d="M250 440 L255 465 L280 470 L255 475 L250 500 L245 475 L220 470 L245 465Z" fill="#fff6d0"/>', vb),
+    planet: (u, vb) => svg('<defs>' + grad(u + 'p', [[0, '#8fe9cf'], [1, '#3f8fae']], 'x1="0" y1="0" x2="1" y2="1"') + glowDef(u + 'g', '#9ff3d0', 0.4) + '</defs>' + glow(u + 'g', 540, 500, 220) +
+      '<ellipse cx="540" cy="500" rx="190" ry="34" fill="none" stroke="#c9b8ff" stroke-width="10" opacity=".55" transform="rotate(-14 540 500)"/><circle cx="540" cy="500" r="120" fill="url(#' + u + 'p)"/>' +
+      '<circle cx="500" cy="462" r="16" fill="#6cc9b0" opacity=".7"/><circle cx="580" cy="540" r="22" fill="#6cc9b0" opacity=".6"/><circle cx="520" cy="552" r="9" fill="#6cc9b0" opacity=".7"/>' +
+      '<path d="M350 520 Q540 560 730 480" fill="none" stroke="#c9b8ff" stroke-width="10" opacity=".55" transform="rotate(-14 540 500)" clip-path="inset(50% 0 0 0)"/>', vb),
+    hills: (_u, vb) => svg('<path d="M-300 800 Q100 720 330 770 T700 750 T1100 790 V1300 H-300Z" fill="#2a2766"/><path d="M-300 880 Q200 810 470 860 T1100 850 V1300 H-300Z" fill="#1c1a52"/><rect x="-300" y="930" width="1400" height="400" fill="#14123f"/>' +
+      '<rect x="560" y="770" width="70" height="56" rx="6" fill="#3b3580"/><path d="M552 774 L595 738 L638 774Z" fill="#241f60"/><rect x="584" y="790" width="22" height="30" rx="4" fill="#ffd98a"/>', vb),
+    home: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#ffe29a', 0.7) + '</defs>' + [[500, 470], [535, 486], [566, 466], [520, 520], [558, 524], [588, 500]].map(([x, y], i) =>
+      '<g class="cf-halo">' + glow(u + 'g', x, y, 26) + '</g><rect x="' + (x - 5) + '" y="' + (y - 7) + '" width="10" height="14" rx="2" fill="#ffe6a0" style="animation-delay:-' + i * 0.4 + 's"/>').join(''), vb),
+    barnaby: () => '<div class="cf-bear sp"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>',
+    trail: (_u, vb) => {
+      let out = '';
+      for (let i = 0; i < 18; i++) {
+        const t = i / 17, x = r1(60 + t * 290), y = r1(700 - t * 120 - Math.sin(t * Math.PI) * 90);
+        out += '<circle class="cf-star" style="--i:' + i + '" cx="' + x + '" cy="' + y + '" r="' + r1(2 + (1 - t) * 3) + '" fill="#fff0a8"/>';
+      }
+      return svg(out, vb);
+    },
+    rocket: (u, vb) => svg('<g transform="translate(300 520) scale(.62)"><g class="cf-fly"><g class="open">' + rocketInner(u) + '</g></g></g>', vb)
   }
 };
 

@@ -59,7 +59,7 @@ export const Cutscene = {
     AudioFX.thud();
 
     const accepted = await this.runDialog();
-    if (!accepted) { await this.close(); return 'declined'; }
+    if (!accepted) { await this.close(false); return 'declined'; }   // declined: the level stays as it was (no remix, no dark theme)
     if (REDUCED) { this.prepareOnce(); await this.wait(500); await this.close(); return 'done'; }
     await this.breakSeals();
     await this.shatter();
@@ -270,9 +270,9 @@ export const Cutscene = {
       this._beginRes = () => { this._beginRes = null; e.noirBegin.classList.remove('on'); e.noirHint.classList.remove('on'); res(); };
     });
   },
-  async close() {
+  async close(remix = true) {
     const e = this.els;
-    this.prepareOnce();
+    if (remix) this.prepareOnce();
     this.opts.boardEl.style.visibility = '';
     setShown(e.noir, false);
     await new Promise<void>(r => setTimeout(r, 420));

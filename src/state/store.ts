@@ -13,7 +13,7 @@ export const Store = {
       unlocked: 1, levels: {}, settings: { sound: true, voice: true, music: true },
       wardrobe: { owned: WARDROBE.filter(i => i.cost === 0 && !i.unlock).map(i => i.id), equipped: Object.assign({}, OUTFIT_DEFAULT) },
       daily: { lastDate: null, streak: 0, best: 0, results: {} },
-      perfect: { streak: 0 }, evil: { cleared: {} }, seen: { larry: false, endings: {} },
+      perfect: { streak: 0 }, evil: { cleared: {} }, seen: { larry: false, pup: false, endings: {} },
       badges: {}, bonusWords: []
     };
   },
@@ -30,8 +30,8 @@ export const Store = {
   evilStars() { return this.evilCount() * 2; },                 // each cleared Noir level is worth 2 bonus stars
   markEvil(key: string) { this.data.evil.cleared[key] = true; this.save(); },
   noteBonusWord(w: string) { if (!this.data.bonusWords.includes(w)) { this.data.bonusWords.push(w); this.save(); } },
-  /* three perfect (3-star) puzzle results in a row summon Barnaby Noir; anything less resets the count */
-  notePerfect(stars: number) { this.data.perfect.streak = stars === 3 ? this.data.perfect.streak + 1 : 0; this.save(); return this.data.perfect.streak; },
+  /* every seventh perfect (3-star) puzzle result summons Barnaby Noir; lesser results don't count but don't reset either */
+  notePerfect(stars: number) { if (stars === 3) this.data.perfect.streak += 1; this.save(); return this.data.perfect.streak; },
   buy(id: string): { ok: boolean; reason?: string; need?: number; already?: boolean } {
     const it = WARDROBE_BY_ID[id];
     if (!it) return { ok: false, reason: 'unknown' };

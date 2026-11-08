@@ -64,6 +64,7 @@ describe('chapter helpers', () => {
   it('chapterOf and isChapterEnd', () => {
     expect(chapterOf(1)?.id).toBe('village');
     expect(chapterOf(5)?.id).toBe('dreams');
+    expect(chapterOf(12)?.id).toBe('space');
     expect(chapterOf(99)).toBeUndefined();
     expect(LEVELS.filter(lv => isChapterEnd(lv.n)).map(lv => lv.n)).toEqual(CHAPTERS.map(c => c.levels[c.levels.length - 1]));
   });
@@ -79,5 +80,7 @@ describe('chapter helpers', () => {
     expect(caseLabel(3)).toBe('Case 1.3');
     expect(caseLabel(4)).toBe('Case 2.1');
     expect(caseLabel(10)).toBe('Case 4.3');
+    expect(caseLabel(11)).toBe('Case 5.1');
+    expect(caseLabel(13)).toBe('Case 5.3');
   });
 });

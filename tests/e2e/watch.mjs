@@ -4,9 +4,10 @@
      npm run build && npm run watch            play dist/index.html
      npm run watch -- --dev                    use the vite dev server instead
      E2E_BROWSER_CHANNEL=chrome npm run watch  pick another installed browser (default msedge)
-     WATCH_SPEED=2 npm run watch               pause lengths are divided by this (default 1)
+     WATCH_SPEED=1 npm run watch               pause lengths are divided by this (default 12)
 
-   Stories are tapped through (not skipped) and the ending films play to their end card. Answers come from src/data. */
+   The play is fast (12x by default) but the cutscenes (Evil Larry's films and the chapter endings) always run at regular speed,
+   to the end, never skipped. Stories are tapped through (not skipped). Answers come from src/data. */
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -20,7 +21,7 @@ import { Store } from '../../src/state/store.ts';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const DEV = process.argv.includes('--dev');
 const CHANNEL = process.env.E2E_BROWSER_CHANNEL || 'msedge';
-const SPEED = Number(process.env.WATCH_SPEED) || 1;
+const SPEED = Number(process.env.WATCH_SPEED) || 12;
 const PORT = 5173;
 
 let devServer = null;
@@ -121,18 +122,17 @@ async function playNoir(page) {
   }
 }
 
-async function watchFilm(page, root, card, skip) {
+/* a cutscene runs at regular speed and closes itself when it ends: wait for that, in real time, without skipping */
+async function watchFilm(page, root) {
   await page.waitForSelector(`${root}.show`);
-  await page.waitForSelector(`${card}.on`, { timeout: 120000 }).catch(() => {});   // let the whole film play to its end card
-  await sleep(page, 2500);
-  await page.click(skip).catch(() => {});
-  await page.waitForSelector(`${root}:not(.show)`, { state: 'attached' });
+  await page.waitForSelector(`${root}:not(.show)`, { state: 'attached', timeout: 180000 });
 }
 
 async function main() {
   const url = await target();
-  const browser = await chromium.launch({ channel: CHANNEL, headless: false, slowMo: 120 });
-  const context = await browser.newContext({ viewport: { width: 430, height: 900 } });
+  // viewport: null makes the page fill the real window, so nothing is cut off on a short screen
+  const browser = await chromium.launch({ channel: CHANNEL, headless: false, slowMo: Math.round(120 / SPEED), args: ['--window-size=480,820', '--window-position=40,20'] });
+  const context = await browser.newContext({ viewport: null });
   const page = await context.newPage();
   page.setDefaultTimeout(30000);
   const errors = [];
@@ -152,8 +152,8 @@ async function main() {
     await sleep(page, 400);
     const lv = LEVELS[current - 1];
 
-    if (await has(page, '#chapterFilm.show')) { log('  chapter film'); await watchFilm(page, '#chapterFilm', '#cfCard', '#cfSkip'); continue; }
-    if (await has(page, '#larryFilm.show')) { log('  Evil Larry cinematic'); await watchFilm(page, '#larryFilm', '#lfSkip', '#lfSkip'); continue; }
+    if (await has(page, '#chapterFilm.show')) { log('  chapter film'); await watchFilm(page, '#chapterFilm'); continue; }
+    if (await has(page, '#larryFilm.show')) { log('  Evil Larry cinematic'); await watchFilm(page, '#larryFilm'); continue; }
     if (await has(page, '#noir.show')) { log('  Barnaby Noir interrupts'); await playNoir(page); continue; }
 
     if (await has(page, '#victory.show')) {

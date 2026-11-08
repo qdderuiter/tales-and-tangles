@@ -1,11 +1,32 @@
 import { AudioFX } from '../audio/sfx.ts';
+import { VoiceManager } from '../audio/voice.ts';
+import { DEFAULT_VOICE } from './babble-rules.ts';
+import type { BabbleVoice } from './babble-rules.ts';
+import { parseEmphasis } from './emphasis-rules.ts';
 
-/* Typewriter: the not-yet-typed remainder stays in layout (hidden) so text never reflows */
+/* Typewriter: the not-yet-typed remainder stays in layout (hidden) so text never reflows.
+   *Stressed* words in the text become <span class="ty-em">; they type slower and babble higher. */
 export interface TyperBear { talk(on: boolean): void }
+
+/* a real voice recording is audible, so the made-up babble stays quiet */
+const recordedClipPlaying = () => { const a = VoiceManager.current; return !!a && !a.paused && !a.ended; };
+
+/* fill node with chars[from..to), wrapping runs of stressed characters in .ty-em */
+function renderRange(node: HTMLElement, chars: string[], em: boolean[], from: number, to: number) {
+  node.replaceChildren();
+  let k = from;
+  while (k < to) {
+    const on = em[k];
+    let run = '';
+    while (k < to && em[k] === on) run += chars[k++];
+    if (on) { const sp = document.createElement('span'); sp.className = 'ty-em'; sp.textContent = run; node.appendChild(sp); }
+    else node.appendChild(document.createTextNode(run));
+  }
+}
 
 export class Typer {
   el: HTMLElement; bear: TyperBear | null; a: HTMLSpanElement; b: HTMLSpanElement;
-  typing = false; timer: number = 0; onDone: (() => void) | null = null; text = ''; chars: string[] = []; i = 0; off = 0; ms = 26;
+  typing = false; timer: number = 0; onDone: (() => void) | null = null; chars: string[] = []; em: boolean[] = []; i = 0; ms = 26; voice: BabbleVoice = DEFAULT_VOICE;
   constructor(el: HTMLElement, bear?: TyperBear | null) {
     this.el = el; this.bear = bear || null;
     el.textContent = '';
@@ -13,11 +34,14 @@ export class Typer {
     this.b = document.createElement('span'); this.b.className = 'ty-b';
     el.appendChild(this.a); el.appendChild(this.b);
   }
-  start(text: string, opts?: { ms?: number; onDone?: () => void }) {
+  start(text: string, opts?: { ms?: number; onDone?: () => void; voice?: BabbleVoice }) {
     this.cancel();
     opts = opts || {};
-    this.text = text; this.chars = Array.from(text); this.i = 0; this.off = 0; this.ms = opts.ms || 26; this.onDone = opts.onDone || null;
-    this.a.textContent = ''; this.b.textContent = text;
+    this.voice = opts.voice || DEFAULT_VOICE;
+    const parsed = parseEmphasis(text);
+    this.chars = Array.from(parsed.plain); this.em = parsed.em; this.i = 0; this.ms = opts.ms || 26; this.onDone = opts.onDone || null;
+    this.a.replaceChildren();
+    renderRange(this.b, this.chars, this.em, 0, this.chars.length);
     this.typing = true;
     if (this.bear) this.bear.talk(true);
     this.step();
@@ -25,19 +49,29 @@ export class Typer {
   step() {
     if (!this.typing) return;
     if (!this.chars.length) { this.finishNow(); return; }
-    const ch = this.chars[this.i++];
-    this.off += ch.length;                            // string offset (a char may be a surrogate pair)
-    this.a.textContent = this.text.slice(0, this.off);
-    this.b.textContent = this.text.slice(this.off);
-    if (/\S/.test(ch) && this.i % 2 === 0) AudioFX.talk();
+    const k = this.i++, ch = this.chars[k], stressed = this.em[k];
+    this.appendTyped(ch, stressed);
+    renderRange(this.b, this.chars, this.em, this.i, this.chars.length);
+    if (this.i % this.voice.every === 0 && !recordedClipPlaying()) AudioFX.babble(ch, this.voice, stressed);
     if (this.i >= this.chars.length) { this.finishNow(); return; }
-    let d = this.ms;
+    let d = stressed ? this.ms * 1.4 : this.ms;
     if ('.!?'.indexOf(ch) >= 0) d *= 7; else if (',;:'.indexOf(ch) >= 0) d *= 4;
     this.timer = setTimeout(() => this.step(), d);
   }
+  /* add one typed character to the visible part, extending the current run so a stressed word's span (and its pop) stays put */
+  appendTyped(ch: string, stressed: boolean) {
+    const last = this.a.lastChild;
+    const lastStressed = last instanceof HTMLElement;
+    if (stressed) {
+      if (lastStressed) { last.textContent += ch; return; }
+      const sp = document.createElement('span'); sp.className = 'ty-em'; sp.textContent = ch; this.a.appendChild(sp);
+    } else if (last instanceof Text) last.data += ch;
+    else this.a.appendChild(document.createTextNode(ch));
+  }
   finishNow() {
     clearTimeout(this.timer);
-    this.a.textContent = this.text; this.b.textContent = '';
+    if (this.i < this.chars.length) renderRange(this.a, this.chars, this.em, 0, this.chars.length);   // skipped: show it all (a natural finish already has)
+    this.b.replaceChildren();
     this.typing = false;
     if (this.bear) this.bear.talk(false);
     const cb = this.onDone; this.onDone = null;

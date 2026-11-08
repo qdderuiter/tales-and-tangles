@@ -33,6 +33,9 @@ export const CRITTERS: Record<string, Critter> = {
   'Cleo Cat':       { color: '#5b4a6b', belly: '#d8c9e6', ear: 'point', acc: 'stripes' },
   'Domino Panda':   { color: '#f2f2f2', belly: '#ffffff', ear: 'round', acc: 'glasses' },
   'Ringo Raccoon':  { color: '#7a7f8a', belly: '#dfe3e8', ear: 'round', acc: 'hat' },
+  'Luna Lamb':      { color: '#f4eef8', belly: '#ffffff', ear: 'round', acc: 'none' },
+  'Sprocket Mole':  { color: '#7b7388', belly: '#d6cfe0', ear: 'round', acc: 'glasses' },
+  'Twinkle Toad':   { color: '#7fb8a4', belly: '#e1f3e9', ear: 'round', acc: 'none' },
   'Evil Larry':     { color: '#3a3442', belly: '#cfc6d8', ear: 'point', acc: 'bandit' }
 };
 

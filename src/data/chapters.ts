@@ -1,6 +1,6 @@
 import type { Chapter, Motif } from './types.ts';
 
-/* The four chapters: which levels belong together, their look, and the film that ends each one.
+/* The chapters: which levels belong together, their look, and the film that ends each one.
    Levels are 1-based and stay in one flat list (data/levels.ts); a chapter only names them. */
 
 /* the stage layers each motif draws (scenes/film-art.ts), back to front; a film's `start`, `show` and `hide` use these ids */
@@ -8,7 +8,8 @@ export const FILM_LAYERS: Record<Motif, string[]> = {
   meadow:  ['sky', 'sun', 'hills', 'garden', 'flowers', 'bees', 'library', 'lamps'],
   night:   ['sky', 'stars', 'moon', 'clouds', 'town', 'cake', 'candles'],
   sea:     ['sky', 'sea', 'lighthouse', 'beam', 'snow', 'globe'],
-  lantern: ['sky', 'stars', 'town', 'rooftop', 'lanterns', 'barnaby']
+  lantern: ['sky', 'stars', 'town', 'rooftop', 'lanterns', 'larry', 'barnaby'],
+  space:   ['sky', 'stars', 'planet', 'hills', 'barnaby', 'trail', 'rocket', 'home']
 };
 
 export const CHAPTERS: Chapter[] = [
@@ -54,13 +55,26 @@ export const CHAPTERS: Chapter[] = [
     palette: { a: '#fbd9a6', b: '#e8975a', ink: '#5a2f1d', glow: '#ffcf6b' },
     ending: {
       start: ['sky', 'town', 'rooftop'],
-      reducedCaption: 'The last lantern is lit. Every case is solved.',
+      reducedCaption: 'The last lantern is lit. High above, a star begins to fall.',
       beats: [
         { caption: 'The last lantern is lit.', show: ['lanterns'], cam: { x: 0, scale: 1, ms: 0 }, cue: 'bell', hold: 2200 },
         { caption: 'Lanterns rise over the market, the carnival, the whole sleepy town.', cam: { x: 0, y: 8, ms: 4200 }, cue: 'swell', hold: 3400 },
-        { caption: 'Somewhere, a striped tail slips over the rooftops. For now.', cue: 'whoosh', hold: 3000 },
-        { caption: 'Barnaby watches the lights from the rooftop.', show: ['barnaby', 'stars'], cam: { x: -14, y: -4, scale: 1.2, ms: 3600 }, cue: 'chime', hold: 3000 },
-        { caption: 'Every case solved.', flash: 0.5, cue: 'finale', hold: 2400 }
+        { caption: 'Somewhere, a striped tail slips over the rooftops. For now.', show: ['larry'], cue: 'whoosh', hold: 3000 },
+        { caption: 'Barnaby watches the lights from the rooftop.', show: ['barnaby', 'stars'], hide: ['larry'], cam: { x: -14, y: -4, scale: 1.2, ms: 3600 }, cue: 'chime', hold: 3000 },
+        { caption: 'But what is that, falling from the sky?', flash: 0.5, cue: 'sparkle', hold: 2800 }
+      ] } },
+  { id: 'space', n: 5, title: 'Lost in Space', tagline: 'A very small visitor took a wrong turn.', levels: [11, 12, 13], motif: 'space',
+    palette: { a: '#d6d2f7', b: '#9aa7e6', ink: '#2b2a63', glow: '#9ff3d0' },
+    ending: {
+      start: ['sky', 'stars', 'hills', 'barnaby'],
+      reducedCaption: 'Pickle is home, and a new star shines over Honeywick.',
+      beats: [
+        { caption: 'Honeywick, a quiet night. One new star hangs in the sky.', cam: { x: 0, scale: 1, ms: 0 }, cue: 'swell', hold: 2600 },
+        { caption: 'Far, far away, a little rocket zips past the moon.', show: ['rocket'], cam: { x: -6, y: -8, scale: 1.1, ms: 3200 }, cue: 'whoosh', hold: 3000 },
+        { caption: 'Sparkles trail behind it, all the way home.', show: ['trail'], cam: { x: -12, y: -12, scale: 1.15, ms: 3200 }, cue: 'sparkle', hold: 2800 },
+        { caption: 'A small planet is waiting.', show: ['planet'], cam: { x: -18, y: -14, scale: 1.25, ms: 3600 }, cue: 'bell', hold: 2600 },
+        { caption: 'Window by window, it lights up. Pickle is home. Bork!', show: ['home'], flash: 0.35, cue: 'chime', hold: 3000 },
+        { caption: 'And down in the meadow, Barnaby waves back.', cam: { x: 0, y: 4, scale: 1, ms: 3400 }, cue: 'finale', flash: 0.4, hold: 2800 }
       ] } }
 ];
 

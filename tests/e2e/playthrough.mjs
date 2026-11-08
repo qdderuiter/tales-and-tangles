@@ -9,12 +9,15 @@
    Scenarios ("level" = one case; a chapter groups several levels and ends with a film)
      A  level 1 start to finish, the chapter view it returns to, then the side screens (wardrobe, badges) and the first badge
      B  level 8: Evil Larry's opening cinematic, then the level's puzzle
-     C  Barnaby Noir interrupts after three perfect results in a row
+     C  Barnaby Noir interrupts after seven perfect results
      D  replay a single puzzle from the map pips
      E  a level with a custom `steps` list (dev server only: it needs the dev hook in src/main.ts)
      F  Reset progress (two taps) erases the save
      G  the last level of chapter 1: its ending film plays, the next chapter unlocks, the film can be rewatched (dev server only)
      H  the chapter view: opens from its card, closes with Escape and the back button, and a locked card stays shut
+     I  declining Barnaby Noir mid-level: the dark theme stays off and the level carries on
+     J  chapter 5, case 1: Pickle's crash-landing film, Pickle speaking with his own portrait, then the whole case
+     K  chapter 5, case 3: the whole case, Pickle's lift-off, the chapter's closing film with the credits
 
    Answers (word paths, trail, culprit, item) are read from src/data, so the test follows the content. Anything logged with
    console.error, or any uncaught page error, fails the scenario. Screenshots go to tests/e2e/out/ (git-ignored). */
@@ -67,6 +70,9 @@ const solvedChapter = { word: { done: true, stars: 3, best: 1400 }, zip: { done:
 
 /* chapter 1 solved, chapter 2 open: the starting point of scenarios B, C, D and F */
 const ch1Done = { unlocked: 2, levels: { 1: solvedChapter } };
+
+/* the first n cases solved, the next one open (the starting point of the chapter 5 scenarios) */
+const solvedUpTo = n => ({ unlocked: n + 1, levels: Object.fromEntries(Array.from({ length: n }, (_, i) => [i + 1, solvedChapter])) });
 
 /* a v2 save built from the real defaults, so it can't drift from the game; `over` replaces top-level fields */
 const makeSave = over => JSON.stringify({ ...Store.defaults(), ...over });
@@ -166,7 +172,7 @@ async function tapNoirUntil(page, done) {
 }
 
 /* ---------- scenarios ---------- */
-const lv1 = LEVELS[0], lv8 = LEVELS[7];
+const lv1 = LEVELS[0], lv8 = LEVELS[7], lv11 = LEVELS[10], lv13 = LEVELS[12];
 
 const scenarios = {
   async A({ page, shot }) {
@@ -238,7 +244,7 @@ const scenarios = {
     await solveWords(page, lv1);                                    // a perfect result: no hints, no mistakes
     await victory(page, 'Clue Found!', 'Back to case files');
     await pressContinue(page);
-    await page.waitForSelector('#noir.show');                       // the third perfect result in a row summons Barnaby Noir
+    await page.waitForSelector('#noir.show');                       // the seventh perfect result summons Barnaby Noir
     await shot('noir');
     const accept = page.locator('#noirChoices .choice', { hasText: 'Bring it on.' });
     await tapNoirUntil(page, () => accept.count());                 // tap through his first lines
@@ -250,6 +256,29 @@ const scenarios = {
     expect(await page.evaluate(() => document.body.classList.contains('evil')), 'Noir skin on').toBe(true);
     expect((await readSave(page)).perfect.streak, 'the streak starts again').toBe(0);
     await shot('noir-board');
+  },
+
+  async I({ page, shot }) {
+    // declining Barnaby Noir mid-level: the level carries on where it was, in the light
+    await page.click('#btnPlay');
+    await skipStory(page);
+    await solveWords(page, lv1);
+    await victory(page, 'Clue Found!');
+    await pressContinue(page);
+    await page.waitForSelector('#noir.show');
+    const decline = page.locator('#noirChoices .choice', { hasText: 'Not today.' });
+    await tapNoirUntil(page, () => decline.count());
+    await page.waitForTimeout(450);
+    await decline.click();
+    await tapNoirUntil(page, async () => !await page.locator('#noir.show').count());
+    await page.waitForTimeout(800);
+    const state = await page.evaluate(() => ({ evil: document.body.classList.contains('evil'), screen: document.querySelector('.screen.active')?.id, victory: !!document.querySelector('#victory.show') }));
+    expect(state.evil, 'the dark theme stays off').toBe(false);
+    expect(state.screen, 'the level carries on to its next step').toBe('screen-story');
+    const save = await readSave(page);
+    expect(save.levels[1].word.done, 'the cleared Words puzzle is kept').toBe(true);
+    expect(save.perfect.streak, 'the streak starts again').toBe(0);
+    await shot('noir-declined');
   },
 
   async D({ page, shot }) {
@@ -354,6 +383,89 @@ const scenarios = {
     await page.waitForSelector('.toast');
     expect(await page.locator('#chView.open').count(), 'a locked chapter stays shut').toBe(0);
     await shot('locked-chapter');
+  },
+
+  async J({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'space');
+    await caseButton(page, 11).click();
+    await page.waitForSelector('#pupFilm.show');                    // Pickle's crash landing opens the case
+    await page.waitForSelector('#pfTitle.on');                      // (reduced motion: the finished scene, then the title card)
+    expect(await page.textContent('#pfTitle b'), 'title card names Pickle').toBe('PICKLE');
+    await shot('pickle-landing');
+    await page.waitForSelector('#pfSkip.on');
+    await page.click('#pfSkip');
+    await page.waitForSelector('#pupFilm:not(.show)');
+    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.pup === true, Store.KEY);   // saved once the film has faded out
+    await onScreen(page, 'story');
+    for (let i = 0; i < 14 && await page.textContent('#dlgName') !== 'Pickle'; i++) {      // tap on to Pickle's first line
+      await page.click('#screen-story', { position: { x: 200, y: 300 } });
+      await page.waitForTimeout(300);
+    }
+    expect(await page.textContent('#dlgName'), 'Pickle speaks').toBe('Pickle');
+    expect(await page.evaluate(() => document.getElementById('storyPup').classList.contains('on')), "Pickle's portrait is up").toBe(true);
+    expect(await page.evaluate(() => document.getElementById('storyBear').classList.contains('away')), "Barnaby steps aside").toBe(true);
+    await shot('pickle-speaks');
+    await skipStory(page);                                          // intro
+    await solveWords(page, lv11);
+    await victory(page, 'Clue Found!', 'Follow the trail');
+    await pressContinue(page);
+    await skipStory(page);                                          // bridge
+    await solveTrail(page, lv11);
+    await victory(page, 'Trail Followed!', 'To the suspects');
+    await pressContinue(page);
+    await accuse(page, lv11);
+    await victory(page, 'Case Solved!', 'Continue the story');
+    await pressContinue(page);
+    await skipStory(page);                                          // outro
+    await onScreen(page, 'map');
+    const save = await readSave(page);
+    expect(save.levels[11].solved, 'case 5.1 solved').toBe(true);
+    expect(save.unlocked, 'case 5.2 unlocked').toBe(12);
+    await page.click('.chv-back').catch(() => {});                  // the pip to watch Pickle's arrival again appears once it has been seen
+    await openChapter(page, 'space');
+    expect(await page.locator('#chvSheet [data-intro="11"]').count(), 'a replay button for the landing').toBe(1);
+  },
+
+  async K({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'space');
+    await caseButton(page, 13).click();
+    await skipStory(page);                                          // intro
+    await solveWords(page, lv13);
+    await victory(page, 'Clue Found!');
+    await pressContinue(page);
+    await skipStory(page);                                          // bridge
+    await solveTrail(page, lv13);
+    await victory(page, 'Trail Followed!');
+    await pressContinue(page);
+    await accuse(page, lv13);
+    await page.waitForSelector('#pupFilm.show');                    // Pickle lifts off before the victory card
+    await shot('pickle-liftoff');
+    await page.waitForSelector('#pupFilm:not(.show)');
+    await victory(page, 'Case Solved!', 'Hear the ending');
+    expect(await page.textContent('#vUnlock'), 'the last case closes the whole story').toBe('Every mystery solvedYou are a true detective!');
+    await pressContinue(page);
+    await onScreen(page, 'story');                                  // outro (Pickle on the radio): the film starts over the story screen, so skip until it shows
+    for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
+      await page.evaluate(() => document.getElementById('btnSkip').click());
+      await page.waitForTimeout(200);
+    }
+    await page.waitForSelector('#chapterFilm.show');                // the last chapter's film
+    await page.waitForSelector('#cfCard.on');
+    expect(await page.textContent('#cfKicker'), 'the last chapter says The End').toBe('The End');
+    expect(await page.textContent('#cfTitle'), 'film card title').toBe('Lost in Space');
+    expect((await page.textContent('#cfCredits')).includes('Pickle'), 'the credits thank Pickle').toBe(true);
+    await shot('space-film');
+    await page.waitForSelector('#cfSkip.on');
+    await page.click('#cfSkip');
+    await page.waitForSelector('#chapterFilm:not(.show)');
+    await onScreen(page, 'map');
+    const save = await readSave(page);
+    expect(save.levels[13].solved, 'case 5.3 solved').toBe(true);
+    expect(save.seen.endings.space, 'the ending is marked as seen').toBe(true);
   }
 };
 
@@ -361,12 +473,15 @@ const scenarios = {
 const seeds = {
   A: null,
   B: makeSave({ ...ch1Done, unlocked: 8 }),
-  C: makeSave({ ...ch1Done, perfect: { streak: 2 } }),
+  C: makeSave({ ...ch1Done, perfect: { streak: 6 } }),
   D: makeSave(ch1Done),
+  I: makeSave({ perfect: { streak: 6 } }),
   E: null,
   F: makeSave(ch1Done),
   G: makeSave({ unlocked: 3, levels: { 1: solvedChapter, 2: solvedChapter } }),
-  H: makeSave(ch1Done)
+  H: makeSave(ch1Done),
+  J: makeSave(solvedUpTo(10)),
+  K: makeSave(solvedUpTo(12))
 };
 
 /* ---------- run ---------- */

@@ -14,6 +14,10 @@
   box-shadow:3px 3px 8px var(--sh-d),inset 0 2px 0 rgba(255,255,255,.6)}
 .dlg-text{font-size:18px;line-height:1.5;font-weight:700;min-height:81px}
 .ty-b{visibility:hidden}
+.ty-em{font-weight:900;color:var(--em,#c2542d);animation:emPop .5s var(--spring) both}
+body.evil .ty-em{--em:#ff8fb1}
+@keyframes emPop{0%{text-shadow:0 0 0 transparent;letter-spacing:.06em}100%{text-shadow:0 0 0 transparent;letter-spacing:0}}
+@media (prefers-reduced-motion:reduce){.ty-em{animation:none}}
 .dlg-choices{display:flex;flex-direction:column;gap:10px}
 .dlg-choices:empty{display:none}
 .choice{background:var(--mint);font-size:16px;padding:12px 18px;text-align:left;animation:popIn .45s var(--spring) both}

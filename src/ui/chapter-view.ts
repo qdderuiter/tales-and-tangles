@@ -4,7 +4,7 @@ import { SPRING_NAV, project, releaseVelocity } from '../core/spring.ts';
 import { REDUCED, clamp, late } from '../core/util.ts';
 import { caseLabel, chapterSolved } from '../data/chapters.ts';
 import { LEVELS } from '../data/levels.ts';
-import type { Chapter, Level } from '../data/types.ts';
+import type { Chapter, Level, SceneId } from '../data/types.ts';
 import { Evil } from '../puzzles/evil.ts';
 import { Stage } from '../scenes/film-art.ts';
 import { session } from '../state/session.ts';
@@ -12,6 +12,8 @@ import { Store } from '../state/store.ts';
 import { animateSpring } from './motion.ts';
 import type { SpringHandle } from './motion.ts';
 import { UI } from './ui.ts';
+
+const SCENE_NAME: Record<SceneId, string> = { larry: 'Larry', pup: 'Pickle' };
 
 /* ---------- the chapter view: one chapter's cases, as a sheet that grows out of its card ----------
    `p` is how open the sheet is, 0 (it is the card) to 1 (full screen). Everything on screen is a function of p (apply), so the same
@@ -149,7 +151,7 @@ export const ChapterView = {
       const pips = locked ? '' : '<div class="cnode-pips">' +
         ([['word', 'Words', rec.word.done], ['zip', 'Trail', rec.zip.done], ['case', 'Case', rec.solved]] as [string, string, boolean][]).map(([kind, label, ok]) =>
           '<button class="pip' + (ok ? ' done' : '') + '" data-step="' + lv.n + ':' + kind + '"' + (rec.solved ? '' : ' disabled') + '>' + (ok ? '✓ ' : '') + label + '</button>').join('') +
-        (lv.introScene && S.data.seen.larry ? '<button class="pip" data-intro="' + lv.n + '">🎬 Larry</button>' : '') + '</div>';       // rewatch the cinematic once it has been seen
+        (lv.introScene && lv.sceneId && S.data.seen[lv.sceneId] ? '<button class="pip" data-intro="' + lv.n + '">🎬 ' + SCENE_NAME[lv.sceneId] + '</button>' : '') + '</div>';       // rewatch the cinematic once it has been seen
       return '<li class="cnode' + (done ? ' done' : '') + (locked ? ' locked' : '') + (!locked && !done ? ' current' : '') + (fresh ? ' fresh' : '') + '" style="--i:' + i + '">' +
         '<button class="cnode-main" data-level="' + lv.n + '"' + (locked ? ' disabled' : '') + '>' +
         '<span class="cnode-dot" aria-hidden="true">' + (locked ? '🔒' : done ? '✓' : i + 1) + '</span>' +
