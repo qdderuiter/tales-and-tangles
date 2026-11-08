@@ -7,7 +7,7 @@ import { Store } from '../state/store.ts';
 export interface NoteOpts { t?: number; dur?: number; vol?: number; attack?: number; type?: OscillatorType; slideTo?: number; lp?: number }
 
 export const AudioFX = {
-  ctx: null as AudioContext | null, master: null as unknown as GainNode, noiseBuf: null as AudioBuffer | null, _unlocked: false,   // master is created together with ctx
+  ctx: null as AudioContext | null, master: null as unknown as GainNode, noiseBuf: null as AudioBuffer | null, _unlocked: false, _lastTalkDuck: 0,   // master is created together with ctx
   get enabled() { return Store.data.settings.sound; },
   ensure(): AudioContext | null {
     let ctx = this.ctx;
@@ -104,7 +104,11 @@ export const AudioFX = {
   tick(step: number) { this.note(this.hz(this.scaleNote(step)), { type: 'triangle', vol: 0.07, dur: 0.14, lp: 2400 }); },
   babble(ch: string, voice: BabbleVoice, stressed = false) {      // one beep of a speaker's made-up speech
     const n = babbleNote(ch, voice, Math.random(), stressed);
-    if (n) this.note(n.hz, { type: voice.wave, vol: n.vol, dur: n.dur, attack: 0.005, lp: 2200 });
+    const speech = Store.data.settings.speech;
+    if (!n || speech <= 0) return;
+    this.note(n.hz, { type: voice.wave, vol: n.vol * speech, dur: n.dur, attack: 0.005, lp: 3000 });
+    const now = performance.now();
+    if (now - this._lastTalkDuck > 150) { this._lastTalkDuck = now; emit('audio:duck', { ms: 450, level: 0.6 }); }   // the music sits lower while someone talks
   },
   blip() { this.note(540, { type: 'sine', vol: 0.07, dur: 0.09 }); this.note(810, { t: 0.04, type: 'sine', vol: 0.05, dur: 0.1 }); },
   thud() {

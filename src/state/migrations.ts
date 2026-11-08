@@ -13,7 +13,7 @@ import { BONUS_DICT } from '../data/words.ts';
 export interface PuzzleRecord { done: boolean; stars: number; best: number }
 export interface LevelRecord { word: PuzzleRecord; zip: PuzzleRecord; solved: boolean; penalty: number }
 export interface DailyResult { stars: number; score: number; secs: number; squares: string }
-export interface Settings { sound: boolean; voice: boolean; music: boolean; autocross?: boolean }
+export interface Settings { sound: boolean; voice: boolean; music: boolean; speech: number; autocross?: boolean }   // speech: 0..1, how loud the characters talk
 
 /* the v2 save file, as held in Store.data */
 export interface SaveData {
@@ -56,7 +56,11 @@ export function migrate(saved: Json | null, readOld: () => Json | null): Json | 
 
 export function sanitize(saved: Json | null, d: SaveData): SaveData {
   if (!saved) return d;
-  if (saved.settings && typeof saved.settings === 'object') Object.assign(d.settings, saved.settings);
+  if (saved.settings && typeof saved.settings === 'object') {
+    Object.assign(d.settings, saved.settings);
+    const sp = saved.settings.speech;
+    d.settings.speech = typeof sp === 'number' && Number.isFinite(sp) ? Math.min(1, Math.max(0, sp)) : 1;
+  }
   const records = saved.levels ?? saved.chapters;          // `levels` is current; v2 saves written before the rename call it `chapters`
   if (records && typeof records === 'object') {
     Object.keys(records).forEach(n => {

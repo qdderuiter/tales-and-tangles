@@ -51,6 +51,7 @@ export const VoiceManager = {
     if (!url) return null;
     try {
       const a = new Audio(url);
+      a.volume = Store.data.settings.speech;
       this.current = a;
       const p = a.play();
       if (p && p.catch) p.catch(() => {});

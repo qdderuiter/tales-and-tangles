@@ -5,7 +5,7 @@
      settings:changed  { key, on }             a title-screen toggle flipped (ui/settings.ts)
      puzzle:won        { kind, result, fresh } a puzzle was solved; fresh = counts toward the perfect streak (badges and Noir listen)
      progress          (nothing)               something that can earn a badge changed: case solved, bonus word found, wardrobe purchase
-     audio:duck        { ms }                  dip the music for ms (fanfares)
+     audio:duck        { ms, level? }          dip the music to level (default 0.35) for ms (fanfares, someone talking)
      film              { on }                  a chapter film started / ended: the music steps aside for its score
    Handlers run synchronously, in the order they were registered. */
 import type { PuzzleKind, PuzzleResult } from './types.ts';
@@ -16,7 +16,7 @@ export interface EventMap {
   'settings:changed': { key: string; on: boolean };
   'puzzle:won': { kind: PuzzleKind; result: PuzzleResult; fresh: boolean };
   progress: undefined;
-  'audio:duck': { ms: number };
+  'audio:duck': { ms: number; level?: number };
   film: { on: boolean };
 }
 type Handler<K extends keyof EventMap> = (payload: EventMap[K]) => void;

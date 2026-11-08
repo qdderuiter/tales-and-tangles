@@ -1,19 +1,18 @@
 import { AudioFX } from '../audio/sfx.ts';
-import { VoiceClipManifest } from '../audio/voice.ts';
 import { Outfit } from '../characters/barnaby-svg.ts';
 import { Barnaby } from '../characters/barnaby.ts';
 import { $ } from '../core/dom.ts';
 import { emit } from '../core/events.ts';
+import { DEFAULT_VOICE } from '../dialogue/babble-rules.ts';
 import { Store } from '../state/store.ts';
 import { Badges } from './badges-screen.ts';
 import { UI } from './ui.ts';
 
 /* title-screen toggles: Store.data.settings key -> button, label. Flipping one emits 'settings:changed' ({ key, on }); the audio modules listen for it. */
-export type SettingKey = 'music' | 'sound' | 'voice';
+export type SettingKey = 'music' | 'sound';
 export const SETTINGS: Record<SettingKey, { btn: string; label: string; blip?: boolean }> = {
   music: { btn: '#btnMusic', label: 'Music', blip: true },
-  sound: { btn: '#btnSound', label: 'Sound', blip: true },
-  voice: { btn: '#btnVoice', label: 'Voice' }
+  sound: { btn: '#btnSound', label: 'Sound', blip: true }
 };
 
 export const TOPBAR_MUSIC = ['#btnPzSound', '#btnZSound'];
@@ -22,6 +21,9 @@ export const Settings = {
   init() {
     (Object.keys(SETTINGS) as SettingKey[]).forEach(key => $(SETTINGS[key].btn).addEventListener('click', () => this.toggle(key)));
     TOPBAR_MUSIC.forEach(sel => $(sel).addEventListener('click', () => this.toggle('music', true)));   // the topbar note button = music on/off
+    $('#btnSettings').addEventListener('click', () => UI.show('settings'));
+    $('#btnSBack').addEventListener('click', () => UI.show('title'));
+    this.initSpeech();
     this.initReset();
     this.sync();
   },
@@ -37,9 +39,22 @@ export const Settings = {
   /* make the buttons show what is saved */
   sync() {
     const s = Store.data.settings;
-    (Object.keys(SETTINGS) as SettingKey[]).forEach(key => { $(SETTINGS[key].btn).textContent = SETTINGS[key].label + ': ' + (s[key] ? 'On' : 'Off'); });
-    $<HTMLButtonElement>('#btnVoice').hidden = !Object.values(VoiceClipManifest.clips).some(c => c.src);   // no voice clips shipped yet -> nothing to toggle
+    (Object.keys(SETTINGS) as SettingKey[]).forEach(key => $(SETTINGS[key].btn).setAttribute('aria-checked', String(s[key])));
+    const rng = $<HTMLInputElement>('#rngSpeech');
+    rng.value = String(Math.round(s.speech * 100)); this.showSpeech(rng);
     TOPBAR_MUSIC.forEach(sel => { $(sel).style.opacity = s.music ? '1' : '0.5'; });
+  },
+
+  showSpeech(rng: HTMLInputElement) { rng.style.setProperty('--p', rng.value + '%'); $('#outSpeech').textContent = rng.value + '%'; },
+
+  /* the speech slider scales the characters' babble and any recorded voice; a sample plays when you let go */
+  initSpeech() {
+    const rng = $<HTMLInputElement>('#rngSpeech');
+    rng.addEventListener('input', () => { Store.data.settings.speech = Number(rng.value) / 100; this.showSpeech(rng); });
+    rng.addEventListener('change', () => {
+      Store.save();
+      if (Store.data.settings.speech > 0) ['h', 'e', 'l', 'o'].forEach((ch, i) => setTimeout(() => AudioFX.babble(ch, DEFAULT_VOICE), i * 90));
+    });
   },
 
   /* "Reset progress" asks twice: the second tap within 3 seconds erases everything */

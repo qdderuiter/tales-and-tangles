@@ -34,10 +34,34 @@
     <div class="title-actions">
       <button class="btn big" id="btnPlay">Play</button>
       <button class="btn butter" id="btnWardrobe">Wardrobe</button>
-      <div class="title-toggles">
-        <button class="btn small sky" id="btnMusic">Music: On</button>
-        <button class="btn small mint" id="btnSound">Sound: On</button>
-        <button class="btn small lav" id="btnVoice">Voice: On</button>
+      <button class="btn lav" id="btnSettings">Settings</button>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="screen-settings" class="screen" aria-label="Settings">
+    <div class="head">
+      <button class="btn round" id="btnSBack" aria-label="Back">&#8592;</button>
+      <h2>Settings</h2>
+    </div>
+    <div class="scroll set-list">
+      <div class="set-group" role="group" aria-label="Audio">
+        <div class="set-row">
+          <span class="set-text"><span class="set-name" id="lblMusic">Music</span><span class="set-sub">The cosy background tune</span></span>
+          <button class="switch" id="btnMusic" role="switch" aria-checked="true" aria-labelledby="lblMusic"><i></i></button>
+        </div>
+        <div class="set-row">
+          <span class="set-text"><span class="set-name" id="lblSound">Sound effects</span><span class="set-sub">Chimes, taps and fanfares</span></span>
+          <button class="switch" id="btnSound" role="switch" aria-checked="true" aria-labelledby="lblSound"><i></i></button>
+        </div>
+      </div>
+      <div class="set-group" role="group" aria-label="Speech">
+        <div class="set-row set-slider">
+          <label class="set-name" for="rngSpeech">Speech volume</label>
+          <output class="set-val" id="outSpeech" for="rngSpeech">100%</output>
+          <input type="range" id="rngSpeech" min="0" max="100" step="5" value="100">
+        </div>
+        <p class="set-foot">How loud the characters talk. Slide to 0% to silence them.</p>
       </div>
       <button class="linkbtn" id="btnReset">Reset progress</button>
     </div>
