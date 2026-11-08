@@ -8,6 +8,7 @@ import { PWA } from './pwa.js';
 
 
 if (import.meta.env.DEV) window.VoiceClipManifest = VoiceClipManifest;   // dev console helper: VoiceClipManifest.ids()
+if (import.meta.env.DEV) import('./data/levels.js').then(m => { window.__LEVELS = m.LEVELS; });   // dev-only: lets tests/e2e give a chapter a custom `steps` list
 
 function boot() {
   initGame();
