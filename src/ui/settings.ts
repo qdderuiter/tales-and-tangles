@@ -1,5 +1,4 @@
 import { AudioFX } from '../audio/sfx.ts';
-import { VoiceClipManifest } from '../audio/voice.ts';
 import { Outfit } from '../characters/barnaby-svg.ts';
 import { Barnaby } from '../characters/barnaby.ts';
 import { $ } from '../core/dom.ts';
@@ -10,11 +9,10 @@ import { Badges } from './badges-screen.ts';
 import { UI } from './ui.ts';
 
 /* title-screen toggles: Store.data.settings key -> button, label. Flipping one emits 'settings:changed' ({ key, on }); the audio modules listen for it. */
-export type SettingKey = 'music' | 'sound' | 'voice';
+export type SettingKey = 'music' | 'sound';
 export const SETTINGS: Record<SettingKey, { btn: string; label: string; blip?: boolean }> = {
   music: { btn: '#btnMusic', label: 'Music', blip: true },
-  sound: { btn: '#btnSound', label: 'Sound', blip: true },
-  voice: { btn: '#btnVoice', label: 'Voice' }
+  sound: { btn: '#btnSound', label: 'Sound', blip: true }
 };
 
 export const TOPBAR_MUSIC = ['#btnPzSound', '#btnZSound'];
@@ -42,7 +40,6 @@ export const Settings = {
   sync() {
     const s = Store.data.settings;
     (Object.keys(SETTINGS) as SettingKey[]).forEach(key => $(SETTINGS[key].btn).setAttribute('aria-checked', String(s[key])));
-    $('#btnVoice').closest<HTMLElement>('.set-row')!.hidden = !Object.values(VoiceClipManifest.clips).some(c => c.src);   // no voice clips shipped yet -> nothing to toggle
     const rng = $<HTMLInputElement>('#rngSpeech');
     rng.value = String(Math.round(s.speech * 100)); this.showSpeech(rng);
     TOPBAR_MUSIC.forEach(sel => { $(sel).style.opacity = s.music ? '1' : '0.5'; });
