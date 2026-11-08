@@ -122,7 +122,6 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
     ],
     outro: [
       { who: 'Evil Larry', e: 'caught', t: 'Hssss! You were not supposed to find the lantern in my sack, bear!' },
-      { who: 'Evil Larry', e: 'angry', t: 'Enjoy your shiny little victory. You have not seen the last of Evil Larry!' },
       { e: 'happy', t: 'He bolted over the rooftops, and the golden lantern is glowing over the market again.' },
       { e: 'proud', t: 'The market glows again. Now, why does the carnival tent sound so very quiet?' }
     ]
@@ -139,12 +138,14 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
     ],
     outro: [
       { e: 'happy', t: 'Domino was practising a surprise finale at the ferris wheel, and hid the prop to keep it secret!' },
+      { e: 'thinking', t: 'Still, that striped thread snagged on the big top is not Domino\'s. Somebody was watching us tonight...' },
       { e: 'sad', t: 'One mystery left, partner. And it is the one I was hoping we would never meet...' }
     ]
   },
   10: {
     intro: [
       { e: 'sad', t: 'My friend... the last lantern has gone out. Everyone we have ever helped is here tonight.' },
+      { e: 'thinking', t: 'My first thought was Larry, of course. But he is nowhere on this list of suspects.' },
       { e: 'thinking', t: 'Five faces you know well. That is exactly what makes this one so hard.' },
       { e: 'neutral', t: 'Trust the notebook, not your heart. Are you ready for the final case?',
         choices: [
@@ -155,7 +156,66 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
     outro: [
       { e: 'surprised', t: 'Mabel! She was keeping the last light safe from the wind in the great hall, and it went out when she sneezed!' },
       { e: 'proud', t: 'No harm done. We can relight it together, all of us.' },
-      { e: 'happy', t: 'Tales and tangles, unravelled together. Thank you, partner. A light will always be on for you.' }
+      { who: 'Evil Larry', e: 'smug', t: 'Relit already? Pity. I had plans for that lantern.' },
+      { e: 'neutral', t: 'Another night, Larry.' },
+      { e: 'happy', t: 'Tales and tangles, unravelled together. Thank you, partner. A light will always be on for you.' },
+      { e: 'surprised', t: 'Wait... did you see that? A shooting star! And it is falling straight toward the meadow!' }
+    ]
+  },
+  11: {
+    intro: [
+      { e: 'surprised', t: 'Partner! Did you see that? Something just fell out of the sky and landed in the clover!' },
+      { who: 'Pickle', e: 'surprised', t: 'Bork! Bork bork! Hello? Is this... Planet Kibble?' },
+      { e: 'happy', t: 'Oh, my whiskers. A little alien dachshund! He is the longest, smallest, greenest pup I have ever seen.' },
+      { who: 'Pickle', e: 'sad', t: 'I turned left at the moon. Everybody says never turn left at the moon. Bork.' },
+      { who: 'Pickle', e: 'sad', t: 'And now my star map is gone, and I cannot find the way home. Whimper.' },
+      { e: 'proud', t: 'Then we shall find it, Pickle. Every clue is tangled up in this letter board. Shall we?',
+        choices: [
+          { label: 'We will get you home!', reply: { e: 'happy', t: 'That is the spirit! Every single letter belongs to a word, so leave none behind.' } },
+          { label: 'Got a hint for me?', gift: true, reply: { e: 'proud', t: 'Of course! Pickle gave me a moon-shaped biscuit, and inside there is one free hint.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'The star map! Pip the bee had it all along. It kept blowing away in the wind, so Pip pinned it down on the picnic hill with a flashlight.' },
+      { who: 'Pickle', e: 'wiggle', t: 'Bork bork! My map! Thank you, Pip! Thank you, detective bear!' },
+      { e: 'thinking', t: 'Hmm. The map is smudged, and Pickle\'s rocket tank is nearly empty. He will need stardust to fly again.' },
+      { e: 'proud', t: 'The old observatory on the hill keeps stardust for its telescope. Off we go, partner.' }
+    ]
+  },
+  12: {
+    intro: [
+      { e: 'neutral', t: 'The old observatory. Miss Hoot keeps a jar of stardust here, to make the big telescope shine.' },
+      { who: 'Pickle', e: 'sad', t: 'Bork... the jar is empty. Without stardust, my rocket cannot fly.' },
+      { e: 'surprised', t: 'Empty? But look at the stairs. They are still sparkling! Somebody carried it out of the star dome.' },
+      { e: 'thinking', t: 'Five suspects, five rooms, from the star dome to the lookout deck. Compare the clues carefully.',
+        choices: [
+          { label: 'Stardust hunting time!', reply: { e: 'happy', t: 'Splendid. Mind the telescope, it is surprisingly wobbly.' } },
+          { label: 'A hint, please?', gift: true, reply: { e: 'proud', t: 'Pickle sniffed one out for you. One free hint, smelling faintly of stars.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'surprised', t: 'Fenny Firefly! She sprinkled the stardust over the star chart, so the constellations glow all the way to Pickle\'s home!' },
+      { who: 'Pickle', e: 'happy', t: 'Bork bork bork! I can see my star! The whole map is shining!' },
+      { e: 'happy', t: 'And there is just enough dust left to fill the tank.' },
+      { e: 'proud', t: 'One thing remains: the rocket needs its launch key. To the launch field, partner!' }
+    ]
+  },
+  13: {
+    intro: [
+      { e: 'neutral', t: 'The launch field, at the edge of the meadow. The rocket is fuelled, polished and ready.' },
+      { who: 'Pickle', e: 'sad', t: 'Bork. The launch key was on the launch pad, and now it is not. I cannot go home without it.' },
+      { e: 'thinking', t: 'Five friends came to wave Pickle off, and one of them knows where that key went.' },
+      { e: 'neutral', t: 'This is the last case of the night. Are you ready to send our friend home?',
+        choices: [
+          { label: 'Ready for take-off!', reply: { e: 'happy', t: 'Ten, nine, eight... oh, we do not need to start that high. Let us begin!' } },
+          { label: 'One last hint, please?', gift: true, reply: { e: 'proud', t: 'For the final launch? Of course. One free hint, glowing softly.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'There he goes! Rufus Rabbit only borrowed the launch key to keep it safe, and lit sparklers to send Pickle off in style.' },
+      { who: 'Pickle', e: 'happy', t: 'Bork! Radio check! I can see my home from here! Thank you, Barnaby! Thank you, everybody!' },
+      { e: 'proud', t: 'Safe travels, little friend. Wag your tail all the way home.' },
+      { e: 'happy', t: 'Look, partner. He left a brand new star right above Honeywick.' }
     ]
   }
 };
@@ -179,9 +239,15 @@ export const STORY_EXTRA: Record<number, Pick<Record<StoryPart, RawLine[]>, 'bri
   8: { bridge: [{ e: 'thinking', t: 'SPICE on the cobbles! Now follow the market whispers, stall by stall, numbers in order.' }],
        caseIntro: [{ e: 'neutral', t: 'Everyone has an alibi, and most of them overlap. And a certain striped someone smells strongly of the mask booth...' }] },
   9: { bridge: [{ e: 'surprised', t: 'CIRCUS sawdust! Now follow the ticket stubs: one trail, every tile, numbers in order.' }],
-       caseIntro: [{ e: 'thinking', t: 'The rooms along the midway matter here. Who was next to whom?' }] },
+       caseIntro: [{ e: 'thinking', t: 'Striped pawprints by the ticket booth... but Larry is not on our list tonight. Focus, partner. The rooms along the midway matter here: who was next to whom?' }] },
   10: { bridge: [{ e: 'proud', t: 'LIGHT under the door! Now the lantern’s own trail: every step, numbers in order.' }],
-        caseIntro: [{ e: 'sad', t: 'Everyone we have met is here. Trust the notebook, partner. Who put out the last lantern?' }] }
+        caseIntro: [{ e: 'sad', t: 'Everyone we have met is here. Trust the notebook, partner. Who put out the last lantern?' }] },
+  11: { bridge: [{ e: 'surprised', t: 'COMET! So that was the falling star. Now follow the scorched trail across the meadow: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'thinking', t: 'Five suspects, five spots around the meadow. Somebody has Pickle\'s map. Cross people off until one story fits.' }] },
+  12: { bridge: [{ e: 'happy', t: 'GALAXY glitter! Now follow the SPARKLE up the stairs: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'thinking', t: 'Who was where, and who held what? Some rooms are right next to each other. That will matter.' }] },
+  13: { bridge: [{ e: 'proud', t: 'ROCKET! Now the countdown, chalked across the field: follow the numbers, touch every tile.' }],
+        caseIntro: [{ e: 'neutral', t: 'The very last case before take-off. Who was on the launch pad with the key? Trust the notebook, partner.' }] }
 };
 
 export const REACT = {

@@ -10,7 +10,7 @@ import { Store } from '../state/store.ts';
 import { Film } from './film.ts';
 import { Stage } from './film-art.ts';
 
-const CREDITS = ['Tales & Tangles', 'Barnaby, detective bear', 'Evil Larry, thief of lanterns', 'Thank you for playing'];
+const CREDITS = ['Tales & Tangles', 'Barnaby, detective bear', 'Evil Larry, thief of lanterns', 'Pickle, space pup', 'Thank you for playing'];
 
 /* ---------- the film that ends a chapter ----------
    Plays the chapter's `ending` script (data/chapters.ts) on a layered stage (film-art.ts) with its own score (audio/film-score.ts):

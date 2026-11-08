@@ -46,6 +46,163 @@ export const SCORES: Record<string, Score> = {
     pad: { type: 'triangle', lp: 1700, vol: 0.055 },
     melody: [[9, null, 13, 16, 13, null, 21, 19], [9, null, 12, 16, 12, null, 19, 16], [11, null, 14, 17, 14, null, 23, 21], [12, null, 16, 19, 24, null, null, null]],
     bell: { type: 'triangle', vol: 0.09, dur: 0.6 }
+  },
+  /* Lost in Space: a floaty, lydian lullaby, glassy bells drifting over a wide pad */
+  space: {
+    bpm: 72, chords: [[0, 4, 7, 11], [2, 6, 9, 12], [-3, 0, 4, 7], [-5, -1, 2, 6]],
+    pad: { type: 'sine', lp: 1400, vol: 0.06 },
+    melody: [[19, null, 23, null, 26, null, 23, null], [21, null, 26, null, 30, null, 26, null], [19, null, 24, null, 28, null, 24, null], [23, null, 26, 23, 19, null, null, null]],
+    bell: { type: 'sine', vol: 0.08, dur: 1.0 }
+  }
+};
+
+/* ---------- Evil Larry's cinematics: a minor-key noir score instead of the game's bright chimes ----------
+   A low drone under the whole scene (the only long-lived sound, so a skip can fade it out), then one-shot hits timed by scenes/larry-scene.ts:
+   the midnight bell tolls, each lantern snuffed with a falling pluck, lightning, the sneaky motif over a walking bass, and the WANTED sting.
+   Everything sits around A minor, with a tritone and a falling semitone for the menace. */
+const bellStrike = (semi: number, t: number, vol: number, len = 2.4) =>
+  [[1, 1, 1], [2.4, 0.5, 0.7], [4.1, 0.25, 0.45]].forEach(([m, v, d]) =>
+    AudioFX.note(hz(semi) * m, { t, dur: len * d, vol: vol * v, type: 'sine', attack: 0.005 }));
+
+export const LarryScore = {
+  stopDrone: null as (() => void) | null,
+
+  /* the drone: A1 + E2 + a soft A2 an octave up, slowly swelling; returns nothing, `stop()` fades it */
+  start() {
+    this.stop();
+    const ctx = AudioFX.enabled ? AudioFX.ensure() : null;
+    if (!ctx) return;
+    const g = ctx.createGain(), lp = ctx.createBiquadFilter(), lfo = ctx.createOscillator(), lg = ctx.createGain();
+    lp.type = 'lowpass'; lp.frequency.value = 340;
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0.085, ctx.currentTime + 2.5);
+    lfo.frequency.value = 0.25; lg.gain.value = 90;                                  // the filter breathes slowly
+    lfo.connect(lg); lg.connect(lp.frequency);
+    const oscs = [[-27, 'sawtooth', 1], [-20, 'sawtooth', 0.6], [-15, 'triangle', 0.5]].map(([s, type, v]) => {
+      const o = ctx.createOscillator(), og = ctx.createGain();
+      o.type = type as OscillatorType; o.frequency.value = hz(s as number); og.gain.value = v as number;
+      o.connect(og); og.connect(lp); o.start(); return o;
+    });
+    lfo.start(); lp.connect(g); g.connect(AudioFX.master);
+    this.stopDrone = () => {
+      const n = ctx.currentTime;
+      g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value, 0.0001), n); g.gain.linearRampToValueAtTime(0.0001, n + 0.6);
+      oscs.forEach(o => o.stop(n + 0.7)); lfo.stop(n + 0.7);
+    };
+  },
+  stop() { if (this.stopDrone) { try { this.stopDrone(); } catch { /* already stopped */ } this.stopDrone = null; } },
+
+  /* "Midnight at the market...": three slow, low bell tolls and gusts of wind */
+  midnight() {
+    [0.3, 2.0, 3.7].forEach(t => bellStrike(-15, t, 0.12));
+    [0, 1.3, 2.7, 4].forEach(t => AudioFX.noise(1, 450, 0.035, t));
+  },
+  /* a lantern goes out: a falling muted pluck and a little puff */
+  lanternOut(i: number) {
+    const fall = [-3, -5, -8, -10, -12, -15, -17, -20], s = fall[Math.min(i, fall.length - 1)];
+    AudioFX.note(hz(s), { dur: 0.55, vol: 0.11, type: 'triangle', lp: 900, attack: 0.006, slideTo: hz(s) * 0.94 });
+    AudioFX.noise(0.12, 900, 0.05);
+  },
+  /* lightning: crack, rumble and a tritone stab */
+  lightning() {
+    AudioFX.noise(0.45, 5200, 0.22); AudioFX.noise(1.1, 650, 0.2, 0.06); AudioFX.thud();
+    [-15, -9].forEach(s => AudioFX.note(hz(s), { dur: 1.3, vol: 0.06, type: 'sawtooth', lp: 750, attack: 0.02 }));   // A2 + Eb3
+  },
+  /* the reveal: a sneaky pizzicato motif (A C Eb C Ab G) over a low walking bass */
+  sneak() {
+    [-3, 0, 3, 0, 8, 7].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.2, type: 'triangle', vol: 0.1, dur: 0.17, lp: 1800 }));
+    [-15, -15, -14, -15].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.3, type: 'triangle', vol: 0.12, dur: 0.26, lp: 520 }));
+  },
+  /* the golden lantern drops into the sack */
+  stolen() {
+    AudioFX.note(560, { dur: 0.42, vol: 0.1, type: 'triangle', slideTo: 170, lp: 1600 });
+    AudioFX.noise(0.18, 1400, 0.05, 0.3);
+  },
+  /* the WANTED card: a crash, two heavy brass-like stabs a semitone apart (A minor, then G# minor), glitchy static and a tolling bell that settles on the drone */
+  wanted() {
+    AudioFX.thud(); AudioFX.noise(0.9, 3200, 0.2);
+    [[-15, -3, 0, 4], [-16, -4, -1, 3]].forEach((chord, k) =>
+      chord.forEach(s => AudioFX.note(hz(s), { t: k * 0.5, dur: k ? 2.2 : 0.9, vol: 0.065, type: 'sawtooth', lp: 1300, attack: 0.02 })));
+    AudioFX.note(hz(15), { t: 0.5, dur: 1.6, vol: 0.03, type: 'sine', attack: 0.04 });                          // a thin high Eb above the second stab
+    [0.04, 0.3, 0.62].forEach(t => AudioFX.noise(0.12, 6500, 0.08, t));                                         // matches the glitch on the card
+    bellStrike(-15, 1.35, 0.14, 3);
+  }
+};
+
+/* ---------- Pickle's cinematics (scenes/pup-scene.ts): soft, bouncy and bright where Larry's are menacing ----------
+   A warm pad under the whole scene (the only long-lived sound, so a skip can fade it out), then one-shot sounds timed by the scene:
+   the rocket zooming by, sputtering, falling, a soft bounce, the hatch popping, Pickle's "bork", the countdown and the lift-off. */
+export const PupScore = {
+  stopPad: null as (() => void) | null,
+
+  start() {
+    this.stop();
+    const ctx = AudioFX.enabled ? AudioFX.ensure() : null;
+    if (!ctx) return;
+    const g = ctx.createGain(), lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 900;
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 2);
+    const oscs = [[-12, 'sine', 1], [-5, 'triangle', 0.6], [4, 'sine', 0.5], [11, 'sine', 0.3]].map(([s, type, v]) => {
+      const o = ctx.createOscillator(), og = ctx.createGain();
+      o.type = type as OscillatorType; o.frequency.value = hz(s as number); og.gain.value = v as number;
+      o.connect(og); og.connect(lp); o.start(); return o;
+    });
+    lp.connect(g); g.connect(AudioFX.master);
+    this.stopPad = () => {
+      const n = ctx.currentTime;
+      g.gain.cancelScheduledValues(n); g.gain.setValueAtTime(Math.max(g.gain.value, 0.0001), n); g.gain.linearRampToValueAtTime(0.0001, n + 0.6);
+      oscs.forEach(o => o.stop(n + 0.7));
+    };
+  },
+  stop() { if (this.stopPad) { try { this.stopPad(); } catch { /* already stopped */ } this.stopPad = null; } },
+
+  /* twinkling stars at the start: a few high glassy notes */
+  twinkle() { [19, 26, 23, 31].forEach((s, i) => AudioFX.chime(s - 12, i * 0.35, 0.05)); },
+  /* the rocket zooms across the sky: a rising slide and a whoosh */
+  zoom() {
+    AudioFX.note(220, { dur: 1.4, attack: 0.3, vol: 0.05, type: 'triangle', slideTo: 1100, lp: 2600 });
+    AudioFX.noise(1.1, 1500, 0.07, 0.1);
+  },
+  /* the engine coughs: four uneven blips that fall in pitch, with puffs */
+  sputter() {
+    [0, 0.22, 0.5, 0.95].forEach((t, i) => {
+      AudioFX.note(190 - i * 28, { t, dur: 0.16, vol: 0.09, type: 'square', lp: 700, slideTo: 120 - i * 14 });
+      AudioFX.noise(0.1, 500, 0.05, t);
+    });
+  },
+  /* a long falling whistle */
+  fall() { AudioFX.note(900, { dur: 1.7, vol: 0.05, type: 'sine', slideTo: 160, lp: 2400 }); },
+  /* the soft landing: a thud and a springy boing */
+  boing() {
+    AudioFX.thud();
+    AudioFX.note(210, { t: 0.04, dur: 0.5, vol: 0.09, type: 'triangle', slideTo: 560, lp: 1800 });
+    AudioFX.note(560, { t: 0.5, dur: 0.35, vol: 0.05, type: 'triangle', slideTo: 330, lp: 1800 });
+    AudioFX.noise(0.3, 900, 0.06, 0.02);
+  },
+  /* the hatch pops open: a hiss and a little rising chime */
+  pop() {
+    AudioFX.noise(0.35, 3200, 0.07);
+    [12, 16, 19].forEach((s, i) => AudioFX.chime(s, 0.1 + i * 0.09, 0.09));
+  },
+  /* "Bork!": two quick yaps, the second a touch higher */
+  bork() {
+    AudioFX.note(560, { dur: 0.13, vol: 0.09, type: 'square', lp: 1500, slideTo: 380, attack: 0.004 });
+    AudioFX.note(690, { t: 0.2, dur: 0.15, vol: 0.09, type: 'square', lp: 1500, slideTo: 450, attack: 0.004 });
+  },
+  /* the WELCOME card: a warm major chord and a sparkle */
+  title() {
+    [0, 4, 7, 12].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.05, dur: 2.2, vol: 0.07, type: 'triangle', attack: 0.03 }));
+    for (let i = 0; i < 6; i++) AudioFX.chime(4 + i * 2, 0.3 + i * 0.08, 0.08);
+  },
+  /* the countdown: three equal beeps and a higher one for GO */
+  countdown(i: number) { AudioFX.note(i < 3 ? 440 : 880, { dur: i < 3 ? 0.22 : 0.6, vol: 0.1, type: 'triangle', lp: 2400, attack: 0.005 }); },
+  /* lift-off: a rumble that opens up, a rising tone and a sparkling finish */
+  liftoff() {
+    AudioFX.noise(2.8, 420, 0.2); AudioFX.noise(2.4, 1800, 0.08, 0.3);
+    AudioFX.note(90, { dur: 2.6, attack: 0.4, vol: 0.09, type: 'sawtooth', slideTo: 520, lp: 900 });
+    AudioFX.note(260, { t: 0.5, dur: 2.4, attack: 0.5, vol: 0.05, type: 'triangle', slideTo: 1500, lp: 3000 });
+    for (let i = 0; i < 7; i++) AudioFX.chime(i * 2, 1.9 + i * 0.1, 0.08);
   }
 };
 

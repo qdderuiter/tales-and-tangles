@@ -1,5 +1,7 @@
 import { emit } from '../core/events.ts';
 import { clamp } from '../core/util.ts';
+import { babbleNote } from '../dialogue/babble-rules.ts';
+import type { BabbleVoice } from '../dialogue/babble-rules.ts';
 import { Store } from '../state/store.ts';
 
 export interface NoteOpts { t?: number; dur?: number; vol?: number; attack?: number; type?: OscillatorType; slideTo?: number; lp?: number }
@@ -100,7 +102,10 @@ export const AudioFX = {
   },
   bump() { this.note(120, { type: 'sine', vol: 0.22, dur: 0.12, slideTo: 80 }); },
   tick(step: number) { this.note(this.hz(this.scaleNote(step)), { type: 'triangle', vol: 0.07, dur: 0.14, lp: 2400 }); },
-  talk() { this.note(300 + Math.random() * 150, { type: 'sine', vol: 0.022, dur: 0.05, attack: 0.005 }); },
+  babble(ch: string, voice: BabbleVoice, stressed = false) {      // one beep of a speaker's made-up speech
+    const n = babbleNote(ch, voice, Math.random(), stressed);
+    if (n) this.note(n.hz, { type: voice.wave, vol: n.vol, dur: n.dur, attack: 0.005, lp: 2200 });
+  },
   blip() { this.note(540, { type: 'sine', vol: 0.07, dur: 0.09 }); this.note(810, { t: 0.04, type: 'sine', vol: 0.05, dur: 0.1 }); },
   thud() {
     this.note(150, { type: 'sine', vol: 0.5, dur: 0.3, slideTo: 52 });

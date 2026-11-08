@@ -62,10 +62,11 @@
   <section id="screen-story" class="screen" aria-label="Story">
     <div class="story-top">
       <div class="chip-title" id="storyTitle">Chapter 1</div>
-      <button class="btn small butter" id="btnSkip">Skip &#9656;&#9656;</button>
+      <button class="btn small skip" id="btnSkip">Skip &#9656;&#9656;</button>
     </div>
     <div class="story-bear" id="storyBear"></div>
     <div class="story-larry" id="storyLarry"></div>
+    <div class="story-pup" id="storyPup"></div>
     <div class="dlg" id="dlg">
       <div class="dlg-name" id="dlgName">Barnaby</div>
       <div class="dlg-text" id="dlgText" aria-live="off"></div>
@@ -222,7 +223,7 @@
       <div class="dlg-caret" id="noirCaret">&#9660;</div>
     </div>
     <button class="btn big noir-begin" id="noirBegin">Begin</button>
-    <button class="btn small lav noir-skip" id="noirSkip">Skip</button>
+    <button class="btn small skip film noir-skip" id="noirSkip">Skip</button>
     <div class="noir-flash" id="noirFlash"></div>
   </div>
   <svg class="defs" aria-hidden="true" focusable="false"><filter id="glitch" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence id="glitchNoise" type="fractalNoise" baseFrequency="0.002 0.06" numOctaves="2" seed="3" result="n"/><feDisplacementMap id="glitchMap" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
@@ -247,7 +248,34 @@
     <div class="lf-cap" id="lfCap"></div>
     <div class="lf-title" id="lfTitle"><small>WANTED</small><b>EVIL LARRY</b><span>up to no good</span></div>
     <div class="lf-flash" id="lfFlash"></div>
-    <button class="btn small lav lf-skip" id="lfSkip">Skip</button>
+    <button class="btn small skip film lf-skip" id="lfSkip">Skip</button>
+  </div>
+
+  <!-- PICKLE THE SPACE PUP: his crash-landing cinematic and his lift-off (scenes/pup-scene.ts) -->
+  <div class="pup-film" id="pupFilm" aria-hidden="true">
+    <div class="pf-stage" id="pfStage">
+      <div class="pf-stars" id="pfStars"></div>
+      <div class="pf-moon"></div>
+      <svg class="pf-sign" id="pfSign" viewBox="0 0 160 190" aria-hidden="true">
+        <rect x="76" y="20" width="8" height="168" rx="3" fill="#8d6a4a"/>
+        <path d="M18 28 H116 L142 46 L116 64 H18Z" fill="#f2c36b" stroke="#a9772e" stroke-width="3"/><text x="66" y="52" text-anchor="middle" font-size="17" font-weight="900" fill="#6b4a2b" font-family="sans-serif">KIBBLE</text>
+        <path d="M142 84 H44 L18 102 L44 120 H142Z" fill="#f2c36b" stroke="#a9772e" stroke-width="3"/><text x="96" y="108" text-anchor="middle" font-size="12" font-weight="900" fill="#6b4a2b" font-family="sans-serif">HONEYWICK</text>
+      </svg>
+      <svg class="pf-heart" id="pfHeart" viewBox="0 0 100 90" aria-hidden="true"><path d="M50 84 C12 58 2 30 22 13 C36 1 50 13 50 24 C50 13 64 1 78 13 C98 30 88 58 50 84Z" fill="none" stroke="#ffe27a" stroke-width="4" stroke-dasharray="1 8" stroke-linecap="round"/><path d="M50 84 C12 58 2 30 22 13 C36 1 50 13 50 24 C50 13 64 1 78 13 C98 30 88 58 50 84Z" fill="rgba(255,226,122,.12)"/></svg>
+      <svg class="pf-hills" viewBox="0 0 400 200" preserveAspectRatio="none" aria-hidden="true">
+        <path fill="#2a2766" d="M0 200 V84 Q70 40 150 70 T300 62 T400 76 V200Z"/>
+        <path fill="#1c1a52" d="M0 200 V122 Q90 82 190 112 T400 104 V200Z"/>
+        <g class="pf-pad"><rect x="146" y="104" width="108" height="9" rx="3" fill="#59607f"/><rect x="156" y="112" width="8" height="22" fill="#434a68"/><rect x="236" y="112" width="8" height="22" fill="#434a68"/><rect x="146" y="104" width="108" height="3" fill="#8b93b8"/></g>
+      </svg>
+      <div class="pf-ship" id="pfShip"></div>
+      <div class="pf-pup" id="pfPup"></div>
+      <div class="pf-count" id="pfCount"></div>
+    </div>
+    <div class="pf-bar top"></div><div class="pf-bar bot"></div>
+    <div class="pf-cap" id="pfCap"></div>
+    <div class="pf-title" id="pfTitle"><small>LOST IN SPACE</small><b>PICKLE</b><span>a very small visitor</span></div>
+    <div class="pf-flash" id="pfFlash"></div>
+    <button class="btn small skip film pf-skip" id="pfSkip">Skip</button>
   </div>
 
   <!-- CHAPTER ENDINGS: the short film that closes each chapter (scenes/chapter-film.ts) -->
@@ -261,7 +289,7 @@
       <div class="cf-credits" id="cfCredits"></div>
     </div>
     <div class="cf-flash" id="cfFlash"></div>
-    <button class="btn small lav cf-skip" id="cfSkip">Skip</button>
+    <button class="btn small skip film cf-skip" id="cfSkip">Skip</button>
   </div>
 
   <div id="toastLayer" aria-live="polite"></div>

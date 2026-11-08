@@ -29,6 +29,9 @@ export const MOODS: Record<string, Mood> = {   // chords: [root pitch class (C=0
   lv8:   { bpm: 78, chords: [[4, 'min9'], [9, 'min7'], [2, 'dom7'], [7, 'maj7']] },     // night market: E minor
   lv9:   { bpm: 86, chords: [[7, 'dom7'], [0, 'maj7'], [7, 'dom7'], [2, 'min7']] },     // carnival: jazzy G7
   lv10:  { bpm: 70, chords: [[0, 'maj7'], [9, 'min7'], [5, 'maj7'], [7, 'dom7']] },     // finale: warm C
+  lv11:  { bpm: 72, chords: [[9, 'min9'], [5, 'maj7'], [0, 'maj7'], [7, 'dom7']] },     // falling star: A minor, floaty
+  lv12:  { bpm: 64, chords: [[2, 'maj7'], [7, 'maj7'], [9, 'min9'], [4, 'min7']] },     // observatory: D, slow and starry
+  lv13:  { bpm: 88, chords: [[7, 'maj7'], [0, 'maj7'], [2, 'dom7'], [7, 'maj7']] },     // countdown: G, bouncy
   evil:  { bpm: 62, heavy: true, drone: true, chords: [[0, 'min9'], [5, 'min7'], [8, 'maj7'], [7, 'dom7']] }   // Barnaby Noir: slow, minor, heavy
 };
 

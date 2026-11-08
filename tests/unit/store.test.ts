@@ -100,6 +100,13 @@ describe('loading', () => {
     expect(d.seen.endings).toEqual({ village: true });
   });
 
+  it('the Pickle cinematic flag survives a load, and an older save without it reads as not seen', () => {
+    put(Store.KEY, { seen: { larry: true, pup: true } });
+    expect(load().seen.pup).toBe(true);
+    put(Store.KEY, { seen: { larry: true } });
+    expect(load().seen.pup).toBe(false);
+  });
+
   it('a save from before endings existed gets an empty endings record', () => {
     put(Store.KEY, { seen: { larry: true } });
     expect(load().seen.endings).toEqual({});

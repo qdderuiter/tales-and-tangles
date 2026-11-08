@@ -129,6 +129,6 @@ export const LevelFlow = {
       onReplay: () => { session.run = this.newRun(n, false); this.goto(levelRun().steps.find(id => PUZZLE_KINDS[id])!); }
     }); };
     const lv = LEVELS[n - 1];
-    if (lv.caughtScene) lv.caughtScene().then(card); else card();   // e.g. Evil Larry is caught red-pawed first
+    if (lv.caughtScene && !run.replay) lv.caughtScene().then(card); else card();   // e.g. Evil Larry is caught red-pawed first
   }
 };

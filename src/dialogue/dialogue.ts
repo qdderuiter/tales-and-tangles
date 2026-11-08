@@ -1,7 +1,7 @@
 import { VoiceManager } from '../audio/voice.ts';
 import type { Bear } from '../characters/barnaby.ts';
 import type { Choice, Line } from '../data/types.ts';
-import { DEFAULT_SPEAKER, SPEAKERS, SPEAKER_CLASSES, lineMs } from './speakers.ts';
+import { DEFAULT_SPEAKER, SPEAKERS, SPEAKER_CLASSES, lineMs, voiceFor } from './speakers.ts';
 import { Typer } from './typer.ts';
 
 export type OnSpeaker = (who: string, emotion: string, reset?: boolean) => void;
@@ -39,7 +39,7 @@ export class Dialogue {
     if (this.onSpeaker) this.onSpeaker(who, line.e || 'neutral');
     if (!sp.ownPortrait) this.bear.react(line.e || 'neutral');
     VoiceManager.play(line.id);
-    this.typer.start(line.t, { ms: lineMs(line, 26), onDone: () => this.afterType(line) });
+    this.typer.start(line.t, { ms: lineMs(line, 26), voice: voiceFor(who), onDone: () => this.afterType(line) });
   }
   afterType(line: Line) {
     if (line.choices) {
