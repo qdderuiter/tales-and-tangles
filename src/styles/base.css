@@ -1,7 +1,10 @@
 :root{
   --cream:#fbf3e6; --cream2:#f2e2c8; --cream3:#e9d5b6;
   --peach:#f8cdb4; --mint:#c8e6cf; --lav:#d9d0f0; --sky:#cde3f3; --butter:#fbe5a0; --rose:#f4b6b6;
-  --brown:#8a5a3c; --ink:#5b4636; --ink-soft:#8b7561;
+  --brown:#8a5a3c; --ink:#5b4636; --ink-soft:#735d4a;
+  /* control edges: each is >=3:1 against every cream surface (WCAG 1.4.11) */
+  --peach-e:#b86a4c; --mint-e:#4f8a63; --lav-e:#7d6cb8; --sky-e:#5084a9; --butter-e:#9c7a1e; --line:#927760;
+  --card-sh:0 1px 2px rgba(110,70,30,.06),0 4px 14px rgba(110,70,30,.07);
   --sh-l:rgba(255,255,255,.95); --sh-d:rgba(176,140,104,.40);
   --spring:cubic-bezier(.34,1.56,.64,1);
   --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px);

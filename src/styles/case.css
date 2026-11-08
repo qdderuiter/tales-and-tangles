@@ -3,18 +3,15 @@
 #screen-case{gap:8px}
 .case-scroll{flex:1;min-height:0;overflow-y:auto;touch-action:pan-y;overscroll-behavior:contain;display:flex;flex-direction:column;gap:16px;padding:2px 4px 28px;margin:0 -4px}
 /* calm surfaces: one flat paper card with a single soft shadow; colour only where it carries meaning */
-.crime,.clist,.accuse-panel{background:#fffaf1;border-radius:20px;box-shadow:0 1px 2px rgba(110,70,30,.06),0 4px 14px rgba(110,70,30,.07)}
+.crime,.clist,.accuse-panel{background:#fffaf1;border-radius:20px;box-shadow:var(--card-sh)}
 .crime{padding:12px 16px;font-weight:600;font-size:14px;line-height:1.45;flex:none}
 .crime small,.hall small{display:block;font-size:12px;font-weight:700;letter-spacing:.01em;color:var(--ink-soft);margin-bottom:2px}
 .nb-tabs{display:flex;gap:2px;flex:none;padding:3px;border-radius:14px;background:var(--cream2)}
 .nbl span{font-size:20px;flex:none;width:26px;text-align:center}
 .nb-tabs button{flex:1;padding:8px 6px;border-radius:11px;background:transparent;font-weight:700;font-size:13.5px;color:var(--ink-soft);
   transition:transform .25s var(--spring),background .2s,color .2s,box-shadow .2s}
-.nb-tabs button.on{background:#fffaf1;color:var(--ink);box-shadow:0 1px 3px rgba(110,70,30,.16)}
+.nb-tabs button.on{background:#fffaf1;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
 .nb-tabs button:active{transform:scale(.97);transition-duration:70ms}
-.nb-foot{display:flex;justify-content:flex-end;margin-top:-10px}
-.nb-foot .auto{background:none;font-size:12.5px;font-weight:700;color:var(--ink-soft);padding:4px 6px;border-radius:8px}
-.nb-foot .auto:active{opacity:.6}
 .nb{display:grid;gap:5px;flex:none;background:#f6ead6;border-radius:18px;padding:8px}
 .nbh{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:46px;text-align:center;line-height:1.05}
 .nbh span{font-size:20px}
@@ -25,37 +22,36 @@
 .nbc{height:42px;border-radius:12px;background:#fffaf1;font-size:19px;font-weight:700;color:var(--ink-soft);
   box-shadow:inset 0 0 0 1px rgba(139,117,97,.10);transition:transform .25s var(--spring),background .15s}
 .nbc:active{transform:scale(.92);transition-duration:70ms}
-.nbc.s1{color:#c46a6a}
+.nbc.s1{color:#b4524f}
 .nbc.s2{background:var(--mint);color:#2f7a4a;box-shadow:none}
-.nbc.s3{color:rgba(196,106,106,.38);background:#faf1e4}
-.nbc.pressed{animation:pop .4s var(--spring)}
+.nbc.s3{color:#b5807a;background:#faf1e4}
 .nbc.hinted{animation:hintPulse .9s ease-in-out infinite;background:#fff1b8}
-.hall{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;flex:none;margin-top:-10px;padding:0 4px;font-size:12px;font-weight:600;color:var(--ink-soft)}
-.hall small{width:100%;margin:0}
+.clist-top{display:flex;flex-direction:column;gap:4px;padding:12px 16px 10px;border-bottom:1px solid rgba(139,117,97,.22)}
+.clist-top .alabel{padding:0}
+.hall{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;font-size:12.5px;font-weight:600;color:var(--ink-soft)}
 .hall i{font-style:normal;opacity:.6}
 .hallchip{white-space:nowrap}
-.clist{display:flex;flex-direction:column;flex:none;padding:2px 0}
+.clist{display:flex;flex-direction:column;flex:none}
 .alabel{font-size:12px;font-weight:700;letter-spacing:.01em;color:var(--ink-soft);padding:0 6px}
-.alabel small{font-weight:600;opacity:.8}
-.clist-head{margin-bottom:-10px}
+.alabel small{font-weight:600}
 .clue-item{padding:11px 16px;font-size:13.5px;line-height:1.45;font-weight:600;border-top:1px solid rgba(139,117,97,.12);
   transition:transform .25s var(--spring),opacity .2s,background .2s}
 .clue-item:first-child{border-top:0}
 .clue-item:active{background:rgba(139,117,97,.06);transition-duration:70ms}
 .clue-item b{color:#b4540e;font-weight:700}
 .clue-item.earned{box-shadow:inset 3px 0 0 var(--butter)}
-.clue-item.done{opacity:.45;text-decoration:line-through}
+.clue-item.done{color:var(--ink-soft);text-decoration:line-through}
 .clue-item.locked{color:var(--ink-soft);font-style:italic}
 .clue-item.hinted{animation:cluePulse 1s ease-in-out infinite;background:#fff1b8}
 @keyframes cluePulse{0%,100%{box-shadow:inset 0 0 0 0 rgba(240,192,64,0)}50%{box-shadow:inset 0 0 0 3px rgba(240,192,64,.95)}}
 .accuse-panel{display:flex;flex-direction:column;gap:10px;flex:none;padding:14px}
 .accuse-panel .alabel{padding:0 2px}
 .chips{display:flex;flex-wrap:wrap;gap:7px}
-.chip{display:flex;align-items:center;gap:5px;padding:5px 10px 5px 6px;border-radius:14px;background:var(--cream2);font-size:12px;font-weight:700;
-  transition:transform .25s var(--spring),background .2s,box-shadow .2s}
+.chip{display:flex;align-items:center;gap:5px;padding:5px 10px 5px 6px;border-radius:14px;background:var(--cream2);border:2px solid var(--line);font-size:12px;font-weight:700;
+  transition:transform .25s var(--spring),background .2s}
 .chip:active{transform:scale(.96);transition-duration:70ms}
 .chip .critter{width:26px;height:auto}
 .chip span{font-size:17px}
-.chip.sel{background:var(--lav);box-shadow:inset 0 0 0 2px #9c88dc}
+.chip.sel{background:var(--lav);border-color:var(--lav-e)}
 .chip.shake{animation:shake .42s ease-in-out}
 .accuse{align-self:center;margin-top:4px}

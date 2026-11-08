@@ -1,7 +1,7 @@
 /* ---------- detective badges ---------- */
 .badge-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .bcard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;padding:14px 10px;border-radius:22px;background:var(--cream2);
-  box-shadow:6px 6px 13px var(--sh-d),-5px -5px 11px var(--sh-l),inset 0 3px 0 rgba(255,255,255,.55)}
+  box-shadow:var(--card-sh)}
 .bcard .bicon{width:54px;height:54px;border-radius:50%;background:#fffaf1;display:grid;place-items:center;font-size:28px;
   box-shadow:inset 3px 3px 7px var(--sh-d),inset -3px -3px 7px var(--sh-l)}
 .bcard b{font-size:14px;font-weight:900;color:var(--ink)}

@@ -17,7 +17,7 @@
 
 .mapchips{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:none}
 .mapchip{display:flex;align-items:center;gap:10px;min-width:0;text-align:left;padding:12px 14px;border-radius:22px;background:var(--cx,#fde9c9);
-  box-shadow:6px 6px 13px var(--sh-d),-5px -5px 11px var(--sh-l),inset 0 3px 0 rgba(255,255,255,.55);transition:transform .25s var(--spring)}
+  border:2px solid var(--line);transition:transform .25s var(--spring)}
 .mapchip:active{transform:scale(.97);transition-duration:100ms}
 .mapchip .ci{flex:none;font-size:1.5rem}
 .mapchip b{display:block;font-size:.95rem;font-weight:900}
@@ -27,7 +27,7 @@
 
 /* ----- a chapter card: art on top, then the name, the tagline and a ring of cases solved ----- */
 .chcard{position:relative;flex:none;border-radius:28px;background:#fffaf1;overflow:hidden;
-  box-shadow:7px 7px 16px var(--sh-d),-6px -6px 14px var(--sh-l);transition:transform .28s var(--spring)}
+  box-shadow:var(--card-sh);transition:transform .28s var(--spring)}
 .chcard:has(.chcard-main:active){transform:scale(.97);transition-duration:100ms}
 .chcard-main{display:block;width:100%;padding:0;text-align:left;background:none;border-radius:inherit}
 .chcard-art{position:relative;display:block;height:196px;overflow:hidden;background:linear-gradient(180deg,var(--ch-a),var(--ch-b));transition:filter .9s ease}
@@ -87,7 +87,7 @@
 .cnode:last-child::after{display:none}
 .cnode.locked::after{opacity:.2}
 .cnode-main{position:relative;z-index:1;display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;border-radius:24px;background:#fffaf1;
-  box-shadow:6px 6px 14px var(--sh-d),-5px -5px 12px var(--sh-l);transition:transform .25s var(--spring)}
+  border:2px solid var(--line);transition:transform .25s var(--spring)}
 .cnode-main:not(:disabled):active{transform:scale(.97);transition-duration:100ms}
 .cnode.locked .cnode-main{opacity:.62;filter:grayscale(.5);cursor:default}
 .cnode-dot{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:1.1rem;font-weight:900;color:var(--ch-ink);background:var(--ch-a);
@@ -102,8 +102,8 @@
 .cnode.ending .cnode-dot{font-size:1.25rem}
 .cnode-pips{position:relative;z-index:1;display:flex;gap:8px;padding:8px 8px 0 74px}
 .pip{flex:1;padding:7px 6px;border-radius:12px;font-size:.75rem;font-weight:800;color:var(--ink-soft);background:var(--cream2);
-  box-shadow:inset 3px 3px 6px var(--sh-d),inset -3px -3px 6px var(--sh-l);transition:transform .25s var(--spring)}
-.pip.done{background:var(--mint);color:#3f6b4f}
+  border:2px solid var(--line);transition:transform .25s var(--spring)}
+.pip.done{background:var(--mint);color:#2f5a40;border-color:var(--mint-e)}
 .pip:not(:disabled):active{transform:scale(.94);transition-duration:100ms}
 .pip:disabled{cursor:default}
 .chview.open .chv-path .cnode{animation:cnodeIn .5s cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i) * 60ms + 160ms)}

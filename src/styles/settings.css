@@ -2,7 +2,7 @@
 .head h2{letter-spacing:-.02em}
 .set-list{gap:20px;padding:4px 2px 28px;align-items:stretch}
 .set-group{display:flex;flex-direction:column;border-radius:22px;background:#fffaf1;overflow:hidden;
-  box-shadow:5px 5px 11px var(--sh-d),-4px -4px 9px var(--sh-l),inset 0 3px 0 #fff}
+  box-shadow:var(--card-sh)}
 .set-row{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:60px;padding:10px 18px;position:relative}
 .set-row[hidden]{display:none}
 .set-row + .set-row::before{content:"";position:absolute;top:0;left:18px;right:0;height:1px;background:rgba(139,117,97,.22)}   /* hairline, inset from the leading edge */

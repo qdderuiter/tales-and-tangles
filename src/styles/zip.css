@@ -2,7 +2,7 @@
 .clue-strip{display:flex;justify-content:center;gap:8px;min-height:40px}
 .zl{width:34px;height:38px;border-radius:12px;background:var(--cream2);display:grid;place-items:center;font-weight:900;font-size:19px;color:var(--ink-soft);
   box-shadow:inset 3px 3px 6px var(--sh-d),inset -3px -3px 6px var(--sh-l);transition:background .25s}
-.zl.on{background:var(--butter);color:var(--ink);box-shadow:3px 3px 7px var(--sh-d),-3px -3px 7px var(--sh-l),inset 0 2px 0 rgba(255,255,255,.6)}
+.zl.on{background:var(--butter);color:var(--ink);box-shadow:inset 0 0 0 2px var(--butter-e)}
 .zl.pop{animation:pop .5s var(--spring)}
 .zboard{width:min(100%,calc(100vh - 426px));width:min(100%,calc(100dvh - 426px));min-width:240px}
 .zgrid{position:relative;width:100%;aspect-ratio:1/1;display:grid;touch-action:none}
