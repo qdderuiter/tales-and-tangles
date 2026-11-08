@@ -15,13 +15,16 @@ import { Film } from './film.ts';
    and bumps down into the meadow; later the countdown, the lift-off and a heart of stardust. Skippable (the Skip button appears after
    1.5 s the first time), and reduced motion gets the finished picture. The playback mechanics are shared with the other films: see film.ts. */
 const TAU = Math.PI * 2;
+const HILLS_H = 0.36;      // the height of the hills svg as a fraction of the stage (.pf-hills in pup.css)
+const SHIP_BELLY = 0.86;   // where the rocket's underside is, as a fraction of its height
+const PUP_FOOT = 0.95;     // where Pickle's paws are, as a fraction of his height
 
 export const PupScene = {
   els: {} as Record<string, HTMLElement>, pup: late<PupPortrait>(), film: late<Film>(),
 
   init() {
     const e = this.els;
-    ['pupFilm', 'pfStage', 'pfStars', 'pfSign', 'pfShip', 'pfPup', 'pfCount', 'pfHeart', 'pfCap', 'pfTitle', 'pfFlash', 'pfSkip'].forEach(id => { e[id] = $('#' + id); });
+    ['pupFilm', 'pfStage', 'pfStars', 'pfSign', 'pfShip', 'pfPup', 'pfCount', 'pfHeart', 'pfCap', 'pfTitle', 'pfFlash', 'pfSkip', 'pfShadowSign', 'pfShadowShip', 'pfShadowPup'].forEach(id => { e[id] = $('#' + id); });
     const rng = mulberry32(17);
     e.pfStars.innerHTML = Array.from({ length: 52 }, (_, i) =>
       '<i class="pf-star" style="left:' + (rng() * 100).toFixed(1) + '%;top:' + (rng() * 60).toFixed(1) + '%;animation-delay:-' + (rng() * 3).toFixed(2) + 's;opacity:' + (0.5 + (i % 3) * 0.25) + '"></i>').join('');
@@ -35,6 +38,67 @@ export const PupScene = {
     e.pfShip.innerHTML = rocketMarkup('pf');
     this.pup = Pup.create(e.pfPup);
     this.film = new Film({ root: e.pupFilm, skip: e.pfSkip, cap: e.pfCap, flash: e.pfFlash });
+    window.addEventListener('resize', () => {                      // keep the props on the hills after a rotate / resize
+      if (!this.film.running) return;
+      this.layoutGround();
+      if (e.pfShip.classList.contains('landed')) e.pfShip.style.transform = this.pose(this.geo().landed);
+    });
+  },
+
+  /* the sign, then the ship and Pickle, stand on the ground: their contact shadows fade in with them */
+  shadows(sign: boolean, ship: boolean, pup: boolean) {
+    const e = this.els;
+    e.pfShadowSign.classList.toggle('on', sign); e.pfShadowShip.classList.toggle('on', ship); e.pfShadowPup.classList.toggle('on', pup);
+  },
+
+  /* the stage y (px) of a hill's outline at stage x: the hills svg is HILLS_H of the stage tall, sits on its bottom edge and is
+     stretched over a 400 x 200 viewBox, so the outline is read off the path itself and scaled (works for any aspect ratio) */
+  groundY(id: 'pfGround' | 'pfRidge', x: number): number {
+    const path = document.getElementById(id) as unknown as SVGPathElement, W = this.els.pfStage.clientWidth, H = this.els.pfStage.clientHeight;
+    const vx = Math.max(0, Math.min(400, (x / W) * 400));
+    return H * (1 - HILLS_H) + (this.curveY(path, vx) / 200) * H * HILLS_H;
+  },
+  /* the y of the top outline at viewBox x, sampled along the path and ignoring the straight edges (x = 0 / 400 verticals, the base line) */
+  curveY(path: SVGPathElement, vx: number): number {
+    const len = path.getTotalLength(), n = 120;
+    let best = 200, bestDx = Infinity;
+    for (let i = 0; i <= n; i++) {
+      const p = path.getPointAtLength((len * i) / n);
+      if (p.y >= 199.5) continue;                                  // the base line and the bottom corners
+      const dx = Math.abs(p.x - vx);
+      if (dx < bestDx) { bestDx = dx; best = p.y; }
+    }
+    return best;
+  },
+
+  /* plant the signpost, Pickle and the contact shadows on the hills (their bottoms, not their tops, touch the ground) */
+  layoutGround() {
+    const e = this.els, W = e.pfStage.clientWidth, H = e.pfStage.clientHeight;
+    if (!W || !H) return;
+    const shadow = (el: HTMLElement, cx: number, y: number, w: number) => {
+      el.style.left = Math.round(cx - w / 2) + 'px'; el.style.top = Math.round(y - w * 0.09) + 'px'; el.style.width = Math.round(w) + 'px'; el.style.height = Math.round(w * 0.18) + 'px';
+    };
+    // the signpost stands on the far ridge, lower right
+    const sw = e.pfSign.clientWidth || W * 0.3, sh = sw * (190 / 160), sx = W * 0.77;
+    const sy = this.groundY('pfRidge', sx);
+    e.pfSign.style.top = Math.round(sy - sh * 0.97) + 'px';
+    e.pfSign.style.left = Math.round(sx - sw / 2) + 'px'; e.pfSign.style.right = 'auto';
+    shadow(e.pfShadowSign, sx, sy, sw * 0.5);
+    // Pickle stands on the near ground beside the rocket
+    const pw = W * 0.38, ph = pw * (200 / 260), px = W * 0.54 + pw / 2;
+    const py = this.groundY('pfGround', px);
+    e.pfPup.style.top = Math.round(py - ph * PUP_FOOT) + 'px';
+    shadow(e.pfShadowPup, px, py, pw * 0.55);
+    // the rocket's contact shadow, under its belly
+    const { landed, shipW } = this.shipLanding();
+    shadow(e.pfShadowShip, landed.x + shipW / 2, this.groundY('pfGround', landed.x + shipW / 2), shipW * 0.9);
+  },
+
+  /* where the crashed rocket sits: its belly rests in the clover at the middle of the ship */
+  shipLanding() {
+    const e = this.els, W = e.pfStage.clientWidth, sw = e.pfShip.offsetWidth || W * 0.36, sh = e.pfShip.offsetHeight || sw * (138 / 256);
+    const x = W * 0.07, ground = this.groundY('pfGround', x + sw / 2);
+    return { landed: { x, y: ground - sh * SHIP_BELLY + sh * 0.03, r: -12 }, shipW: sw };
   },
 
   /* the stage size, and the pose of the rocket (top-left corner + tilt) where it landed in the clover, or stands on the launch pad */
@@ -42,7 +106,7 @@ export const PupScene = {
     const e = this.els, W = e.pfStage.clientWidth, H = e.pfStage.clientHeight, sw = e.pfShip.offsetWidth, sh = e.pfShip.offsetHeight;
     return {
       W, H,
-      landed: { x: W * 0.07, y: H * 0.625, r: -12 },
+      landed: this.shipLanding().landed,
       pad: { x: W * 0.5 - sw / 2, y: H * 0.827 - sw / 2 - sh / 2 - 2, r: 90 }
     };
   },
@@ -54,11 +118,13 @@ export const PupScene = {
     e.pfStage.querySelectorAll('.pf-puff').forEach(p => p.remove());
     e.pfStage.classList.remove('lift'); e.pfStage.style.transform = '';
     e.pfSign.classList.remove('on');
-    e.pfShip.classList.remove('open'); e.pfShip.style.transform = this.pose({ x: -9999, y: 0, r: 0 });
+    e.pfShip.classList.remove('open', 'landed'); e.pfShip.style.transform = this.pose({ x: -9999, y: 0, r: 0 });
     e.pfPup.style.opacity = '0'; e.pfPup.style.transform = '';
     e.pfCount.style.opacity = ''; e.pfCount.style.transform = ''; e.pfCount.textContent = '';
     e.pfHeart.style.opacity = ''; e.pfHeart.style.transform = '';
     e.pfTitle.classList.remove('on');
+    for (const s of [e.pfShadowSign, e.pfShadowShip, e.pfShadowPup]) s.classList.remove('on');
+    this.layoutGround();
     this.film.caption('');
     this.pup.react('happy');
   },
@@ -77,8 +143,9 @@ export const PupScene = {
     const e = this.els;
     e.pfSign.classList.add('on');
     e.pfShip.style.transform = this.pose(this.geo().landed);
-    e.pfShip.classList.add('open');
+    e.pfShip.classList.add('open', 'landed');
     e.pfPup.style.opacity = '1';
+    this.shadows(true, true, true);
     this.pup.react('happy');
   },
 
@@ -99,7 +166,7 @@ export const PupScene = {
       f.anim(e.pfStage, [{ transform: 'scale(1)' }, { transform: 'scale(1.07)' }], { duration: 15000, easing: 'ease-in-out', fill: 'forwards' });
       f.caption('A quiet night over Honeywick...');
       await f.wait(2500);
-      e.pfSign.classList.add('on');
+      e.pfSign.classList.add('on'); this.shadows(true, false, false);
       f.caption('Far past the moon, a signpost points the wrong way...');
       await f.wait(2000);
       // 2. a little rocket zooms by... and turns left
@@ -123,10 +190,11 @@ export const PupScene = {
       f.snd(() => { PupScore.boing(); Haptics.buzz(30); });
       f.flashScreen(0.35, 500, 0.2);
       f.anim(e.pfStage, [{ transform: 'translateY(0)' }, { transform: 'translateY(8px)', offset: 0.3 }, { transform: 'translateY(-3px)', offset: 0.6 }, { transform: 'translateY(0)' }], { duration: 520, easing: 'ease-out' });
-      this.puff(landed.x + W * 0.05, landed.y + H * 0.085); this.puff(landed.x + W * 0.17, landed.y + H * 0.1, 80); this.puff(landed.x + W * 0.28, landed.y + H * 0.085, 160);
+      e.pfShip.classList.add('landed'); this.shadows(true, true, false);
+      for (const [i, k] of [0.18, 0.5, 0.82].entries()) { const px = landed.x + e.pfShip.offsetWidth * k; this.puff(px, this.groundY('pfGround', px) - 4, i * 80); }
       await f.wait(1300);
       // 5. the hatch pops open
-      e.pfShip.classList.add('open');
+      e.pfShip.classList.add('open'); this.shadows(true, true, true);
       f.snd(() => { PupScore.pop(); Haptics.found(); });
       f.caption('A hatch pops open. Two little antennae wobble up...');
       await f.wait(2400);
@@ -160,7 +228,7 @@ export const PupScene = {
     this.reset(); f.open(false);
     emit('film', { on: true });
     e.pfStage.classList.add('lift');
-    e.pfSign.classList.add('on');
+    e.pfSign.classList.add('on'); this.shadows(true, false, false);
     e.pfShip.classList.add('open');
     const { W, H, pad } = this.geo();
     e.pfShip.style.transform = this.pose(pad);
