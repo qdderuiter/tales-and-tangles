@@ -9,7 +9,7 @@ export const AudioFX = {
     if (!this.ctx) {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return null;
-      try { this.ctx = new AC(); } catch (e) { return null; }
+      try { this.ctx = new AC(); } catch { return null; }
       this.master = this.ctx.createGain();
       this.master.gain.value = 0.85;
       const comp = this.ctx.createDynamicsCompressor();
@@ -28,7 +28,7 @@ export const AudioFX = {
       src.connect(ctx.destination);
       src.start(0);
       if (ctx.state === 'running') this._unlocked = true;
-    } catch (e) { /* ignore */ }
+    } catch { /* ignore */ }
   },
   hz(semi) { return 261.63 * Math.pow(2, semi / 12); },
   scaleNote(step, base) {                       // C-major pentatonic, climbing octaves

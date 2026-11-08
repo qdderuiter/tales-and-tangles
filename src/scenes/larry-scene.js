@@ -33,7 +33,7 @@ export const LarryScene = {
       this._pending = () => { clearTimeout(t); res(); };
     });
   },
-  snd(fn) { if (!this.fast) { try { fn(); } catch (err) { /* audio is optional */ } } },
+  snd(fn) { if (!this.fast) { try { fn(); } catch { /* audio is optional */ } } },
   anim(el, frames, opts) { return (this.fast || REDUCED) ? null : el.animate(frames, opts); },
   caption(text) { const c = this.els.lfCap; c.textContent = text; c.classList.toggle('on', !!text); },
   flash(peak, ms) { if (!this.fast && !REDUCED) this.els.lfFlash.animate([{ opacity: 0 }, { opacity: peak, offset: 0.2 }, { opacity: 0 }], { duration: ms }); },

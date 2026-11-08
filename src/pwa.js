@@ -28,6 +28,6 @@ export const PWA = {
       link.rel = 'manifest';
       link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' }));
       document.head.appendChild(link);
-    } catch (e) { /* manifest is a nicety, never block the game */ }
+    } catch { /* manifest is a nicety, never block the game */ }
   }
 };

@@ -53,10 +53,10 @@ export const VoiceManager = {
       const p = a.play();
       if (p && p.catch) p.catch(() => {});
       return a;
-    } catch (e) { return null; }
+    } catch { return null; }
   },
   stop() {
-    if (this.current) { try { this.current.pause(); } catch (e) { /* ignore */ } this.current = null; }
+    if (this.current) { try { this.current.pause(); } catch { /* ignore */ } this.current = null; }
   }
 };
 

@@ -1,0 +1,27 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.6.6/schema.json",
+	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+	"files": { "includes": ["src/**", "tests/**"] },
+	"formatter": { "enabled": false },
+	"assist": { "enabled": false },
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "none",
+			"correctness": {
+				"noUndeclaredVariables": "error",
+				"noUnusedVariables": {
+					"level": "warn",
+					"options": { "ignoreRestSiblings": true }
+				},
+				"noUnusedFunctionParameters": "off",
+				"noInvalidUseBeforeDeclaration": "error"
+			},
+			"suspicious": {
+				"noImportAssign": "error",
+				"noDuplicateObjectKeys": "error"
+			}
+		}
+	},
+	"javascript": { "parser": { "jsxEverywhere": false } }
+}

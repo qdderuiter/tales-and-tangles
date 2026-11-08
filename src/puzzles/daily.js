@@ -34,7 +34,7 @@ export const Daily = {
       const ta = document.createElement('textarea');
       ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;left:-999px;top:0;opacity:0';
       document.body.appendChild(ta); ta.select();
-      try { document.execCommand('copy'); copied(); } catch (e) { UI.toast('Could not copy the result'); }
+      try { document.execCommand('copy'); copied(); } catch { UI.toast('Could not copy the result'); }
       ta.remove();
     };
     if (navigator.share && window.matchMedia && window.matchMedia('(pointer:coarse)').matches) navigator.share({ text }).catch(() => {});

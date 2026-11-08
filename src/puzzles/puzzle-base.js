@@ -36,7 +36,7 @@ export const PuzzleBase = {
   },
   capture(e, p) {
     this.pointerId = e.pointerId;
-    try { this.els.grid.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+    try { this.els.grid.setPointerCapture(e.pointerId); } catch { /* ignore */ }
     this.tracing = true; this.lastPt = p;
   },
   onMove(e) {

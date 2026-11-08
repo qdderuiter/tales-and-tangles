@@ -17,7 +17,7 @@ export const Store = {
     };
   },
   blankChapter() { return { word: { done: false, stars: 0, best: 0 }, zip: { done: false, stars: 0, best: 0 }, solved: false, penalty: 0 }; },
-  read(key) { try { const v = JSON.parse(localStorage.getItem(key)); return v && typeof v === 'object' ? v : null; } catch (e) { return null; } },
+  read(key) { try { const v = JSON.parse(localStorage.getItem(key)); return v && typeof v === 'object' ? v : null; } catch { return null; } },
   load() {
     let saved = this.read(this.KEY);
     const d = this.defaults();
@@ -97,7 +97,7 @@ export const Store = {
     this.data.wardrobe.equipped[it.slot] = id; this.save();
     return true;
   },
-  save() { try { localStorage.setItem(this.KEY, JSON.stringify(this.data)); } catch (e) { /* private mode: play on without saving */ } },
+  save() { try { localStorage.setItem(this.KEY, JSON.stringify(this.data)); } catch { /* private mode: play on without saving */ } },
   chapter(n) { return this.data.chapters[n] || this.blankChapter(); },
   /* kind: 'word' | 'zip' */
   recordPuzzle(n, kind, result) {
