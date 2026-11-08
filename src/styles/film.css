@@ -47,7 +47,8 @@
 .cf-layer.on .cf-fl{animation:cfBloom .9s cubic-bezier(.34,1.4,.64,1) both;animation-delay:calc(var(--i) * 110ms + .4s)}
 @keyframes cfBloom{from{transform:scale(0)}to{transform:scale(1)}}
 .cf-bee{animation:cfBee 10s linear infinite both}
-@keyframes cfBee{0%{transform:translate(-80px,0)}25%{transform:translate(180px,-24px)}50%{transform:translate(430px,10px)}75%{transform:translate(660px,-22px)}100%{transform:translate(920px,0)}}
+/* the 🐝 glyph faces left, and these bees fly right, so each frame mirrors it (scale after translate: the mirror is about the bee's own origin) */
+@keyframes cfBee{0%{transform:translate(-50px,0) scaleX(-1)}25%{transform:translate(210px,-24px) scaleX(-1)}50%{transform:translate(460px,10px) scaleX(-1)}75%{transform:translate(690px,-22px) scaleX(-1)}100%{transform:translate(950px,0) scaleX(-1)}}
 .cf-halo{animation:cfGlow 3s ease-in-out infinite alternate}
 @keyframes cfGlow{from{opacity:.26}to{opacity:.42}}
 
