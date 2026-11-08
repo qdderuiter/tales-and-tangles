@@ -15,15 +15,17 @@ import { Store } from '../state/store.ts';
       Call it once at the bottom of this script (see "voice hookup" in boot()).
    3. durationMs (optional) makes the typewriter finish in time with the recording.
    Lines without a src stay silent (text only). A missing or unplayable file fails silently. */
+export interface Clip { src: string | null; text: string; emotion: string; durationMs: number | null }
+
 export const VoiceClipManifest = {
   basePath: 'voices/',
   format: 'mp3',
-  clips: {},
-  register(id, text, emotion) {
+  clips: {} as Record<string, Clip>,
+  register(id: string, text: string, emotion?: string): Clip {
     if (!this.clips[id]) this.clips[id] = { src: null, text, emotion: emotion || 'neutral', durationMs: null };
     return this.clips[id];
   },
-  attach(map) {
+  attach(map: Record<string, string | Partial<Clip>>) {
     Object.keys(map).forEach(id => {
       const clip = this.clips[id];
       if (!clip) { console.warn('[VoiceClipManifest] unknown clip id:', id); return; }
@@ -32,7 +34,7 @@ export const VoiceClipManifest = {
     });
   },
   attachByConvention() { Object.keys(this.clips).forEach(id => { this.clips[id].src = id + '.' + this.format; }); },
-  resolve(id) {
+  resolve(id: string) {
     const c = this.clips[id];
     if (!c || !c.src) return null;
     return /^(https?:|data:|blob:|\/)/.test(c.src) ? c.src : this.basePath + c.src;
@@ -41,8 +43,8 @@ export const VoiceClipManifest = {
 };
 
 export const VoiceManager = {
-  current: null,
-  play(id) {
+  current: null as HTMLAudioElement | null,
+  play(id: string) {
     this.stop();
     if (!Store.data.settings.voice) return null;
     const url = VoiceClipManifest.resolve(id);

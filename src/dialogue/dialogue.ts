@@ -1,15 +1,23 @@
 import { VoiceManager } from '../audio/voice.ts';
+import type { Bear } from '../characters/barnaby.ts';
+import type { Choice, Line } from '../data/types.ts';
 import { DEFAULT_SPEAKER, SPEAKERS, SPEAKER_CLASSES, lineMs } from './speakers.ts';
 import { Typer } from './typer.ts';
 
+export type OnSpeaker = (who: string, emotion: string, reset?: boolean) => void;
+export interface DialogueOpts { nameEl: HTMLElement; textEl: HTMLElement; choicesEl: HTMLElement; caret: HTMLElement; bear: Bear }
+export interface PlayOpts { onChoice?: (ch: Choice) => void; onDone?: () => void; onSpeaker?: OnSpeaker }
+
 export class Dialogue {
-  constructor(o) {
+  nameEl: HTMLElement; choicesEl: HTMLElement; caret: HTMLElement; bear: Bear; typer: Typer;
+  lines: Line[] = []; i = -1; active = false; waiting = false;
+  onChoice: ((ch: Choice) => void) | null = null; onDone: (() => void) | null = null; onSpeaker: OnSpeaker | null = null;
+  defaultSpeaker: OnSpeaker | null = null;      // set by the owner screen; used when play() is not given its own onSpeaker
+  constructor(o: DialogueOpts) {
     this.nameEl = o.nameEl; this.choicesEl = o.choicesEl; this.caret = o.caret; this.bear = o.bear;
     this.typer = new Typer(o.textEl, o.bear);
-    this.lines = []; this.i = -1; this.active = false; this.waiting = false;
-    this.onChoice = null; this.onDone = null;
   }
-  play(lines, opts) {
+  play(lines: Line[], opts?: PlayOpts) {
     opts = opts || {};
     this.lines = lines.slice(); this.i = -1;
     this.onChoice = opts.onChoice || null; this.onDone = opts.onDone || null; this.onSpeaker = opts.onSpeaker || this.defaultSpeaker || null;
@@ -21,11 +29,11 @@ export class Dialogue {
     if (this.i >= this.lines.length) { this.end(); return; }
     this.show(this.lines[this.i]);
   }
-  show(line) {
+  show(line: Line) {
     this.waiting = false;
     this.choicesEl.innerHTML = '';
     this.caret.classList.remove('on');
-    const who = line.who || DEFAULT_SPEAKER, sp = SPEAKERS[who] || {};
+    const who = line.who || DEFAULT_SPEAKER, sp: Partial<(typeof SPEAKERS)[string]> = SPEAKERS[who] || {};
     this.nameEl.textContent = who;
     SPEAKER_CLASSES.forEach(c => this.nameEl.classList.toggle(c, c === sp.nameClass));
     if (this.onSpeaker) this.onSpeaker(who, line.e || 'neutral');
@@ -33,7 +41,7 @@ export class Dialogue {
     VoiceManager.play(line.id);
     this.typer.start(line.t, { ms: lineMs(line, 26), onDone: () => this.afterType(line) });
   }
-  afterType(line) {
+  afterType(line: Line) {
     if (line.choices) {
       this.waiting = true;
       const armedAt = performance.now() + 380;   // the tap that skipped typing must not also pick a choice that appears under the finger
@@ -47,7 +55,7 @@ export class Dialogue {
       });
     } else this.caret.classList.add('on');
   }
-  choose(line, ch, idx) {
+  choose(line: Line, ch: Choice, idx: number) {
     if (!this.waiting) return;
     this.choicesEl.innerHTML = '';
     this.waiting = false;

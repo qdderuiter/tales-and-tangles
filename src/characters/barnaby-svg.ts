@@ -1,6 +1,7 @@
+import type { Slot, WardrobeItem } from '../data/types.ts';
 import { OUTFIT_DEFAULT, WARDROBE_BY_ID } from '../data/wardrobe.ts';
 
-export const BROWS = {
+export const BROWS: Record<string, [string, string]> = {
   neutral:   ['M72 80 Q82 75 92 79',  'M108 79 Q118 75 128 80'],
   happy:     ['M72 78 Q82 72 92 77',  'M108 77 Q118 72 128 78'],
   proud:     ['M72 78 Q82 72 92 77',  'M108 77 Q118 72 128 78'],
@@ -9,7 +10,7 @@ export const BROWS = {
   sad:       ['M72 76 Q82 78 92 82',  'M108 82 Q118 78 128 76']
 };
 
-export const MOUTHS = {  // [closed, open]
+export const MOUTHS: Record<string, [string, string]> = {  // [closed, open]
   neutral:   ['M90 124 Q100 131 110 124', 'M90 123 Q100 140 110 123 Z'],
   happy:     ['M87 122 Q100 138 113 122', 'M88 122 Q100 146 112 122 Z'],
   proud:     ['M88 123 Q100 135 112 123', 'M88 122 Q100 146 112 122 Z'],
@@ -19,15 +20,15 @@ export const MOUTHS = {  // [closed, open]
 };
 
 export const Outfit = {
-  current: Object.assign({}, OUTFIT_DEFAULT),
-  item(slot, id) { const it = WARDROBE_BY_ID[id]; return it && it.slot === slot ? it : WARDROBE_BY_ID[OUTFIT_DEFAULT[slot]]; },
-  svg(slot, id) { return this.item(slot, id).svg; }
+  current: Object.assign({}, OUTFIT_DEFAULT) as Record<Slot, string>,
+  item(slot: Slot, id: string): WardrobeItem { const it = WARDROBE_BY_ID[id]; return it && it.slot === slot ? it : WARDROBE_BY_ID[OUTFIT_DEFAULT[slot]]!; },
+  svg(slot: Slot, id: string) { return this.item(slot, id).svg; }
 };
 
-export const bearEye = x => '<g class="eye" style="transform-origin:' + x + 'px 94px"><ellipse cx="' + x + '" cy="94" rx="7" ry="8.5" fill="#fff"/>' +
+export const bearEye = (x: number) => '<g class="eye" style="transform-origin:' + x + 'px 94px"><ellipse cx="' + x + '" cy="94" rx="7" ry="8.5" fill="#fff"/>' +
   '<g class="pupil-g"><circle class="iris" cx="' + x + '" cy="95" r="4.8" fill="#2d2118"/><circle cx="' + (x + 1.8) + '" cy="93" r="1.7" fill="#fff"/></g></g>';
 
-export function bearMarkup(outfit) {
+export function bearMarkup(outfit?: Record<Slot, string>) {
   outfit = outfit || Outfit.current;
   return '<div class="bear"><svg viewBox="0 0 200 230" class="bear-svg" role="img" aria-label="Barnaby the Detective Bear">' +
   '<ellipse cx="100" cy="224" rx="64" ry="7" fill="rgba(120,90,60,.18)"/>' +

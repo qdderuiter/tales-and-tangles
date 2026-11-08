@@ -1,5 +1,5 @@
 /* Theme hints shown above the board so the words are easier to guess (kept in evil mode too, where word lengths are hidden). */
-export const THEME_HINTS = [
+export const THEME_HINTS: string[] = [
   'the missing honey jar - bees, bears and sweet, sticky things',
   'a muddled library - books, writing and reading',
   'a wilted garden - flowers, soil and weather',
@@ -12,5 +12,5 @@ export const THEME_HINTS = [
   'warm feelings - friendship, light and home'
 ];
 
-export const TRAIL_HINTS = { HIVE: 'where bees live', NIGHT: 'when the owls come out', MOLE: 'a tunnelling garden digger', CLOCK: 'it chimes the hours', PARTY: 'a birthday celebration',
+export const TRAIL_HINTS: Record<string, string> = { HIVE: 'where bees live', NIGHT: 'when the owls come out', MOLE: 'a tunnelling garden digger', CLOCK: 'it chimes the hours', PARTY: 'a birthday celebration',
   TIDE: 'what the sea does twice a day', SLEIGH: 'what Santa rides', MARKET: 'where stalls sell things', TICKET: 'you need one to get in', LANTERN: 'a light you can carry' };

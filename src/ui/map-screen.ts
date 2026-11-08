@@ -1,6 +1,8 @@
 import { AudioFX } from '../audio/sfx.ts';
 import { $ } from '../core/dom.ts';
+import { late } from '../core/util.ts';
 import { BADGES } from '../data/badges.ts';
+import type { Level } from '../data/types.ts';
 import { LEVELS } from '../data/levels.ts';
 import { Daily } from '../puzzles/daily.ts';
 import { Evil } from '../puzzles/evil.ts';
@@ -13,10 +15,17 @@ import { UI } from './ui.ts';
      handlers = { chapter(n), step(n, kind), daily(done), intro(lv) }
    chapter: play a chapter from the start    step: replay one step ('word' | 'zip' | 'case') of a solved chapter
    daily: open today's Daily Case (done = today's saved result, if any)    intro: rewatch a chapter's cinematic */
-export const MapScreen = {
-  handlers: null,
+export interface MapHandlers {
+  chapter(n: number): void;
+  step(n: number, kind: string): void;
+  daily(done: ReturnType<typeof Daily.result>): void;
+  intro(lv: Level): void;
+}
 
-  init(handlers) { this.handlers = handlers; },
+export const MapScreen = {
+  handlers: late<MapHandlers>(),
+
+  init(handlers: MapHandlers) { this.handlers = handlers; },
 
   open() {
     this.render();
@@ -59,7 +68,7 @@ export const MapScreen = {
       if (!locked) {
         const pips = document.createElement('div');
         pips.className = 'pips';
-        [['word', 'Words', ch.word.done], ['zip', 'Trail', ch.zip.done], ['case', 'Case', ch.solved]].forEach(([kind, label, done]) => {
+        ([['word', 'Words', ch.word.done], ['zip', 'Trail', ch.zip.done], ['case', 'Case', ch.solved]] as [string, string, boolean][]).forEach(([kind, label, done]) => {
           const p = document.createElement('button');
           p.className = 'pip' + (done ? ' done' : '');
           p.textContent = (done ? '✓ ' : '') + label;

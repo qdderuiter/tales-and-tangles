@@ -1,22 +1,36 @@
 import { Haptics } from '../../audio/haptics.ts';
 import { AudioFX } from '../../audio/sfx.ts';
+import type { Bear } from '../../characters/barnaby.ts';
 import { $, flashClass, replayClass } from '../../core/dom.ts';
+import type { PuzzleResult } from '../../core/types.ts';
+import { late } from '../../core/util.ts';
+import type { Checkpoint, Level, ParsedZip } from '../../data/types.ts';
 import { ZIP_COLORS } from '../../data/palette.ts';
 import { REACT } from '../../data/story.ts';
 import { Typer } from '../../dialogue/typer.ts';
 import { Sparks } from '../../fx/sparks.ts';
-import { PuzzleBase } from '../puzzle-base.ts';
+import type { SparkEmitter } from '../../fx/sparks.ts';
+import { definePuzzle } from '../puzzle-base.ts';
+import type { Pt } from '../puzzle-base.ts';
 import { registerPuzzle } from '../registry.ts';
+import type { LoadOpts } from '../registry.ts';
 import { Scoring } from '../scoring.ts';
 import { checkpointMap, isSolvedTrail, prefixLength, zipAdjacent, zipCode, zipRC, zipWallBetween } from './zip-rules.ts';
 
-export const ZipPuzzle = Object.assign({}, PuzzleBase, {
-  cols: 5, rows: 5, hitR2: 0.2116,
-  lvl: null, z: null, n: 5, K: 0, path: [], cpAt: new Map(), cpList: [], tracing: false, pointerId: null, lastPt: null,
-  hints: 0, freeHints: 0, hintStage: 0, backtracks: 0, elapsed: 0, running: false, lastTick: 0, timerId: 0,
-  tiles: [], hintTimers: [], onWin: null, bear: null, bubble: null, els: {}, lastBump: 0, lastSay: 0, shownLetters: 0,
+interface ZipEls {
+  grid: HTMLElement; svg: SVGSVGElement; clue: HTMLElement; prog: HTMLElement; time: HTMLElement; title: HTMLElement; badge: HTMLElement;
+  sparks: SparkEmitter; theme: HTMLElement; line: SVGPolylineElement; cps: SVGGElement[];
+}
 
-  init(bear) {
+/* fields marked late() are filled by init() / load() before anything reads them */
+export const ZipPuzzle = definePuzzle({
+  cols: 5, rows: 5, hitR2: 0.2116,
+  lvl: late<Level>(), z: late<ParsedZip>(), n: 5, K: 0, path: [] as number[], cpAt: new Map<number, Checkpoint>(), tracing: false, pointerId: null as number | null, lastPt: late<Pt>(),
+  hints: 0, freeHints: 0, hintStage: 0, backtracks: 0, elapsed: 0, running: false, lastTick: 0, timerId: 0, shownSec: -1, rect: late<DOMRect>(), rectEpoch: -1,
+  tiles: [] as HTMLElement[], hintTimers: [] as number[], onWin: null as ((r: PuzzleResult) => void) | null, bear: late<Bear>(), bubble: late<Typer>(), els: {} as ZipEls, lastBump: 0, lastSay: 0, shownLetters: 0,
+  sol: [] as number[], drawn: [] as number[], headEl: null as HTMLElement | null, shownReached: -1, lastSpark: 0,
+
+  init(bear: Bear) {
     this.bear = bear;
     const e = this.els;
     e.grid = $('#zGrid'); e.svg = $('#zLines'); e.clue = $('#zClue'); e.prog = $('#zProg'); e.time = $('#zTime');
@@ -30,13 +44,13 @@ export const ZipPuzzle = Object.assign({}, PuzzleBase, {
     $('#btnZReset').addEventListener('click', () => this.resetTrail());
   },
 
-  code(r, c) { return zipCode(this.n, r, c); },
-  rc(code) { return zipRC(this.n, code); },
-  wallBetween(a, b) { return zipWallBetween(this.z, a, b); },
-  adjacent(a, b) { return zipAdjacent(this.n, a, b); },
+  code(r: number, c: number) { return zipCode(this.n, r, c); },
+  rc(code: number) { return zipRC(this.n, code); },
+  wallBetween(a: number, b: number) { return zipWallBetween(this.z, a, b); },
+  adjacent(a: number, b: number) { return zipAdjacent(this.n, a, b); },
   cpsReached() { let k = 0; this.path.forEach(c => { if (this.cpAt.has(c)) k++; }); return k; },
 
-  load(lvl, opts) {
+  load(lvl: Level, opts?: LoadOpts) {
     this.stop();
     this.lvl = lvl; this.z = lvl.zip; this.n = this.cols = this.rows = this.z.size; this.K = this.z.cps.length;
     this.sol = this.z.path.map(([r, c]) => this.code(r, c));
@@ -69,8 +83,8 @@ export const ZipPuzzle = Object.assign({}, PuzzleBase, {
       cps += '<g class="zcp" data-n="' + cp.num + '"><circle cx="' + (cp.c * 100 + 50) + '" cy="' + (cp.r * 100 + 50) + '" r="31"/><text x="' + (cp.c * 100 + 50) + '" y="' + (cp.r * 100 + 52) + '">' + cp.num + '</text></g>';
     });
     svg.innerHTML = '<polyline id="zLine" points=""/><g class="zcps">' + cps + '</g><g class="zwalls">' + walls + '</g>';
-    this.els.line = svg.querySelector('#zLine');
-    this.els.cps = Array.from(svg.querySelectorAll('.zcp'));
+    this.els.line = svg.querySelector('#zLine') as SVGPolylineElement;
+    this.els.cps = Array.from(svg.querySelectorAll<SVGGElement>('.zcp'));
     const color = ZIP_COLORS[(lvl.n - 1) % ZIP_COLORS.length];
     this.els.line.style.stroke = color;
     g.style.setProperty('--zc', color + '55');
@@ -82,8 +96,8 @@ export const ZipPuzzle = Object.assign({}, PuzzleBase, {
   },
 
   /* ---- input (pointer capture, interpolated onMove and cellAt come from PuzzleBase) ---- */
-  hit(p, loose) { const h = this.cellAt(p, loose); return h ? h.r * this.n + h.c : -1; },
-  onDown(e) {
+  hit(p: Pt, loose?: boolean) { const h = this.cellAt(p, loose); return h ? h.r * this.n + h.c : -1; },
+  onDown(e: PointerEvent) {
     if (!this.running || this.tracing || (e.pointerType === 'mouse' && e.button !== 0)) return;
     e.preventDefault();
     this.measure();
@@ -102,17 +116,17 @@ export const ZipPuzzle = Object.assign({}, PuzzleBase, {
     this.capture(e, p);
     this.refresh();
   },
-  onUp(e) {
+  onUp(e: PointerEvent) {
     if (!this.tracing || e.pointerId !== this.pointerId) return;
     this.tracing = false; this.pointerId = null;
   },
-  rewindTo(idx) {
+  rewindTo(idx: number) {
     const removed = this.path.length - 1 - idx;
     if (removed <= 0) return;
     if (removed >= 3) this.backtracks++;
     this.path.length = idx + 1;
   },
-  visit(p) {
+  visit(p: Pt): boolean {
     const code = this.hit(p, false);
     if (code < 0) return false;
     const path = this.path, last = path[path.length - 1];
@@ -139,7 +153,7 @@ export const ZipPuzzle = Object.assign({}, PuzzleBase, {
     if (path.length === this.n * this.n && cp && cp.num === this.K) { this.tracing = false; this.finish(); }
     return true;
   },
-  bump(orderMsg) {
+  bump(orderMsg: boolean) {
     const now = performance.now();
     if (now - this.lastBump > 350) { AudioFX.bump(); this.lastBump = now; }
     if (orderMsg && now - this.lastSay > 5000) this.say(REACT.zipOrder);
@@ -150,9 +164,9 @@ export const ZipPuzzle = Object.assign({}, PuzzleBase, {
     this.hintTimers.push(setTimeout(() => t.classList.remove('hint'), 1600));
     AudioFX.bump();
   },
-  onCheckpoint(cp) {
+  onCheckpoint(cp: Checkpoint) {
     const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');       // expanding ripple on the checkpoint
-    ring.setAttribute('class', 'zring'); ring.setAttribute('cx', cp.c * 100 + 50); ring.setAttribute('cy', cp.r * 100 + 50); ring.setAttribute('r', 31);
+    ring.setAttribute('class', 'zring'); ring.setAttribute('cx', String(cp.c * 100 + 50)); ring.setAttribute('cy', String(cp.r * 100 + 50)); ring.setAttribute('r', '31');
     this.els.svg.appendChild(ring);
     setTimeout(() => ring.remove(), 850);
     this.els.sparks.burst([{ x: (cp.c + 0.5) / this.n, y: (cp.r + 0.5) / this.n }], ['#f7c948', '#fff', '#ffb347'], 12);
@@ -241,4 +255,4 @@ export const ZipPuzzle = Object.assign({}, PuzzleBase, {
 });
 
 registerPuzzle('zip', { obj: ZipPuzzle, screen: 'zip', board: '#zGrid', tileSel: '.zt', title: 'Trail Followed!',
-                        evil: base => Object.assign({}, base, { zip: base.evilZip, evil: true }) });
+                        evil: base => ({ ...(base as Level), zip: (base as Level).evilZip, evil: true }) });

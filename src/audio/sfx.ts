@@ -2,22 +2,26 @@ import { emit } from '../core/events.ts';
 import { clamp } from '../core/util.ts';
 import { Store } from '../state/store.ts';
 
+export interface NoteOpts { t?: number; dur?: number; vol?: number; attack?: number; type?: OscillatorType; slideTo?: number; lp?: number }
+
 export const AudioFX = {
-  ctx: null, master: null, noiseBuf: null,
+  ctx: null as AudioContext | null, master: null as unknown as GainNode, noiseBuf: null as AudioBuffer | null, _unlocked: false,   // master is created together with ctx
   get enabled() { return Store.data.settings.sound; },
-  ensure() {
-    if (!this.ctx) {
+  ensure(): AudioContext | null {
+    let ctx = this.ctx;
+    if (!ctx) {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return null;
-      try { this.ctx = new AC(); } catch { return null; }
-      this.master = this.ctx.createGain();
+      try { ctx = new AC(); } catch { return null; }
+      this.ctx = ctx;
+      this.master = ctx.createGain();
       this.master.gain.value = 0.85;
-      const comp = this.ctx.createDynamicsCompressor();
+      const comp = ctx.createDynamicsCompressor();
       this.master.connect(comp);
-      comp.connect(this.ctx.destination);
+      comp.connect(ctx.destination);
     }
-    if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
-    return this.ctx;
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+    return ctx;
   },
   unlock() {
     const ctx = this.ensure();
@@ -30,13 +34,13 @@ export const AudioFX = {
       if (ctx.state === 'running') this._unlocked = true;
     } catch { /* ignore */ }
   },
-  hz(semi) { return 261.63 * Math.pow(2, semi / 12); },
-  scaleNote(step, base) {                       // C-major pentatonic, climbing octaves
+  hz(semi: number) { return 261.63 * Math.pow(2, semi / 12); },
+  scaleNote(step: number, base?: number) {                       // C-major pentatonic, climbing octaves
     const pent = [0, 2, 4, 7, 9];
     const s = Math.max(0, step);
     return (base === undefined ? 12 : base) + pent[s % 5] + 12 * Math.min(2, Math.floor(s / 5));
   },
-  note(freq, o) {
+  note(freq: number, o?: NoteOpts) {
     if (!this.enabled) return;
     const ctx = this.ensure();
     if (!ctx) return;
@@ -56,7 +60,7 @@ export const AudioFX = {
     osc.start(t0);
     osc.stop(t0 + dur + 0.05);
   },
-  noise(dur, cutoff, vol, t) {
+  noise(dur: number, cutoff: number, vol: number, t?: number) {
     if (!this.enabled) return;
     const ctx = this.ensure();
     if (!ctx) return;
@@ -75,14 +79,14 @@ export const AudioFX = {
     src.start(t0); src.stop(t0 + dur + 0.02);
   },
   /* soft bell: fundamental + octave + a hint of 3rd partial */
-  chime(step, t, vol) {
+  chime(step: number, t?: number, vol?: number) {
     const f = this.hz(this.scaleNote(step));
     const v = vol === undefined ? 0.16 : vol;
     this.note(f, { t, type: 'sine', vol: v, dur: 0.75 });
     this.note(f * 2, { t, type: 'triangle', vol: v * 0.32, dur: 0.45 });
     this.note(f * 3.01, { t, type: 'sine', vol: v * 0.12, dur: 0.25 });
   },
-  purr() {                                     // low rumble with a fast tremolo; returns a stop function
+  purr(): (() => void) | null {                                     // low rumble with a fast tremolo; returns a stop function
     if (!this.enabled) return null;
     const ctx = this.ensure();
     if (!ctx) return null;
@@ -95,18 +99,18 @@ export const AudioFX = {
     return () => { const n = ctx.currentTime; g.gain.cancelScheduledValues(n); g.gain.setTargetAtTime(0.0001, n, 0.08); o.stop(n + 0.5); lfo.stop(n + 0.5); };
   },
   bump() { this.note(120, { type: 'sine', vol: 0.22, dur: 0.12, slideTo: 80 }); },
-  tick(step) { this.note(this.hz(this.scaleNote(step)), { type: 'triangle', vol: 0.07, dur: 0.14, lp: 2400 }); },
+  tick(step: number) { this.note(this.hz(this.scaleNote(step)), { type: 'triangle', vol: 0.07, dur: 0.14, lp: 2400 }); },
   talk() { this.note(300 + Math.random() * 150, { type: 'sine', vol: 0.022, dur: 0.05, attack: 0.005 }); },
   blip() { this.note(540, { type: 'sine', vol: 0.07, dur: 0.09 }); this.note(810, { t: 0.04, type: 'sine', vol: 0.05, dur: 0.1 }); },
   thud() {
     this.note(150, { type: 'sine', vol: 0.5, dur: 0.3, slideTo: 52 });
     this.noise(0.14, 380, 0.22);
   },
-  wordFound(len, combo) {                      // the chime climbs the scale with each chained find
+  wordFound(len: number, combo?: number) {                      // the chime climbs the scale with each chained find
     const s = clamp(len - 1, 0, 6) + clamp((combo || 1) - 1, 0, 5);
     this.chime(s, 0); this.chime(s + 2, 0.09); this.chime(s + 4, 0.18, 0.18);
   },
-  star(i) { this.chime(5 + i * 2, 0, 0.17); },
+  star(i: number) { this.chime(5 + i * 2, 0, 0.17); },
   fanfare() {
     emit('audio:duck', { ms: 2800 });                   // the music dips under the fanfare
     const C5 =this.hz(12), E5 = this.hz(16), G5 = this.hz(19), C6 = this.hz(24);

@@ -53,7 +53,7 @@ export function initGame() {
     chapter: n => Chapter.start(n),
     step: (n, kind) => Chapter.playStep(n, kind),
     daily: done => DailyFlow.open(done),
-    intro: lv => lv.introScene()
+    intro: lv => { lv.introScene?.(); }
   });
   $('#btnMapBack').addEventListener('click', () => UI.show('title'));
   $('#btnBBack').addEventListener('click', () => toMap());

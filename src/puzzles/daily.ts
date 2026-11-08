@@ -1,3 +1,4 @@
+import type { PuzzleResult } from '../core/types.ts';
 import { fmtClock } from '../core/util.ts';
 import { Store } from '../state/store.ts';
 import { UI } from '../ui/ui.ts';
@@ -7,10 +8,10 @@ import { chunk, dateSeed, formatDate, generateDaily, hamiltonian, shiftDate, tod
 export const Daily = {
   fmt: formatDate, today: todayString, shift: shiftDate, seed: dateSeed, hamiltonian, chunk, generate: generateDaily,
 
-  streak(today) { const dl = Store.data.daily; return dl.lastDate === today || dl.lastDate === this.shift(today, -1) ? dl.streak : 0; },
-  result(date) { return Store.data.daily.results[date] || null; },
+  streak(today: string) { const dl = Store.data.daily; return dl.lastDate === today || dl.lastDate === this.shift(today, -1) ? dl.streak : 0; },
+  result(date: string) { return Store.data.daily.results[date] || null; },
   /* the first completion of a date counts (streak + stars); later runs are just practice */
-  record(date, result) {
+  record(date: string, result: PuzzleResult) {
     const dl = Store.data.daily;
     if (dl.results[date]) return { first: false, streak: this.streak(date), stored: dl.results[date] };
     dl.streak = dl.lastDate === this.shift(date, -1) ? dl.streak + 1 : 1;
@@ -19,14 +20,14 @@ export const Daily = {
     Store.save();
     return { first: true, streak: dl.streak, stored: dl.results[date] };
   },
-  shareText(date) {
+  shareText(date: string) {
     const r = this.result(date);
     if (!r) return '';
-    const sq = { G: '🟩', Y: '🟨', B: '🟦' };
+    const sq: Record<string, string> = { G: '🟩', Y: '🟨', B: '🟦' };
     return 'Tales & Tangles Daily ' + date + '\n' + '★'.repeat(r.stars) + '☆'.repeat(3 - r.stars) + ' ' + fmtClock(r.secs) +
       '\n' + r.squares.split('').map(c => sq[c] || '').join('');
   },
-  share(date) {
+  share(date: string) {
     const text = this.shareText(date);
     if (!text) return '';
     const copied = () => UI.toast('Result copied — paste it anywhere!');

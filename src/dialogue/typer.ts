@@ -1,16 +1,19 @@
 import { AudioFX } from '../audio/sfx.ts';
 
 /* Typewriter: the not-yet-typed remainder stays in layout (hidden) so text never reflows */
+export interface TyperBear { talk(on: boolean): void }
+
 export class Typer {
-  constructor(el, bear) {
-    this.el = el; this.bear = bear;
+  el: HTMLElement; bear: TyperBear | null; a: HTMLSpanElement; b: HTMLSpanElement;
+  typing = false; timer: number = 0; onDone: (() => void) | null = null; text = ''; chars: string[] = []; i = 0; off = 0; ms = 26;
+  constructor(el: HTMLElement, bear?: TyperBear | null) {
+    this.el = el; this.bear = bear || null;
     el.textContent = '';
     this.a = document.createElement('span'); this.a.className = 'ty-a';
     this.b = document.createElement('span'); this.b.className = 'ty-b';
     el.appendChild(this.a); el.appendChild(this.b);
-    this.typing = false; this.timer = 0; this.onDone = null; this.text = ''; this.chars = []; this.i = 0; this.off = 0; this.ms = 26;
   }
-  start(text, opts) {
+  start(text: string, opts?: { ms?: number; onDone?: () => void }) {
     this.cancel();
     opts = opts || {};
     this.text = text; this.chars = Array.from(text); this.i = 0; this.off = 0; this.ms = opts.ms || 26; this.onDone = opts.onDone || null;

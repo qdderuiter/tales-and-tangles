@@ -1,13 +1,14 @@
+import type { Badge } from './types.ts';
 import { LEVELS } from './levels.ts';
 import { WARDROBE } from './wardrobe.ts';
 
 /* ---------- detective badges ----------
    test(d, ev, S): d = S.data; ev = the puzzle result event { type:'puzzle', kind, result } when one just happened (else undefined); S = the Store (handed in so this file imports no code). */
-export const BADGES = [
+export const BADGES: Badge[] = [
   { id: 'rookie',     icon: '🔎', name: 'Rookie Detective',   desc: 'Solve your first case.',                       test: (d, ev, S) => S.chapter(1).solved },
   { id: 'master',     icon: '🕵️', name: 'Master Detective',   desc: 'Solve all ten cases.',                         test: (d, ev, S) => LEVELS.every(lv => S.chapter(lv.n).solved) },
   { id: 'sharp',      icon: '👁️', name: 'Sharp Eyes',         desc: 'Win a puzzle with no hints and no mistakes.',  test: (d, ev) => !!ev && ev.result.hints === 0 && ev.result.wrongs === 0 },
-  { id: 'chain',      icon: '⛓️', name: 'Chain Reaction',     desc: 'Reach a ×5 combo in a Words puzzle.',          test: (d, ev) => !!ev && ev.kind === 'word' && ev.result.maxCombo >= 5 },
+  { id: 'chain',      icon: '⛓️', name: 'Chain Reaction',     desc: 'Reach a ×5 combo in a Words puzzle.',          test: (d, ev) => !!ev && ev.kind === 'word' && (ev.result.maxCombo ?? 0) >= 5 },
   { id: 'quick',      icon: '⚡', name: 'Quick Paws',         desc: 'Finish a Words puzzle in under a minute.',     test: (d, ev) => !!ev && ev.kind === 'word' && ev.result.secs < 60 },
   { id: 'bythebook',  icon: '📖', name: 'By the Book',        desc: 'Solve a whole case with three stars.',         test: (d, ev, S) => LEVELS.some(lv => S.stars(lv.n) === 3) },
   { id: 'daily1',     icon: '📰', name: 'Morning Paper',      desc: 'Solve a Daily Case.',                          test: d => Object.keys(d.daily.results).length > 0 },

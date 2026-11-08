@@ -1,4 +1,6 @@
-export const CRITTERS = {
+export interface Critter { color: string; belly: string; ear: 'round' | 'point' | 'long'; acc: string }
+
+export const CRITTERS: Record<string, Critter> = {
   'Bruno Bear':     { color: '#8b5a3c', belly: '#e8c9a0', ear: 'round', acc: 'none' },
   'Pip the Bee':    { color: '#f4c542', belly: '#fff2b8', ear: 'round', acc: 'antennae' },
   'Wanda Wasp':     { color: '#d9a52a', belly: '#f6e2a0', ear: 'point', acc: 'stripes' },
@@ -34,4 +36,4 @@ export const CRITTERS = {
   'Evil Larry':     { color: '#3a3442', belly: '#cfc6d8', ear: 'point', acc: 'bandit' }
 };
 
-export const critterOf = name => CRITTERS[name] || { color: '#c9a77f', belly: '#f3e4cf', ear: 'round', acc: 'none' };
+export const critterOf = (name: string): Critter => CRITTERS[name] || { color: '#c9a77f', belly: '#f3e4cf', ear: 'round', acc: 'none' };

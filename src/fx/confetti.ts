@@ -4,7 +4,7 @@ import { WORD_FILL } from '../data/palette.ts';
 
 export const Confetti = {
   raf: 0,
-  burst(canvas) {
+  burst(canvas: HTMLCanvasElement) {
     if (REDUCED) return;
     cancelAnimationFrame(this.raf);
     const { ctx, w, h, dpr } = fitCanvas(canvas);
@@ -14,7 +14,7 @@ export const Confetti = {
       s: rand(6, 11), r: rand(0, 6), vr: rand(-0.3, 0.3), c: pick(colors)
     }));
     const t0 = performance.now();
-    const loop = now => {
+    const loop = (now: number) => {
       ctx.clearRect(0, 0, w, h);
       let alive = false;
       parts.forEach(p => {
@@ -31,5 +31,5 @@ export const Confetti = {
     };
     this.raf = requestAnimationFrame(loop);
   },
-  stop(canvas) { cancelAnimationFrame(this.raf); const c = canvas.getContext('2d'); c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, canvas.width, canvas.height); }
+  stop(canvas: HTMLCanvasElement) { cancelAnimationFrame(this.raf); const c = canvas.getContext('2d')!; c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, canvas.width, canvas.height); }
 };

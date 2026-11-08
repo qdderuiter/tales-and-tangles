@@ -1,6 +1,7 @@
 import { critterOf } from '../data/critters.ts';
+import type { Critter } from '../data/critters.ts';
 
-export function critterMarkup(s) {
+export function critterMarkup(s: Critter) {
   const dark = '#3b2a1e', pink = '#f2b6a8', c = s.color;
   let ears;
   if (s.ear === 'round') ears = '<circle cx="24" cy="26" r="13" fill="' + c + '"/><circle cx="76" cy="26" r="13" fill="' + c + '"/><circle cx="24" cy="26" r="6.5" fill="' + pink + '"/><circle cx="76" cy="26" r="6.5" fill="' + pink + '"/>';
@@ -22,6 +23,6 @@ export function critterMarkup(s) {
     '<path d="M44 71 Q50 76 56 71" stroke="' + dark + '" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>';
 }
 
-export const CRITTER_SVG = {};
+export const CRITTER_SVG: Record<string, string> = {};
 
-export const critterSvg = name => CRITTER_SVG[name] || (CRITTER_SVG[name] = critterMarkup(critterOf(name)));   // portraits are cached per name
+export const critterSvg = (name: string) => CRITTER_SVG[name] || (CRITTER_SVG[name] = critterMarkup(critterOf(name)));   // portraits are cached per name

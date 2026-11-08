@@ -3,23 +3,40 @@ import { AudioFX } from '../audio/sfx.ts';
 import { BROWS, MOUTHS, Outfit, bearMarkup } from './barnaby-svg.ts';
 import { replayClass } from '../core/dom.ts';
 import { REDUCED, clamp, pick, rand } from '../core/util.ts';
+import type { Slot } from '../data/types.ts';
 import { NOIR_OUTFIT, SLOTS } from '../data/wardrobe.ts';
 import { UI } from '../ui/ui.ts';
 
-export const FLOAT_COLORS = { '♪': '#7b6bd6', '♥': '#e55a8a', z: '#6f9fd0' };
+export interface Bear {
+  host: HTMLElement; root: HTMLElement; emotion: string;
+  talkTimer: number; blinkTimer: number; zTimer: number; heartTimer: number;
+  lastInput: number; nextAct: number;
+  asleep: boolean; busy: boolean; purring: boolean; noir: boolean; purrStop: (() => void) | null;
+  browL: Element; browR: Element; mClosed: Element; mOpen: Element; pupils: HTMLElement[]; svg: SVGElement;
+  react(emo: string, bounce?: boolean): void;
+  rest(): void; talk(on: boolean): void; bounce(): void; blink(): void; scheduleBlink(): void;
+  lookAt(r: DOMRect, x: number, y: number): void;
+  dress(outfit: Record<Slot, string>): void; setSkin(on: boolean): void;
+  visible(): boolean; touch(now: number): void; float(glyph: string): void;
+  endAct(ms: number, fn?: () => void): void; act(name: string): void; idleTick(): void;
+  sleep(): void; wake(): void; bob(q: number): void;
+  tipHat(): void; purrOn(): void; purrOff(): void;
+}
+
+export const FLOAT_COLORS: Record<string, string> = { '♪': '#7b6bd6', '♥': '#e55a8a', z: '#6f9fd0' };
 
 export const Barnaby = {
-  instances: [], lastInput: 0,
-  create(host, opts) {
+  instances: [] as Bear[], lastInput: 0,
+  create(host: HTMLElement, opts?: { noir?: boolean }): Bear {
     host.innerHTML = bearMarkup(opts && opts.noir ? NOIR_OUTFIT : Outfit.current);
-    const root = host.querySelector('.bear');
-    const inst = {
+    const root = host.querySelector('.bear') as HTMLElement;
+    const inst: Bear = {
       host, root, emotion: 'neutral', talkTimer: 0, blinkTimer: 0,
       lastInput: performance.now(), nextAct: performance.now() + rand(8000, 14000),
       asleep: false, busy: false, purring: false, zTimer: 0, heartTimer: 0, purrStop: null, noir: false,
-      browL: root.querySelector('.brow-l'), browR: root.querySelector('.brow-r'),
-      mClosed: root.querySelector('.mouth-closed'), mOpen: root.querySelector('.mouth-open'),
-      pupils: Array.from(root.querySelectorAll('.pupil-g')), svg: root.querySelector('.bear-svg'),
+      browL: root.querySelector('.brow-l')!, browR: root.querySelector('.brow-r')!,
+      mClosed: root.querySelector('.mouth-closed')!, mOpen: root.querySelector('.mouth-open')!,
+      pupils: Array.from(root.querySelectorAll<HTMLElement>('.pupil-g')), svg: root.querySelector('.bear-svg') as SVGElement,
       react(emo, bounce) {
         const e = BROWS[emo] ? emo : 'neutral';
         this.emotion = e;
@@ -60,7 +77,7 @@ export const Barnaby = {
 
       /* ---- outfit ---- */
       dress(outfit) {
-        SLOTS.forEach(slot => { this.root.querySelector('.slot-' + slot).innerHTML = Outfit.svg(slot, outfit[slot]); });
+        SLOTS.forEach(slot => { this.root.querySelector('.slot-' + slot)!.innerHTML = Outfit.svg(slot, outfit[slot]); });
       },
 
       setSkin(on) {                                      // Barnaby Noir: darker coat, red eyes, fedora and cape
@@ -95,7 +112,7 @@ export const Barnaby = {
           r.add('yawn', 'open'); this.endAct(1700, () => r.remove('yawn'));
         } else if (name === 'look') {
           r.add('looking');
-          const sweep = [[0, -3, 0], [550, 3, 0], [1100, 0, 1]];
+          const sweep: [number, number, number][] = [[0, -3, 0], [550, 3, 0], [1100, 0, 1]];
           sweep.forEach(([t, x, y]) => setTimeout(() => this.pupils.forEach(p => { p.style.transform = 'translate(' + x + 'px,' + y + 'px)'; }), t));
           this.endAct(2000, () => r.remove('looking'));
         } else if (name === 'hum') {
@@ -127,7 +144,7 @@ export const Barnaby = {
       },
       bob(q) {
         if (REDUCED || this.asleep) return;
-        this.svg.classList.remove('bobL', 'bobR'); void this.svg.offsetWidth; this.svg.classList.add(q % 2 ? 'bobL' : 'bobR');
+        this.svg.classList.remove('bobL', 'bobR'); void this.svg.getBoundingClientRect(); this.svg.classList.add(q % 2 ? 'bobL' : 'bobR');
       },
 
       /* ---- pokes ---- */
@@ -154,9 +171,9 @@ export const Barnaby = {
     this.instances.push(inst);
     return inst;
   },
-  dressAll(outfit) { this.instances.forEach(b => b.dress(b.noir ? NOIR_OUTFIT : outfit)); },
+  dressAll(outfit: Record<Slot, string>) { this.instances.forEach(b => b.dress(b.noir ? NOIR_OUTFIT : outfit)); },
   init() {
-    let pending = null, raf = 0;
+    let pending: PointerEvent | null = null, raf = 0;
     document.addEventListener('pointermove', e => {
       pending = e;
       if (raf) return;
@@ -165,7 +182,7 @@ export const Barnaby = {
         if (!pending) return;
         const bears = this.instances.filter(b => !b.busy && b.visible());
         const rects = bears.map(b => b.root.getBoundingClientRect());           // all reads first, then all writes
-        bears.forEach((b, i) => b.lookAt(rects[i], pending.clientX, pending.clientY));
+        bears.forEach((b, i) => b.lookAt(rects[i], pending!.clientX, pending!.clientY));
       });
     }, { passive: true });
     /* pointer input keeps him awake: down is handled at once; moves only stamp the time (idleTick catches up), except to wake a sleeper */
@@ -175,17 +192,17 @@ export const Barnaby = {
       this.instances.forEach(b => { if (b.asleep) b.touch(now); });
     }, { passive: true, capture: true });
     setInterval(() => this.instances.forEach(b => b.idleTick()), 1000);
-    Music.onBeat(q => this.instances.forEach(b => { if (b.visible()) b.bob(q); }));    // nod along to the lofi
+    Music.onBeat((q: number) => this.instances.forEach(b => { if (b.visible()) b.bob(q); }));    // nod along to the lofi
   },
   /* tap = startled chime, double-tap = tips his hat, hold = purrs, ten quick pokes = grumbles */
-  makePokeable(inst) {
+  makePokeable(inst: Bear) {
     const h = inst.host;
-    let pid = null, holdTimer = 0, lastTap = 0, pokes = [];
+    let pid: number | null = null, holdTimer = 0, lastTap = 0, pokes: number[] = [];
     h.addEventListener('pointerdown', e => {
       pid = e.pointerId; clearTimeout(holdTimer);
       holdTimer = setTimeout(() => inst.purrOn(), 600);
     });
-    const end = (e, cancelled) => {
+    const end = (e: PointerEvent, cancelled: boolean) => {
       if (e.pointerId !== pid) return;
       pid = null; clearTimeout(holdTimer);
       if (inst.purring) { inst.purrOff(); return; }

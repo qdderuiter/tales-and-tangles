@@ -1,5 +1,7 @@
+import type { PuzzleResult } from '../core/types.ts';
+
 export const Scoring = {
-  compute(o) {
+  compute(o: { elapsedMs: number; wrongs: number; hints: number; bonus?: number; wrongs3?: number; wrongs2?: number }): PuzzleResult {
     const secs = Math.round(o.elapsedMs / 1000);
     const timeBonus = Math.max(0, 300 - secs * 2);
     const score = Math.max(100, 1000 + timeBonus + 100 + (o.bonus || 0) - o.wrongs * 50 - o.hints * 150);

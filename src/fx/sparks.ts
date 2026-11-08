@@ -1,12 +1,20 @@
 import { fitCanvas } from '../core/dom.ts';
-import { REDUCED, pick, rand } from '../core/util.ts';
+import { REDUCED, late, pick, rand } from '../core/util.ts';
 
 /* ---------- sparks: small particle bursts layered over a board ----------
    Points are normalised (0..1) within the canvas, so they stay correct at any board size. */
+interface Particle { x: number; y: number; vx: number; vy: number; life: number; max: number; s: number; c: string }
+export interface SparkEmitter {
+  cv: HTMLCanvasElement; ctx: CanvasRenderingContext2D; parts: Particle[]; raf: number; w: number; h: number;
+  fit(): boolean;
+  burst(points: { x: number; y: number }[], colors: string[], perPoint: number): void;
+  loop(): void;
+}
+
 export const Sparks = {
-  create(canvas) {
-    const em = {
-      cv: canvas, ctx: null, parts: [], raf: 0, w: 0, h: 0,
+  create(canvas: HTMLCanvasElement): SparkEmitter {
+    const em: SparkEmitter = {
+      cv: canvas, ctx: late<CanvasRenderingContext2D>(), parts: [], raf: 0, w: 0, h: 0,   // ctx is made by the first fit()
       fit() {
         const w = this.cv.clientWidth, h = this.cv.clientHeight;
         if (!w || !h) return false;

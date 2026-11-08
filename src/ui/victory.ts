@@ -1,8 +1,9 @@
 import { Haptics } from '../audio/haptics.ts';
 import { AudioFX } from '../audio/sfx.ts';
 import { VoiceManager } from '../audio/voice.ts';
+import type { Bear } from '../characters/barnaby.ts';
 import { $, setShown } from '../core/dom.ts';
-import { REDUCED, clamp } from '../core/util.ts';
+import { REDUCED, clamp, late } from '../core/util.ts';
 import { REACT } from '../data/story.ts';
 import { speak } from '../dialogue/speakers.ts';
 import { Typer } from '../dialogue/typer.ts';
@@ -10,9 +11,15 @@ import { Confetti } from '../fx/confetti.ts';
 
 export const STAR_SVG = '<svg viewBox="0 0 24 24" class="star{on}" style="--d:{d}ms"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg>';
 
+export interface VictoryOpts {
+  title: string; result: { stars: number; score: number }; rec: { isBest: boolean; prevBest: number };
+  unlock: string; continueLabel: string; replayLabel?: string; keepOpen?: boolean;
+  onContinue?: () => void; onReplay?: () => void;
+}
+
 export const Victory = {
-  bear: null, typer: null, cb: null,
-  init(bear) {
+  bear: late<Bear>(), typer: late<Typer>(), cb: null as VictoryOpts | null,
+  init(bear: Bear) {
     this.bear = bear;
     this.typer = new Typer($('#vText'), bear);
     $('#vContinue').addEventListener('click', () => {
@@ -23,11 +30,11 @@ export const Victory = {
     $('#vReplay').addEventListener('click', () => { const cb = this.cb; this.hide(); if (cb && cb.onReplay) cb.onReplay(); });
   },
   /* o: { title, result:{score,stars}, rec:{isBest,prevBest}, unlock (html), continueLabel, replayLabel, onContinue, onReplay } */
-  show(o) {
+  show(o: VictoryOpts) {
     this.cb = o;
     const el = $('#victory'), result = o.result, rec = o.rec;
     $('#vTitle').textContent = o.title;
-    $('#vStars').innerHTML = [1, 2, 3].map(i => STAR_SVG.replace('{on}', i <= result.stars ? ' on' : '').replace('{d}', 500 + i * 380)).join('');
+    $('#vStars').innerHTML = [1, 2, 3].map(i => STAR_SVG.replace('{on}', i <= result.stars ? ' on' : '').replace('{d}', String(500 + i * 380))).join('');
     for (let i = 0; i < result.stars; i++) setTimeout(() => AudioFX.star(i), 500 + (i + 1) * 380);
     $('#vBest').innerHTML = rec.isBest && rec.prevBest > 0 ? '<span class="newbest">NEW BEST</span>' : (rec.prevBest > 0 ? '(best ' + rec.prevBest + ')' : '');
     $('#vUnlock').innerHTML = o.unlock;
@@ -40,13 +47,13 @@ export const Victory = {
     Confetti.burst($('#confetti'));
     // count the score up
     const out = $('#vScore'), t0 = performance.now(), dur = REDUCED ? 1 : 1100;
-    const tick = now => {
+    const tick = (now: number) => {
       const k = clamp((now - t0) / dur, 0, 1);
-      out.textContent = Math.round(result.score * (1 - Math.pow(1 - k, 3)));
+      out.textContent = String(Math.round(result.score * (1 - Math.pow(1 - k, 3))));
       if (k < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
-    const line = REACT.victory[result.stars];
+    const line = REACT.victory[result.stars as 1 | 2 | 3];
     setTimeout(() => {
       if (el.classList.contains('show')) speak(this.bear, this.typer, line, 22);
     }, 700);

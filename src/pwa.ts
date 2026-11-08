@@ -1,10 +1,10 @@
 export const PWA = {
-  drawIcon(size) {
+  drawIcon(size: number) {
     const c = document.createElement('canvas'); c.width = c.height = size;
-    const x = c.getContext('2d'), s = size / 100;
+    const x = c.getContext('2d')!, s = size / 100;
     const bg = x.createLinearGradient(0, 0, 0, size); bg.addColorStop(0, '#fdf1dc'); bg.addColorStop(1, '#f5d9b3');
     x.fillStyle = bg; x.fillRect(0, 0, size, size);
-    const circle = (cx, cy, r, col) => { x.beginPath(); x.arc(cx * s, cy * s, r * s, 0, Math.PI * 2); x.fillStyle = col; x.fill(); };
+    const circle = (cx: number, cy: number, r: number, col: string) => { x.beginPath(); x.arc(cx * s, cy * s, r * s, 0, Math.PI * 2); x.fillStyle = col; x.fill(); };
     circle(26, 30, 12, '#8b5a3c'); circle(74, 30, 12, '#8b5a3c'); circle(26, 30, 6, '#e8a99a'); circle(74, 30, 6, '#e8a99a');
     circle(50, 56, 33, '#9a6743');
     x.beginPath(); x.ellipse(50 * s, 66 * s, 17 * s, 13 * s, 0, 0, Math.PI * 2); x.fillStyle = '#f3dcb8'; x.fill();

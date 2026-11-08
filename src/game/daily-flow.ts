@@ -1,7 +1,10 @@
 import { emit } from '../core/events.ts';
+import type { PuzzleResult } from '../core/types.ts';
 import { Daily } from '../puzzles/daily.ts';
 import { WordPuzzle } from '../puzzles/word/word-puzzle.ts';
+import type { DailyResult } from '../state/migrations.ts';
 import { session } from '../state/session.ts';
+import type { DailyRun } from '../state/session.ts';
 import { UI } from '../ui/ui.ts';
 import { Victory } from '../ui/victory.ts';
 import { Noir } from './noir-flow.ts';
@@ -9,7 +12,7 @@ import { Noir } from './noir-flow.ts';
 /* ----- the Daily Case: one generated word puzzle per day ----- */
 export const DailyFlow = {
   /* map tap: show today's result when already solved, otherwise play */
-  open(done) { if (done) this.showResult(); else this.start(); },
+  open(done: ReturnType<typeof Daily.result>) { if (done) this.showResult(); else this.start(); },
 
   start() {
     const date = Daily.today(), lvl = Daily.generate(date);
@@ -19,7 +22,7 @@ export const DailyFlow = {
     WordPuzzle.start();
   },
 
-  card(date, stored, streak, first) {
+  card(date: string, stored: DailyResult, streak: number, first: boolean) {
     const stars = stored.stars;
     Victory.show({
       title: 'Daily Case Solved!', result: { stars, score: stored.score }, rec: { isBest: false, prevBest: 0 },
@@ -30,8 +33,8 @@ export const DailyFlow = {
     });
   },
 
-  onWin(result) {
-    const date = session.run.date, rec = Daily.record(date, result);
+  onWin(result: PuzzleResult) {
+    const date = (session.run as DailyRun).date as string, rec = Daily.record(date, result);
     emit('puzzle:won', { kind: 'word', result, fresh: rec.first });      // only the first Daily result of a day counts toward the perfect streak
     this.card(date, rec.stored, rec.streak, rec.first);
   },
@@ -39,6 +42,6 @@ export const DailyFlow = {
   showResult() {
     const date = Daily.today();
     session.run = { n: 0, replay: true, freeHints: 0, moodChapter: 0 };
-    this.card(date, Daily.result(date), Daily.streak(date), true);
+    this.card(date, Daily.result(date)!, Daily.streak(date), true);
   }
 };

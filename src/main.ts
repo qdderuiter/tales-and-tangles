@@ -23,7 +23,7 @@ function boot() {
   ['pointerdown', 'pointerup', 'touchend', 'click'].forEach(t => document.addEventListener(t, unlock, true));
 
   // soft tap sound on every clay button
-  document.addEventListener('click', e => { if (e.target.closest('.btn') && !e.target.closest('.choice')) AudioFX.blip(); });
+  document.addEventListener('click', e => { const t = e.target as Element; if (t.closest('.btn') && !t.closest('.choice')) AudioFX.blip(); });
   document.addEventListener('contextmenu', e => e.preventDefault());
   document.addEventListener('gesturestart', e => e.preventDefault());
   document.addEventListener('visibilitychange', () => { if (document.hidden) VoiceManager.stop(); Music.setHidden(document.hidden); });

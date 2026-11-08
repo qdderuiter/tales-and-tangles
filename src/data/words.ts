@@ -5,7 +5,7 @@ import { LEVELS } from './levels.ts';
    Recipe: random Hamiltonian path over the 6x5 grid -> cut into consecutive chunks of 3-5 cells -> a distinct cozy
    word per chunk. Chunks of a Hamiltonian path tile the grid exactly and are adjacent chains, so the normal
    WordPuzzle engine runs it unchanged. */
-export const DAILY_WORDS = {
+export const DAILY_WORDS: Record<3 | 4 | 5, string[]> = {
   3: ('BEE JAR PAW CAT DOG HAT SUN MOP PEN CUP BED NAP TEA PIE FIG OAK ELM IVY FOX OWL BAT HEN COW PIG RUG BOX KEY MAP LAP NET ORB OAT PEA RAY SEA SKY ' +
       'TOY WEB YAM INK ICE JAM JOY KIT LOG MUD NUT OAR PAN SAP TIN URN WAX FAN GEM').split(' '),
   4: ('BOOK LAMP CAKE HIVE MOON STAR FERN ROSE SEED RAIN MOSS LEAF DAWN DUSK FROG DUCK BEAR LAKE POND HILL PATH GATE DOOR ROOF TILE BELL DRUM HARP SONG ' +

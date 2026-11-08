@@ -1,4 +1,6 @@
-export const STORY_RAW = {
+import type { RawLine, StoryPart } from './types.ts';
+
+export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro' | 'outro'>> = {
   1: {
     intro: [
       { e: 'surprised', t: 'Oh dear, oh dear! Partner, my honey jar has vanished from the pantry!' },
@@ -159,7 +161,7 @@ export const STORY_RAW = {
 };
 
 /* between the two puzzles (bridge) and before the accusation (caseIntro) */
-export const STORY_EXTRA = {
+export const STORY_EXTRA: Record<number, Pick<Record<StoryPart, RawLine[]>, 'bridge' | 'caseIntro'>> = {
   1: { bridge:    [{ e: 'happy',    t: 'HONEY! Now we know what the thief loved. Next, the scent trail: one path through every tile, touching the numbers in order.' }],
        caseIntro: [{ e: 'thinking', t: 'Four suspects, four rooms. No single clue will crack it. Cross people off in the notebook until only one story fits.' }] },
   2: { bridge:    [{ e: 'thinking', t: 'QUILL! Ink on the floor, too. Follow the inky footprints: every tile once, numbers in order.' }],

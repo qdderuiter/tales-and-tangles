@@ -11,7 +11,7 @@
     "lint": "biome lint src tests",
     "test:e2e": "node tests/e2e/playthrough.mjs",
     "check": "npm run lint && npm run typecheck && npm test && npm run build && npm run test:e2e",
-    "typecheck": "tsc"
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.6",

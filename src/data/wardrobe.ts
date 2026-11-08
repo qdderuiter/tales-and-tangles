@@ -1,13 +1,15 @@
-export const OUTFIT_DEFAULT = { hat: 'deerstalker', face: 'none', neck: 'tie' };
+import type { Slot, WardrobeItem } from './types.ts';
 
-export const NOIR_OUTFIT = { hat: 'fedora', face: 'none', neck: 'cape' };
+export const OUTFIT_DEFAULT: Record<Slot, string> = { hat: 'deerstalker', face: 'none', neck: 'tie' };
 
-export const flowerSvg = (x, y, c) => '<circle cx="' + (x - 5) + '" cy="' + y + '" r="5.5" fill="' + c + '"/><circle cx="' + (x + 5) + '" cy="' + y + '" r="5.5" fill="' + c + '"/>' +
+export const NOIR_OUTFIT: Record<Slot, string> = { hat: 'fedora', face: 'none', neck: 'cape' };
+
+export const flowerSvg = (x: number, y: number, c: string) => '<circle cx="' + (x - 5) + '" cy="' + y + '" r="5.5" fill="' + c + '"/><circle cx="' + (x + 5) + '" cy="' + y + '" r="5.5" fill="' + c + '"/>' +
   '<circle cx="' + x + '" cy="' + (y - 5) + '" r="5.5" fill="' + c + '"/><circle cx="' + x + '" cy="' + (y + 5) + '" r="5.5" fill="' + c + '"/><circle cx="' + x + '" cy="' + y + '" r="3.4" fill="#ffd54f"/>';
 
-export const heartSvg = (x, y) => '<path transform="translate(' + x + ' ' + y + ')" d="M0 4 C-11 -7 -15 7 0 16 C15 7 11 -7 0 4 Z" fill="rgba(244,143,177,.78)" stroke="#d81b60" stroke-width="2.4" stroke-linejoin="round"/>';
+export const heartSvg = (x: number, y: number) => '<path transform="translate(' + x + ' ' + y + ')" d="M0 4 C-11 -7 -15 7 0 16 C15 7 11 -7 0 4 Z" fill="rgba(244,143,177,.78)" stroke="#d81b60" stroke-width="2.4" stroke-linejoin="round"/>';
 
-export const WARDROBE = [
+export const WARDROBE: WardrobeItem[] = [
   { id: 'deerstalker', slot: 'hat', name: 'Detective cap', cost: 0, svg:
     '<path d="M54 64 Q56 22 100 20 Q144 22 146 64 Q100 52 54 64 Z" fill="url(#hat)"/>' +
     '<path d="M70 40 Q100 30 130 40 M64 52 Q100 42 136 52" stroke="#8f6b3f" stroke-width="2.4" fill="none" opacity=".55"/>' +
@@ -49,6 +51,6 @@ export const WARDROBE = [
     '<path d="M62 148 Q100 168 138 148 L150 218 Q100 198 50 218 Z" fill="#5b2a6b"/><path d="M62 148 Q100 168 138 148" stroke="#d9363e" stroke-width="5" fill="none" stroke-linecap="round"/>' }
 ];
 
-export const WARDROBE_BY_ID = Object.assign(Object.create(null), Object.fromEntries(WARDROBE.map(i => [i.id, i])));   // null-proto: ids like 'constructor' from a corrupted save don't resolve
+export const WARDROBE_BY_ID: Record<string, WardrobeItem | undefined> = Object.assign(Object.create(null), Object.fromEntries(WARDROBE.map(i => [i.id, i])));   // null-proto: ids like 'constructor' from a corrupted save don't resolve
 
-export const SLOTS = Object.keys(OUTFIT_DEFAULT);
+export const SLOTS = Object.keys(OUTFIT_DEFAULT) as Slot[];

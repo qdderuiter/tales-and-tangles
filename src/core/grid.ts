@@ -4,4 +4,6 @@
    Every cell of the 6x5 grid belongs to exactly one word. */
 export const COLS = 6, ROWS = 5;
 
-export const P = s => s.trim().split(/\s+/).map(t => [Number(t[0]), Number(t[1])]);
+import type { Cell } from './types.ts';
+
+export const P = (s: string): Cell[] => s.trim().split(/\s+/).map(t => [Number(t[0]), Number(t[1])] as Cell);

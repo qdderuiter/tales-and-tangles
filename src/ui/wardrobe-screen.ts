@@ -2,21 +2,24 @@ import { Haptics } from '../audio/haptics.ts';
 import { AudioFX } from '../audio/sfx.ts';
 import { Outfit } from '../characters/barnaby-svg.ts';
 import { Barnaby } from '../characters/barnaby.ts';
+import type { Bear } from '../characters/barnaby.ts';
 import { $, replayClass } from '../core/dom.ts';
 import { emit } from '../core/events.ts';
+import { late } from '../core/util.ts';
+import type { Slot, WardrobeItem } from '../data/types.ts';
 import { WARDROBE } from '../data/wardrobe.ts';
 import { toMap } from '../game/nav.ts';
 import { Store } from '../state/store.ts';
 import { UI } from './ui.ts';
 
 export const Wardrobe = {
-  bear: null, from: 'title',
-  SLOTS: [['hat', 'Hats', '40 -2 120 86'], ['face', 'Glasses', '52 64 96 52'], ['neck', 'Neckwear', '58 136 84 78']],
-  init(bear) {
+  bear: late<Bear>(), from: 'title',
+  SLOTS: [['hat', 'Hats', '40 -2 120 86'], ['face', 'Glasses', '52 64 96 52'], ['neck', 'Neckwear', '58 136 84 78']] as [Slot, string, string][],
+  init(bear: Bear) {
     this.bear = bear;
     $('#btnWBack').addEventListener('click', () => { if (this.from === 'map') toMap(); else UI.show('title'); });
   },
-  open(from) { this.from = from; this.render(); UI.show('wardrobe'); },
+  open(from: string) { this.from = from; this.render(); UI.show('wardrobe'); },
   render() {
     $('#wStars').textContent = '★ ' + Store.availableStars();
     const box = $('#wSlots');
@@ -37,7 +40,7 @@ export const Wardrobe = {
       });
     });
   },
-  tap(item, card) {
+  tap(item: WardrobeItem, card: HTMLElement) {
     const r = Store.buy(item.id);                                    // already owned -> ok; Noir items -> reason 'unlock'
     if (!r.ok) {
       replayClass(card, 'shake');

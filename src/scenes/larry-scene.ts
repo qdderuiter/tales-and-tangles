@@ -1,8 +1,9 @@
 import { AudioFX } from '../audio/sfx.ts';
 import { Larry } from '../characters/larry.ts';
+import type { LarryPortrait } from '../characters/larry.ts';
 import { $, setShown } from '../core/dom.ts';
 import { scenes } from '../core/scenes.ts';
-import { REDUCED, rand } from '../core/util.ts';
+import { REDUCED, late, rand } from '../core/util.ts';
 import { Cutscene } from './cutscene.ts';
 import { Store } from '../state/store.ts';
 
@@ -10,15 +11,15 @@ import { Store } from '../state/store.ts';
    Drawn live (no video file): letterbox, a camera pan over the market, lanterns going out, lightning, the silhouette reveal and a WANTED title card.
    Skippable (the Skip button appears after 1.5 s the first time), and reduced-motion gets just the title card. */
 export const LarryScene = {
-  els: {}, larry: null, running: false, fast: false, canSkip: false, _pending: null, _skipTimer: 0,
+  els: {} as Record<string, HTMLElement> & { lanterns: HTMLElement[] }, larry: late<LarryPortrait>(), running: false, fast: false, canSkip: false, _pending: null as (() => void) | null, _skipTimer: 0,
 
   init() {
     const e = this.els;
     ['larryFilm', 'lfStage', 'lfCat', 'lfCap', 'lfTitle', 'lfFlash', 'lfSkip', 'lfGold', 'lfSpot', 'lfC1', 'lfC2'].forEach(id => { e[id] = $('#' + id); });
-    e.lanterns = Array.from(e.larryFilm.querySelectorAll('.lf-lan'));
+    e.lanterns = Array.from(e.larryFilm.querySelectorAll<HTMLElement>('.lf-lan'));
     this.larry = Larry.create(e.lfCat);
     e.lfSkip.addEventListener('click', () => this.skip());
-    e.larryFilm.addEventListener('pointerdown', ev => { if (this.canSkip && !ev.target.closest('#lfSkip')) this.skip(); });
+    e.larryFilm.addEventListener('pointerdown', ev => { if (this.canSkip && !(ev.target as Element).closest('#lfSkip')) this.skip(); });
   },
 
   skip() {
@@ -26,20 +27,20 @@ export const LarryScene = {
     this.fast = true;
     if (this._pending) { const r = this._pending; this._pending = null; r(); }
   },
-  wait(ms) {
-    return new Promise(res => {
+  wait(ms: number) {
+    return new Promise<void>(res => {
       if (this.fast) { res(); return; }
       const t = setTimeout(() => { this._pending = null; res(); }, ms);
       this._pending = () => { clearTimeout(t); res(); };
     });
   },
-  snd(fn) { if (!this.fast) { try { fn(); } catch { /* audio is optional */ } } },
-  anim(el, frames, opts) { return (this.fast || REDUCED) ? null : el.animate(frames, opts); },
-  caption(text) { const c = this.els.lfCap; c.textContent = text; c.classList.toggle('on', !!text); },
-  flash(peak, ms) { if (!this.fast && !REDUCED) this.els.lfFlash.animate([{ opacity: 0 }, { opacity: peak, offset: 0.2 }, { opacity: 0 }], { duration: ms }); },
+  snd(fn: () => void) { if (!this.fast) { try { fn(); } catch { /* audio is optional */ } } },
+  anim(el: Element, frames: Keyframe[], opts: KeyframeAnimationOptions) { return (this.fast || REDUCED) ? null : el.animate(frames, opts); },
+  caption(text: string) { const c = this.els.lfCap; c.textContent = text; c.classList.toggle('on', !!text); },
+  flash(peak: number, ms: number) { if (!this.fast && !REDUCED) this.els.lfFlash.animate([{ opacity: 0 }, { opacity: peak, offset: 0.2 }, { opacity: 0 }], { duration: ms }); },
   sneak() { [220, 261.6, 311.1, 261.6, 415.3, 392].forEach((f, i) => AudioFX.note(f, { t: i * 0.2, type: 'triangle', vol: 0.09, dur: 0.16, lp: 1800 })); },
 
-  reset(mode) {
+  reset(mode: string) {
     const e = this.els;
     if (e.larryFilm.getAnimations) e.larryFilm.getAnimations({ subtree: true }).forEach(a => a.cancel());
     e.lfStage.style.transform = '';
@@ -52,7 +53,7 @@ export const LarryScene = {
     this.larry.root.classList.remove('sil', 'tip');
     this.larry.react('sneaky');
   },
-  open(first) {
+  open(first: boolean) {
     const e = this.els;
     this.running = true; this.fast = false; this.canSkip = false;
     e.lfSkip.classList.remove('on');
@@ -65,17 +66,17 @@ export const LarryScene = {
     clearTimeout(this._skipTimer);
     setShown(e.larryFilm, false);
     e.lfSkip.classList.remove('on'); this.canSkip = false;
-    await new Promise(r => setTimeout(r, 520));
+    await new Promise<void>(r => setTimeout(r, 520));
     this.running = false; this.fast = false; this._pending = null;
   },
   /* screen-space offset (in the gold lantern's own units) from the lantern to Larry's sack */
   sackOffset() {
-    const g = this.els.lfGold, s = this.larry.root.querySelector('.larry-sack');
+    const g = this.els.lfGold, s = this.larry.root.querySelector('.larry-sack')!;
     const a = g.getBoundingClientRect(), b = s.getBoundingClientRect(), k = (a.width / (g.offsetWidth || 1)) || 1;
     return { dx: (b.left + b.width / 2 - a.left - a.width / 2) / k, dy: (b.top + b.height / 2 - a.top - a.height / 2) / k };
   },
 
-  async intro() {
+  async intro(): Promise<void> {
     if (this.running) return;
     const e = this.els, root = this.larry.root, first = !Store.data.seen.larry;
     this.reset('intro'); this.open(first);
@@ -115,7 +116,7 @@ export const LarryScene = {
       await this.wait(800);
       const o = this.sackOffset();
       this.anim(e.lfGold, [{ transform: 'none', opacity: 1 }, { transform: 'translate(' + o.dx + 'px,' + o.dy + 'px) scale(.25)', opacity: 0 }], { duration: 600, easing: 'ease-in', fill: 'forwards' });
-      this.anim(root.querySelector('.larry-sack'), [{ transform: 'scale(1)' }, { transform: 'scale(1.18)', offset: 0.6 }, { transform: 'scale(1)' }], { duration: 700, delay: 450 });
+      this.anim(root.querySelector('.larry-sack')!, [{ transform: 'scale(1)' }, { transform: 'scale(1.18)', offset: 0.6 }, { transform: 'scale(1)' }], { duration: 700, delay: 450 });
       this.snd(() => AudioFX.chime(7, 0.5, 0.1));
       await this.wait(1300);
       // 5. the title card
@@ -129,7 +130,7 @@ export const LarryScene = {
     Store.data.seen.larry = true; Store.save();
   },
 
-  async caught() {
+  async caught(): Promise<void> {
     if (this.running) return;
     const e = this.els, root = this.larry.root;
     this.reset('caught'); this.open(false);
@@ -150,7 +151,7 @@ export const LarryScene = {
     e.lfGold.classList.add('on');
     const o = this.sackOffset();
     this.anim(e.lfGold, [{ transform: 'translate(' + o.dx + 'px,' + o.dy + 'px) scale(.25) rotate(0)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 500, easing: 'cubic-bezier(.2,1.3,.4,1)', fill: 'backwards' });
-    this.anim(root.querySelector('.larry-sack'), [{ transform: 'scaleY(1)' }, { transform: 'scaleY(.8)' }, { transform: 'scaleY(1)' }], { duration: 500 });
+    this.anim(root.querySelector('.larry-sack')!, [{ transform: 'scaleY(1)' }, { transform: 'scaleY(.8)' }, { transform: 'scaleY(1)' }], { duration: 500 });
     this.snd(() => AudioFX.chime(9, 0, 0.1));
     await this.wait(900);
     // the market relights, one lantern at a time

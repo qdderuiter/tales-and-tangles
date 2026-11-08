@@ -22,11 +22,13 @@ export function larryMarkup() {
     '</svg>';
 }
 
+export interface LarryPortrait { root: HTMLElement; react(e: string): void }
+
 export const Larry = {
   EMOS: ['smug', 'sneaky', 'angry', 'caught'],
-  create(host) {
+  create(host: HTMLElement): LarryPortrait {
     host.innerHTML = '<div class="larry l-smug">' + larryMarkup() + '</div>';
-    const root = host.firstElementChild;
-    return { root, react(e) { Larry.EMOS.forEach(c => root.classList.remove('l-' + c)); root.classList.add('l-' + (Larry.EMOS.includes(e) ? e : 'smug')); } };
+    const root = host.firstElementChild as HTMLElement;
+    return { root, react(e: string) { Larry.EMOS.forEach(c => root.classList.remove('l-' + c)); root.classList.add('l-' + (Larry.EMOS.includes(e) ? e : 'smug')); } };
   }
 };

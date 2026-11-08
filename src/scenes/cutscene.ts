@@ -1,19 +1,32 @@
 import { Haptics } from '../audio/haptics.ts';
 import { AudioFX } from '../audio/sfx.ts';
 import { Barnaby } from '../characters/barnaby.ts';
+import type { Bear } from '../characters/barnaby.ts';
 import { $, fitCanvas, setShown } from '../core/dom.ts';
-import { REDUCED, clamp, rand } from '../core/util.ts';
+import { REDUCED, clamp, late, rand } from '../core/util.ts';
+import type { Choice } from '../data/types.ts';
 import { Dialogue } from '../dialogue/dialogue.ts';
 import { NOIR_LINES } from './noir-lines.ts';
 
 /* ---------- the interactive cutscene engine ----------
    Dialogue -> break three seals (tap) -> the board shatters into 3D shards you can fling -> the shards spring back as the remixed level.
    Everything is driven by the pointer: parallax tilt, cracks, shard flicks. Always skippable; reduced-motion gets a plain dissolve. */
+export interface CutsceneOpts { boardEl: HTMLElement; tileSel: string; prepare(): void }
+interface Shard {
+  el: HTMLElement; f: HTMLElement; b: HTMLElement; w: number; h: number; cx: number; cy: number;
+  x: number; y: number; z: number; vx: number; vy: number; vz: number; rx: number; ry: number; rz: number; vrx: number; vry: number; vrz: number;
+}
+interface Ember { x: number; y: number; vx: number; vy: number; life: number; max: number; s: number }
+/* what measureTiles() reads off one tile */
+interface TileBox { left: number; top: number; w: number; h: number; bg: string; shadow: string; radius: string; text: string | null; color: string | null; fontSize: string | null }
+
+/* fields marked late() are filled by init() / play() before anything reads them */
 export const Cutscene = {
-  els: {}, dlg: null, bear: null, running: false, fast: false, phase: '', opts: null, prepared: false,
+  els: {} as Record<string, HTMLElement>, dlg: late<Dialogue>(), bear: late<Bear>(), running: false, fast: false, phase: '', opts: late<CutsceneOpts>(), prepared: false,
   tilt: { rx: 0, ry: 0, trx: 0, try: 0, wrx: Infinity, wry: Infinity },   // w* = last values written to the stage
-  ptr: { x: 0, y: 0, vx: 0, vy: 0, t: 0 }, shards: [], embers: [], raf: 0, W: 0, H: 0,
-  _pending: null, _beginRes: null,
+  ptr: { x: 0, y: 0, vx: 0, vy: 0, t: 0 }, shards: [] as Shard[], embers: [] as Ember[], raf: 0, W: 0, H: 0,
+  _pending: null as (() => void) | null, _beginRes: null as (() => void) | null,
+  ctx: late<CanvasRenderingContext2D>(), nr: null as DOMRect | null,
 
   init() {
     const e = this.els;
@@ -21,7 +34,7 @@ export const Cutscene = {
       .forEach(id => { e[id] = $('#' + id); });
     this.bear = Barnaby.create(e.noirBear, { noir: true });
     this.dlg = new Dialogue({ nameEl: $('#noirName'), textEl: $('#noirText'), choicesEl: $('#noirChoices'), caret: $('#noirCaret'), bear: this.bear });
-    e.noirDlg.addEventListener('pointerdown', ev => { if (!ev.target.closest('.dlg-choices')) this.dlg.tap(); });
+    e.noirDlg.addEventListener('pointerdown', ev => { if (!(ev.target as Element).closest('.dlg-choices')) this.dlg.tap(); });
     e.noirSkip.addEventListener('click', () => this.skip());
     e.noirBegin.addEventListener('click', () => { if (this._beginRes) this._beginRes(); });
     e.noir.addEventListener('pointermove', ev => this.onMove(ev));
@@ -30,7 +43,7 @@ export const Cutscene = {
   },
 
   /* opts: { boardEl, tileSel, prepare() }  ->  Promise<'declined' | 'done'> */
-  async play(opts) {
+  async play(opts: CutsceneOpts): Promise<'declined' | 'done'> {
     if (this.running) return 'declined';
     this.running = true; this.fast = false; this.opts = opts; this.prepared = false; this.phase = 'dialog';
     const e = this.els;
@@ -57,13 +70,13 @@ export const Cutscene = {
   },
 
   prepareOnce() { if (!this.prepared) { this.prepared = true; this.opts.prepare(); } },
-  wait(ms) { return new Promise(res => { if (this.fast) { res(); return; } this._pending = res; setTimeout(() => { if (this._pending === res) this._pending = null; res(); }, ms); }); },
+  wait(ms: number) { return new Promise<void>(res => { if (this.fast) { res(); return; } this._pending = res; setTimeout(() => { if (this._pending === res) this._pending = null; res(); }, ms); }); },
 
   runDialog() {
-    return new Promise(res => {
+    return new Promise<boolean>(res => {
       let accepted = false;
       this.els.noirDlg.classList.add('on');
-      this.dlg.play(NOIR_LINES, { onChoice: ch => { accepted = !!ch.evil; }, onDone: () => { this.els.noirDlg.classList.remove('on'); res(accepted); } });
+      this.dlg.play(NOIR_LINES, { onChoice: (ch: Choice) => { accepted = !!ch.evil; }, onDone: () => { this.els.noirDlg.classList.remove('on'); res(accepted); } });
     });
   },
 
@@ -73,9 +86,9 @@ export const Cutscene = {
     return { nr, br: this.opts.boardEl.getBoundingClientRect() };
   },
   /* read every tile's box and look in one pass (no writes in between, so layout is computed once) */
-  measureTiles(nr) {
+  measureTiles(nr: { left: number; top: number }): TileBox[] {
     return Array.from(this.opts.boardEl.querySelectorAll(this.opts.tileSel)).map(t => {
-      const face = t.firstElementChild || t, r = face.getBoundingClientRect(), cs = getComputedStyle(face), sp = face.querySelector('span'), ss = sp && getComputedStyle(sp);
+      const face: Element = t.firstElementChild || t, r = face.getBoundingClientRect(), cs = getComputedStyle(face), sp = face.querySelector('span'), ss = sp && getComputedStyle(sp);
       return { left: r.left - nr.left, top: r.top - nr.top, w: r.width, h: r.height, bg: cs.backgroundColor, shadow: cs.boxShadow, radius: cs.borderRadius,
                text: sp ? sp.textContent : null, color: ss && ss.color, fontSize: ss && ss.fontSize };
     });
@@ -87,7 +100,7 @@ export const Cutscene = {
       el.style.cssText = 'left:' + m.left + 'px;top:' + m.top + 'px;width:' + m.w + 'px;height:' + m.h + 'px';
       const f = document.createElement('div'); f.className = 'sf';
       f.style.cssText = 'background:' + m.bg + ';box-shadow:' + m.shadow + ';border-radius:' + m.radius;
-      if (m.text !== null) { f.textContent = m.text; f.style.color = m.color; f.style.fontSize = m.fontSize; }
+      if (m.text !== null) { f.textContent = m.text; f.style.color = m.color!; f.style.fontSize = m.fontSize!; }
       const b = document.createElement('div'); b.className = 'sb';
       el.appendChild(f); el.appendChild(b); frag.appendChild(el);
       return { el, f, b, w: m.w, h: m.h, cx: m.left + m.w / 2, cy: m.top + m.h / 2, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, rx: 0, ry: 0, rz: 0, vrx: 0, vry: 0, vrz: 0 };
@@ -96,7 +109,7 @@ export const Cutscene = {
     this.opts.boardEl.style.visibility = 'hidden';
   },
   breakSeals() {
-    return new Promise(res => {
+    return new Promise<void>(res => {
       this.phase = 'seals';
       const e = this.els;
       this.buildShards();
@@ -120,7 +133,7 @@ export const Cutscene = {
       });
     });
   },
-  hitSeal(s, p, index) {
+  hitSeal(s: HTMLElement, p: { x: number; y: number }, index: number) {
     const e = this.els;
     AudioFX.thud(); AudioFX.chime(2 + index * 2, 0.02, 0.12); Haptics.tangle();
     this.crack(p.x, p.y);
@@ -131,7 +144,7 @@ export const Cutscene = {
     this.bear.react(index === 2 ? 'surprised' : 'happy');
     this.addEmbers(p.x, p.y, 26);
   },
-  crack(px, py) {
+  crack(px: number, py: number) {
     const nr = this.els.noir.getBoundingClientRect(), cx = px / nr.width * 100, cy = py / nr.height * 100, svg = this.els.noirCracks;
     for (let b = 0; b < 7; b++) {
       let a = rand(0, Math.PI * 2), x = cx, y = cy;
@@ -146,7 +159,7 @@ export const Cutscene = {
 
   /* ---- 2. the shatter: 3D shards with simple physics; drag through them to fling them ---- */
   shatter() {
-    return new Promise(res => {
+    return new Promise<void>(res => {
       this.phase = 'shatter';
       const e = this.els;
       e.noirSeals.innerHTML = '';
@@ -165,7 +178,7 @@ export const Cutscene = {
       this.addEmbers(ox, oy, 70);
       const t0 = performance.now();
       this._pending = res;
-      const step = now => {
+      const step = (now: number) => {
         if (this.phase !== 'shatter') return;
         if (now - t0 > 3000 || this.fast) { e.noirHint.classList.remove('on'); this._pending = null; res(); return; }
         requestAnimationFrame(step);
@@ -173,7 +186,7 @@ export const Cutscene = {
       requestAnimationFrame(step);
     });
   },
-  physics(dt) {                                                      // shards only move while shattered (reassembly is driven by WAAPI)
+  physics(dt: number) {                                                      // shards only move while shattered (reassembly is driven by WAAPI)
     if (this.phase !== 'shatter') return;
     const gravity = 0.16;
     this.shards.forEach(s => {
@@ -189,7 +202,7 @@ export const Cutscene = {
     });
   },
   /* flick: a moving finger pushes nearby shards; a tap sends a shock wave */
-  onMove(ev) {
+  onMove(ev: PointerEvent) {
     const nr = this.nr || this.els.noir.getBoundingClientRect(), x = ev.clientX - nr.left, y = ev.clientY - nr.top, now = performance.now(), p = this.ptr;
     const dtp = Math.max(1, now - p.t);
     p.vx = (x - p.x) / dtp * 16.7; p.vy = (y - p.y) / dtp * 16.7; p.x = x; p.y = y; p.t = now;
@@ -202,7 +215,7 @@ export const Cutscene = {
       });
     }
   },
-  onDown(ev) {
+  onDown(ev: PointerEvent) {
     if (this.phase !== 'shatter') return;
     const nr = this.els.noir.getBoundingClientRect(), x = ev.clientX - nr.left, y = ev.clientY - nr.top;
     AudioFX.tick(Math.floor(rand(2, 9)));
@@ -215,7 +228,7 @@ export const Cutscene = {
 
   /* ---- 3. reassemble: shards spring into the NEW layout and flip to reveal the dark tiles ---- */
   reassemble() {
-    return new Promise(res => {
+    return new Promise<void>(res => {
       this.phase = 'reassemble';
       const e = this.els;
       e.noirHint.classList.remove('on');
@@ -232,8 +245,8 @@ export const Cutscene = {
         s.el.style.left = m.left + 'px'; s.el.style.top = m.top + 'px'; s.el.style.width = m.w + 'px'; s.el.style.height = m.h + 'px';
         s.b.style.cssText = 'background:' + m.bg + ';border-radius:' + m.radius;
         s.b.textContent = m.text !== null ? m.text : '';
-        if (m.text !== null) { s.b.style.fontSize = m.fontSize; s.b.style.color = m.color; }
-        const norm = a => ((a % 360) + 540) % 360 - 180;
+        if (m.text !== null) { s.b.style.fontSize = m.fontSize!; s.b.style.color = m.color!; }
+        const norm = (a: number) => ((a % 360) + 540) % 360 - 180;
         const from = 'translate3d(' + (curX - tcx).toFixed(1) + 'px,' + (curY - tcy).toFixed(1) + 'px,' + s.z.toFixed(1) + 'px) rotateX(' + norm(s.rx).toFixed(1) + 'deg) rotateY(' + norm(s.ry).toFixed(1) + 'deg) rotateZ(' + norm(s.rz).toFixed(1) + 'deg)';
         const to = 'translate3d(0,0,0) rotateX(0deg) rotateY(180deg) rotateZ(0deg)';
         const dur = 900 + i * 14;
@@ -247,7 +260,7 @@ export const Cutscene = {
     });
   },
   waitBegin() {
-    return new Promise(res => {
+    return new Promise<void>(res => {
       this.phase = 'begin';
       if (this.fast) { res(); return; }
       const e = this.els;
@@ -262,7 +275,7 @@ export const Cutscene = {
     this.prepareOnce();
     this.opts.boardEl.style.visibility = '';
     setShown(e.noir, false);
-    await new Promise(r => setTimeout(r, 420));
+    await new Promise<void>(r => setTimeout(r, 420));
     e.noirShards.innerHTML = ''; e.noirSeals.innerHTML = ''; e.noirCracks.innerHTML = ''; this.shards = [];
     this.running = false; this.phase = '';
     this.dlg.end();
@@ -277,17 +290,17 @@ export const Cutscene = {
   },
 
   /* ---- effects ---- */
-  flash(color, peak, ms) {
+  flash(color: string, peak: number, ms: number) {
     const f = this.els.noirFlash;
     f.style.background = color;
     f.animate([{ opacity: 0 }, { opacity: peak, offset: 0.25 }, { opacity: 0 }], { duration: ms });
   },
-  glitch(ms) {                                                       // SVG displacement filter on the whole app for a moment
+  glitch(ms: number) {                                                       // SVG displacement filter on the whole app for a moment
     const app = $('#app'), map = $('#glitchMap'), noise = $('#glitchNoise');
     if (!map || !noise) return;
     app.style.filter = 'url(#glitch)';
     const t0 = performance.now();
-    const step = now => {
+    const step = (now: number) => {
       const k = (now - t0) / ms;
       if (k >= 1) { app.style.filter = ''; map.setAttribute('scale', '0'); return; }
       map.setAttribute('scale', String(Math.round(Math.sin(k * Math.PI) * 46 * (0.5 + Math.random() * 0.5))));
@@ -298,10 +311,10 @@ export const Cutscene = {
   },
   sizeCanvas() {
     this.W = this.els.noir.clientWidth; this.H = this.els.noir.clientHeight;
-    this.ctx = fitCanvas(this.els.noirEmbers, this.W, this.H).ctx;
+    this.ctx = fitCanvas(this.els.noirEmbers as HTMLCanvasElement, this.W, this.H).ctx;
     this.nr = this.els.noir.getBoundingClientRect();                 // cached for pointer moves (the overlay is fixed)
   },
-  addEmbers(x, y, n) {
+  addEmbers(x: number, y: number, n: number) {
     if (REDUCED) return;
     for (let i = 0; i < n; i++) this.embers.push({ x: x + rand(-14, 14), y: y + rand(-14, 14), vx: rand(-1.6, 1.6), vy: rand(-3.4, -0.6), life: 0, max: rand(40, 90), s: rand(1.5, 4) });
     if (this.embers.length > 260) this.embers.splice(0, this.embers.length - 260);
@@ -310,7 +323,7 @@ export const Cutscene = {
   loop() {
     cancelAnimationFrame(this.raf);
     let last = performance.now();
-    const frame = now => {
+    const frame = (now: number) => {
       if (!this.running) return;
       const dt = Math.min(2.2, (now - last) / 16.7); last = now;
       const t = this.tilt;
@@ -341,8 +354,8 @@ export const Cutscene = {
     this.raf = requestAnimationFrame(frame);
   },
   /* a quick bright wipe used when leaving the evil version ("back to the light") */
-  light(fn) {
-    return new Promise(res => {
+  light(fn: () => void) {
+    return new Promise<void>(res => {
       const e = this.els;
       e.noir.classList.add('lightmode'); setShown(e.noir, true);
       e.noirFlash.style.background = '#fff6e0';

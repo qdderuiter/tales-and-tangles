@@ -1,23 +1,28 @@
 import { Haptics } from '../../audio/haptics.ts';
 import { AudioFX } from '../../audio/sfx.ts';
 import { VoiceManager } from '../../audio/voice.ts';
+import type { Bear } from '../../characters/barnaby.ts';
 import { critterSvg } from '../../characters/critter-svg.ts';
 import { $, flashClass, replayClass } from '../../core/dom.ts';
-import { REDUCED } from '../../core/util.ts';
+import { REDUCED, late } from '../../core/util.ts';
+import type { Level } from '../../data/types.ts';
 import { REACT } from '../../data/story.ts';
 import { speak } from '../../dialogue/speakers.ts';
+import type { Reaction } from '../../dialogue/speakers.ts';
 import { STORY } from '../../dialogue/story-builder.ts';
 import { Typer } from '../../dialogue/typer.ts';
 import { NOTE_KINDS, blankNotes, planCaseHint } from './case-logic.ts';
+import type { CaseHint, NoteKind, Notes } from './case-logic.ts';
+import type { ChapterRun } from '../../state/session.ts';
 import { Store } from '../../state/store.ts';
 import { UI } from '../../ui/ui.ts';
 
 export const CELL_MARK = ['', '✕', '✓', '✕'];                           // cell state: 0 blank, 1 cross, 2 check, 3 auto-cross
 
-export const LOCKED_MSG = { word: 'Solve the Words puzzle', zip: 'Follow the Scent Trail' };
+export const LOCKED_MSG: Record<string, string> = { word: 'Solve the Words puzzle', zip: 'Follow the Scent Trail' };
 
 /* Barnaby's hint lines for the notebook (dynamic text, so no pre-recorded voice id) */
-export const HINT_PAGE = { items: 'Items', places: 'Rooms', itemPlaces: 'Item ↔ Room' };
+export const HINT_PAGE: Record<NoteKind, string> = { items: 'Items', places: 'Rooms', itemPlaces: 'Item ↔ Room' };
 
 export const CASE_HINT = {
   clue:   { id: '', e: 'thinking', t: 'Look at the clue I lit up. Read it again, slowly.' },
@@ -25,27 +30,34 @@ export const CASE_HINT = {
   elim:   { id: '', e: 'neutral',  t: 'A row or a column has only one choice left. Check your pages for it.' },
   combo:  { id: '', e: 'thinking', t: 'Nothing jumps out from one clue alone. Put several clues together.' },
   locked: { id: '', e: 'sad',      t: 'I need more clues first. Solve the other puzzles to open the locked ones!' },
-  focus:  (kind, name) => ({ id: '', e: 'happy', t: kind === 'items' ? 'Think about what ' + name + ' could have been holding.' : kind === 'places' ? 'Think about where ' + name + ' could have been.' : 'Think about which room the ' + name + ' could be in.' }),
-  fixRow: (kind, name) => ({ id: '', e: 'thinking', t: 'Hmm, something on the ' + HINT_PAGE[kind] + ' page does not add up. Check the row for ' + (kind === 'itemPlaces' ? 'the ' : '') + name + ' again.' }),
-  fixCol: name => ({ id: '', e: 'thinking', t: 'Look closely at the ' + name + ' column in that row.' }),
+  focus:  (kind: NoteKind, name: string) => ({ id: '', e: 'happy', t: kind === 'items' ? 'Think about what ' + name + ' could have been holding.' : kind === 'places' ? 'Think about where ' + name + ' could have been.' : 'Think about which room the ' + name + ' could be in.' }),
+  fixRow: (kind: NoteKind, name: string) => ({ id: '', e: 'thinking', t: 'Hmm, something on the ' + HINT_PAGE[kind] + ' page does not add up. Check the row for ' + (kind === 'itemPlaces' ? 'the ' : '') + name + ' again.' }),
+  fixCol: (name: string) => ({ id: '', e: 'thinking', t: 'Look closely at the ' + name + ' column in that row.' }),
   fixed:  { id: '', e: 'proud', t: 'There. I wiped the wrong mark away. The rest is up to you!' }
 };
 
-export const CaseScreen = {
-  lvl: null, run: null, notes: null, tab: 'items', bear: null, typer: null, onSolved: null,
-  wrong: 0, hints: 0, done: false, selS: -1, selI: -1, els: {}, hintPlan: null, hintTimer: 0,
+interface CaseEls {
+  crime: HTMLElement; tabs: HTMLElement; grid: HTMLElement; hall: HTMLElement; clues: HTMLElement;
+  sus: HTMLElement; items: HTMLElement; btn: HTMLButtonElement; auto: HTMLElement;
+}
+type HintPlan = CaseHint & { sig: string; stage: number; charged: boolean };
 
-  init(bear) {
+/* fields marked late() are filled by init() / load() before anything reads them */
+export const CaseScreen = {
+  lvl: late<Level>(), run: late<ChapterRun>(), notes: late<Notes>(), tab: 'items' as NoteKind, bear: late<Bear>(), typer: late<Typer>(), onSolved: null as ((penalty: number) => void) | null,
+  wrong: 0, hints: 0, done: false, selS: -1, selI: -1, els: {} as CaseEls, hintPlan: null as HintPlan | null, hintTimer: 0, cellEls: [] as HTMLButtonElement[],
+
+  init(bear: Bear) {
     this.bear = bear;
     this.typer = new Typer($('#cBubble'), bear);
     const e = this.els;
     e.crime = $('#cCrime'); e.tabs = $('#cTabs'); e.grid = $('#cGrid'); e.hall = $('#cHall'); e.clues = $('#cClues');
-    e.sus = $('#cSus'); e.items = $('#cItems'); e.btn = $('#btnAccuse'); e.auto = $('#cAuto');
-    e.tabs.addEventListener('click', ev => { const b = ev.target.closest('button[data-tab]'); if (b) this.setTab(b.dataset.tab); });
-    e.grid.addEventListener('click', ev => { const b = ev.target.closest('button.nbc'); if (b) this.tapCell(Number(b.dataset.s), Number(b.dataset.i)); });
-    e.clues.addEventListener('click', ev => { const b = ev.target.closest('.clue-item'); if (b) this.tapClue(Number(b.dataset.k)); });
-    e.sus.addEventListener('click', ev => { const b = ev.target.closest('button.chip'); if (b && !this.done) { this.selS = Number(b.dataset.s); AudioFX.tick(this.selS); this.renderAccuse(); } });
-    e.items.addEventListener('click', ev => { const b = ev.target.closest('button.chip'); if (b && !this.done) { this.selI = Number(b.dataset.i); AudioFX.tick(this.selI + 3); this.renderAccuse(); } });
+    e.sus = $('#cSus'); e.items = $('#cItems'); e.btn = $<HTMLButtonElement>('#btnAccuse'); e.auto = $('#cAuto');
+    e.tabs.addEventListener('click', ev => { const b = (ev.target as Element).closest<HTMLElement>('button[data-tab]'); if (b) this.setTab(b.dataset.tab as NoteKind); });
+    e.grid.addEventListener('click', ev => { const b = (ev.target as Element).closest<HTMLElement>('button.nbc'); if (b) this.tapCell(Number(b.dataset.s), Number(b.dataset.i)); });
+    e.clues.addEventListener('click', ev => { const b = (ev.target as Element).closest<HTMLElement>('.clue-item'); if (b) this.tapClue(Number(b.dataset.k)); });
+    e.sus.addEventListener('click', ev => { const b = (ev.target as Element).closest<HTMLElement>('button.chip'); if (b && !this.done) { this.selS = Number(b.dataset.s); AudioFX.tick(this.selS); this.renderAccuse(); } });
+    e.items.addEventListener('click', ev => { const b = (ev.target as Element).closest<HTMLElement>('button.chip'); if (b && !this.done) { this.selI = Number(b.dataset.i); AudioFX.tick(this.selI + 3); this.renderAccuse(); } });
     e.auto.addEventListener('click', () => {
       Store.data.settings.autocross = !this.autoOn(); Store.save();
       if (this.notes) NOTE_KINDS.forEach(k => this.recompute(this.notes[k]));
@@ -55,9 +67,9 @@ export const CaseScreen = {
     $('#btnCHint').addEventListener('click', () => this.hint());
   },
   autoOn() { return Store.data.settings.autocross !== false; },
-  say(r) { speak(this.bear, this.typer, r, 17); },
+  say(r: Reaction) { speak(this.bear, this.typer, r, 17); },
 
-  load(lvl, run, onSolved) {
+  load(lvl: Level, run: ChapterRun, onSolved: (penalty: number) => void) {
     this.lvl = lvl; this.run = run; this.onSolved = onSolved;
     this.done = false; this.wrong = 0; this.hints = 0; this.selS = -1; this.selI = -1; this.tab = 'items'; this.hintPlan = null; clearTimeout(this.hintTimer);
     const c = lvl.case, N = c.N;
@@ -71,9 +83,9 @@ export const CaseScreen = {
   },
 
   render() { this.renderTabs(); this.renderGrid(); this.renderClues(); this.renderAccuse(true); },
-  setTab(t) { this.tab = t; AudioFX.tick(2 + 2 * NOTE_KINDS.indexOf(t)); this.renderTabs(); this.renderGrid(); },
+  setTab(t: NoteKind) { this.tab = t; AudioFX.tick(2 + 2 * NOTE_KINDS.indexOf(t)); this.renderTabs(); this.renderGrid(); },
   renderTabs() {
-    this.els.tabs.querySelectorAll('button[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === this.tab));
+    this.els.tabs.querySelectorAll<HTMLElement>('button[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === this.tab));
     this.els.auto.textContent = 'Auto-cross: ' + (this.autoOn() ? 'On' : 'Off');
   },
 
@@ -91,16 +103,16 @@ export const CaseScreen = {
       }
     });
     g.innerHTML = h;
-    this.cellEls = Array.from(g.querySelectorAll('button.nbc'));      // row-major, N per row
+    this.cellEls = Array.from(g.querySelectorAll<HTMLButtonElement>('button.nbc'));      // row-major, N per row
   },
   /* repaint the existing cell buttons from the matrix (no rebuild) */
   paintCells() {
     const M = this.notes[this.tab], N = M.length;
     this.cellEls.forEach((b, k) => { const st = M[Math.floor(k / N)][k % N]; b.className = 'nbc s' + st; b.textContent = CELL_MARK[st]; });
   },
-  cellEl(s, i) { return this.cellEls[s * this.notes[this.tab].length + i]; },
+  cellEl(s: number, i: number) { return this.cellEls[s * this.notes[this.tab].length + i]; },
   /* ✓ crosses out the rest of its row and column (state 3) when auto-cross is on */
-  recompute(M) {
+  recompute(M: number[][]) {
     const N = M.length;
     for (let s = 0; s < N; s++) for (let i = 0; i < N; i++) if (M[s][i] === 3) M[s][i] = 0;
     if (!this.autoOn()) return;
@@ -109,7 +121,7 @@ export const CaseScreen = {
       for (let t = 0; t < N; t++) if (t !== s && M[t][i] === 0) M[t][i] = 3;
     }
   },
-  tapCell(s, i) {
+  tapCell(s: number, i: number) {
     if (this.done) return;
     const M = this.notes[this.tab];
     const next = [1, 2, 0, 1][M[s][i]];                               // blank -> X -> check -> blank; an auto-cross becomes a manual cross when tapped
@@ -120,40 +132,40 @@ export const CaseScreen = {
     replayClass(this.cellEl(s, i), 'pressed');
   },
 
-  highlight(t) { return t.replace(/\b([A-Z]{3,})\b/g, '<b>$1</b>'); },
+  highlight(t: string) { return t.replace(/\b([A-Z]{3,})\b/g, '<b>$1</b>'); },
   renderClues() {
     const c = this.lvl.case, earned = this.run.earned, struck = this.notes.struck;
-    const isStruck = k => { const cl = c.clues[k]; return !!struck[k] && !(cl.earned && !earned[cl.earned]); };
+    const isStruck = (k: number) => { const cl = c.clues[k]; return !!struck[k] && !(cl.earned && !earned[cl.earned]); };
     const order = c.clues.map((_, k) => k);
     const open = order.filter(k => !isStruck(k));
     const crossed = order.filter(isStruck).sort((a, b) => (Number(struck[a]) || 1) - (Number(struck[b]) || 1) || a - b);
     this.els.clues.innerHTML = open.concat(crossed).map(k => {
       const cl = c.clues[k];
       const locked = cl.earned && !earned[cl.earned];
-      const body = locked ? '🔒 ' + LOCKED_MSG[cl.earned] + ' to reveal this clue.' : this.highlight(cl.t);
+      const body = locked ? '🔒 ' + LOCKED_MSG[cl.earned as string] + ' to reveal this clue.' : this.highlight(cl.t);
       return '<div class="clue-item' + (locked ? ' locked' : '') + (struck[k] && !locked ? ' done' : '') + (cl.earned && !locked ? ' earned' : '') + '" data-k="' + k + '">' + body + '</div>';
     }).join('');
   },
-  tapClue(k) {
+  tapClue(k: number) {
     const cl = this.lvl.case.clues[k];
-    if (cl.earned && !this.run.earned[cl.earned]) { UI.toast(LOCKED_MSG[cl.earned] + ' to reveal it'); AudioFX.bump(); return; }
+    if (cl.earned && !this.run.earned[cl.earned]) { UI.toast(LOCKED_MSG[cl.earned as string] + ' to reveal it'); AudioFX.bump(); return; }
     const st = this.notes.struck;                    // value = strike order, so the newest strike sits at the very bottom
     st[k] = st[k] ? 0 : Object.values(st).reduce((m, v) => Math.max(m, Number(v) || 0), 0) + 1;
     AudioFX.tick(st[k] ? 5 : 2);
-    const before = {};
-    this.els.clues.querySelectorAll('.clue-item').forEach(el => { before[el.dataset.k] = el.getBoundingClientRect().top; });
+    const before: Record<string, number> = {};
+    this.els.clues.querySelectorAll<HTMLElement>('.clue-item').forEach(el => { before[el.dataset.k!] = el.getBoundingClientRect().top; });
     this.renderClues();
     if (REDUCED) return;
-    const moved = [];                                // FLIP: slide each clue from its old spot to the new one
-    this.els.clues.querySelectorAll('.clue-item').forEach(el => {
-      const d = before[el.dataset.k] - el.getBoundingClientRect().top;
+    const moved: HTMLElement[] = [];                                // FLIP: slide each clue from its old spot to the new one
+    this.els.clues.querySelectorAll<HTMLElement>('.clue-item').forEach(el => {
+      const d = before[el.dataset.k!] - el.getBoundingClientRect().top;
       if (d) { el.style.transition = 'none'; el.style.transform = 'translateY(' + d + 'px)'; moved.push(el); }
     });
     if (moved.length) requestAnimationFrame(() => requestAnimationFrame(() => moved.forEach(el => { el.style.transition = ''; el.style.transform = ''; })));
   },
 
   /* the chips are built once per case (rebuild); a selection change only toggles .sel */
-  renderAccuse(rebuild) {
+  renderAccuse(rebuild?: boolean) {
     const c = this.lvl.case, e = this.els;
     if (rebuild) {
       e.sus.innerHTML = c.suspects.map((n, s) => '<button class="chip sus" data-s="' + s + '">' + critterSvg(n) + '<b>' + n + '</b></button>').join('');
@@ -203,10 +215,10 @@ export const CaseScreen = {
     if (plan.type === 'none') { this.say(CASE_HINT.locked); return; }
     if (plan.stage >= 2 && !plan.charged) { plan.charged = true; this.hints++; }
 
-    const names = (kind, i) => kind === 'items' ? c.items[i].name : c.places[i].name;     // column label
-    const rowName = (kind, s) => kind === 'itemPlaces' ? c.items[s].name : c.suspects[s];
-    const showTab = kind => { this.tab = kind; this.renderTabs(); this.renderGrid(); };
-    const setCell = (kind, s, v, mark, line) => {                 // step 3: change one cell, show it, and say so
+    const names = (kind: NoteKind, i: number) => kind === 'items' ? c.items[i].name : c.places[i].name;     // column label
+    const rowName = (kind: NoteKind, s: number) => kind === 'itemPlaces' ? c.items[s].name : c.suspects[s];
+    const showTab = (kind: NoteKind) => { this.tab = kind; this.renderTabs(); this.renderGrid(); };
+    const setCell = (kind: NoteKind, s: number, v: number, mark: number, line: Reaction) => {                 // step 3: change one cell, show it, and say so
       this.notes[kind][s][v] = mark; this.recompute(this.notes[kind]);
       showTab(kind); flashClass(this.cellEl(s, v), 'hinted', 2200); AudioFX.chime(4);
       this.say(line);
@@ -231,10 +243,10 @@ export const CaseScreen = {
     } else setCell(kind, s, v, isCheck ? 2 : 1, REACT.caseHint);
   },
   /* pulse the given clue rows in the list and scroll the first into view */
-  glowClues(ks) {
+  glowClues(ks: number[]) {
     clearTimeout(this.hintTimer);
     this.els.clues.querySelectorAll('.clue-item.hinted').forEach(el => el.classList.remove('hinted'));
-    const els = ks.map(k => this.els.clues.querySelector('.clue-item[data-k="' + k + '"]')).filter(Boolean);
+    const els = ks.map(k => this.els.clues.querySelector('.clue-item[data-k="' + k + '"]')).filter((el): el is Element => !!el);
     els.forEach(el => el.classList.add('hinted'));
     if (els[0]) els[0].scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
     this.hintTimer = setTimeout(() => els.forEach(el => el.classList.remove('hinted')), 4500);

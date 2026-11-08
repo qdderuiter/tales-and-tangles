@@ -1,6 +1,6 @@
 import { AudioFX } from './sfx.ts';
 import { on } from '../core/events.ts';
-import { mulberry32 } from '../core/util.ts';
+import { late, mulberry32 } from '../core/util.ts';
 import { session } from '../state/session.ts';
 import { Store } from '../state/store.ts';
 
@@ -8,9 +8,16 @@ import { Store } from '../state/store.ts';
    Each chapter has its own key / tempo / chord loop. "calm" = chords + bass + brushed hat (title, map, story);
    "play" adds soft kick / snare / hats (puzzles, trail, suspects). Mood changes land on the next bar line.
    The voice functions take an explicit audio context so the exact same code can render offline for tests. */
-export const CHORD_Q = { maj7: [0, 4, 7, 11], min7: [0, 3, 7, 10], min9: [0, 3, 7, 10, 14], dom7: [0, 4, 7, 10] };
+export const CHORD_Q: Record<string, number[]> = { maj7: [0, 4, 7, 11], min7: [0, 3, 7, 10], min9: [0, 3, 7, 10, 14], dom7: [0, 4, 7, 10] };
 
-export const MOODS = {   // chords: [root pitch class (C=0), quality], one chord per bar
+export interface Mood { bpm: number; heavy?: boolean; drone?: boolean; chords: [number, string][] }
+export type NoiseType = 'lowpass' | 'highpass' | 'bandpass';
+/* the shared audio graph, and the bundle every voice function draws with (works on live and offline contexts) */
+export interface Graph { bus: GainNode; duckG: GainNode; lfoGain: GainNode; noiseBuf: AudioBuffer }
+export interface Voices extends Graph { ctx: BaseAudioContext; stats: { notes: number; drums: number } }
+export type Intensity = 'calm' | 'play';
+
+export const MOODS: Record<string, Mood> = {   // chords: [root pitch class (C=0), quality], one chord per bar
   title: { bpm: 72, chords: [[0, 'maj7'], [9, 'min7'], [2, 'min7'], [7, 'dom7']] },
   ch1:   { bpm: 76, chords: [[5, 'maj7'], [2, 'min7'], [7, 'min7'], [0, 'dom7']] },     // honey: F
   ch2:   { bpm: 70, chords: [[9, 'min9'], [2, 'min9'], [4, 'min7'], [9, 'min9']] },     // library: A minor
@@ -25,24 +32,25 @@ export const MOODS = {   // chords: [root pitch class (C=0), quality], one chord
   evil:  { bpm: 62, heavy: true, drone: true, chords: [[0, 'min9'], [5, 'min7'], [8, 'maj7'], [7, 'dom7']] }   // Barnaby Noir: slow, minor, heavy
 };
 
-export const KICK  = [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0];
+export const KICK: number[] = [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0];
 
-export const SNARE = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0];
+export const SNARE: number[] = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0];
 
 export const Music = {
-  ctx: null, G: null, E: null, timer: 0, running: false, step: 0, bar: 0, nextTime: 0,
-  mood: null, intensity: 'calm', pending: null, want: { mood: 'title', intensity: 'calm' },
-  beatCbs: [], stats: { notes: 0, drums: 0 }, hiddenPause: false,
+  ctx: null as AudioContext | null, G: null as Graph | null, E: null as Voices | null, timer: 0, duckTimer: 0, running: false, step: 0, bar: 0, nextTime: 0,
+  mood: late<Mood>(), intensity: 'calm' as Intensity, pending: null as { mood: Mood; intensity: Intensity } | null, want: { mood: 'title', intensity: 'calm' as Intensity },
+  beatCbs: [] as ((q: number) => void)[], stats: { notes: 0, drums: 0 }, hiddenPause: false,
+  toneCache: new WeakMap<[number, string], number[]>(),   // a chord's voicing is computed once
 
-  mtof(m) { return 440 * Math.pow(2, (m - 69) / 12); },
-  voicing(root, q) {                                   // close voicing around middle C, root left to the bass
+  mtof(m: number) { return 440 * Math.pow(2, (m - 69) / 12); },
+  voicing(root: number, q: string) {                                   // close voicing around middle C, root left to the bass
     let iv = CHORD_Q[q]; if (iv.length >= 5) iv = iv.slice(1);
     const base = 48 + root;
     return iv.map(i => { let m = base + i; while (m < 57) m += 12; while (m > 74) m -= 12; return m; }).sort((a, b) => a - b);
   },
 
   /* shared graph: bus -> duck -> lowpass -> dest, plus tape-wobble LFO and a noise buffer for the drums */
-  buildGraph(ctx, dest, rng, startGain) {
+  buildGraph(ctx: BaseAudioContext, dest: AudioNode, rng: () => number, startGain: number): Graph {
     const bus = ctx.createGain(); bus.gain.value = startGain;
     const duckG = ctx.createGain();
     const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 5200; lp.Q.value = 0.4;
@@ -63,12 +71,12 @@ export const Music = {
   },
 
   /* ----- voices (E = { ctx, bus, lfoGain, noiseBuf, stats }) ----- */
-  ep(E, t, midi, dur, vel) {
+  ep(E: Voices, t: number, midi: number, dur: number, vel: number) {
     const ctx = E.ctx, f = this.mtof(midi);
     const env = ctx.createGain(); env.gain.setValueAtTime(0.0001, t);
     env.gain.linearRampToValueAtTime(vel, t + 0.012); env.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1400 + vel * 6000; lp.Q.value = 0.5;
-    [['sine', 1, 0.6, 0], ['triangle', 1.002, 0.32, 6], ['sine', 2, 0.14, 0]].forEach(([type, mul, gain, det]) => {
+    ([['sine', 1, 0.6, 0], ['triangle', 1.002, 0.32, 6], ['sine', 2, 0.14, 0]] as [OscillatorType, number, number, number][]).forEach(([type, mul, gain, det]) => {
       const o = ctx.createOscillator(); o.type = type; o.frequency.value = f * mul; o.detune.value = det;
       E.lfoGain.connect(o.detune);
       const g = ctx.createGain(); g.gain.value = gain; o.connect(g); g.connect(lp);
@@ -77,12 +85,12 @@ export const Music = {
     lp.connect(env); env.connect(E.bus);
     E.stats.notes++;
   },
-  bass(E, t, midi, dur, vel) {
+  bass(E: Voices, t: number, midi: number, dur: number, vel: number) {
     const ctx = E.ctx, f = this.mtof(midi);
     const env = ctx.createGain(); env.gain.setValueAtTime(0.0001, t);
     env.gain.linearRampToValueAtTime(vel, t + 0.015); env.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 420;
-    [['sine', 1, 1], ['triangle', 2, 0.18]].forEach(([type, mul, gain]) => {
+    ([['sine', 1, 1], ['triangle', 2, 0.18]] as [OscillatorType, number, number][]).forEach(([type, mul, gain]) => {
       const o = ctx.createOscillator(); o.type = type; o.frequency.value = f * mul;
       const g = ctx.createGain(); g.gain.value = gain; o.connect(g); g.connect(lp);
       o.start(t); o.stop(t + dur + 0.05);
@@ -90,20 +98,20 @@ export const Music = {
     lp.connect(env); env.connect(E.bus);
     E.stats.notes++;
   },
-  kick(E, t, vel) {
+  kick(E: Voices, t: number, vel: number) {
     const ctx = E.ctx, o = ctx.createOscillator(), g = ctx.createGain();
     o.type = 'sine'; o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.16);
     g.gain.setValueAtTime(vel, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
     o.connect(g); g.connect(E.bus); o.start(t); o.stop(t + 0.3);
     E.stats.drums++;
   },
-  noiseHit(E, t, offset, type, freq, q, dur, vel) {
+  noiseHit(E: Voices, t: number, offset: number, type: NoiseType, freq: number, q: number, dur: number, vel: number) {
     const ctx = E.ctx, s = ctx.createBufferSource(); s.buffer = E.noiseBuf;
     const f = ctx.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q;
     const g = ctx.createGain(); g.gain.setValueAtTime(vel, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     s.connect(f); f.connect(g); g.connect(E.bus); s.start(t, offset); s.stop(t + dur + 0.02);
   },
-  snare(E, t, vel, off) {
+  snare(E: Voices, t: number, vel: number, off: number) {
     this.noiseHit(E, t, off, 'bandpass', 1900, 0.8, 0.14, vel);
     const ctx = E.ctx, o = ctx.createOscillator(), g = ctx.createGain();
     o.type = 'triangle'; o.frequency.setValueAtTime(190, t); o.frequency.exponentialRampToValueAtTime(140, t + 0.08);
@@ -111,8 +119,8 @@ export const Music = {
     o.connect(g); g.connect(E.bus); o.start(t); o.stop(t + 0.12);
     E.stats.drums++;
   },
-  hat(E, t, vel, off) { this.noiseHit(E, t, off, 'highpass', 7200, 0.7, 0.045, vel); E.stats.drums++; },
-  bell(E, t, midi, vel) {
+  hat(E: Voices, t: number, vel: number, off: number) { this.noiseHit(E, t, off, 'highpass', 7200, 0.7, 0.045, vel); E.stats.drums++; },
+  bell(E: Voices, t: number, midi: number, vel: number) {
     const ctx = E.ctx, f = this.mtof(midi);
     [[1, 1], [2, 0.3]].forEach(([mul, gain]) => {
       const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.value = f * mul;
@@ -123,8 +131,8 @@ export const Music = {
   },
 
   /* one 16th-note step of the groove */
-  renderStep(E, mood, intensity, bar, step, t, rand, stepDur) {
-    const ch = mood.chords[bar % 4], tones = ch.tones || (ch.tones = this.voicing(ch[0], ch[1])), bassM = 36 + ch[0];   // voicing cached per chord
+  renderStep(E: Voices, mood: Mood, intensity: Intensity, bar: number, step: number, t: number, rand: () => number, stepDur: number) {
+    const ch = mood.chords[bar % 4], tones = this.toneCache.get(ch) ?? (this.toneCache.set(ch, this.voicing(ch[0], ch[1])), this.toneCache.get(ch)!), bassM = 36 + ch[0];   // voicing cached per chord
     const swing = step % 4 === 2 ? stepDur * 0.3 : 0;                  // lazy off-beats
     const tt = t + swing + (rand() - 0.5) * 0.016;                     // humanise
     const play = intensity === 'play';
@@ -163,10 +171,10 @@ export const Music = {
   },
   loop() { clearInterval(this.timer); this.timer = setInterval(() => this.tick(), 25); },
   tick() {
-    const ctx = this.ctx;
+    const ctx = this.ctx!;
     while (this.nextTime < ctx.currentTime + 0.15) {
       const stepDur = 60 / this.mood.bpm / 4, t = this.nextTime;
-      this.renderStep(this.E, this.mood, this.intensity, this.bar, this.step, t, Math.random, stepDur);
+      this.renderStep(this.E!, this.mood, this.intensity, this.bar, this.step, t, Math.random, stepDur);
       if (this.step % 4 === 0 && this.beatCbs.length) {
         const q = this.step / 4;
         setTimeout(() => this.beatCbs.forEach(cb => cb(q)), Math.max(0, (t - ctx.currentTime) * 1000));
@@ -180,34 +188,34 @@ export const Music = {
   },
   stop() {
     this.running = false; clearInterval(this.timer); this.timer = 0;
-    if (this.G) this.G.bus.gain.setTargetAtTime(0, this.ctx.currentTime, 0.12);
+    if (this.G) this.G.bus.gain.setTargetAtTime(0, this.ctx!.currentTime, 0.12);
   },
-  setEnabled(on) { if (on) this.start(); else this.stop(); },
-  scene(name, chapter, evil) {
+  setEnabled(on: boolean) { if (on) this.start(); else this.stop(); },
+  scene(name: string, chapter: number, evil: boolean) {
     const play = name === 'puzzle' || name === 'zip' || name === 'case', inChapter = play || name === 'story';
     const key = evil && inChapter ? 'evil' : chapter > 0 && inChapter ? 'ch' + chapter : 'title';
     this.want = { mood: key, intensity: play ? 'play' : 'calm' };
     if (this.running) this.pending = { mood: MOODS[key], intensity: this.want.intensity };
   },
-  duck(ms) {                                            // dip under fanfares
+  duck(ms: number) {                                            // dip under fanfares
     if (!this.G) return;
-    const ctx = this.ctx, g = this.G.duckG.gain;
+    const ctx = this.ctx!, g = this.G.duckG.gain;
     g.cancelScheduledValues(ctx.currentTime); g.setTargetAtTime(0.35, ctx.currentTime, 0.08);
     clearTimeout(this.duckTimer);
     this.duckTimer = setTimeout(() => g.setTargetAtTime(1, ctx.currentTime, 0.5), ms);
   },
-  setHidden(h) {                                        // save battery in background tabs
+  setHidden(h: boolean) {                                        // save battery in background tabs
     if (!this.running || !this.ctx) return;
     if (h) { clearInterval(this.timer); this.hiddenPause = true; this.ctx.suspend().catch(() => {}); }
     else if (this.hiddenPause) {
       this.hiddenPause = false;
-      this.ctx.resume().then(() => { this.nextTime = this.ctx.currentTime + 0.12; this.loop(); }).catch(() => {});
+      this.ctx.resume().then(() => { this.nextTime = this.ctx!.currentTime + 0.12; this.loop(); }).catch(() => {});
     }
   },
-  onBeat(cb) { this.beatCbs.push(cb); },
+  onBeat(cb: (q: number) => void) { this.beatCbs.push(cb); },
 
   /* ----- offline render (tests / preview wav): same voices, deterministic RNG ----- */
-  async renderOffline(moodKey, intensity, seconds, sr) {
+  async renderOffline(moodKey: string, intensity: Intensity, seconds: number, sr?: number) {
     sr = sr || 32000;
     const ctx = new OfflineAudioContext(1, Math.ceil(seconds * sr), sr);
     const G = this.buildGraph(ctx, ctx.destination, mulberry32(7), 0.9);

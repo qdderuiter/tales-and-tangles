@@ -1,20 +1,26 @@
 import { VoiceClipManifest } from '../audio/voice.ts';
 import { pad2 } from '../core/util.ts';
 import { REACT, STORY_EXTRA, STORY_RAW } from '../data/story.ts';
+import type { Story, StoryPart } from '../data/types.ts';
 import { DEFAULT_SPEAKER, registerLines } from './speakers.ts';
 
 /* Build the story with stable ids and register every line (story + reactions + victory) */
-export const STORY = {};
+export const STORY: Story = {};
+
+const PARTS: StoryPart[] = ['intro', 'bridge', 'caseIntro', 'outro'];
 
 (function buildStory() {
-  Object.keys(STORY_RAW).forEach(n => {
-    STORY[n] = {};
-    Object.assign(STORY_RAW[n], STORY_EXTRA[n]);
-    ['intro', 'bridge', 'caseIntro', 'outro'].forEach(part => {
-      STORY[n][part] = registerLines(STORY_RAW[n][part].map((line, i) => Object.assign({ id: 'ch' + n + '_' + part + '_' + pad2(i + 1), who: DEFAULT_SPEAKER }, line)));
+  Object.keys(STORY_RAW).map(Number).forEach(n => {
+    const raw = { ...STORY_RAW[n], ...STORY_EXTRA[n] };
+    STORY[n] = {} as Story[number];
+    PARTS.forEach(part => {
+      STORY[n][part] = registerLines(raw[part].map((line, i) => ({ id: 'ch' + n + '_' + part + '_' + pad2(i + 1), who: DEFAULT_SPEAKER, ...line })));
     });
   });
-  (function walk(v) {                                   // every { id, t } anywhere inside REACT is a spoken line
-    if (v && typeof v === 'object') { if (v.id && v.t) VoiceClipManifest.register(v.id, v.t, v.e); else Object.values(v).forEach(walk); }
+  (function walk(v: unknown) {                          // every { id, t } anywhere inside REACT is a spoken line
+    if (v && typeof v === 'object') {
+      const line = v as { id?: string; t?: string; e?: string };
+      if (line.id && line.t) VoiceClipManifest.register(line.id, line.t, line.e); else Object.values(v).forEach(walk);
+    }
   })(REACT);
 })();

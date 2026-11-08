@@ -1,9 +1,10 @@
 import { P } from '../core/grid.ts';
+import type { ParsedZip, RawZip } from './types.ts';
 
 /* Zip "Scent Trail" levels (generated offline with a solver: each has exactly ONE solution).
    path: solution cells "rc rc ..."; cps: [pathIndex, letter] checkpoints numbered 1..K in path order (letters spell the clue word);
    walls: cell-index pairs "a-b" (index = row*size+col) that the trail may not cross. */
-export const ZIPS = [
+export const ZIPS: RawZip[] = [
   { size:5, word:'HIVE', path:'22 23 13 12 02 03 04 14 24 34 44 43 42 41 40 30 20 10 00 01 11 21 31 32 33', cps:[[0,'H'],[5,''],[10,'I'],[14,'V'],[19,''],[24,'E']], walls:'1-2 13-14' },
   { size:5, word:'NIGHT', path:'20 21 11 10 00 01 02 12 22 32 31 30 40 41 42 43 44 34 33 23 24 14 13 03 04', cps:[[0,'N'],[4,''],[8,'I'],[12,'G'],[16,''],[20,'H'],[24,'T']], walls:'18-23 2-3 17-18 11-12' },
   { size:6, word:'MOLE', path:'40 50 51 52 53 54 55 45 35 34 44 43 33 23 13 14 24 25 15 05 04 03 02 01 00 10 20 30 31 41 42 32 22 12 11 21', cps:[[0,'M'],[5,''],[10,'O'],[15,''],[20,''],[25,'L'],[30,''],[35,'E']], walls:'6-7 14-15 20-21 2-8 17-23' },
@@ -17,7 +18,7 @@ export const ZIPS = [
 ];
 
 /* Harder "evil" trails (Barnaby Noir): same clue word, 6x6, fewer checkpoints, more walls; each also has a unique solution. */
-export const EVIL_ZIPS = [
+export const EVIL_ZIPS: RawZip[] = [
   { size:6, word:'HIVE', path:'24 14 04 05 15 25 35 34 44 45 55 54 53 52 42 32 31 41 51 50 40 30 20 10 00 01 02 03 13 12 11 21 22 23 33 43', cps:[[0,'H'],[9,'I'],[18,''],[26,'V'],[35,'E']], walls:'25-26 1-7 26-27 14-20 2-8 8-14 21-22 9-10' },
   { size:6, word:'NIGHT', path:'03 02 01 00 10 20 21 11 12 22 32 42 41 31 30 40 50 51 52 53 54 55 45 44 43 33 23 13 14 24 34 35 25 15 05 04', cps:[[0,'N'],[7,'I'],[14,''],[21,'G'],[28,'H'],[35,'T']], walls:'16-17 8-9 1-7 12-18 19-20' },
   { size:6, word:'MOLE', path:'01 00 10 11 21 20 30 31 41 42 43 33 32 22 23 13 12 02 03 04 05 15 14 24 25 35 34 44 45 55 54 53 52 51 50 40', cps:[[0,'M'],[9,'O'],[18,''],[26,'L'],[35,'E']], walls:'4-10 15-16 21-22 7-8 28-34 15-21' },
@@ -30,7 +31,7 @@ export const EVIL_ZIPS = [
   { size:6, word:'LANTERN', path:'34 44 43 42 41 31 21 11 01 00 10 20 30 40 50 51 52 53 54 55 45 35 25 24 23 33 32 22 12 02 03 13 14 15 05 04', cps:[[0,'L'],[5,'A'],[10,'N'],[15,''],[20,'T'],[25,'E'],[30,'R'],[35,'N']], walls:'' }
 ];
 
-export const parseZip = z => {
+export const parseZip = (z: RawZip): ParsedZip => {
   const cells = P(z.path);
   return { size: z.size, word: z.word, path: cells, cps: z.cps.map(([pi, ch], k) => ({ idx: pi, num: k + 1, letter: ch, r: cells[pi][0], c: cells[pi][1] })),
            walls: new Set(z.walls.split(/\s+/).filter(Boolean)) };

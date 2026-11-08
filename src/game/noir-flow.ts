@@ -1,5 +1,8 @@
 import { $ } from '../core/dom.ts';
 import { emit, on } from '../core/events.ts';
+import type { PuzzleResult } from '../core/types.ts';
+import { late } from '../core/util.ts';
+import type { Level, TempLevel } from '../data/types.ts';
 import { WARDROBE } from '../data/wardrobe.ts';
 import { Daily } from '../puzzles/daily.ts';
 import { EVIL_STREAK, Evil } from '../puzzles/evil.ts';
@@ -17,18 +20,18 @@ import { toMap } from './nav.ts';
    returnTo   what to do after the remix (the Continue action he interrupted)
    kind/base  which puzzle kind and level the current remix is built from */
 export const Noir = {
-  pending: false, returnTo: null, kind: null, base: null,
+  pending: false, returnTo: null as (() => void) | null, kind: late<string>(), base: late<Level | TempLevel>(),
 
-  noteResult(stars) {                                            // call once per fresh puzzle result
+  noteResult(stars: number) {                                            // call once per fresh puzzle result
     this.pending = Store.notePerfect(stars) >= EVIL_STREAK;
   },
 
   /* wraps a "Continue" action: when Noir is due he interrupts first; declining carries on with next() */
-  gate(kind, next) {
+  gate(kind: string, next: () => void) {
     if (!this.pending || (session.run && session.run.evil)) return next();
     this.pending = false;
     Store.data.perfect.streak = 0; Store.save();
-    const run = session.run, base = run.daily || (run.n ? currentLevel() : Daily.generate(Daily.today())), k = PUZZLE_KINDS[kind];
+    const run = session.run!, base = run.daily || (run.n ? currentLevel() : Daily.generate(Daily.today())), k = PUZZLE_KINDS[kind];
     Cutscene.play({
       boardEl: $(k.board), tileSel: k.tileSel,
       prepare: () => this.begin(kind, base)
@@ -39,13 +42,13 @@ export const Noir = {
     });
   },
 
-  begin(kind, base) {
+  begin(kind: string, base: Level | TempLevel) {
     this.kind = kind; this.base = base;
     setEvil(true);
     PUZZLE_KINDS[kind].obj.load(PUZZLE_KINDS[kind].evil(base), { freeHints: 0, onWin: r => this.onWin(r) });
   },
 
-  onWin(result) {
+  onWin(result: PuzzleResult) {
     const base = this.base, kind = this.kind, key = Evil.key(kind, base);
     const first = !Store.data.evil.cleared[key];
     Store.markEvil(key);

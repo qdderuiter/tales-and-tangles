@@ -4,7 +4,7 @@
 		"lib": ["ES2020", "DOM", "DOM.Iterable"],
 		"module": "ESNext",
 		"moduleResolution": "bundler",
-		"types": ["vite/client", "node"],
+		"types": ["vite/client"],
 		"strict": true,
 		"noEmit": true,
 		"allowImportingTsExtensions": true,
@@ -13,5 +13,5 @@
 		"isolatedModules": true,
 		"skipLibCheck": true
 	},
-	"include": ["src", "tests/unit", "vite.config.ts"]
+	"include": ["src"]
 }

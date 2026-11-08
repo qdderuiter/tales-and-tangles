@@ -7,21 +7,33 @@
      progress          (nothing)               something that can earn a badge changed: case solved, bonus word found, wardrobe purchase
      audio:duck        { ms }                  dip the music for ms (fanfares)
    Handlers run synchronously, in the order they were registered. */
-const handlers = new Map();
+import type { PuzzleKind, PuzzleResult } from './types.ts';
 
-export function on(name, fn) {
+export interface EventMap {
+  screen: { name: string };
+  'evil:changed': { on: boolean };
+  'settings:changed': { key: string; on: boolean };
+  'puzzle:won': { kind: PuzzleKind; result: PuzzleResult; fresh: boolean };
+  progress: undefined;
+  'audio:duck': { ms: number };
+}
+type Handler<K extends keyof EventMap> = (payload: EventMap[K]) => void;
+
+const handlers = new Map<keyof EventMap, Handler<never>[]>();
+
+export function on<K extends keyof EventMap>(name: K, fn: Handler<K>): () => void {
   if (!handlers.has(name)) handlers.set(name, []);
-  handlers.get(name).push(fn);
+  handlers.get(name)!.push(fn as Handler<never>);
   return () => off(name, fn);
 }
 
-export function off(name, fn) {
+export function off<K extends keyof EventMap>(name: K, fn: Handler<K>): void {
   const list = handlers.get(name);
-  const i = list ? list.indexOf(fn) : -1;
-  if (i >= 0) list.splice(i, 1);
+  const i = list ? list.indexOf(fn as Handler<never>) : -1;
+  if (i >= 0) list!.splice(i, 1);
 }
 
-export function emit(name, payload) {
+export function emit<K extends keyof EventMap>(name: K, ...payload: EventMap[K] extends undefined ? [] : [EventMap[K]]): void {
   const list = handlers.get(name);
-  if (list) list.slice().forEach(fn => fn(payload));     // copy: a handler may unsubscribe while we iterate
+  if (list) list.slice().forEach(fn => (fn as (p: unknown) => void)(payload[0]));     // copy: a handler may unsubscribe while we iterate
 }

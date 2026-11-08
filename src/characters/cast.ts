@@ -1,14 +1,16 @@
 import { $ } from '../core/dom.ts';
 import { Barnaby } from './barnaby.ts';
+import type { Bear } from './barnaby.ts';
 import { Larry } from './larry.ts';
+import type { LarryPortrait } from './larry.ts';
 
 /* The recurring characters that live on the screens, created once at boot (createCast).
      title / story / pz / z / c / v / w   Barnaby on the title, story, Words, Trail, notebook, victory and wardrobe screens
      larry                                Evil Larry's portrait on the story screen */
-export const cast = { title: null, story: null, pz: null, z: null, c: null, v: null, w: null, larry: null };
+export const cast = {} as { title: Bear; story: Bear; pz: Bear; z: Bear; c: Bear; v: Bear; w: Bear; larry: LarryPortrait };   // filled by createCast() at boot
 
 /* the bears that switch to their Noir look while Barnaby Noir is on (the others are on screens Noir never shows) */
-const NOIR_SKINNED = ['pz', 'z', 'c', 'v'];
+const NOIR_SKINNED = ['pz', 'z', 'c', 'v'] as const;
 
 export function createCast() {
   cast.title = Barnaby.create($('#titleBear'));
@@ -22,6 +24,6 @@ export function createCast() {
   cast.larry = Larry.create($('#storyLarry'));
 }
 
-export function setNoirSkin(on) {
+export function setNoirSkin(on: boolean) {
   NOIR_SKINNED.forEach(k => { if (cast[k]) cast[k].setSkin(on); });
 }

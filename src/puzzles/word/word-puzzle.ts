@@ -3,27 +3,42 @@ import { AudioFX } from '../../audio/sfx.ts';
 import { $, flashClass, replayClass } from '../../core/dom.ts';
 import { emit } from '../../core/events.ts';
 import { COLS, ROWS } from '../../core/grid.ts';
-import { pick } from '../../core/util.ts';
+import type { PuzzleResult } from '../../core/types.ts';
+import { late, pick } from '../../core/util.ts';
+import type { TempLevel } from '../../data/types.ts';
 import { GOLD_FILL, GOLD_LINE, WORD_FILL, WORD_LINE } from '../../data/palette.ts';
 import { REACT } from '../../data/story.ts';
 import { BONUS_DICT } from '../../data/words.ts';
+import type { Bear } from '../../characters/barnaby.ts';
 import { Typer } from '../../dialogue/typer.ts';
 import { Sparks } from '../../fx/sparks.ts';
+import type { SparkEmitter } from '../../fx/sparks.ts';
 import { Evil } from '../evil.ts';
-import { PuzzleBase } from '../puzzle-base.ts';
+import { definePuzzle } from '../puzzle-base.ts';
+import type { Pt } from '../puzzle-base.ts';
 import { registerPuzzle } from '../registry.ts';
+import type { LoadOpts } from '../registry.ts';
 import { Scoring } from '../scoring.ts';
 import { attemptInfo, buildGrid, isSolved, matchWord, spell } from './word-rules.ts';
+import type { GridCell } from './word-rules.ts';
 import { Store } from '../../state/store.ts';
 
-export const WordPuzzle = Object.assign({}, PuzzleBase, {
-  cols: COLS, rows: ROWS, hitR2: 0.2304,
-  lvl: null, grid: [], found: new Set(), locked: {}, trace: [], tracing: false, pointerId: null, lastPt: null,
-  wrongs: 0, hints: 0, freeHints: 0, hinted: new Set(), elapsed: 0, running: false, lastTick: 0, timerId: 0,
-  tiles: [], selEls: [], hintTimers: [], order: [], onWin: null, bear: null, bubble: null,
-  els: {},
+interface WordEls {
+  grid: HTMLElement; trace: SVGElement; bad: SVGElement; zips: SVGElement; tray: HTMLElement; sparks: SparkEmitter; combo: HTMLElement; theme: HTMLElement;
+  preview: HTMLElement; found: HTMLElement; time: HTMLElement; title: HTMLElement; badge: HTMLElement;
+}
+type Step = { r: number; c: number };
 
-  init(bear) {
+/* fields marked late() are filled by init() / load() before anything reads them */
+export const WordPuzzle = definePuzzle({
+  cols: COLS, rows: ROWS, hitR2: 0.2304,
+  lvl: late<TempLevel>(), grid: [] as GridCell[][], found: new Set<number>(), locked: {} as Record<number, number>, trace: [] as Step[], tracing: false, pointerId: null as number | null, lastPt: late<Pt>(),
+  wrongs: 0, hints: 0, freeHints: 0, hinted: new Set<number>(), elapsed: 0, running: false, lastTick: 0, timerId: 0, shownSec: -1, rect: late<DOMRect>(), rectEpoch: -1, lastSay: 0,
+  tiles: [] as HTMLElement[], selEls: [] as HTMLElement[], hintTimers: [] as number[], order: [] as number[], onWin: null as ((r: PuzzleResult) => void) | null, bear: late<Bear>(), bubble: late<Typer>(),
+  combo: 0, maxCombo: 0, bonus: 0, squares: [] as string[], sinceWrong: false, sinceHint: false, bonusFound: new Set<string>(),
+  els: {} as WordEls,
+
+  init(bear: Bear) {
     this.bear = bear;
     const e = this.els;
     e.grid = $('#grid'); e.trace = $('#traceLine'); e.bad = $('#badLine'); e.zips = $('#zips'); e.tray = $('#tray');
@@ -37,7 +52,7 @@ export const WordPuzzle = Object.assign({}, PuzzleBase, {
     $('#btnHint').addEventListener('click', () => this.hint());
   },
 
-  load(lvl, opts) {
+  load(lvl: TempLevel, opts?: LoadOpts) {
     this.stop();
     this.lvl = lvl;
     this.freeHints = (opts && opts.freeHints) || 0;
@@ -58,7 +73,7 @@ export const WordPuzzle = Object.assign({}, PuzzleBase, {
         const t = document.createElement('div');
         t.className = 'tile';
         t.innerHTML = '<div class="face"><span></span></div>';
-        t.querySelector('span').textContent = this.grid[r][c].ch;
+        t.querySelector('span')!.textContent = this.grid[r][c].ch;
         g.insertBefore(t, $('#lines'));
         this.tiles.push(t);
       }
@@ -75,10 +90,10 @@ export const WordPuzzle = Object.assign({}, PuzzleBase, {
     this.say(REACT.start);
   },
 
-  tile(r, c) { return this.tiles[r * COLS + c]; },
-  center(p) { return ((p.c + 0.5) * 100).toFixed(1) + ',' + ((p.r + 0.5) * 100).toFixed(1); },
-  setLine(el, pts) { el.setAttribute('points', pts.map(p => this.center(p)).join(' ')); },
-  colorsFor(i) { return this.lvl.words[i].gold ? [GOLD_FILL, GOLD_LINE] : [WORD_FILL[i % WORD_FILL.length], WORD_LINE[i % WORD_LINE.length]]; },
+  tile(r: number, c: number) { return this.tiles[r * COLS + c]; },
+  center(p: Step) { return ((p.c + 0.5) * 100).toFixed(1) + ',' + ((p.r + 0.5) * 100).toFixed(1); },
+  setLine(el: Element, pts: Step[]) { el.setAttribute('points', pts.map(p => this.center(p)).join(' ')); },
+  colorsFor(i: number) { return this.lvl.words[i].gold ? [GOLD_FILL, GOLD_LINE] : [WORD_FILL[i % WORD_FILL.length], WORD_LINE[i % WORD_LINE.length]]; },
 
   updateStatus() {
     this.els.found.textContent = this.found.size + '/' + (this.lvl ? this.lvl.words.length : 0);
@@ -93,13 +108,13 @@ export const WordPuzzle = Object.assign({}, PuzzleBase, {
     this.order.forEach(i => {
       const s = document.createElement('div');
       s.className = 'slot' + (this.lvl.words[i].gold ? ' gold' : '');
-      s.dataset.w = i;
+      s.dataset.w = String(i);
       tray.appendChild(s);
       this.renderSlot(i);
     });
   },
-  renderSlot(i) {
-    const s = this.els.tray.querySelector('[data-w="' + i + '"]');
+  renderSlot(i: number) {
+    const s = this.els.tray.querySelector<HTMLElement>('[data-w="' + i + '"]');
     if (!s) return;
     const w = this.lvl.words[i];
     if (this.found.has(i)) {
@@ -107,14 +122,14 @@ export const WordPuzzle = Object.assign({}, PuzzleBase, {
       s.classList.add('done');
       s.style.setProperty('--wc', this.colorsFor(i)[0]);
     } else {
-      const chars = Array(this.lvl.evil ? 3 : w.w.length).fill('•');
+      const chars = Array<string>(this.lvl.evil ? 3 : w.w.length).fill('•');
       if (this.hinted.has(i)) chars[0] = w.w[0];
       s.textContent = chars.join(' ');
     }
   },
 
   /* ---- input (onMove + cellAt come from PuzzleBase) ---- */
-  onDown(e) {
+  onDown(e: PointerEvent) {
     if (!this.running || this.tracing || (e.pointerType === 'mouse' && e.button !== 0)) return;
     e.preventDefault();
     this.measure();
@@ -125,7 +140,7 @@ export const WordPuzzle = Object.assign({}, PuzzleBase, {
     AudioFX.tick(0);
     this.refresh();
   },
-  onUp(e, cancelled) {
+  onUp(e: PointerEvent, cancelled?: boolean) {
     if (!this.tracing || e.pointerId !== this.pointerId) return;
     this.tracing = false; this.pointerId = null;
     const t = this.trace; this.trace = [];
@@ -133,7 +148,7 @@ export const WordPuzzle = Object.assign({}, PuzzleBase, {
     if (cancelled || t.length < 2) return;
     this.evaluate(t);
   },
-  visit(p) {
+  visit(p: Pt): boolean {
     const h = this.cellAt(p, false);
     if (!h) return false;
     if (this.locked[h.r * COLS + h.c] !== undefined) return false;
@@ -161,11 +176,11 @@ export const WordPuzzle = Object.assign({}, PuzzleBase, {
   },
 
   /* ---- validation ---- */
-  evaluate(t) {
+  evaluate(t: Step[]) {
     const idx = matchWord(this.lvl, this.found, t);
     if (idx >= 0) this.success(idx, t); else this.fail(t);
   },
-  success(idx, t) {
+  success(idx: number, t: Step[]) {
     const w = this.lvl.words[idx];
     this.found.add(idx);
     const [fill, line] = this.colorsFor(idx);
@@ -174,8 +189,8 @@ export const WordPuzzle = Object.assign({}, PuzzleBase, {
       this.locked[p.r * COLS + p.c] = idx;
       const el = this.tile(p.r, p.c);
       el.classList.remove('hint');
-      el.style.setProperty('--i', k);
-      el.querySelector('.face').style.setProperty('--wc', fill);
+      el.style.setProperty('--i', String(k));
+      el.querySelector<HTMLElement>('.face')!.style.setProperty('--wc', fill);
       el.classList.add('found');
     });
     const pl = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
@@ -197,7 +212,7 @@ export const WordPuzzle = Object.assign({}, PuzzleBase, {
     this.say(w.gold ? REACT.gold : pick(REACT.found));
     if (this.found.size === this.lvl.words.length) this.finishIfSolved();
   },
-  fail(t) {
+  fail(t: Step[]) {
     const spelled = spell(this.grid, t);
     const { near, isClue } = attemptInfo(this.lvl, this.found, spelled);       // a clue word (even an already-found one) is never a hidden bonus
     if (t.length >= 3 && !isClue && BONUS_DICT.has(spelled)) {          // a real word that isn't a clue: bonus, never a mistake
@@ -218,9 +233,9 @@ export const WordPuzzle = Object.assign({}, PuzzleBase, {
     replayClass(this.els.bad, 'flash');
     if (t.length >= 3 || near) this.say(near ? REACT.near : pick(REACT.wrong));
   },
-  sparkPts(cells) { return cells.map(p => ({ x: (p.c + 0.5) / COLS, y: (p.r + 0.5) / ROWS })); },
+  sparkPts(cells: Step[]) { return cells.map(p => ({ x: (p.c + 0.5) / COLS, y: (p.r + 0.5) / ROWS })); },
   /* a real word that is not one of the grid's clue words: score only (like the combo bonus), never stars */
-  bonusWord(word, t) {
+  bonusWord(word: string, t: Step[]) {
     const pts = 30 * word.length;
     this.bonusFound.add(word);
     this.bonus += pts;
@@ -264,7 +279,7 @@ export const WordPuzzle = Object.assign({}, PuzzleBase, {
     replayClass(c, 'on');
   },
 
-  toast(text, gold, extra, sub) {
+  toast(text: string, gold?: boolean, extra?: string, sub?: string) {
     const d = document.createElement('div');
     d.className = 'word-toast' + (gold ? ' gold' : '') + (extra ? ' ' + extra : '');
     d.textContent = text;
