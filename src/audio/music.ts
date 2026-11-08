@@ -40,7 +40,7 @@ export const KICK: number[] = [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0];
 export const SNARE: number[] = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0];
 
 export const Music = {
-  ctx: null as AudioContext | null, G: null as Graph | null, E: null as Voices | null, timer: 0, duckTimer: 0, running: false, step: 0, bar: 0, nextTime: 0,
+  ctx: null as AudioContext | null, G: null as Graph | null, E: null as Voices | null, timer: 0, duckTimer: 0, duckLevel: 1, inFilm: false, running: false, step: 0, bar: 0, nextTime: 0,
   mood: late<Mood>(), intensity: 'calm' as Intensity, pending: null as { mood: Mood; intensity: Intensity } | null, want: { mood: 'title', intensity: 'calm' as Intensity },
   beatCbs: [] as ((q: number) => void)[], stats: { notes: 0, drums: 0 }, hiddenPause: false,
   toneCache: new WeakMap<[number, string], number[]>(),   // a chord's voicing is computed once
@@ -200,18 +200,20 @@ export const Music = {
     this.want = { mood: key, intensity: play ? 'play' : 'calm' };
     if (this.running) this.pending = { mood: MOODS[key], intensity: this.want.intensity };
   },
-  duck(ms: number) {                                            // dip under fanfares
-    if (!this.G) return;
+  duck(ms: number, level = 0.35) {                              // dip under fanfares and speech; a shallower dip never cuts a deeper one short
+    if (!this.G || this.inFilm) return;
     const ctx = this.ctx!, g = this.G.duckG.gain;
-    g.cancelScheduledValues(ctx.currentTime); g.setTargetAtTime(0.35, ctx.currentTime, 0.08);
+    this.duckLevel = Math.min(this.duckLevel, level);
+    g.cancelScheduledValues(ctx.currentTime); g.setTargetAtTime(this.duckLevel, ctx.currentTime, 0.08);
     clearTimeout(this.duckTimer);
-    this.duckTimer = setTimeout(() => g.setTargetAtTime(1, ctx.currentTime, 0.5), ms);
+    this.duckTimer = setTimeout(() => { this.duckLevel = 1; g.setTargetAtTime(1, ctx.currentTime, 0.5); }, ms);
   },
   /* a chapter film brings its own score: the lofi bed fades out under it and back in after (the same node `duck` uses) */
   setFilm(playing: boolean) {
+    this.inFilm = playing;
     if (!this.G) return;
     const ctx = this.ctx!, g = this.G.duckG.gain;
-    clearTimeout(this.duckTimer);
+    clearTimeout(this.duckTimer); this.duckLevel = 1;
     g.cancelScheduledValues(ctx.currentTime); g.setTargetAtTime(playing ? 0 : 1, ctx.currentTime, playing ? 0.25 : 0.7);
   },
   setHidden(h: boolean) {                                        // save battery in background tabs
@@ -245,6 +247,6 @@ function syncScene() {
 }
 on('screen', syncScene);
 on('evil:changed', syncScene);
-on('audio:duck', ({ ms }) => Music.duck(ms));
+on('audio:duck', ({ ms, level }) => Music.duck(ms, level));
 on('film', ({ on: playing }) => Music.setFilm(playing));
 on('settings:changed', ({ key, on: enabled }) => { if (key === 'music') Music.setEnabled(enabled); });

@@ -33,6 +33,11 @@ describe('babbleNote', () => {
     expect(plain && loud && loud.hz > plain.hz && loud.dur > plain.dur && loud.vol > plain.vol).toBe(true);
   });
 
+  it('beeps stay audible but never painfully loud', () => {
+    const loudest = babbleNote('o', DEFAULT_VOICE, 0.5, true);
+    expect(loudest && loudest.vol >= 0.1 && loudest.vol <= 0.35).toBe(true);
+  });
+
   it('a higher voice babbles higher', () => {
     const high: BabbleVoice = { ...DEFAULT_VOICE, base: DEFAULT_VOICE.base * 2 };
     const lo = babbleNote('m', DEFAULT_VOICE, 0.5), hi = babbleNote('m', high, 0.5);

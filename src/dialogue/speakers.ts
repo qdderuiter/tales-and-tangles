@@ -22,9 +22,9 @@ export const SPEAKER_CLASSES = Object.values(SPEAKERS).map(s => s.nameClass).fil
 
 /* each speaker's babble voice; anyone not listed (Barnaby) uses DEFAULT_VOICE */
 const VOICES: Record<string, BabbleVoice> = {
-  'Evil Larry': { base: 330, wave: 'square', spread: 12, every: 2, vol: 0.07 },
-  'Pickle': { base: 620, wave: 'sine', spread: 18, every: 2, vol: 0.08 },
-  'Barnaby Noir': { base: 150, wave: 'sawtooth', spread: 6, every: 3, vol: 0.08 }
+  'Evil Larry': { base: 330, wave: 'square', spread: 12, every: 2, vol: 0.13 },
+  'Pickle': { base: 620, wave: 'sine', spread: 18, every: 2, vol: 0.22 },
+  'Barnaby Noir': { base: 150, wave: 'sawtooth', spread: 6, every: 3, vol: 0.15 }
 };
 export const voiceFor = (who: string): BabbleVoice => VOICES[who] || DEFAULT_VOICE;
 

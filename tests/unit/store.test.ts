@@ -161,7 +161,18 @@ describe('loading', () => {
 
   it('settings merge over the defaults instead of replacing them', () => {
     put(Store.KEY, { settings: { music: false } });
-    expect(load().settings).toEqual({ sound: true, voice: true, music: false });
+    expect(load().settings).toEqual({ sound: true, voice: true, music: false, speech: 1 });
+  });
+
+  it('the speech volume is kept within 0..1 and falls back to full for junk', () => {
+    put(Store.KEY, { settings: { speech: 0.4 } });
+    expect(load().settings.speech).toBe(0.4);
+    put(Store.KEY, { settings: { speech: 7 } });
+    expect(load().settings.speech).toBe(1);
+    put(Store.KEY, { settings: { speech: -2 } });
+    expect(load().settings.speech).toBe(0);
+    put(Store.KEY, { settings: { speech: 'loud' } });
+    expect(load().settings.speech).toBe(1);
   });
 
   it('daily results, streak, perfect streak, evil clears and the Larry flag are kept', () => {

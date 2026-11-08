@@ -322,6 +322,8 @@ const scenarios = {
 
   async F({ page, shot }) {
     expect((await readSave(page)).levels[1].solved, 'a seeded save to erase').toBe(true);
+    await page.click('#btnSettings');
+    await onScreen(page, 'settings');
     const reset = page.locator('#btnReset');
     await reset.click();
     expect(await reset.textContent(), 'first tap arms the button').toBe('Tap again to erase all progress');
@@ -332,6 +334,8 @@ const scenarios = {
     expect(!save || (save.unlocked === 1 && Object.keys(save.levels).length === 0), 'the save is back to defaults').toBe(true);
     expect(await reset.textContent(), 'button resets its label').toBe('Reset progress');
     await shot('reset');
+    await page.click('#btnSBack');
+    await onScreen(page, 'title');
     await page.click('#btnPlay');                                   // no progress again: a new game starts at the story
     await onScreen(page, 'story');
   },

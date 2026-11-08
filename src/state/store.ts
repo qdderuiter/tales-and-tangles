@@ -10,7 +10,7 @@ export const Store = {
   data: null as unknown as SaveData,       // set by load() at boot, before anything reads it
   defaults(): SaveData {
     return {
-      unlocked: 1, levels: {}, settings: { sound: true, voice: true, music: true },
+      unlocked: 1, levels: {}, settings: { sound: true, voice: true, music: true, speech: 1 },
       wardrobe: { owned: WARDROBE.filter(i => i.cost === 0 && !i.unlock).map(i => i.id), equipped: Object.assign({}, OUTFIT_DEFAULT) },
       daily: { lastDate: null, streak: 0, best: 0, results: {} },
       perfect: { streak: 0 }, evil: { cleared: {} }, seen: { larry: false, pup: false, endings: {} },
