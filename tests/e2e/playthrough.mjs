@@ -21,9 +21,9 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { chromium } from 'playwright-core';
-import { COLS, ROWS } from '../../src/core/grid.js';
-import { LEVELS } from '../../src/data/levels.js';
-import { Store } from '../../src/state/store.js';
+import { COLS, ROWS } from '../../src/core/grid.ts';
+import { LEVELS } from '../../src/data/levels.ts';
+import { Store } from '../../src/state/store.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUT = resolve(ROOT, 'tests/e2e/out');
