@@ -1,7 +1,6 @@
-import { BADGES } from '../data/badges.js';
 import { LEVELS } from '../data/levels.js';
 import { OUTFIT_DEFAULT, SLOTS, WARDROBE, WARDROBE_BY_ID } from '../data/wardrobe.js';
-import { BONUS_DICT } from '../data/words.js';
+import { blankChapter, migrate, sanitize } from './migrations.js';
 
 export const Store = {
   KEY: 'tales_tangles_v2',
@@ -16,57 +15,11 @@ export const Store = {
       badges: {}, bonusWords: []
     };
   },
-  blankChapter() { return { word: { done: false, stars: 0, best: 0 }, zip: { done: false, stars: 0, best: 0 }, solved: false, penalty: 0 }; },
+  blankChapter,
   read(key) { try { const v = JSON.parse(localStorage.getItem(key)); return v && typeof v === 'object' ? v : null; } catch { return null; } },
   load() {
-    let saved = this.read(this.KEY);
-    const d = this.defaults();
-    if (!saved) {
-      // v1 -> v2: a v1 chapter record was the word puzzle only; keep its stars/score and the unlock progress
-      const old = this.read(this.OLD_KEY);
-      if (old) {
-        saved = { unlocked: old.unlocked, settings: old.settings, chapters: {} };
-        Object.keys(old.chapters || {}).forEach(n => {
-          const o = old.chapters[n], ch = this.blankChapter();
-          if (o && o.done) ch.word = { done: true, stars: o.stars | 0, best: o.best | 0 };
-          saved.chapters[n] = ch;
-        });
-      }
-    }
-    if (saved) {
-      if (saved.settings && typeof saved.settings === 'object') Object.assign(d.settings, saved.settings);
-      if (saved.chapters && typeof saved.chapters === 'object') {
-        Object.keys(saved.chapters).forEach(n => {
-          const s = saved.chapters[n] || {}, ch = this.blankChapter();
-          ['word', 'zip'].forEach(k => { if (s[k]) ch[k] = { done: !!s[k].done, stars: s[k].stars | 0, best: s[k].best | 0 }; });
-          ch.solved = !!s.solved; ch.penalty = s.penalty | 0;
-          d.chapters[n] = ch;
-        });
-      }
-      const u = parseInt(saved.unlocked, 10);
-      if (u >= 1) d.unlocked = Math.min(u, LEVELS.length);
-      const w = saved.wardrobe;
-      if (w && Array.isArray(w.owned)) {                       // keep only items that still exist; free items are always owned
-        w.owned.forEach(id => { const it = WARDROBE_BY_ID[id]; if (it && !it.unlock && !d.wardrobe.owned.includes(id)) d.wardrobe.owned.push(id); });   // Noir items are unlocked by evil clears, never by an old owned list
-        SLOTS.forEach(slot => {
-          const id = w.equipped && w.equipped[slot], it = id && WARDROBE_BY_ID[id];
-          if (it && it.slot === slot) d.wardrobe.equipped[slot] = id;    // ownership is checked once below, after this.data is set
-        });
-      }
-      const dl = saved.daily;
-      if (dl && typeof dl === 'object') {
-        d.daily.lastDate = typeof dl.lastDate === 'string' ? dl.lastDate : null;
-        d.daily.streak = dl.streak | 0; d.daily.best = dl.best | 0;
-        if (dl.results && typeof dl.results === 'object') d.daily.results = dl.results;
-      }
-      if (saved.perfect && typeof saved.perfect === 'object') d.perfect.streak = saved.perfect.streak | 0;
-      if (saved.evil && saved.evil.cleared && typeof saved.evil.cleared === 'object') d.evil.cleared = saved.evil.cleared;
-      if (saved.seen && typeof saved.seen === 'object') d.seen.larry = !!saved.seen.larry;
-      if (saved.badges && typeof saved.badges === 'object') {          // keep only badges that still exist
-        BADGES.forEach(b => { if (typeof saved.badges[b.id] === 'string') d.badges[b.id] = saved.badges[b.id]; });
-      }
-      if (Array.isArray(saved.bonusWords)) d.bonusWords = [...new Set(saved.bonusWords.filter(w => typeof w === 'string' && BONUS_DICT.has(w)))];
-    }
+    const saved = migrate(this.read(this.KEY), () => this.read(this.OLD_KEY));
+    const d = sanitize(saved, this.defaults());
     this.data = d;
     SLOTS.forEach(slot => { if (!this.owns(d.wardrobe.equipped[slot])) d.wardrobe.equipped[slot] = OUTFIT_DEFAULT[slot]; });
   },
