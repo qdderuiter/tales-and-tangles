@@ -6,7 +6,7 @@ import { chunk, hamiltonian } from './daily-generator.ts';
 /* ---------- Barnaby Noir: the evil remix ----------
    Every EVIL_STREAK perfect (3-star) puzzle results (not necessarily in a row) summon Noir, who offers a harder, dark-themed REMIX of the puzzle you just solved.
    Evil.word re-lays the same words on a fresh snaking grid; the Scent Trail uses a pre-generated harder trail (lvl.evilZip). */
-export const EVIL_STREAK = 7;
+export const EVIL_STREAK = 10;
 
 export const Evil = {
   key(kind: string, base: Partial<Pick<TempLevel, 'n' | 'daily' | 'date'>>) { return base.daily ? 'daily-' + base.date : kind + base.n; },   // Store.data.evil.cleared key

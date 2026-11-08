@@ -30,7 +30,7 @@ export const Store = {
   evilStars() { return this.evilCount() * 2; },                 // each cleared Noir level is worth 2 bonus stars
   markEvil(key: string) { this.data.evil.cleared[key] = true; this.save(); },
   noteBonusWord(w: string) { if (!this.data.bonusWords.includes(w)) { this.data.bonusWords.push(w); this.save(); } },
-  /* every seventh perfect (3-star) puzzle result summons Barnaby Noir; lesser results don't count but don't reset either */
+  /* every EVIL_STREAK-th perfect (3-star) puzzle result summons Barnaby Noir (puzzles/evil.ts); lesser results don't count but don't reset either */
   notePerfect(stars: number) { if (stars === 3) this.data.perfect.streak += 1; this.save(); return this.data.perfect.streak; },
   buy(id: string): { ok: boolean; reason?: string; need?: number; already?: boolean } {
     const it = WARDROBE_BY_ID[id];

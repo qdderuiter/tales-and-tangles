@@ -15,7 +15,7 @@ import { Victory } from '../ui/victory.ts';
 import { setEvil } from './evil-mode.ts';
 import { toMap } from './nav.ts';
 
-/* ---------- Barnaby Noir: seven perfect results -> an evil remix of the puzzle you just solved ----------
+/* ---------- Barnaby Noir: EVIL_STREAK (10) perfect results -> an evil remix of the puzzle you just solved ----------
    pending    Noir is due: the next "Continue" is interrupted by his cutscene
    returnTo   what to do after the remix (the Continue action he interrupted)
    kind/base  which puzzle kind and level the current remix is built from */
