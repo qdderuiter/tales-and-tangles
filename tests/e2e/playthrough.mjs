@@ -9,7 +9,7 @@
    Scenarios ("level" = one case; a chapter groups several levels and ends with a film)
      A  level 1 start to finish, the chapter view it returns to, then the side screens (wardrobe, badges) and the first badge
      B  level 8: Evil Larry's opening cinematic, then the level's puzzle
-     C  Barnaby Noir interrupts after three perfect results in a row
+     C  Barnaby Noir interrupts after seven perfect results
      D  replay a single puzzle from the map pips
      E  a level with a custom `steps` list (dev server only: it needs the dev hook in src/main.ts)
      F  Reset progress (two taps) erases the save
@@ -238,7 +238,7 @@ const scenarios = {
     await solveWords(page, lv1);                                    // a perfect result: no hints, no mistakes
     await victory(page, 'Clue Found!', 'Back to case files');
     await pressContinue(page);
-    await page.waitForSelector('#noir.show');                       // the third perfect result in a row summons Barnaby Noir
+    await page.waitForSelector('#noir.show');                       // the seventh perfect result summons Barnaby Noir
     await shot('noir');
     const accept = page.locator('#noirChoices .choice', { hasText: 'Bring it on.' });
     await tapNoirUntil(page, () => accept.count());                 // tap through his first lines
@@ -361,7 +361,7 @@ const scenarios = {
 const seeds = {
   A: null,
   B: makeSave({ ...ch1Done, unlocked: 8 }),
-  C: makeSave({ ...ch1Done, perfect: { streak: 2 } }),
+  C: makeSave({ ...ch1Done, perfect: { streak: 6 } }),
   D: makeSave(ch1Done),
   E: null,
   F: makeSave(ch1Done),

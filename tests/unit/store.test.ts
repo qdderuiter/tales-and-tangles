@@ -286,13 +286,13 @@ describe('recording results', () => {
     expect(Store.totalStars()).toBe(4);
   });
 
-  it('notePerfect counts 3-star results in a row and resets on anything less', () => {
+  it('notePerfect counts 3-star results and ignores anything less', () => {
     expect(Store.notePerfect(3)).toBe(1);
     expect(Store.notePerfect(3)).toBe(2);
-    expect(Store.notePerfect(2)).toBe(0);
-    expect(Store.notePerfect(3)).toBe(1);
-    expect(Store.notePerfect(1)).toBe(0);
-    expect(Store.notePerfect(0)).toBe(0);
+    expect(Store.notePerfect(2)).toBe(2);
+    expect(Store.notePerfect(3)).toBe(3);
+    expect(Store.notePerfect(1)).toBe(3);
+    expect(Store.notePerfect(0)).toBe(3);
   });
 
   it('noteBonusWord records a word once', () => {
