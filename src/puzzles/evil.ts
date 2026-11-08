@@ -9,7 +9,7 @@ import { chunk, hamiltonian } from './daily-generator.ts';
 export const EVIL_STREAK = 3;
 
 export const Evil = {
-  key(kind: string, base: TempLevel) { return base.daily ? 'daily-' + base.date : kind + base.n; },   // Store.data.evil.cleared key
+  key(kind: string, base: Partial<Pick<TempLevel, 'n' | 'daily' | 'date'>>) { return base.daily ? 'daily-' + base.date : kind + base.n; },   // Store.data.evil.cleared key
   word(base: TempLevel): TempLevel {
     const rand = mulberry32(((Date.now() ^ (base.n * 7919)) >>> 0) || 1);
     const lens = base.words.map(w => w.w.length);

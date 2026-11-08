@@ -2,15 +2,16 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { DEFAULT_STEPS, STEPS, stepLabel } from '../../src/game/chapter-steps.ts';
 import { LEVELS } from '../../src/data/levels.ts';
 import { PUZZLE_KINDS, registerPuzzle } from '../../src/puzzles/registry.ts';
+import type { PuzzleDef } from '../../src/puzzles/registry.ts';
 import { registeredPuzzleIds } from './helpers/puzzle-ids.ts';
 
 describe('registerPuzzle', () => {
   afterEach(() => { delete PUZZLE_KINDS.test_kind; });
 
   it('adds a kind, and registering the same kind again replaces it', () => {
-    registerPuzzle('test_kind', { title: 'one' });
+    registerPuzzle('test_kind', { title: 'one' } as PuzzleDef);
     expect(PUZZLE_KINDS.test_kind.title).toBe('one');
-    registerPuzzle('test_kind', { title: 'two' });
+    registerPuzzle('test_kind', { title: 'two' } as PuzzleDef);
     expect(PUZZLE_KINDS.test_kind.title).toBe('two');
   });
 });

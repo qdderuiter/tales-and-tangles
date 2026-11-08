@@ -11,7 +11,7 @@ export const Daily = {
   streak(today: string) { const dl = Store.data.daily; return dl.lastDate === today || dl.lastDate === this.shift(today, -1) ? dl.streak : 0; },
   result(date: string) { return Store.data.daily.results[date] || null; },
   /* the first completion of a date counts (streak + stars); later runs are just practice */
-  record(date: string, result: PuzzleResult) {
+  record(date: string, result: Pick<PuzzleResult, 'stars' | 'score' | 'secs' | 'squares'>) {
     const dl = Store.data.daily;
     if (dl.results[date]) return { first: false, streak: this.streak(date), stored: dl.results[date] };
     dl.streak = dl.lastDate === this.shift(date, -1) ? dl.streak + 1 : 1;

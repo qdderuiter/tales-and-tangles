@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { LEVELS } from '../../src/data/levels.ts';
 import { blankNotes, caseCell, planCaseHint } from '../../src/puzzles/case/case-logic.ts';
+import type { CaseHint, Notes } from '../../src/puzzles/case/case-logic.ts';
 
 /* notes: per grid kind an N x N board of 0 (blank) / 1 (cross) / 2 (check); `struck` = clues the player crossed out */
 const allEarned = { word: true, zip: true };
 
 /* do what the hint says, like a player would */
-function follow(notes, hint) {
+function follow(notes: Notes, hint: CaseHint) {
   if (hint.type === 'fix') notes[hint.kind][hint.s][hint.v] = 0;
-  else { const [kind, s, v, check] = hint.target; notes[kind][s][v] = check ? 2 : 1; }
+  else if (hint.type === 'deduce') { const [kind, s, v, check] = hint.target; notes[kind][s][v] = check ? 2 : 1; }
 }
 
 describe.each(LEVELS.map(lv => [lv.n, lv.case]))('notebook hints for chapter %i', (_n, c) => {
@@ -19,6 +20,7 @@ describe.each(LEVELS.map(lv => [lv.n, lv.case]))('notebook hints for chapter %i'
       const hint = planCaseHint(c, notes, allEarned);
       if (hint.type === 'done') break;
       expect(hint.type, 'step ' + steps).toBe('deduce');
+      if (hint.type !== 'deduce') throw new Error('unreachable: checked above');
       const [kind, s, v, check] = hint.target;
       expect(caseCell(c.solution, kind, s, v), `${kind} ${s} ${v} at step ${steps}`).toBe(check);
       expect(notes[kind][s][v]).toBe(0);

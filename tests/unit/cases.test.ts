@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { LEVELS } from '../../src/data/levels.ts';
+import type { Case, Clue } from '../../src/data/types.ts';
 import { caseAssignments, caseFits } from '../../src/puzzles/case/case-logic.ts';
 
-const solutions = (c, clues) => caseAssignments(c.N).filter(a => clues.every(cl => caseFits(c.N, a.item, a.place, cl.c)));
+const solutions = (c: Case, clues: Clue[]) => caseAssignments(c.N).filter(a => clues.every(cl => caseFits(c.N, a.item, a.place, cl.c)));
 
 describe.each(LEVELS.map(lv => [lv.n, lv]))('case of chapter %i', (_n, lv) => {
   const c = lv.case, sol = c.solution;
@@ -35,8 +36,8 @@ describe.each(LEVELS.map(lv => [lv.n, lv]))('case of chapter %i', (_n, lv) => {
   it('each earned clue is keyed by the level word (Words) or the trail word (Trail), one of each', () => {
     const earned = c.clues.filter(cl => cl.earned);
     expect(earned.map(cl => cl.earned).sort()).toEqual(['word', 'zip']);
-    expect(earned.find(cl => cl.earned === 'word').key).toBe(lv.theme);
-    expect(earned.find(cl => cl.earned === 'zip').key).toBe(lv.zip.word);
+    expect(earned.find(cl => cl.earned === 'word')!.key).toBe(lv.theme);
+    expect(earned.find(cl => cl.earned === 'zip')!.key).toBe(lv.zip.word);
   });
 
   it('every clue has text and a constraint', () => {

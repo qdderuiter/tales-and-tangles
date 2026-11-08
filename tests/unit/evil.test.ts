@@ -1,19 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import { LEVELS } from '../../src/data/levels.ts';
+import type { TempLevel } from '../../src/data/types.ts';
 import { Evil } from '../../src/puzzles/evil.ts';
 import { generateDaily } from '../../src/puzzles/daily-generator.ts';
 import { buildGrid, isSolved } from '../../src/puzzles/word/word-rules.ts';
 import { allFound } from './helpers/word-level.ts';
 
-const sorted = lv => lv.words.map(w => w.w).sort();
-const layout = lv => JSON.stringify(lv.words.map(w => w.p));
+const sorted = (lv: TempLevel) => lv.words.map(w => w.w).sort();
+const layout = (lv: TempLevel) => JSON.stringify(lv.words.map(w => w.p));
 
-describe.each([...LEVELS.map(lv => [`chapter ${lv.n}`, lv]), ['a daily', generateDaily('2025-06-01')]])('Evil.word of %s', (_name, base) => {
+const bases: [string, TempLevel][] = [...LEVELS.map((lv): [string, TempLevel] => [`chapter ${lv.n}`, lv]), ['a daily', generateDaily('2025-06-01')]];
+
+describe.each(bases)('Evil.word of %s', (_name, base) => {
   const evil = Evil.word(base);
 
   it('keeps the same words (and gold word) on a different layout', () => {
     expect(sorted(evil)).toEqual(sorted(base));
-    expect(evil.words.find(w => w.gold).w).toBe(base.words.find(w => w.gold).w);
+    expect(evil.words.find(w => w.gold)!.w).toBe(base.words.find(w => w.gold)!.w);
     expect(layout(evil)).not.toBe(layout(base));
     expect(evil.evil).toBe(true);
   });

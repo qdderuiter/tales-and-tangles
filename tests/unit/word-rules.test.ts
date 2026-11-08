@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { COLS, ROWS } from '../../src/core/grid.ts';
+import type { Cell } from '../../src/core/types.ts';
 import { attemptInfo, buildGrid, isSolved, matchWord, samePath, spell } from '../../src/puzzles/word/word-rules.ts';
 import { allFound, toTrace } from './helpers/word-level.ts';
 
 /* A made-up level on the real 6x5 grid: a snake through every cell, cut into six 5-letter "words". */
-const snake = [];
+const snake: Cell[] = [];
 for (let r = 0; r < ROWS; r++) for (let k = 0; k < COLS; k++) snake.push([r, r % 2 ? COLS - 1 - k : k]);
 const level = {
   words: ['ALPHA', 'BRAVO', 'CHARM', 'DELTA', 'EAGLE', 'FROST'].map((w, i) => ({ w, p: snake.slice(i * 5, i * 5 + 5), gold: i === 0 }))

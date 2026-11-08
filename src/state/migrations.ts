@@ -28,8 +28,8 @@ export interface SaveData {
   bonusWords: string[];
 }
 
-/* untyped JSON from localStorage: every field is checked before it is trusted */
-type Json = Record<string, any>;
+/* untyped JSON from localStorage: every field is checked before it is trusted. The one place `any` is allowed. */
+export type Json = Record<string, any>;
 
 export const blankChapter = (): ChapterRecord => ({ word: { done: false, stars: 0, best: 0 }, zip: { done: false, stars: 0, best: 0 }, solved: false, penalty: 0 });
 

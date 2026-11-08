@@ -1,7 +1,7 @@
 import { LEVELS } from '../data/levels.ts';
 import { OUTFIT_DEFAULT, WARDROBE, WARDROBE_BY_ID } from '../data/wardrobe.ts';
 import { blankChapter, migrate, ownsItem, sanitize } from './migrations.ts';
-import type { SaveData } from './migrations.ts';
+import type { Json, SaveData } from './migrations.ts';
 import type { PuzzleResult } from '../core/types.ts';
 
 export const Store = {
@@ -17,7 +17,7 @@ export const Store = {
       badges: {}, bonusWords: []
     };
   },
-  read(key: string): Record<string, any> | null { try { const v = JSON.parse(localStorage.getItem(key) ?? 'null'); return v && typeof v === 'object' ? v : null; } catch { return null; } },
+  read(key: string): Json | null { try { const v = JSON.parse(localStorage.getItem(key) ?? 'null'); return v && typeof v === 'object' ? v : null; } catch { return null; } },
   load() {
     this.data = sanitize(migrate(this.read(this.KEY), () => this.read(this.OLD_KEY)), this.defaults());
   },
@@ -51,7 +51,7 @@ export const Store = {
   save() { try { localStorage.setItem(this.KEY, JSON.stringify(this.data)); } catch { /* private mode: play on without saving */ } },
   chapter(n: number) { return this.data.chapters[n] || blankChapter(); },
   /* kind: 'word' | 'zip' */
-  recordPuzzle(n: number, kind: 'word' | 'zip', result: PuzzleResult) {
+  recordPuzzle(n: number, kind: 'word' | 'zip', result: Pick<PuzzleResult, 'score' | 'stars'>) {
     const ch = this.chapter(n), prev = ch[kind];
     const isBest = result.score > prev.best;
     ch[kind] = { done: true, stars: Math.max(prev.stars, result.stars), best: Math.max(prev.best, result.score) };

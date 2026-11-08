@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Daily } from '../../src/puzzles/daily.ts';
 import { formatDate, generateDaily, shiftDate } from '../../src/puzzles/daily-generator.ts';
+import type { SaveData } from '../../src/state/migrations.ts';
 import { Store } from '../../src/state/store.ts';
 import { buildGrid, isSolved } from '../../src/puzzles/word/word-rules.ts';
 import { allFound } from './helpers/word-level.ts';
@@ -42,14 +43,14 @@ describe('generateDaily', () => {
       }
       expect(new Set(lv.words.map(w => w.w)).size).toBe(lv.words.length);
       expect(lv.words.filter(w => w.gold).length).toBe(1);
-      expect(lv.theme).toBe(lv.words.find(w => w.gold).w);
+      expect(lv.theme).toBe(lv.words.find(w => w.gold)!.w);
     }
   });
 });
 
 describe('Daily streak and record (stubbed Store)', () => {
   beforeEach(() => {
-    Store.data = { daily: { lastDate: null, streak: 0, best: 0, results: {} } };
+    Store.data = { daily: { lastDate: null, streak: 0, best: 0, results: {} } } as unknown as SaveData;   // the only part Daily touches
     Store.save = vi.fn();
   });
   const result = { stars: 3, score: 1400, secs: 40, squares: 'GGY' };

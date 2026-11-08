@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Scoring } from '../../src/puzzles/scoring.ts';
 
-const run = (o) => Scoring.compute({ elapsedMs: 0, wrongs: 0, hints: 0, ...o });
+const run = (o: Partial<Parameters<typeof Scoring.compute>[0]>) => Scoring.compute({ elapsedMs: 0, wrongs: 0, hints: 0, ...o });
 
 describe('Scoring.compute', () => {
   it('a perfect instant run scores 1000 + 300 time bonus + 100', () => {

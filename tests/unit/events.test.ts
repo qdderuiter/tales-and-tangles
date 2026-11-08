@@ -1,9 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { emit, off, on } from '../../src/core/events.ts';
 
+/* the ad-hoc events used below, added to the typed bus for this file only */
+declare module '../../src/core/events.ts' {
+  interface EventMap {
+    't:order': number; 't:nopayload': undefined; 't:nobody-listens': number; 't:off': undefined; 't:never-registered': undefined;
+    't:self': undefined; 't:x': undefined; 't:y': undefined;
+  }
+}
+
 describe('event bus', () => {
   it('calls handlers in the order they were registered, with the payload', () => {
-    const seen = [];
+    const seen: [string, number][] = [];
     on('t:order', p => seen.push(['a', p]));
     on('t:order', p => seen.push(['b', p]));
     emit('t:order', 42);
@@ -11,7 +19,7 @@ describe('event bus', () => {
   });
 
   it('emitting with no payload and no listeners is fine', () => {
-    let got = 'unset';
+    let got: unknown = 'unset';
     on('t:nopayload', p => { got = p; });
     emit('t:nopayload');
     expect(got).toBeUndefined();
@@ -19,7 +27,7 @@ describe('event bus', () => {
   });
 
   it('on() returns an unsubscribe function, and off() removes one handler only', () => {
-    const calls = [];
+    const calls: string[] = [];
     const a = () => calls.push('a'), b = () => calls.push('b');
     const unsubA = on('t:off', a);
     on('t:off', b);
@@ -33,7 +41,7 @@ describe('event bus', () => {
   });
 
   it('a handler can unsubscribe during emit without skipping the next one', () => {
-    const calls = [];
+    const calls: string[] = [];
     const first = () => { calls.push('first'); off('t:self', first); };
     on('t:self', first);
     on('t:self', () => calls.push('second'));
@@ -43,7 +51,7 @@ describe('event bus', () => {
   });
 
   it('different event names do not interfere', () => {
-    const calls = [];
+    const calls: string[] = [];
     on('t:x', () => calls.push('x'));
     on('t:y', () => calls.push('y'));
     emit('t:x');

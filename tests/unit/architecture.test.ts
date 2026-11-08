@@ -5,14 +5,14 @@ import { describe, expect, it } from 'vitest';
 
 const SRC = resolve(dirname(fileURLToPath(import.meta.url)), '../../src');
 
-const walk = dir => readdirSync(dir, { withFileTypes: true }).flatMap(e => (e.isDirectory() ? walk(join(dir, e.name)) : e.name.endsWith('.ts') ? [join(dir, e.name)] : []));
-const rel = f => relative(SRC, f).split(sep).join('/');
+const walk = (dir: string): string[] => readdirSync(dir, { withFileTypes: true }).flatMap(e => (e.isDirectory() ? walk(join(dir, e.name)) : e.name.endsWith('.ts') ? [join(dir, e.name)] : []));
+const rel = (f: string) => relative(SRC, f).split(sep).join('/');
 
 /* static imports and re-exports: `import x from './a.ts'`, `import './a.ts'`, `export { x } from './a.ts'` (dynamic import() is not followed) */
 const IMPORT = /(?:^|\n)\s*(?:import|export)\s+(?:[^'";]*?\sfrom\s*)?['"](\.[^'"]+)['"]/g;
-const stripComments = s => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"\\])\/\/.*$/gm, '$1');
+const stripComments = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"\\])\/\/.*$/gm, '$1');
 
-const graph = new Map();
+const graph = new Map<string, string[]>();
 for (const f of walk(SRC)) {
   const text = stripComments(readFileSync(f, 'utf8'));
   graph.set(rel(f), [...text.matchAll(IMPORT)].map(m => rel(resolve(dirname(f), m[1]))));
@@ -31,8 +31,8 @@ describe('module graph', () => {
   });
 
   it('has no import cycles', () => {
-    const state = new Map(), stack = [], cycles = [];
-    const visit = n => {
+    const state = new Map<string, number>(), stack: string[] = [], cycles: string[] = [];
+    const visit = (n: string): void => {
       if (state.get(n) === 2) return;
       if (state.get(n) === 1) { cycles.push([...stack.slice(stack.indexOf(n)), n].join(' -> ')); return; }
       state.set(n, 1); stack.push(n);
@@ -45,10 +45,10 @@ describe('module graph', () => {
 });
 
 describe('layers', () => {
-  const importsOf = pred => [...graph].filter(([f]) => pred(f));
+  const importsOf = (pred: (f: string) => boolean) => [...graph].filter(([f]) => pred(f));
 
   it('data/ imports only other data/ files, core/, and puzzles/*-rules.ts', () => {
-    const ok = d => d.startsWith('data/') || d.startsWith('core/') || /^puzzles\/.*-rules.ts$/.test(d);
+    const ok = (d: string) => d.startsWith('data/') || d.startsWith('core/') || /^puzzles\/.*-rules.ts$/.test(d);
     const bad = importsOf(f => f.startsWith('data/')).flatMap(([f, deps]) => deps.filter(d => !ok(d)).map(d => `${f} -> ${d}`));
     expect(bad).toEqual([]);
   });
@@ -59,12 +59,12 @@ describe('layers', () => {
   });
 
   /* the pure set: rules files, generators and the save migrations */
-  const isPure = f => /-(rules|generator).ts$/.test(f) || f === 'state/migrations.ts';
+  const isPure = (f: string) => /-(rules|generator).ts$/.test(f) || f === 'state/migrations.ts';
   const pure = () => importsOf(isPure);
 
   it('pure files import only data/, core/ and other pure files', () => {
     expect(pure().length).toBeGreaterThanOrEqual(4);
-    const ok = d => d.startsWith('data/') || d.startsWith('core/') || isPure(d);
+    const ok = (d: string) => d.startsWith('data/') || d.startsWith('core/') || isPure(d);
     const bad = pure().flatMap(([f, deps]) => deps.filter(d => !ok(d)).map(d => `${f} -> ${d}`));
     expect(bad).toEqual([]);
   });

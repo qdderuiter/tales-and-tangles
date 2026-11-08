@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
+import type { Cell } from '../../src/core/types.ts';
+import type { ParsedZip } from '../../src/data/types.ts';
 import { checkpointMap, isSolvedTrail, prefixLength, zipAdjacent, zipCode, zipRC, zipSolution, zipWallBetween } from '../../src/puzzles/zip/zip-rules.ts';
 
 /* A made-up 2x2 trail:   0 1      codes are row*2+col, so the solution is 0 -> 1 -> 3 -> 2
                           2 3      checkpoint 1 on code 0, checkpoint 2 on code 2 */
-const trail = (walls = []) => ({
+const trail = (walls: string[] = []): ParsedZip => ({
   size: 2, word: 'AB', walls: new Set(walls),
-  path: [[0, 0], [0, 1], [1, 1], [1, 0]],
+  path: [[0, 0], [0, 1], [1, 1], [1, 0]] as Cell[],
   cps: [{ idx: 0, num: 1, letter: 'A', r: 0, c: 0 }, { idx: 3, num: 2, letter: 'B', r: 1, c: 0 }]
 });
 
@@ -33,8 +35,8 @@ describe('solution helpers', () => {
     const z = trail();
     expect(zipSolution(z)).toEqual([0, 1, 3, 2]);
     const m = checkpointMap(z);
-    expect(m.get(0).num).toBe(1);
-    expect(m.get(2).num).toBe(2);
+    expect(m.get(0)!.num).toBe(1);
+    expect(m.get(2)!.num).toBe(2);
     expect(m.has(1)).toBe(false);
   });
   it('prefixLength counts matching cells from the start', () => {

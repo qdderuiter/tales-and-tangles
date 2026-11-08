@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { LEVELS } from '../../src/data/levels.ts';
+import type { ParsedZip } from '../../src/data/types.ts';
 import { isSolvedTrail, zipAdjacent, zipCode, zipSolution } from '../../src/puzzles/zip/zip-rules.ts';
 
-const trails = LEVELS.flatMap(lv => [[`zip of chapter ${lv.n}`, lv.zip], [`evilZip of chapter ${lv.n}`, lv.evilZip]]);
+const trails = LEVELS.flatMap((lv): [string, ParsedZip][] => [[`zip of chapter ${lv.n}`, lv.zip], [`evilZip of chapter ${lv.n}`, lv.evilZip]]);
 
 describe.each(trails)('%s', (_name, z) => {
   const sol = zipSolution(z);

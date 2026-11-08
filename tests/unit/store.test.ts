@@ -1,24 +1,25 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LEVELS } from '../../src/data/levels.ts';
 import { blankChapter, migrate, sanitize } from '../../src/state/migrations.ts';
+import type { SaveData } from '../../src/state/migrations.ts';
 import { Store } from '../../src/state/store.ts';
 
 /* localStorage is a plain object here: no DOM, no jsdom */
-let disk;
+let disk: Record<string, string>;
 beforeEach(() => {
   disk = {};
   vi.stubGlobal('localStorage', {
-    getItem: k => (k in disk ? disk[k] : null),
-    setItem: (k, v) => { disk[k] = String(v); },
-    removeItem: k => { delete disk[k]; }
+    getItem: (k: string) => (k in disk ? disk[k] : null),
+    setItem: (k: string, v: unknown) => { disk[k] = String(v); },
+    removeItem: (k: string) => { delete disk[k]; }
   });
-  Store.data = null;
+  Store.data = null as unknown as SaveData;
 });
 afterEach(() => { vi.unstubAllGlobals(); });
 
-const put = (key, value) => { disk[key] = typeof value === 'string' ? value : JSON.stringify(value); };
+const put = (key: string, value: unknown) => { disk[key] = typeof value === 'string' ? value : JSON.stringify(value); };
 const load = () => { Store.load(); return Store.data; };
-const solved = (word, zip, penalty = 0) => ({ word: { done: true, stars: word, best: 1000 }, zip: { done: true, stars: zip, best: 1000 }, solved: true, penalty });
+const solved = (word: number, zip: number, penalty = 0) => ({ word: { done: true, stars: word, best: 1000 }, zip: { done: true, stars: zip, best: 1000 }, solved: true, penalty });
 
 describe('loading', () => {
   it('empty storage gives the defaults, and no progress', () => {
@@ -160,7 +161,7 @@ describe('migrate / sanitize on their own', () => {
     expect(d.wardrobe.equipped.hat).toBe('deerstalker');
   });
   it('sanitize alone keeps a Noir item once the evil-clear count meets its unlock', () => {
-    const saved = hat => ({ wardrobe: { owned: [], equipped: { hat } }, evil: { cleared: { word1: true } } });
+    const saved = (hat: string) => ({ wardrobe: { owned: [], equipped: { hat } }, evil: { cleared: { word1: true } } });
     expect(sanitize(saved('fedora'), Store.defaults()).wardrobe.equipped.hat).toBe('fedora');
     expect(sanitize({ wardrobe: { owned: [], equipped: { hat: 'fedora' } } }, Store.defaults()).wardrobe.equipped.hat).toBe('deerstalker');
   });
@@ -168,7 +169,7 @@ describe('migrate / sanitize on their own', () => {
 
 describe('the wardrobe', () => {
   beforeEach(() => { load(); });
-  const earn = n => { Store.data.chapters[1] = solved(n, n); };    // chapter 1 solved at n stars = n stars to spend
+  const earn = (n: number) => { Store.data.chapters[1] = solved(n, n); };    // chapter 1 solved at n stars = n stars to spend
 
   it('buy: unknown item', () => { expect(Store.buy('nope')).toEqual({ ok: false, reason: 'unknown' }); });
   it('buy: not enough stars', () => { expect(Store.buy('party')).toEqual({ ok: false, reason: 'stars', need: 3 }); });
@@ -288,7 +289,7 @@ describe('saving', () => {
     Store.noteBonusWord('BEE');
     Store.save();
     const before = JSON.parse(JSON.stringify(Store.data));
-    Store.data = null;
+    Store.data = null as unknown as SaveData;
     expect(load()).toEqual(before);
   });
 

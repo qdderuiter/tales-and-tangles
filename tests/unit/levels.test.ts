@@ -1,14 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { COLS, ROWS } from '../../src/core/grid.ts';
+import type { Cell } from '../../src/core/types.ts';
+import type { Level } from '../../src/data/types.ts';
 import { LEVELS } from '../../src/data/levels.ts';
 import { buildGrid, isSolved, matchWord } from '../../src/puzzles/word/word-rules.ts';
 import { allFound, toTrace } from './helpers/word-level.ts';
 
-const adjacent = (a, b) => Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1])) === 1;   // words may run diagonally
+const adjacent = (a: Cell, b: Cell) => Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1])) === 1;   // words may run diagonally
 
 describe.each(LEVELS.map(lv => [lv.n, lv]))('level %i', (_n, lv) => {
   it('has the extra fields every chapter needs', () => {
-    for (const key of ['zip', 'evilZip', 'case', 'hint', 'trailHint', 'title', 'blurb']) expect(lv[key], key).toBeTruthy();
+    for (const key of ['zip', 'evilZip', 'case', 'hint', 'trailHint', 'title', 'blurb']) expect(lv[key as keyof Level], key).toBeTruthy();
   });
 
   it('words tile the grid exactly once', () => {
