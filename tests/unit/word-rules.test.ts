@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { COLS, ROWS } from '../../src/core/grid.ts';
 import type { Cell } from '../../src/core/types.ts';
-import { attemptInfo, buildGrid, isSolved, matchWord, samePath, spell } from '../../src/puzzles/word/word-rules.ts';
+import { attemptInfo, buildGrid, countSpellings, falseStarts, isSolved, matchWord, orthogonal, samePath, spell, turns, twist } from '../../src/puzzles/word/word-rules.ts';
 import { allFound, toTrace } from './helpers/word-level.ts';
 
 /* A made-up level on the real 6x5 grid: a snake through every cell, cut into six 5-letter "words". */
@@ -69,5 +69,42 @@ describe('isSolved', () => {
     expect(isSolved(clash, allFound(level), grid)).toBe(false);
     const wrongLetters = { words: level.words.map((w, i) => (i === 0 ? { ...w, w: 'ZZZZZ' } : w)) };
     expect(isSolved(wrongLetters, allFound(level), grid)).toBe(false);
+  });
+});
+
+describe('orthogonal / turns / twist', () => {
+  it('orthogonal is true only for a horizontal or vertical step of one', () => {
+    expect(orthogonal([1, 1], [1, 2])).toBe(true);
+    expect(orthogonal([1, 1], [0, 1])).toBe(true);
+    expect(orthogonal([1, 1], [2, 2])).toBe(false);
+    expect(orthogonal([1, 1], [1, 3])).toBe(false);
+    expect(orthogonal([1, 1], [1, 1])).toBe(false);
+  });
+  it('turns counts direction changes', () => {
+    expect(turns([[0, 0], [0, 1], [0, 2]])).toBe(0);
+    expect(turns([[0, 0], [0, 1], [1, 1], [1, 2]])).toBe(2);
+    expect(turns([[0, 0], [0, 1]])).toBe(0);
+  });
+  it('twist is the share of possible bends used', () => {
+    expect(twist(level)).toBeGreaterThan(0);                 // the snake bends only at its ends
+    expect(twist({ words: [{ w: 'ABC', p: [[0, 0], [0, 1], [0, 2]], gold: false }] })).toBe(0);
+    expect(twist({ words: [{ w: 'ABC', p: [[0, 0], [0, 1], [1, 1]], gold: false }] })).toBe(1);
+  });
+});
+
+describe('countSpellings / falseStarts', () => {
+  it('counts one spelling when the word can be read along one path only', () => {
+    expect(countSpellings(buildGrid(level), 'ALPHA')).toBe(1);
+  });
+  it('counts two when the letters can be read along two paths', () => {
+    const grid = buildGrid(level), before = countSpellings(grid, 'AL');
+    grid[1][1] = { ch: 'A', w: 9 };                 // another A touching the L at (0,1)
+    expect(countSpellings(grid, 'AL')).toBe(before + 1);
+  });
+  it('falseStarts counts touching pairs that open a word like its real start but are not it', () => {
+    const grid = buildGrid(level);
+    const before = falseStarts(level, grid);
+    grid[1][1] = { ch: 'A', w: 9 };
+    expect(falseStarts(level, grid)[0]).toBeGreaterThan(before[0]);
   });
 });

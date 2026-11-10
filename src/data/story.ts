@@ -5,7 +5,7 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
     intro: [
       { e: 'surprised', t: 'Oh dear, oh dear! Partner, my honey jar has vanished from the pantry!' },
       { e: 'thinking', t: 'But look: sticky pawprints, and a very faint buzzing. The clues are all tangled up in this letter board.' },
-      { e: 'neutral', t: 'Drag your finger across touching letters, in any direction, even diagonally, to spell each clue word. Ready?',
+      { e: 'neutral', t: 'Drag your finger across touching letters, up, down or sideways, to spell each clue word. Words can bend! Ready?',
         choices: [
           { label: "Let's crack the case!", reply: { e: 'happy', t: "That's the spirit! Every single letter belongs to a word, so leave none behind." } },
           { label: 'Any tips first?', gift: true, reply: { e: 'proud', t: 'Of course! Take my spare notebook. It holds one free hint, on the house.' } }

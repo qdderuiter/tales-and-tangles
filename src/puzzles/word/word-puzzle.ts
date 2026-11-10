@@ -20,7 +20,7 @@ import type { Pt } from '../puzzle-base.ts';
 import { registerPuzzle } from '../registry.ts';
 import type { LoadOpts } from '../registry.ts';
 import { Scoring } from '../scoring.ts';
-import { attemptInfo, buildGrid, isSolved, matchWord, spell } from './word-rules.ts';
+import { attemptInfo, buildGrid, isSolved, matchWord, orthogonal, spell } from './word-rules.ts';
 import type { GridCell } from './word-rules.ts';
 import { Store } from '../../state/store.ts';
 
@@ -160,7 +160,7 @@ export const WordPuzzle = definePuzzle({
       if (prev.r === h.r && prev.c === h.c) { t.pop(); AudioFX.tick(t.length - 1); return true; }   // slide back = undo
     }
     if (t.some(q => q.r === h.r && q.c === h.c)) return false;
-    if (Math.max(Math.abs(h.r - last.r), Math.abs(h.c - last.c)) !== 1) return false;           // 8-way adjacency
+    if (!orthogonal([h.r, h.c], [last.r, last.c])) return false;                                 // up, down, left or right only
     t.push(h);
     AudioFX.tick(t.length - 1);
     return true;

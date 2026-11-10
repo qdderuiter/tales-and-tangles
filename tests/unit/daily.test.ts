@@ -3,7 +3,7 @@ import { Daily } from '../../src/puzzles/daily.ts';
 import { formatDate, generateDaily, shiftDate } from '../../src/puzzles/daily-generator.ts';
 import type { SaveData } from '../../src/state/migrations.ts';
 import { Store } from '../../src/state/store.ts';
-import { buildGrid, isSolved } from '../../src/puzzles/word/word-rules.ts';
+import { buildGrid, isSolved, orthogonal } from '../../src/puzzles/word/word-rules.ts';
 import { allFound } from './helpers/word-level.ts';
 
 describe('dates', () => {
@@ -40,6 +40,7 @@ describe('generateDaily', () => {
         expect(w.w.length).toBeGreaterThanOrEqual(3);
         expect(w.w.length).toBeLessThanOrEqual(5);
         expect(w.p.length).toBe(w.w.length);
+        for (let k = 1; k < w.p.length; k++) expect(orthogonal(w.p[k - 1], w.p[k]), lv.date + ' ' + w.w).toBe(true);
       }
       expect(new Set(lv.words.map(w => w.w)).size).toBe(lv.words.length);
       expect(lv.words.filter(w => w.gold).length).toBe(1);

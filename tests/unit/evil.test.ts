@@ -3,7 +3,7 @@ import { LEVELS } from '../../src/data/levels.ts';
 import type { TempLevel } from '../../src/data/types.ts';
 import { Evil } from '../../src/puzzles/evil.ts';
 import { generateDaily } from '../../src/puzzles/daily-generator.ts';
-import { buildGrid, isSolved } from '../../src/puzzles/word/word-rules.ts';
+import { buildGrid, isSolved, orthogonal } from '../../src/puzzles/word/word-rules.ts';
 import { allFound } from './helpers/word-level.ts';
 
 const sorted = (lv: TempLevel) => lv.words.map(w => w.w).sort();
@@ -25,6 +25,9 @@ describe.each(bases)('Evil.word of %s', (_name, base) => {
   });
   it('every path is as long as its word, so hidden-length mode cannot leak a wrong length', () => {
     for (const w of evil.words) expect(w.p.length).toBe(w.w.length);
+  });
+  it('never steps diagonally', () => {
+    for (const w of evil.words) for (let k = 1; k < w.p.length; k++) expect(orthogonal(w.p[k - 1], w.p[k]), w.w).toBe(true);
   });
 });
 

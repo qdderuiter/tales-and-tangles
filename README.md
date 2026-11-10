@@ -47,7 +47,7 @@ A chapter is an entry in `CHAPTERS` (`data/chapters.ts`): the level numbers it g
 
 ### Add a level
 A level (case) *n* is spread over a few data files, all indexed by position (so keep them in step), and then belongs to a chapter above:
-1. `data/levels.ts`: a `LEVELS` entry. Words are `[WORD, 'rc rc rc']` paths that must tile the 6×5 grid exactly once; `theme` is the gold word.
+1. `data/levels.ts`: a `LEVELS` entry. Words are `[WORD, 'rc rc rc']` paths that must tile the 6×5 grid exactly once; `theme` is the gold word. Steps are horizontal or vertical only (no diagonals), and each word must be spellable along exactly one such path in its grid (a swipe has to hit the stored cells). `node scripts/lay-words.mjs` searches layouts that meet the difficulty floors in `tests/unit/levels.test.ts` and prints `words: [...]` lines to paste in.
 2. `data/zips.ts`: a `ZIPS` entry and an `EVIL_ZIPS` entry (the Scent Trail: one solution, checkpoint letters spell `word`).
 3. `data/cases.ts`: a `CASES` entry (the clues must leave exactly one solution, and need each of the two `earned` clues to do it; the unit tests also check the case can be solved by hand).
 4. `data/hints.ts`: a `THEME_HINTS` entry, and a `TRAIL_HINTS` entry keyed by the trail word.
