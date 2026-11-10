@@ -33,7 +33,7 @@ npm run check        # lint + typecheck + unit tests + build + browser playthrou
 | `state/` | `store.ts` (the save file and everything derived from it), `migrations.ts` (pure save upgrade and clean-up), `session.ts` (what is happening right now) |
 | `ui/` | screens: map (chapter cards), `chapter-view` (the sheet that grows out of a card), `motion` (the spring frame loop), story, wardrobe, badges, victory card, settings |
 | `scenes/`, `fx/` | cutscenes (Noir, Evil Larry, Pickle the space pup, the chapter films) and confetti / sparks. `film` is the shared playback engine, `film-art` draws the layered stages (also the art on the map cards), `chapter-film` plays a chapter's script |
-| `dialogue/`, `characters/`, `audio/` | dialogue engine and story lines, Barnaby and the cast, sound / music / voice / haptics. `film-score` holds the chapter films' synthesized music and cues |
+| `dialogue/`, `characters/`, `audio/` | dialogue engine and story lines, Barnaby and the cast, sound / music / voice / haptics. `music` plays the mp3 tracks in `public/music/` (shipped as `dist/music/` beside `index.html`); sound effects are synthesized, and `film-score` holds the chapter films' synthesized music and cues |
 | `styles/` | CSS, one file per area |
 
 Rules the tests enforce (`tests/unit/architecture.test.ts`): no import cycles; `data/` imports only `data/`, `core/` and `puzzles/*-rules.ts`; `core/` imports only `core/`; `*-rules.ts` and `*-generator.ts` import nothing from `ui/`, `audio/`, `characters/` or `game/`.

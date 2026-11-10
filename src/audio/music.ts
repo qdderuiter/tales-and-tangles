@@ -1,249 +1,157 @@
 import { AudioFX } from './sfx.ts';
 import { on } from '../core/events.ts';
-import { late, mulberry32 } from '../core/util.ts';
 import { session } from '../state/session.ts';
 import { Store } from '../state/store.ts';
 
-/* ---------- 6b. lofi music (synthesized live: electric piano, bass, soft swung drums; no crackle) ----------
-   Each level has its own key / tempo / chord loop. "calm" = chords + bass + brushed hat (title, map, story);
-   "play" adds soft kick / snare / hats (puzzles, trail, suspects). Mood changes land on the next bar line.
-   The voice functions take an explicit audio context so the exact same code can render offline for tests. */
-export const CHORD_Q: Record<string, number[]> = { maj7: [0, 4, 7, 11], min7: [0, 3, 7, 10], min9: [0, 3, 7, 10, 14], dom7: [0, 4, 7, 10] };
+/* ---------- background music: three looping mp3 tracks in public/music/ ----------
+   title = Village at Dusk (title and every menu), case = Curious Melody (story, puzzles, notebook), evil = Smoky Night Sketch (Barnaby Noir).
+   Each track is an <audio> element routed through the Web Audio graph (track gain -> duck gain -> AudioFX.master), so it sits under the
+   sound effects, ducks under fanfares and speech, and fades out under a chapter film. Changing screens crossfades. */
+export type TrackKey = 'title' | 'case' | 'evil';
 
-export interface Mood { bpm: number; heavy?: boolean; drone?: boolean; chords: [number, string][] }
-export type NoiseType = 'lowpass' | 'highpass' | 'bandpass';
-/* the shared audio graph, and the bundle every voice function draws with (works on live and offline contexts) */
-export interface Graph { bus: GainNode; duckG: GainNode; lfoGain: GainNode; noiseBuf: AudioBuffer }
-export interface Voices extends Graph { ctx: BaseAudioContext; stats: { notes: number; drums: number } }
-export type Intensity = 'calm' | 'play';
-
-export const MOODS: Record<string, Mood> = {   // chords: [root pitch class (C=0), quality], one chord per bar
-  title: { bpm: 72, chords: [[0, 'maj7'], [9, 'min7'], [2, 'min7'], [7, 'dom7']] },
-  lv1:   { bpm: 76, chords: [[5, 'maj7'], [2, 'min7'], [7, 'min7'], [0, 'dom7']] },     // honey: F
-  lv2:   { bpm: 70, chords: [[9, 'min9'], [2, 'min9'], [4, 'min7'], [9, 'min9']] },     // library: A minor
-  lv3:   { bpm: 80, chords: [[7, 'maj7'], [4, 'min7'], [0, 'maj7'], [2, 'dom7']] },     // garden: G
-  lv4:   { bpm: 66, chords: [[2, 'min9'], [10, 'maj7'], [7, 'min9'], [9, 'dom7']] },    // moon: D minor
-  lv5:   { bpm: 84, chords: [[3, 'maj7'], [0, 'min7'], [8, 'maj7'], [10, 'dom7']] },    // cake: Eb
-  lv6:   { bpm: 74, chords: [[2, 'maj7'], [11, 'min7'], [4, 'min7'], [9, 'dom7']] },    // lighthouse: D
-  lv7:   { bpm: 68, chords: [[10, 'maj7'], [7, 'min7'], [3, 'maj7'], [5, 'dom7']] },    // snow: Bb
-  lv8:   { bpm: 78, chords: [[4, 'min9'], [9, 'min7'], [2, 'dom7'], [7, 'maj7']] },     // night market: E minor
-  lv9:   { bpm: 86, chords: [[7, 'dom7'], [0, 'maj7'], [7, 'dom7'], [2, 'min7']] },     // carnival: jazzy G7
-  lv10:  { bpm: 70, chords: [[0, 'maj7'], [9, 'min7'], [5, 'maj7'], [7, 'dom7']] },     // finale: warm C
-  lv11:  { bpm: 72, chords: [[9, 'min9'], [5, 'maj7'], [0, 'maj7'], [7, 'dom7']] },     // falling star: A minor, floaty
-  lv12:  { bpm: 64, chords: [[2, 'maj7'], [7, 'maj7'], [9, 'min9'], [4, 'min7']] },     // observatory: D, slow and starry
-  lv13:  { bpm: 88, chords: [[7, 'maj7'], [0, 'maj7'], [2, 'dom7'], [7, 'maj7']] },     // countdown: G, bouncy
-  evil:  { bpm: 62, heavy: true, drone: true, chords: [[0, 'min9'], [5, 'min7'], [8, 'maj7'], [7, 'dom7']] }   // Barnaby Noir: slow, minor, heavy
+export const TRACKS: Record<TrackKey, { src: string; bpm: number }> = {
+  title: { src: 'music/village-at-dusk.mp3', bpm: 80 },
+  case: { src: 'music/curious-melody.mp3', bpm: 80 },
+  evil: { src: 'music/smoky-night-sketch.mp3', bpm: 70 }
 };
 
-export const KICK: number[] = [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0];
+const LEVEL = 0.62;     // sits under the sound effects
+const FADE = 0.6;       // crossfade time constant, seconds
 
-export const SNARE: number[] = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0];
+/* Opened straight from disk (file://) the browser treats the mp3 as cross-origin and mutes a media element that is routed through Web Audio.
+   There the tracks play on the element's own volume instead (a small tween does the fades; iOS ignores element volume, but it never runs from disk). */
+const DIRECT = typeof location !== 'undefined' && location.protocol === 'file:';
+
+interface Player { el: HTMLAudioElement; gain: GainNode | null; pauseTimer: number; lvl: number; cur: number }
 
 export const Music = {
-  ctx: null as AudioContext | null, G: null as Graph | null, E: null as Voices | null, timer: 0, duckTimer: 0, duckLevel: 1, inFilm: false, running: false, step: 0, bar: 0, nextTime: 0,
-  mood: late<Mood>(), intensity: 'calm' as Intensity, pending: null as { mood: Mood; intensity: Intensity } | null, want: { mood: 'title', intensity: 'calm' as Intensity },
-  beatCbs: [] as ((q: number) => void)[], stats: { notes: 0, drums: 0 }, hiddenPause: false,
-  toneCache: new WeakMap<[number, string], number[]>(),   // a chord's voicing is computed once
+  ctx: null as AudioContext | null, duckG: null as GainNode | null, players: {} as Partial<Record<TrackKey, Player>>,
+  duckTimer: 0, duckLevel: 1, duckNow: 1, duckGoal: 1, tween: 0, duckStep: 0.1, inFilm: false, running: false, hiddenPause: false,
+  want: 'title' as TrackKey, current: null as TrackKey | null,
+  beatCbs: [] as ((q: number) => void)[], beatTimer: 0, beat: 0,
 
-  mtof(m: number) { return 440 * Math.pow(2, (m - 69) / 12); },
-  voicing(root: number, q: string) {                                   // close voicing around middle C, root left to the bass
-    let iv = CHORD_Q[q]; if (iv.length >= 5) iv = iv.slice(1);
-    const base = 48 + root;
-    return iv.map(i => { let m = base + i; while (m < 57) m += 12; while (m > 74) m -= 12; return m; }).sort((a, b) => a - b);
+  /* the shared duck node, created together with the audio context */
+  graph(ctx: AudioContext) {
+    if (!this.duckG) { this.duckG = ctx.createGain(); this.duckG.connect(AudioFX.master); }
+    return this.duckG;
   },
-
-  /* shared graph: bus -> duck -> lowpass -> dest, plus tape-wobble LFO and a noise buffer for the drums */
-  buildGraph(ctx: BaseAudioContext, dest: AudioNode, rng: () => number, startGain: number): Graph {
-    const bus = ctx.createGain(); bus.gain.value = startGain;
-    const duckG = ctx.createGain();
-    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 5200; lp.Q.value = 0.4;
-    const comp = ctx.createDynamicsCompressor();                       // glue + makeup: keeps the soft parts audible without peaks
-    comp.threshold.value = -30; comp.knee.value = 18; comp.ratio.value = 5; comp.attack.value = 0.01; comp.release.value = 0.25;
-    const makeup = ctx.createGain(); makeup.gain.value = 2.6;
-    const sat = ctx.createWaveShaper();                                // soft tape-style saturation: warm, and caps peaks below 0.9
-    const curve = new Float32Array(1024);
-    for (let i = 0; i < curve.length; i++) { const x = i / 512 - 1; curve[i] = Math.tanh(1.3 * x) * 0.9; }
-    sat.curve = curve; sat.oversample = '2x';
-    bus.connect(duckG); duckG.connect(lp); lp.connect(comp); comp.connect(makeup); makeup.connect(sat); sat.connect(dest);
-    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.35;
-    const lfoGain = ctx.createGain(); lfoGain.gain.value = 7;          // +-7 cents of slow tape wobble
-    lfo.connect(lfoGain); lfo.start();
-    const nlen = ctx.sampleRate, nb = ctx.createBuffer(1, nlen, ctx.sampleRate), nd = nb.getChannelData(0);
-    for (let i = 0; i < nlen; i++) nd[i] = rng() * 2 - 1;
-    return { bus, duckG, lfoGain, noiseBuf: nb };
+  player(key: TrackKey, ctx: AudioContext): Player | null {
+    const have = this.players[key];
+    if (have) return have;
+    try {
+      const el = new Audio(TRACKS[key].src);
+      el.loop = true; el.preload = 'auto';
+      let gain: GainNode | null = null;
+      if (!DIRECT) { gain = ctx.createGain(); gain.gain.value = 0; ctx.createMediaElementSource(el).connect(gain); gain.connect(this.graph(ctx)); } else el.volume = 0;
+      return (this.players[key] = { el, gain, pauseTimer: 0, lvl: 0, cur: 0 });
+    } catch { return null; }
   },
-
-  /* ----- voices (E = { ctx, bus, lfoGain, noiseBuf, stats }) ----- */
-  ep(E: Voices, t: number, midi: number, dur: number, vel: number) {
-    const ctx = E.ctx, f = this.mtof(midi);
-    const env = ctx.createGain(); env.gain.setValueAtTime(0.0001, t);
-    env.gain.linearRampToValueAtTime(vel, t + 0.012); env.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1400 + vel * 6000; lp.Q.value = 0.5;
-    ([['sine', 1, 0.6, 0], ['triangle', 1.002, 0.32, 6], ['sine', 2, 0.14, 0]] as [OscillatorType, number, number, number][]).forEach(([type, mul, gain, det]) => {
-      const o = ctx.createOscillator(); o.type = type; o.frequency.value = f * mul; o.detune.value = det;
-      E.lfoGain.connect(o.detune);
-      const g = ctx.createGain(); g.gain.value = gain; o.connect(g); g.connect(lp);
-      o.start(t); o.stop(t + dur + 0.05);
-    });
-    lp.connect(env); env.connect(E.bus);
-    E.stats.notes++;
+  fadeIn(key: TrackKey) {
+    const ctx = this.ctx!, p = this.player(key, ctx);
+    if (!p) return;
+    clearTimeout(p.pauseTimer);
+    this.level(p, LEVEL, FADE / 2);
+    const r = p.el.play(); if (r && r.catch) r.catch(() => {});
   },
-  bass(E: Voices, t: number, midi: number, dur: number, vel: number) {
-    const ctx = E.ctx, f = this.mtof(midi);
-    const env = ctx.createGain(); env.gain.setValueAtTime(0.0001, t);
-    env.gain.linearRampToValueAtTime(vel, t + 0.015); env.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 420;
-    ([['sine', 1, 1], ['triangle', 2, 0.18]] as [OscillatorType, number, number][]).forEach(([type, mul, gain]) => {
-      const o = ctx.createOscillator(); o.type = type; o.frequency.value = f * mul;
-      const g = ctx.createGain(); g.gain.value = gain; o.connect(g); g.connect(lp);
-      o.start(t); o.stop(t + dur + 0.05);
-    });
-    lp.connect(env); env.connect(E.bus);
-    E.stats.notes++;
+  fadeOut(key: TrackKey, pauseAfter = true) {
+    const p = this.players[key], ctx = this.ctx;
+    if (!p || !ctx) return;
+    this.level(p, 0, FADE / 3);
+    if (pauseAfter) { clearTimeout(p.pauseTimer); p.pauseTimer = window.setTimeout(() => { try { p.el.pause(); } catch { /* ignore */ } }, FADE * 1500); }
   },
-  kick(E: Voices, t: number, vel: number) {
-    const ctx = E.ctx, o = ctx.createOscillator(), g = ctx.createGain();
-    o.type = 'sine'; o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.16);
-    g.gain.setValueAtTime(vel, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
-    o.connect(g); g.connect(E.bus); o.start(t); o.stop(t + 0.3);
-    E.stats.drums++;
+  /* ramp a track toward a level: a gain node normally, the element volume when opened from disk */
+  level(p: Player, v: number, tc: number) {
+    if (p.gain) { const g = p.gain.gain, t = this.ctx!.currentTime; g.cancelScheduledValues(t); g.setTargetAtTime(v, t, tc); return; }
+    p.lvl = v; this.runTween();
   },
-  noiseHit(E: Voices, t: number, offset: number, type: NoiseType, freq: number, q: number, dur: number, vel: number) {
-    const ctx = E.ctx, s = ctx.createBufferSource(); s.buffer = E.noiseBuf;
-    const f = ctx.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q;
-    const g = ctx.createGain(); g.gain.setValueAtTime(vel, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    s.connect(f); f.connect(g); g.connect(E.bus); s.start(t, offset); s.stop(t + dur + 0.02);
+  runTween() {
+    if (this.tween) return;
+    this.tween = window.setInterval(() => {
+      let moving = false;
+      const dd = this.duckGoal - this.duckNow;
+      this.duckNow = Math.abs(dd) < 0.004 ? this.duckGoal : this.duckNow + dd * this.duckStep;
+      for (const p of Object.values(this.players)) {
+        if (!p) continue;
+        const goal = p.lvl * this.duckNow, d = goal - p.cur;
+        p.cur = Math.abs(d) < 0.004 ? goal : p.cur + d * 0.12;
+        p.el.volume = Math.min(1, Math.max(0, p.cur));
+        if (p.cur !== goal) moving = true;
+      }
+      if (!moving && this.duckNow === this.duckGoal) { clearInterval(this.tween); this.tween = 0; }
+    }, 40);
   },
-  snare(E: Voices, t: number, vel: number, off: number) {
-    this.noiseHit(E, t, off, 'bandpass', 1900, 0.8, 0.14, vel);
-    const ctx = E.ctx, o = ctx.createOscillator(), g = ctx.createGain();
-    o.type = 'triangle'; o.frequency.setValueAtTime(190, t); o.frequency.exponentialRampToValueAtTime(140, t + 0.08);
-    g.gain.setValueAtTime(vel * 0.6, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
-    o.connect(g); g.connect(E.bus); o.start(t); o.stop(t + 0.12);
-    E.stats.drums++;
+  /* the duck / film level on the shared node (or, from disk, on every element) */
+  duckTo(v: number, tc: number) {
+    if (DIRECT) { this.duckGoal = v; this.duckStep = tc < 0.2 ? 0.3 : 0.1; this.runTween(); return; }
+    const g = this.duckG!.gain, t = this.ctx!.currentTime; g.cancelScheduledValues(t); g.setTargetAtTime(v, t, tc);
   },
-  hat(E: Voices, t: number, vel: number, off: number) { this.noiseHit(E, t, off, 'highpass', 7200, 0.7, 0.045, vel); E.stats.drums++; },
-  bell(E: Voices, t: number, midi: number, vel: number) {
-    const ctx = E.ctx, f = this.mtof(midi);
-    [[1, 1], [2, 0.3]].forEach(([mul, gain]) => {
-      const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.value = f * mul;
-      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vel * gain, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
-      o.connect(g); g.connect(E.bus); o.start(t); o.stop(t + 1.15);
-    });
-    E.stats.notes++;
+  /* play the wanted track, fading out whichever was playing */
+  switchTo(key: TrackKey) {
+    if (this.current === key) { this.fadeIn(key); return; }
+    if (this.current) this.fadeOut(this.current);
+    this.current = key; this.fadeIn(key);
+    this.restartBeat();
   },
 
-  /* one 16th-note step of the groove */
-  renderStep(E: Voices, mood: Mood, intensity: Intensity, bar: number, step: number, t: number, rand: () => number, stepDur: number) {
-    const ch = mood.chords[bar % 4], tones = this.toneCache.get(ch) ?? (this.toneCache.set(ch, this.voicing(ch[0], ch[1])), this.toneCache.get(ch)!), bassM = 36 + ch[0];   // voicing cached per chord
-    const swing = step % 4 === 2 ? stepDur * 0.3 : 0;                  // lazy off-beats
-    const tt = t + swing + (rand() - 0.5) * 0.016;                     // humanise
-    const play = intensity === 'play';
-    if (step === 0) {
-      tones.forEach((m, i) => this.ep(E, tt + i * 0.011, m, stepDur * 10, 0.075));
-      this.bass(E, tt, bassM, stepDur * 6, 0.2);
-      if (mood.drone) this.bass(E, tt, 24 + ch[0], stepDur * 16, 0.12);                 // sub-bass drone under the evil mood
-    } else if (step === 10) {
-      tones.forEach((m, i) => this.ep(E, tt + i * 0.011, m, stepDur * 5, 0.05));
-      if (rand() < 0.6) this.bass(E, tt, bassM + (rand() < 0.5 ? 12 : 7), stepDur * 3, 0.11);
-    }
-    if (step % 4 === 2 && rand() < (play ? 0.1 : 0.07)) this.bell(E, tt, tones[Math.floor(rand() * tones.length)] + 12, 0.035);
-    if (play) {
-      if (KICK[step] || (mood.heavy && (step === 3 || step === 8)) || (step === 14 && bar % 4 === 3 && rand() < 0.5)) this.kick(E, tt, mood.heavy ? 0.46 : 0.34);
-      if (SNARE[step]) this.snare(E, tt, 0.13, rand() * 0.5);
-      if (step % 2 === 0) this.hat(E, tt, step % 4 === 0 ? 0.045 : 0.028, rand() * 0.5);
-    } else if (step === 4 || step === 12) {
-      this.hat(E, tt, 0.022, rand() * 0.5);                            // brushed hat only
-    }
-  },
-
-  /* ----- live playback ----- */
   start() {
     if (!Store.data.settings.music) return;
     const ctx = AudioFX.ensure();
     if (!ctx) return;
-    this.ctx = ctx;
-    if (!this.G) { this.G = this.buildGraph(ctx, AudioFX.master, Math.random, 0); this.E = Object.assign({ ctx, stats: this.stats }, this.G); }
-    this.G.bus.gain.cancelScheduledValues(ctx.currentTime);
-    this.G.bus.gain.setTargetAtTime(0.62, ctx.currentTime, 0.5);   // sits under the sound effects
-    if (this.running) return;
-    this.running = true; this.step = 0; this.bar = 0; this.pending = null;
-    this.nextTime = ctx.currentTime + 0.12;
-    this.mood = MOODS[this.want.mood]; this.intensity = this.want.intensity;
-    this.loop();
-  },
-  loop() { clearInterval(this.timer); this.timer = setInterval(() => this.tick(), 25); },
-  tick() {
-    const ctx = this.ctx!;
-    while (this.nextTime < ctx.currentTime + 0.15) {
-      const stepDur = 60 / this.mood.bpm / 4, t = this.nextTime;
-      this.renderStep(this.E!, this.mood, this.intensity, this.bar, this.step, t, Math.random, stepDur);
-      if (this.step % 4 === 0 && this.beatCbs.length) {
-        const q = this.step / 4;
-        setTimeout(() => this.beatCbs.forEach(cb => cb(q)), Math.max(0, (t - ctx.currentTime) * 1000));
-      }
-      this.nextTime += stepDur; this.step = (this.step + 1) % 16;
-      if (this.step === 0) {
-        this.bar++;
-        if (this.pending) { this.mood = this.pending.mood; this.intensity = this.pending.intensity; this.pending = null; this.bar = 0; }
-      }
-    }
+    this.ctx = ctx; this.graph(ctx);
+    if (this.running) { this.fadeIn(this.current ?? this.want); return; }
+    this.running = true;
+    this.switchTo(this.want);
   },
   stop() {
-    this.running = false; clearInterval(this.timer); this.timer = 0;
-    if (this.G) this.G.bus.gain.setTargetAtTime(0, this.ctx!.currentTime, 0.12);
+    this.running = false; clearInterval(this.beatTimer); this.beatTimer = 0;
+    (Object.keys(this.players) as TrackKey[]).forEach(k => this.fadeOut(k));
+    this.current = null;
   },
   setEnabled(on: boolean) { if (on) this.start(); else this.stop(); },
-  scene(name: string, level: number, evil: boolean) {
-    const play = name === 'puzzle' || name === 'zip' || name === 'case', inLevel = play || name === 'story';
-    const key = evil && inLevel ? 'evil' : level > 0 && inLevel ? 'lv' + level : 'title';
-    this.want = { mood: key, intensity: play ? 'play' : 'calm' };
-    if (this.running) this.pending = { mood: MOODS[key], intensity: this.want.intensity };
+  scene(name: string, _level: number, evil: boolean) {
+    const inLevel = name === 'puzzle' || name === 'zip' || name === 'case' || name === 'story';
+    this.want = evil && inLevel ? 'evil' : inLevel ? 'case' : 'title';
+    if (this.running) this.switchTo(this.want);
   },
   duck(ms: number, level = 0.35) {                              // dip under fanfares and speech; a shallower dip never cuts a deeper one short
-    if (!this.G || this.inFilm) return;
-    const ctx = this.ctx!, g = this.G.duckG.gain;
+    if (!this.duckG || this.inFilm) return;
     this.duckLevel = Math.min(this.duckLevel, level);
-    g.cancelScheduledValues(ctx.currentTime); g.setTargetAtTime(this.duckLevel, ctx.currentTime, 0.08);
+    this.duckTo(this.duckLevel, 0.08);
     clearTimeout(this.duckTimer);
-    this.duckTimer = setTimeout(() => { this.duckLevel = 1; g.setTargetAtTime(1, ctx.currentTime, 0.5); }, ms);
+    this.duckTimer = window.setTimeout(() => { this.duckLevel = 1; this.duckTo(1, 0.5); }, ms);
   },
-  /* a chapter film brings its own score: the lofi bed fades out under it and back in after (the same node `duck` uses) */
+  /* a chapter film brings its own score: the music fades out under it and back in after */
   setFilm(playing: boolean) {
     this.inFilm = playing;
-    if (!this.G) return;
-    const ctx = this.ctx!, g = this.G.duckG.gain;
+    if (!this.duckG) return;
     clearTimeout(this.duckTimer); this.duckLevel = 1;
-    g.cancelScheduledValues(ctx.currentTime); g.setTargetAtTime(playing ? 0 : 1, ctx.currentTime, playing ? 0.25 : 0.7);
+    this.duckTo(playing ? 0 : 1, playing ? 0.25 : 0.7);
   },
   setHidden(h: boolean) {                                        // save battery in background tabs
-    if (!this.running || !this.ctx) return;
-    if (h) { clearInterval(this.timer); this.hiddenPause = true; this.ctx.suspend().catch(() => {}); }
+    if (!this.running || !this.current) return;
+    const p = this.players[this.current];
+    if (h) { this.hiddenPause = true; clearInterval(this.beatTimer); this.beatTimer = 0; try { p?.el.pause(); } catch { /* ignore */ } }
     else if (this.hiddenPause) {
       this.hiddenPause = false;
-      this.ctx.resume().then(() => { this.nextTime = this.ctx!.currentTime + 0.12; this.loop(); }).catch(() => {});
+      this.ctx?.resume().catch(() => {});
+      const r = p?.el.play(); if (r && r.catch) r.catch(() => {});
+      this.restartBeat();
     }
   },
-  onBeat(cb: (q: number) => void) { this.beatCbs.push(cb); },
 
-  /* ----- offline render (tests / preview wav): same voices, deterministic RNG ----- */
-  async renderOffline(moodKey: string, intensity: Intensity, seconds: number, sr?: number) {
-    sr = sr || 32000;
-    const ctx = new OfflineAudioContext(1, Math.ceil(seconds * sr), sr);
-    const G = this.buildGraph(ctx, ctx.destination, mulberry32(7), 0.9);
-    const E = Object.assign({ ctx, stats: { notes: 0, drums: 0 } }, G);
-    const mood = MOODS[moodKey], rand = mulberry32(99), stepDur = 60 / mood.bpm / 4;
-    let step = 0, bar = 0, t = 0.05;
-    while (t < seconds) { this.renderStep(E, mood, intensity, bar, step, t, rand, stepDur); t += stepDur; step++; if (step % 16 === 0) bar++; }
-    const buf = await ctx.startRendering();
-    return { data: buf.getChannelData(0), sr, stats: E.stats };
+  /* Barnaby nods along: a steady pulse at the playing track's tempo, one tick per quarter note (0-3 within the bar) */
+  onBeat(cb: (q: number) => void) { this.beatCbs.push(cb); if (this.running && !this.beatTimer && !this.hiddenPause) this.restartBeat(); },
+  restartBeat() {
+    clearInterval(this.beatTimer); this.beatTimer = 0; this.beat = 0;
+    if (!this.current || !this.beatCbs.length) return;
+    this.beatTimer = window.setInterval(() => { const q = this.beat++ % 4; this.beatCbs.forEach(cb => cb(q)); }, 60000 / TRACKS[this.current].bpm);
   }
 };
 
 /* the music follows the screen and the Noir switch (UI.show and setEvil just announce them) */
 function syncScene() {
   const run = session.run;
-  Music.scene(session.screen, run ? (run.moodLevel || run.n) : 0, !!(run && run.evil));
+  Music.scene(session.screen, run ? run.n : 0, !!(run && run.evil));
 }
 on('screen', syncScene);
 on('evil:changed', syncScene);
