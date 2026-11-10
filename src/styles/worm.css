@@ -1,0 +1,83 @@
+/* ---------- Biscuit, the little sand worm: portrait and cinematics (characters/worm.ts, scenes/worm-scene.ts) ---------- */
+.story-worm{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 250px);width:min(58%,260px);z-index:1;opacity:0;pointer-events:none;transition:opacity .25s}
+.story-worm.on{opacity:1}
+.dlg-name.worm{background:#b5593c;color:#fff1dc}
+.story-worm .biscuit,.wf-worm .biscuit{width:100%;line-height:0}   /* the portrait wrapper only */
+.worm-svg{width:100%;height:auto;overflow:visible;display:block;transform-origin:100px 210px;animation:breathe 3.2s ease-in-out infinite}
+.worm-body,.worm-head,.worm-eyes,.worm-tie{transform-box:fill-box}
+.worm-body{transform-origin:50% 100%;animation:wormSway 3.4s ease-in-out infinite}
+.worm-head{transform-origin:50% 90%;animation:wormNod 3.4s ease-in-out infinite}
+.worm-tie{transform-origin:50% 50%;animation:wormTie 2.2s ease-in-out infinite}
+.worm-eyes{transform-origin:center;animation:wormBlink 4.4s infinite;transition:transform .15s}
+.worm-brow,.worm-mouth.frown,.worm-mouth.o{opacity:0;transition:opacity .15s}
+.worm-blush{transition:opacity .2s}
+.biscuit.b-shy .worm-head{animation:none;transform:rotate(-7deg)}
+.biscuit.b-shy .worm-blush{opacity:.95}
+.biscuit.b-sad .worm-mouth.smile,.biscuit.b-surprised .worm-mouth.smile{opacity:0}
+.biscuit.b-sad .worm-mouth.frown{opacity:1}
+.biscuit.b-sad .worm-brow{opacity:1}
+.biscuit.b-sad .worm-head{animation:none;transform:rotate(3deg) translateY(4px)}
+.biscuit.b-sad .worm-eyes{animation:none;transform:translateY(3px)}
+.biscuit.b-surprised .worm-mouth.o{opacity:1}
+.biscuit.b-surprised .worm-eyes{transform:scale(1.18);animation:none}
+.biscuit.b-sleepy .worm-eyes{transform:scaleY(.12);animation:none}
+.biscuit.b-sleepy .worm-head{animation:none;transform:rotate(6deg)}
+.biscuit.b-wiggle .worm-svg{animation:wormWiggle .5s ease-in-out infinite}
+@keyframes wormSway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@keyframes wormNod{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg) translateY(-2px)}}
+@keyframes wormTie{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes wormBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes wormWiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg) translateY(-4px)}}
+
+/* ----- the cinematics: Biscuit pops out of the dunes, and later gets home ----- */
+.worm-film{position:absolute;inset:0;z-index:45;background:#120e30;overflow:hidden;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .5s ease,visibility 0s .5s}
+.worm-film.show{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .5s ease,visibility 0s}
+.wf-stage{position:absolute;inset:0;transform-origin:50% 70%;will-change:transform;background:linear-gradient(180deg,#16123d 0%,#4a3480 48%,#b86aa0 76%,#f2a97c 100%)}
+.wf-art{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.wf-art.home .wf-intro,.wf-art:not(.home) .wf-home{display:none}   /* which pieces belong to which scene */
+.wf-hid{opacity:0}
+.wf-star{animation:cfTwinkle 3.2s ease-in-out infinite}
+.wf-cstar,.wf-sign,.wf-bump,.wf-biscuit,.wf-door,.wf-key,.wf-p,.wf-num,.wf-fly,#wfTear{transform-box:fill-box;transform-origin:50% 50%}
+.wf-sign,.wf-bump,.wf-biscuit{transform-origin:50% 100%}
+.wf-door{transform-origin:0 50%}
+.wf-num{font-weight:900;font-size:17px;fill:#fff6c8;font-family:inherit;paint-order:stroke;stroke:rgba(30,20,70,.55);stroke-width:3px}
+.wf-q{font-size:26px}
+.wf-win{opacity:0;transition:opacity .6s ease}
+.wf-win.on{opacity:1}
+.wf-puff{opacity:0;transform-box:fill-box;transform-origin:50% 50%}
+.wf-steam.on .wf-puff{animation:wfPuff 2.7s ease-out infinite;animation-delay:calc(var(--i) * .9s)}
+@keyframes wfPuff{0%{opacity:0;transform:translate(0,0) scale(.4)}18%{opacity:.95}100%{opacity:0;transform:translate(9px,-52px) scale(1.35)}}
+.wf-fly circle{animation:wfFloat 2.6s ease-in-out infinite alternate}
+@keyframes wfFloat{from{transform:translate(-2px,2px)}to{transform:translate(2px,-3px)}}
+.biscuit.wf-lookup .worm-head{animation:none;transform:rotate(-9deg) translateY(-2px)}
+.wf-cap{position:absolute;left:8%;right:8%;bottom:13%;z-index:4;text-align:center;font-weight:800;font-size:18px;line-height:1.35;color:#fff8e8;text-shadow:0 2px 10px #000;opacity:0;transition:opacity .35s;text-wrap:balance}
+.wf-cap.on{opacity:1}
+.wf-bar{position:absolute;left:0;right:0;height:11%;background:#000;z-index:3}
+.wf-bar.top{top:0}.wf-bar.bot{bottom:0}
+.wf-title{position:absolute;left:50%;top:40%;z-index:4;transform:translate(-50%,-50%) scale(1.8);opacity:0;pointer-events:none;text-align:center;padding:18px 30px 16px;border-radius:26px;white-space:nowrap;color:#fff;
+  background:rgba(34,24,66,.5);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.3);border-top-color:rgba(255,255,255,.6);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.wf-title small{display:block;font-weight:900;letter-spacing:.3em;font-size:13px;color:#ffd98a}
+.wf-title b{display:block;font-size:clamp(40px,13vw,58px);font-weight:900;line-height:1.05;letter-spacing:-.02em;color:#fff6c8;text-shadow:0 2px 14px rgba(0,0,0,.4)}
+.wf-title span{display:block;font-style:italic;font-weight:800;font-size:17px;margin-top:2px;opacity:.92}
+.wf-title.on{opacity:1;transform:translate(-50%,-50%) scale(1);transition:transform .5s cubic-bezier(.2,1.4,.4,1),opacity .2s}
+.wf-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:5}
+.wf-skip{position:absolute;top:calc(var(--sat) + 12px);right:calc(var(--sar) + 14px);z-index:6;opacity:0;pointer-events:none;transition:opacity .3s}
+.wf-skip.on{opacity:1;pointer-events:auto}
+
+/* reduced motion: the finished picture, no drifting */
+@media (prefers-reduced-motion:reduce){
+  .worm-svg,.worm-body,.worm-head,.worm-eyes,.worm-tie,.wf-star,.wf-fly circle{animation:none !important}
+  .wf-steam.on .wf-puff{animation:none !important;opacity:.9;transform:translate(calc(var(--i) * 4px),calc(var(--i) * -17px - 4px)) scale(calc(.6 + var(--i) * .25))}
+}
+@media (prefers-contrast:more){
+  .wf-title{-webkit-backdrop-filter:none;backdrop-filter:none;background:#1c1438;border:2px solid #fff}
+  .wf-cap{background:rgba(0,0,0,.7);padding:8px 12px;border-radius:12px}
+}
+@media (prefers-reduced-transparency:reduce){
+  .wf-title{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(34,24,66,.94)}
+}
+
+/* on the stage Biscuit has no portrait svg around him, so his happy wiggle moves the drawing itself */
+#wfEmo{transform-box:fill-box;transform-origin:50% 100%}
+#wfEmo.b-wiggle{animation:wormWiggle .5s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){#wfEmo.b-wiggle{animation:none}}

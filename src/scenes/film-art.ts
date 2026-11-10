@@ -1,5 +1,6 @@
 import { bearMarkup } from '../characters/barnaby-svg.ts';
 import { rocketInner } from '../characters/pup.ts';
+import { wormInner } from '../characters/worm.ts';
 import { FILM_LAYERS } from '../data/chapters.ts';
 import type { Motif } from '../data/types.ts';
 import { mulberry32 } from '../core/util.ts';
@@ -13,12 +14,13 @@ import type { Film } from './film.ts';
 
 const VIEW = '0 0 800 1000';
 /* the crop each motif's card shows (the whole hero scene; the sky, hills and sea run past it, so a wide card has no empty sides) */
-const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400' };
+const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440' };
 
 /* how far each layer follows the camera (0 = fixed, 1 = full) */
 const DEPTH: Record<string, number> = {
   sky: 0.1, sun: 0.15, moon: 0.15, stars: 0.18, clouds: 0.3, hills: 0.4, sea: 0.5, town: 0.5, lighthouse: 0.6, beam: 0.6, library: 0.7,
-  garden: 0.85, flowers: 0.9, lamps: 0.75, bees: 0.8, lanterns: 0.8, rooftop: 1, larry: 1, barnaby: 1, cake: 1, candles: 1, snow: 1, globe: 0, planet: 0.2, home: 0.2, trail: 0.6, rocket: 0.6
+  garden: 0.85, flowers: 0.9, lamps: 0.75, bees: 0.8, lanterns: 0.8, rooftop: 1, larry: 1, barnaby: 1, cake: 1, candles: 1, snow: 1, globe: 0, planet: 0.2, home: 0.2, trail: 0.6, rocket: 0.6,
+  dunes: 0.8, caravan: 0.82, palms: 0.85, pool: 0.85, house: 0.85
 };
 
 /* what the map card shows for each motif: the finished-scene layers only */
@@ -27,7 +29,8 @@ export const BAND_LAYERS: Record<Motif, string[]> = {
   night: ['sky', 'stars', 'moon', 'town'],
   sea: ['sky', 'sea', 'lighthouse', 'beam'],
   lantern: ['sky', 'stars', 'town', 'lanterns'],
-  space: ['sky', 'stars', 'planet', 'hills', 'home', 'rocket']
+  space: ['sky', 'stars', 'planet', 'hills', 'home', 'rocket'],
+  desert: ['sky', 'stars', 'moon', 'dunes', 'palms', 'pool', 'house']
 };
 
 let uid = 0;
@@ -201,8 +204,56 @@ const ART: Record<Motif, Record<string, LayerFn>> = {
       return svg(out, vb);
     },
     rocket: (u, vb) => svg('<g transform="translate(300 520) scale(.62)"><g class="cf-fly"><g class="open">' + rocketInner(u) + '</g></g></g>', vb)
+  },
+
+  /* ---- a midnight desert: a sleeping caravan, an oasis, and Biscuit's little round house ---- */
+  desert: {
+    sky: (u, vb) => svg('<defs>' + grad(u + 's', [[0.2, '#16123d'], [0.55, '#4a3480'], [0.8, '#b86aa0'], [0.95, '#f2a97c']]) + '</defs>' + skyRect(u + 's'), vb),
+    stars: (_u, vb) => svg(starField(64, 61, 440), vb),
+    moon: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#fff1c0', 0.5) + '</defs>' + glow(u + 'g', 230, 470, 300) + '<circle cx="230" cy="470" r="88" fill="#fff3cf"/><circle cx="204" cy="448" r="15" fill="#f1dca6" opacity=".7"/><circle cx="256" cy="494" r="21" fill="#f1dca6" opacity=".6"/><circle cx="262" cy="440" r="8" fill="#f1dca6" opacity=".6"/>', vb),
+    dunes: (_u, vb) => svg('<path d="M-300 690 Q-60 610 200 660 T560 650 T1100 680 V1300 H-300Z" fill="#6b4a88"/><path d="M-300 760 Q120 690 420 750 T1100 740 V1300 H-300Z" fill="#a35f7e"/>' +
+      '<path d="M-300 850 Q200 790 520 840 T1100 830 V1300 H-300Z" fill="#d98c6e"/><path d="M-300 930 Q260 880 600 925 T1100 915 V1300 H-300Z" fill="#c97a5e"/>' +
+      '<path d="M-300 850 Q200 790 520 840 T1100 830" fill="none" stroke="#ffd9a8" stroke-width="5" opacity=".35"/><path d="M-300 760 Q120 690 420 750 T1100 740" fill="none" stroke="#ffc6b0" stroke-width="4" opacity=".28"/>', vb),
+    caravan: (u, vb) => {
+      const camel = (x: number, y: number, s: number, f: number) => '<g transform="translate(' + x + ' ' + y + ') scale(' + r1(s * f) + ' ' + s + ')" fill="#2c1f4d"><ellipse cx="0" cy="-24" rx="46" ry="19"/><ellipse cx="-8" cy="-46" rx="14" ry="14"/>' +
+        '<path d="M30 -32 Q54 -46 52 -76" fill="none" stroke="#2c1f4d" stroke-width="12" stroke-linecap="round"/><ellipse cx="58" cy="-80" rx="15" ry="9" transform="rotate(-12 58 -80)"/><circle cx="52" cy="-90" r="4"/>' +
+        '<ellipse cx="-26" cy="-4" rx="22" ry="8"/><ellipse cx="22" cy="-4" rx="22" ry="8"/></g>';
+      return svg('<defs>' + glowDef(u + 'g', '#ffb866', 0.8) + '</defs>' + camel(330, 712, 0.6, 1) + camel(392, 718, 0.55, -1) + camel(530, 714, 0.6, 1) +
+        '<path d="M432 718 L462 676 L492 718Z" fill="#7a4a6a"/><path d="M462 690 L452 718 H472Z" fill="#ffd98a"/><g class="cf-halo">' + glow(u + 'g', 462, 708, 40) + '</g>' +
+        '<g class="cf-halo">' + glow(u + 'g', 500, 716, 30) + '</g><path class="cf-flame" d="M500 718 Q491 706 500 692 Q509 706 500 718Z" fill="#ffc45a"/>', vb);
+    },
+    palms: (_u, vb) => {
+      const palm = (x: number, y: number, h: number, lean: number, i: number) => {
+        const tx = x + lean, ty = y - h;
+        let fronds = '';
+        for (let k = 0; k < 7; k++) { const a = -160 + k * 22; fronds += '<path d="M0 0 Q42 -34 100 -6 Q46 -16 0 0Z" fill="' + (k % 2 ? '#2f8a6a' : '#3aa07a') + '" transform="rotate(' + a + ')"/>'; }
+        return '<path d="M' + x + ' ' + y + ' Q' + (x + lean * 0.2) + ' ' + (y - h * 0.55) + ' ' + tx + ' ' + ty + '" fill="none" stroke="#5a3a3a" stroke-width="15" stroke-linecap="round"/>' +
+          '<g transform="translate(' + tx + ' ' + ty + ')"><g class="cf-sway" style="animation-delay:-' + i * 0.9 + 's">' + fronds + '<circle cx="-6" cy="8" r="8" fill="#6b4a2a"/><circle cx="8" cy="10" r="8" fill="#7a5532"/></g></g>';
+      };
+      return svg(palm(610, 806, 190, 26, 0) + palm(700, 800, 270, -24, 1) + palm(752, 808, 200, 30, 2) + '<path d="M580 812 Q600 780 626 812Z M726 806 Q744 782 764 806Z" fill="#3a8a5a"/>', vb);
+    },
+    pool: (u, vb) => {
+      let flies = '';
+      const rng = mulberry32(44);
+      for (let i = 0; i < 12; i++) {
+        const x = r1(470 + rng() * 290), y = r1(790 + rng() * 120);
+        flies += '<g class="cf-halo">' + glow(u + 'g', x, y, 14) + '</g><circle class="cf-star" style="--i:' + i + '" cx="' + x + '" cy="' + y + '" r="3.4" fill="#e8ff8a"/>';
+      }
+      return svg('<defs>' + grad(u + 'w', [[0, '#5fc8c8'], [1, '#2b6f98']]) + glowDef(u + 'g', '#e8ff8a', 0.7) + '</defs>' +
+        '<ellipse cx="610" cy="892" rx="176" ry="36" fill="#f1c690"/><ellipse cx="610" cy="890" rx="158" ry="28" fill="url(#' + u + 'w)"/>' +
+        '<ellipse cx="560" cy="884" rx="62" ry="9" fill="#fff3cf" opacity=".28"/>' +
+        '<ellipse cx="566" cy="896" rx="20" ry="7" fill="#4fae7a"/><ellipse cx="654" cy="902" rx="22" ry="8" fill="#4fae7a"/><ellipse cx="700" cy="886" rx="16" ry="6" fill="#4fae7a"/><circle cx="566" cy="893" r="6" fill="#ff9fc0"/><circle cx="654" cy="899" r="6" fill="#ffc0d8"/>' + flies, vb);
+    },
+    house: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#ffe29a', 0.8) + '</defs><ellipse cx="340" cy="856" rx="122" ry="14" fill="#6a3f4f" opacity=".35"/>' +
+      '<path d="M236 852 Q236 724 340 724 Q444 724 444 852Z" fill="#e3a876"/><path d="M258 804 Q296 756 346 748" fill="none" stroke="#f5c896" stroke-width="9" stroke-linecap="round" opacity=".5"/>' +
+      '<g class="cf-halo">' + glow(u + 'g', 284, 786, 46) + glow(u + 'g', 398, 786, 46) + '</g><circle cx="284" cy="786" r="12" fill="#ffe6a0" stroke="#a0653f" stroke-width="4"/><circle cx="398" cy="786" r="12" fill="#ffe6a0" stroke="#a0653f" stroke-width="4"/>' +
+      '<circle cx="341" cy="818" r="36" fill="#7a4a35"/><circle cx="341" cy="818" r="29" fill="#a0653f"/><path d="M341 790 V846 M313 818 H369" stroke="#7a4a35" stroke-width="4" opacity=".6"/><circle cx="356" cy="822" r="4.5" fill="#ffd36b"/>' +
+      '<path d="M341 770 L321 760 Q317 770 321 780Z M341 770 L361 760 Q365 770 361 780Z" fill="#e8506a"/><rect x="335" y="764" width="12" height="12" rx="4" fill="#c23a57"/>' +
+      '<g transform="translate(414 812) scale(.3)"><g class="cf-peek">' + wormInner() + '</g></g>', vb),
+    barnaby: () => '<div class="cf-bear ds"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
   }
 };
+
 
 /* the transform a layer wears for a camera position: far layers move less (parallax) and zoom less */
 export function layerTransform(depth: number, cam: { x: number; y: number; scale: number }): string {

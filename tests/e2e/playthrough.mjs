@@ -17,7 +17,9 @@
      H  the chapter view: opens from its card, closes with Escape and the back button, and a locked card stays shut
      I  declining Barnaby Noir mid-level: the dark theme stays off and the level carries on
      J  chapter 5, case 1: Pickle's crash-landing film, Pickle speaking with his own portrait, then the whole case
-     K  chapter 5, case 3: the whole case, Pickle's lift-off, the chapter's closing film with the credits
+     K  chapter 5, case 3: the whole case, Pickle's lift-off, and the chapter's closing film (an ordinary chapter end: the story goes on)
+     L  the LAST case of the game (chapter 6, case 3): the whole case, Biscuit's homecoming, "Hear the ending", the last film with The End and the credits
+     M  chapter 6, case 1: Biscuit pops out of the dunes, speaks with his own portrait, then the whole case
 
    Answers (word paths, trail, culprit, item) are read from src/data, so the test follows the content. Anything logged with
    console.error, or any uncaught page error, fails the scenario. Screenshots go to tests/e2e/out/ (git-ignored). */
@@ -27,6 +29,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { chromium } from 'playwright-core';
 import { COLS, ROWS } from '../../src/core/grid.ts';
+import { CHAPTERS } from '../../src/data/chapters.ts';
 import { LEVELS } from '../../src/data/levels.ts';
 import { EVIL_STREAK } from '../../src/puzzles/evil.ts';
 import { Store } from '../../src/state/store.ts';
@@ -173,7 +176,9 @@ async function tapNoirUntil(page, done) {
 }
 
 /* ---------- scenarios ---------- */
-const lv1 = LEVELS[0], lv8 = LEVELS[7], lv11 = LEVELS[10], lv13 = LEVELS[12];
+const lv1 = LEVELS[0], lv8 = LEVELS[7], lv11 = LEVELS[10], lv13 = LEVELS[12], lv14 = LEVELS[13];
+const lvLast = LEVELS[LEVELS.length - 1];                          // the ending always follows the last level, however many there are
+const chLast = CHAPTERS[CHAPTERS.length - 1];
 
 const scenarios = {
   async A({ page, shot }) {
@@ -450,8 +455,8 @@ const scenarios = {
     await page.waitForSelector('#pupFilm.show');                    // Pickle lifts off before the victory card
     await shot('pickle-liftoff');
     await page.waitForSelector('#pupFilm:not(.show)');
-    await victory(page, 'Case Solved!', 'Hear the ending');
-    expect(await page.textContent('#vUnlock'), 'the last case closes the whole story').toBe('Every mystery solvedYou are a true detective!');
+    await victory(page, 'Case Solved!', 'Continue the story');
+    expect(await page.textContent('#vUnlock'), 'a chapter end, not the end of the game').toBe('Chapter completeLost in Space');
     await pressContinue(page);
     await onScreen(page, 'story');                                  // outro (Pickle on the radio): the film starts over the story screen, so skip until it shows
     for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
@@ -460,9 +465,9 @@ const scenarios = {
     }
     await page.waitForSelector('#chapterFilm.show');                // the last chapter's film
     await page.waitForSelector('#cfCard.on');
-    expect(await page.textContent('#cfKicker'), 'the last chapter says The End').toBe('The End');
+    expect(await page.textContent('#cfKicker'), 'chapter 5 is not the end').toBe('Chapter 5 complete');
     expect(await page.textContent('#cfTitle'), 'film card title').toBe('Lost in Space');
-    expect((await page.textContent('#cfCredits')).includes('Pickle'), 'the credits thank Pickle').toBe(true);
+    expect(await page.textContent('#cfNext'), 'the card points to chapter 6').toBe('Next: Chapter 6 · Midnight Oasis');
     await shot('space-film');
     await page.waitForSelector('#cfSkip.on');
     await page.click('#cfSkip');
@@ -471,6 +476,89 @@ const scenarios = {
     const save = await readSave(page);
     expect(save.levels[13].solved, 'case 5.3 solved').toBe(true);
     expect(save.seen.endings.space, 'the ending is marked as seen').toBe(true);
+    expect(save.unlocked, 'case 6.1 unlocked').toBe(14);
+  },
+
+  async L({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, chLast.id);
+    await caseButton(page, lvLast.n).click();
+    await skipStory(page);                                          // intro
+    await solveWords(page, lvLast);
+    await victory(page, 'Clue Found!');
+    await pressContinue(page);
+    await skipStory(page);                                          // bridge
+    await solveTrail(page, lvLast);
+    await victory(page, 'Trail Followed!');
+    await pressContinue(page);
+    await accuse(page, lvLast);
+    await page.waitForSelector('#wormFilm.show');                   // Biscuit's homecoming plays before the victory card
+    await shot('biscuit-homecoming');
+    await page.waitForSelector('#wfSkip.on');
+    await page.click('#wfSkip');
+    await page.waitForSelector('#wormFilm:not(.show)');
+    await victory(page, 'Case Solved!', 'Hear the ending');
+    expect(await page.textContent('#vUnlock'), 'the last case closes the whole story').toBe('Every mystery solvedYou are a true detective!');
+    await pressContinue(page);
+    await onScreen(page, 'story');                                  // outro, then Barnaby's epilogue: skip until the film shows
+    for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
+      await page.evaluate(() => document.getElementById('btnSkip').click());
+      await page.waitForTimeout(200);
+    }
+    await page.waitForSelector('#chapterFilm.show');                // the last chapter's film
+    await page.waitForSelector('#cfCard.on');
+    expect(await page.textContent('#cfKicker'), 'the last chapter says The End').toBe('The End');
+    expect(await page.textContent('#cfTitle'), 'film card title').toBe(chLast.title);
+    expect((await page.textContent('#cfCredits')).includes('Biscuit'), 'the credits thank Biscuit').toBe(true);
+    await shot('oasis-film');
+    await page.waitForSelector('#cfSkip.on');
+    await page.click('#cfSkip');
+    await page.waitForSelector('#chapterFilm:not(.show)');
+    await onScreen(page, 'map');
+    const save = await readSave(page);
+    expect(save.levels[lvLast.n].solved, 'the last case solved').toBe(true);
+    expect(save.seen.endings[chLast.id], 'the ending is marked as seen').toBe(true);
+  },
+
+  async M({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'oasis');
+    await caseButton(page, 14).click();
+    await page.waitForSelector('#wormFilm.show');                   // Biscuit pops out of the dunes and opens the case
+    await page.waitForSelector('#wfTitle.on');                      // (reduced motion: the finished scene, then the title card)
+    expect(await page.textContent('#wfTitle b'), 'title card names Biscuit').toBe('BISCUIT');
+    await shot('biscuit-intro');
+    await page.waitForSelector('#wfSkip.on');
+    await page.click('#wfSkip');
+    await page.waitForSelector('#wormFilm:not(.show)');
+    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.worm === true, Store.KEY);
+    await onScreen(page, 'story');
+    for (let i = 0; i < 14 && await page.textContent('#dlgName') !== 'Biscuit'; i++) {      // tap on to Biscuit's first line
+      await page.click('#screen-story', { position: { x: 200, y: 300 } });
+      await page.waitForTimeout(300);
+    }
+    expect(await page.textContent('#dlgName'), 'Biscuit speaks').toBe('Biscuit');
+    expect(await page.evaluate(() => document.getElementById('storyWorm').classList.contains('on')), "Biscuit's portrait is up").toBe(true);
+    expect(await page.evaluate(() => document.getElementById('storyBear').classList.contains('away')), 'Barnaby steps aside').toBe(true);
+    await shot('biscuit-speaks');
+    await skipStory(page);                                          // intro
+    await solveWords(page, lv14);
+    await victory(page, 'Clue Found!', 'Follow the trail');
+    await pressContinue(page);
+    await skipStory(page);                                          // bridge
+    await solveTrail(page, lv14);
+    await victory(page, 'Trail Followed!', 'To the suspects');
+    await pressContinue(page);
+    await accuse(page, lv14);
+    await victory(page, 'Case Solved!', 'Continue the story');
+    await pressContinue(page);
+    await skipStory(page);                                          // outro
+    await onScreen(page, 'map');
+    const save = await readSave(page);
+    expect(save.levels[14].solved, 'case 6.1 solved').toBe(true);
+    expect(save.unlocked, 'case 6.2 unlocked').toBe(15);
   }
 };
 
@@ -486,7 +574,9 @@ const seeds = {
   G: makeSave({ unlocked: 3, levels: { 1: solvedChapter, 2: solvedChapter } }),
   H: makeSave(ch1Done),
   J: makeSave(solvedUpTo(10)),
-  K: makeSave(solvedUpTo(12))
+  K: makeSave(solvedUpTo(12)),
+  L: makeSave(solvedUpTo(lvLast.n - 1)),
+  M: makeSave(solvedUpTo(13))
 };
 
 /* ---------- run ---------- */

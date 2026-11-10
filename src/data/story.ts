@@ -215,7 +215,69 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
       { e: 'happy', t: 'There he goes! Rufus Rabbit only borrowed the launch key to keep it safe, and lit sparklers to send Pickle off in style.' },
       { who: 'Pickle', e: 'happy', t: 'Bork! Radio check! I can see my home from here! Thank you, Barnaby! Thank you, everybody!' },
       { e: 'proud', t: 'Safe travels, little friend. Wag your tail all the way home.' },
-      { e: 'happy', t: 'Look, partner. He left a brand new star right above Honeywick.' }
+      { e: 'happy', t: 'Look, partner. He left a brand new star right above Honeywick.' },
+      { e: 'thinking', t: 'Hm. Do you feel that? A warm breeze, and a faint smell of sand and starlight...' },
+      { e: 'surprised', t: 'Somewhere far to the south, under a midnight moon, someone small is calling for help. Let us go and see.' }
+    ]
+  },
+  14: {
+    intro: [
+      { e: 'surprised', t: 'Goodness me! The sand just popped up and wiggled at us.' },
+      { who: 'Biscuit', e: 'shy', t: 'Oh! Pardon me. I did not mean to pop up so suddenly. My name is Biscuit.' },
+      { who: 'Biscuit', e: 'sad', t: 'I went out to count the stars. And when I wiggled back down, every dune looked exactly the same. I cannot find my house anywhere.' },
+      { e: 'thinking', t: 'Lost in the desert at midnight? Well, that settles it. We are walking you home.' },
+      { who: 'Biscuit', e: 'happy', t: 'You would do that? Even though I am very small, and very slow?' },
+      { e: 'proud', t: 'Especially then. Small friends make the very best company. And look, his little brass compass is missing from the dune ridge. That is our first clue.',
+        choices: [
+          { label: "Let's get Biscuit home!", reply: { e: 'happy', t: 'That is the spirit! Trace each word, and leave no letter behind.' } },
+          { label: 'Any tips for the road?', gift: true, reply: { e: 'proud', t: 'Of course. Take my spare notebook. It holds one free hint, wrapped in sand-proof paper.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Fennec Fern! She borrowed the compass at the dune ridge, and held a lantern high so Biscuit could find his way back to her.' },
+      { who: 'Biscuit', e: 'wiggle', t: 'Fern, you were looking for me? That is the kindest thing anyone has ever done with my compass!' },
+      { who: 'Biscuit', e: 'happy', t: 'It always points north. And my house is, well... a little bit north, I think.' },
+      { e: 'proud', t: 'Then north we go, partner. The caravan lights should be just over the next dune.' }
+    ]
+  },
+  15: {
+    intro: [
+      { e: 'neutral', t: 'A camel caravan, sleeping under the stars. Hush now. The sand is listening.' },
+      { who: 'Biscuit', e: 'sleepy', t: 'Barnaby? Is it all right if I ride in your pocket? My tail is very tired.' },
+      { e: 'happy', t: 'Of course. There you go, snug as a... well, snug as a worm in a pocket.' },
+      { who: 'Biscuit', e: 'happy', t: 'It is very cozy in here. It smells like honey.' },
+      { e: 'surprised', t: 'Honey! So that is where my snack went... Never mind. Look, partner: the caravan lost its star map, the one that shows the way to the oasis.' },
+      { e: 'thinking', t: 'Five travellers, five spots around the camp. Shall we see who was where?',
+        choices: [
+          { label: 'Stargazing time!', reply: { e: 'happy', t: 'Splendid. Mind the camels. They are very sleepy and very tall.' } },
+          { label: 'A hint for the night?', gift: true, reply: { e: 'proud', t: 'Biscuit found one in my pocket. One free hint, smelling faintly of honey.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Juniper Jerboa! She wrapped the star map in her silk scarf and tucked it away in the camel tent, so the night wind could not carry it off.' },
+      { who: 'Biscuit', e: 'wiggle', t: 'She kept it safe! And look, the map says my oasis is just past the last dune!' },
+      { who: 'Biscuit', e: 'happy', t: 'I can almost smell the date palms!' },
+      { e: 'proud', t: 'Then lead on, little navigator. Or rather, point the way from my pocket.' }
+    ]
+  },
+  16: {
+    intro: [
+      { e: 'surprised', t: 'Look, partner! Palm trees, a silver pool and fireflies everywhere. The midnight oasis!' },
+      { who: 'Biscuit', e: 'happy', t: 'That is my pool! That is my palm tree! I am home!' },
+      { who: 'Biscuit', e: 'sad', t: '...Oh. But my front door is locked, and my little door key is gone. Being home but not being able to get in is almost worse than being lost.' },
+      { e: 'proud', t: 'Almost, but not quite. Being lost means you do not know where home is. Now we do.' },
+      { e: 'neutral', t: 'One last case, partner. Five friends are gathered at the oasis, and one of them knows where that key went.',
+        choices: [
+          { label: 'For Biscuit!', reply: { e: 'happy', t: 'For Biscuit! And for every small friend who ever lost the way.' } },
+          { label: 'One last hint, please?', gift: true, reply: { e: 'proud', t: 'For the final case? Of course. One free hint, glowing like a firefly.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Tumble Tortoise! He found the key in the palm grove, and kept it safe in his shell, because the sand likes to swallow small things.' },
+      { who: 'Biscuit', e: 'happy', t: 'Thank you, Tumble! And look at that, my little round door has opened!' },
+      { who: 'Biscuit', e: 'shy', t: 'It was here all along, right where I left it. Just under a lot of sand.' },
+      { who: 'Biscuit', e: 'wiggle', t: 'Would you like to come in for a cup of cactus tea? It is not prickly, I promise.' },
+      { e: 'happy', t: 'We would be honoured.' }
     ]
   }
 };
@@ -247,7 +309,13 @@ export const STORY_EXTRA: Record<number, Pick<Record<StoryPart, RawLine[]>, 'bri
   12: { bridge: [{ e: 'happy', t: 'GALAXY glitter! Now follow the SPARKLE up the stairs: every tile, numbers in order.' }],
         caseIntro: [{ e: 'thinking', t: 'Who was where, and who held what? Some rooms are right next to each other. That will matter.' }] },
   13: { bridge: [{ e: 'proud', t: 'ROCKET! Now the countdown, chalked across the field: follow the numbers, touch every tile.' }],
-        caseIntro: [{ e: 'neutral', t: 'The very last case before take-off. Who was on the launch pad with the key? Trust the notebook, partner.' }] }
+        caseIntro: [{ e: 'neutral', t: 'The very last case before take-off. Who was on the launch pad with the key? Trust the notebook, partner.' }] },
+  14: { bridge: [{ e: 'happy', t: 'DESERT! The tiny tracks lead down a freshly dug hole. Now follow the burrow: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'thinking', t: 'Five desert friends, five spots along the dunes. Some of these clues only say who was near whom, so read them slowly.' }] },
+  15: { bridge: [{ e: 'proud', t: 'CARAVAN! Biscuit says his compass is trembling. Follow the needle: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'neutral', t: 'Who was in the camel tent, and who held what? The neighbours matter tonight. Cross people off until one story fits.' }] },
+  16: { bridge: [{ e: 'surprised', t: 'OASIS! The pool is full of ripples. Follow them back to the spring: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'proud', t: 'The very last case. Five friends, five spots around the oasis, and one little key. Trust the notebook, partner.' }] }
 };
 
 export const REACT = {

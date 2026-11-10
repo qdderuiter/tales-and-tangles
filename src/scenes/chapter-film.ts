@@ -4,12 +4,12 @@ import { $ } from '../core/dom.ts';
 import { scenes } from '../core/scenes.ts';
 import { REDUCED, late } from '../core/util.ts';
 import { CHAPTERS, endingLayers } from '../data/chapters.ts';
+import { CREDITS } from '../data/ending.ts';
 import type { Chapter } from '../data/types.ts';
 import { Store } from '../state/store.ts';
 import { Film } from './film.ts';
 import { Stage } from './film-art.ts';
 
-const CREDITS = ['Tales & Tangles', 'Barnaby, detective bear', 'Evil Larry, thief of lanterns', 'Pickle, space pup', 'Thank you for playing'];
 
 /* ---------- the film that ends a chapter ----------
    Plays the chapter's `ending` script (data/chapters.ts) on a layered stage (film-art.ts) with its own score (audio/film-score.ts):
@@ -68,13 +68,14 @@ export const ChapterFilm = {
       await f.wait(2800);
     } else {
       stage.show(ch.ending.start);
-      for (const b of ch.ending.beats) {
+      for (const [i, b] of ch.ending.beats.entries()) {
         const spent = b.caption !== undefined ? await this.say(b.caption) : 0;
         // the picture, the sound and the flash all change on this one tick
         if (b.show) stage.show(b.show);
         if (b.hide) stage.hide(b.hide);
         if (b.cam) stage.camera(b.cam, f.fast ? 0 : b.cam.ms, f);
-        if (b.cue) { const cue = b.cue; f.snd(() => FilmScore.cue(cue)); }
+        const cue = last && i === ch.ending.beats.length - 1 ? 'finale' : b.cue;     // the very last beat of the whole game always ends on the finale sting
+        if (cue) f.snd(() => FilmScore.cue(cue));
         if (b.flash) f.flashScreen(b.flash, 1100, 0.4);
         await f.wait(Math.max(0, b.hold - spent));
       }

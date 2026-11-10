@@ -53,6 +53,13 @@ export const SCORES: Record<string, Score> = {
     pad: { type: 'sine', lp: 1400, vol: 0.06 },
     melody: [[19, null, 23, null, 26, null, 23, null], [21, null, 26, null, 30, null, 26, null], [19, null, 24, null, 28, null, 24, null], [23, null, 26, 23, 19, null, null, null]],
     bell: { type: 'sine', vol: 0.08, dur: 1.0 }
+  },
+  /* Midnight Oasis: a warm, slow desert lullaby, a plucked melody in a phrygian-dominant colour (D, E flat, F sharp) over a soft pad */
+  oasis: {
+    bpm: 76, chords: [[2, 6, 9, 12], [3, 7, 10, 14], [7, 10, 14, 17], [2, 6, 9, 14]],
+    pad: { type: 'triangle', lp: 1300, vol: 0.05 },
+    melody: [[21, null, 22, 21, 18, null, 15, null], [14, null, 15, null, 18, null, 19, null], [22, null, 21, null, 19, 18, 15, null], [14, null, 18, null, 21, null, null, null]],
+    bell: { type: 'triangle', vol: 0.075, dur: 0.85 }
   }
 };
 
@@ -197,6 +204,68 @@ export const PupScore = {
     AudioFX.note(90, { dur: 2.6, attack: 0.4, vol: 0.09, type: 'sawtooth', slideTo: 520, lp: 900 });
     AudioFX.note(260, { t: 0.5, dur: 2.4, attack: 0.5, vol: 0.05, type: 'triangle', slideTo: 1500, lp: 3000 });
     for (let i = 0; i < 7; i++) AudioFX.chime(i * 2, 1.9 + i * 0.1, 0.08);
+  }
+};
+
+/* ---------- Biscuit's cinematics (scenes/worm-scene.ts): a warm desert night, soft sand sounds and small, squeaky joy ----------
+   A low pad under the whole scene (the only long-lived sound, so a skip can fade it out), then one-shot sounds timed by the scene. */
+export const WormScore = {
+  ...padControl([[-14, 'sine', 1], [-7, 'triangle', 0.5], [2, 'sine', 0.4], [9, 'sine', 0.3]], { lp: 800, vol: 0.055, rise: 2 }),
+
+  /* a few high glassy notes: the stars over the dunes */
+  twinkle() { [21, 28, 24, 33].forEach((n, i) => AudioFX.chime(n - 12, i * 0.4, 0.045)); },
+  /* "one... two... three...": each counted star rings a step higher, with a tiny squeak under it */
+  count(i: number) { AudioFX.chime(7 + i * 2, 0, 0.1); AudioFX.note(820 + i * 90, { t: 0.02, dur: 0.09, vol: 0.045, type: 'sine', slideTo: 980 + i * 90, attack: 0.004 }); },
+  /* "...one hundred!": every star at once, and a shooting star on top */
+  hundred() { sparkleRun(0, 0.07, 0.08); AudioFX.note(1500, { t: 0.35, dur: 0.9, vol: 0.035, type: 'sine', slideTo: 620, lp: 3000 }); },
+  /* a very small yawn: up, then a long way down */
+  yawn() { AudioFX.note(520, { dur: 0.35, vol: 0.06, type: 'sine', slideTo: 760, attack: 0.05 }); AudioFX.note(760, { t: 0.34, dur: 0.75, vol: 0.06, type: 'sine', slideTo: 330, lp: 1800 }); },
+  /* diving into the sand: a soft plop and a hush of grains */
+  dive() { AudioFX.note(420, { dur: 0.22, vol: 0.08, type: 'triangle', slideTo: 150, lp: 1400 }); AudioFX.noise(0.4, 1800, 0.06, 0.05); },
+  /* tunnelling: a few soft, uneven thumps under a gritty hush */
+  rumble() { [0, 0.3, 0.55, 0.95, 1.2].forEach(t => { AudioFX.note(110, { t, dur: 0.2, vol: 0.06, type: 'sine', slideTo: 72, lp: 300 }); AudioFX.noise(0.2, 600, 0.04, t); }); },
+  /* the wind that moves the dunes: a long gust that swells and passes, with a low moan in it */
+  gust() {
+    AudioFX.noise(2.8, 520, 0.13); AudioFX.noise(2.4, 1700, 0.07, 0.25); AudioFX.noise(1.6, 3800, 0.03, 0.6);
+    AudioFX.note(150, { dur: 2.6, attack: 0.9, vol: 0.05, type: 'sine', slideTo: 235, lp: 500 });
+    AudioFX.note(236, { t: 1.5, dur: 1.3, attack: 0.3, vol: 0.035, type: 'sine', slideTo: 140, lp: 500 });
+  },
+  /* "hm?": two questioning notes, the second one up in the air */
+  wonder() { AudioFX.note(hz(9), { dur: 0.16, vol: 0.07, type: 'triangle', lp: 2200 }); AudioFX.note(hz(14), { t: 0.2, dur: 0.3, vol: 0.07, type: 'triangle', slideTo: hz(16), lp: 2200 }); },
+  /* out of the sand with a pop */
+  pop() { AudioFX.noise(0.25, 2400, 0.06); AudioFX.note(300, { dur: 0.22, vol: 0.09, type: 'triangle', slideTo: 760, lp: 2400 }); [14, 19].forEach((n, i) => AudioFX.chime(n, 0.12 + i * 0.1, 0.08)); },
+  /* "Eep!": two tiny squeaks */
+  squeak() {
+    AudioFX.note(900, { dur: 0.12, vol: 0.07, type: 'sine', slideTo: 1250, attack: 0.004 });
+    AudioFX.note(1050, { t: 0.18, dur: 0.14, vol: 0.07, type: 'sine', slideTo: 1450, attack: 0.004 });
+  },
+  /* a single tear: one small, falling drop */
+  tear() { AudioFX.note(1300, { dur: 0.3, vol: 0.05, type: 'sine', slideTo: 700, attack: 0.004 }); AudioFX.chime(4, 0.32, 0.05); },
+  /* the lantern over the dune: a warm chord opening up, hope arriving */
+  lantern() {
+    [0, 7, 12, 16].forEach((n, i) => AudioFX.note(hz(n - 12), { t: i * 0.16, dur: 2.6, attack: 0.5, vol: 0.055, type: 'triangle', lp: 1800 }));
+    AudioFX.chime(9, 0.9, 0.07); AudioFX.chime(12, 1.1, 0.07);
+  },
+  /* the title card: a warm chord and a sparkle */
+  title() {
+    [0, 4, 7, 12].forEach((n, i) => AudioFX.note(hz(n), { t: i * 0.05, dur: 2.2, vol: 0.07, type: 'triangle', attack: 0.03 }));
+    sparkleRun(0.3, 0.08, 0.08);
+  },
+  /* the key sails to the lock, then turns: a bright swish, and later two metal chimes and a click */
+  swish() { AudioFX.note(700, { dur: 0.5, vol: 0.04, type: 'sine', slideTo: 1500, attack: 0.1 }); AudioFX.noise(0.4, 4200, 0.03); },
+  key() { AudioFX.chime(14, 0, 0.09); AudioFX.chime(19, 0.08, 0.09); AudioFX.note(1400, { t: 0.22, dur: 0.05, vol: 0.07, type: 'square', lp: 3000 }); AudioFX.note(180, { t: 0.24, dur: 0.12, vol: 0.07, type: 'sine', lp: 400 }); },
+  /* the round door swings open: a long soft creak, then warm light */
+  creak() { AudioFX.note(170, { dur: 0.9, vol: 0.05, type: 'sawtooth', slideTo: 290, lp: 600, attack: 0.1 }); AudioFX.noise(0.7, 900, 0.03, 0.05); AudioFX.note(hz(0), { t: 0.7, dur: 1.6, attack: 0.5, vol: 0.04, type: 'triangle', lp: 1600 }); },
+  /* hop, hop, hop: each one a little higher */
+  hop(i: number) { AudioFX.note(330 + i * 50, { dur: 0.16, vol: 0.07, type: 'triangle', slideTo: 560 + i * 60, lp: 2000, attack: 0.005 }); AudioFX.noise(0.08, 1400, 0.03, 0.15); },
+  /* a window lights up, each a note higher than the one before */
+  window(i: number) { AudioFX.chime(9 + i * 3, 0, 0.09); },
+  /* the kettle: a soft hiss rising into a tiny whistle */
+  kettle() { AudioFX.noise(1.2, 5200, 0.03); AudioFX.note(1500, { t: 0.3, dur: 1.0, attack: 0.4, vol: 0.03, type: 'sine', slideTo: 1900 }); },
+  /* fireflies gather into a heart: a slow rising run, then a chord to rest on */
+  heart() {
+    for (let i = 0; i < 8; i++) AudioFX.chime(2 + i * 2, i * 0.16, 0.075);
+    [0, 4, 7, 12].forEach(n => AudioFX.note(hz(n), { t: 1.4, dur: 2.6, attack: 0.2, vol: 0.05, type: 'triangle', lp: 2200 }));
   }
 };
 

@@ -12,9 +12,13 @@ export const THEME_HINTS: string[] = [
   'warm feelings - friendship, light and home',
   'a falling star - the sky, space and a very small visitor',
   'the observatory - stars, planets and the night sky',
-  'blast off - rockets, helmets and the way home'
+  'blast off - rockets, helmets and the way home',
+  'the desert at night - sand, spiky plants and scuttling things',
+  'a sleepy camp - travellers, tents and cosy snacks',
+  'the oasis - palms, pools and tiny lights'
 ];
 
 export const TRAIL_HINTS: Record<string, string> = { HIVE: 'where bees live', NIGHT: 'when the owls come out', MOLE: 'a tunnelling garden digger', CLOCK: 'it chimes the hours', PARTY: 'a birthday celebration',
   TIDE: 'what the sea does twice a day', SLEIGH: 'what Santa rides', MARKET: 'where stalls sell things', TICKET: 'you need one to get in', LANTERN: 'a light you can carry',
-  CRATER: 'a bowl-shaped dent where something landed', SPARKLE: 'what stardust does', LAUNCH: 'what a rocket does when the countdown ends' };
+  CRATER: 'a bowl-shaped dent where something landed', SPARKLE: 'what stardust does', LAUNCH: 'what a rocket does when the countdown ends',
+  BURROW: 'a tunnel a worm digs to get home', COMPASS: 'it always points north', SPRING: 'where fresh water bubbles up' };

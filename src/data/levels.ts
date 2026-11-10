@@ -41,7 +41,15 @@ const RAW_LEVELS: RawLevel[] = [
     words: [['GALAXY','00 01 12 13 22 33'],['ORBIT','02 03 04 15 05'],['LUNAR','10 11 20 30 21'],['PLANET','14 24 25 34 23 32'],['SOLAR','31 40 41 42 43'],['UFO','35 44 45']] },
   { n: 13, title: 'Countdown to Home', blurb: 'One key stands between Pickle and the stars.', theme: 'ROCKET', scene: ['#e7d6f7', '#c59be0'],
     caughtScene: () => scenes.pup!.caught(),                                                // Pickle's lift-off follows the solved case
-    words: [['WAVE','00 10 11 12'],['HELMET','01 02 13 04 15 05'],['STARS','03 14 25 24 33'],['HOME','20 31 22 32'],['HEART','21 30 40 41 42'],['ROCKET','23 34 43 44 45 35']] }
+    words: [['WAVE','00 10 11 12'],['HELMET','01 02 13 04 15 05'],['STARS','03 14 25 24 33'],['HOME','20 31 22 32'],['HEART','21 30 40 41 42'],['ROCKET','23 34 43 44 45 35']] },
+  { n: 14, title: "The Lost Little Worm", blurb: "A tiny worm and a very big desert.", theme: 'DESERT', scene: ['#f9e3c4', '#e9b87a'],
+    introScene: () => scenes.worm!.intro(), sceneId: 'worm',                                // Biscuit pops out of the dunes and opens this level
+    words: [['DESERT','12 03 14 25 15 24'],['SCARAB','35 34 43 32 23 22'],['CACTUS','41 30 40 31 20 21'],['CAMEL','11 02 13 04 05'],['DUNE','45 44 33 42'],['SUN','00 10 01']] },
+  { n: 15, title: "Stars Over the Dunes", blurb: "The sleepy caravan has lost its map.", theme: 'CARAVAN', scene: ['#e8d5f0', '#c8a2d8'],
+    words: [['CARAVAN','44 34 45 35 24 15 04'],['STARRY','21 22 33 42 31 30'],['NOMAD','23 12 01 10 20'],['DATES','13 03 02 11 00'],['TENT','43 32 41 40'],['RUG','05 14 25']] },
+  { n: 16, title: "The Midnight Oasis", blurb: "One little door key stands between Biscuit and home.", theme: 'OASIS', scene: ['#d4f0e4', '#8fd4c0'],
+    caughtScene: () => scenes.worm!.caught(),                                                // Biscuit's homecoming follows the solved case
+    words: [['FIREFLY','33 34 23 32 43 42 31'],['COCONUT','00 11 20 10 01 12 02'],['OASIS','25 15 24 13 22'],['PALM','04 03 14 05'],['LILY','21 30 40 41'],['KEY','45 44 35']] }
 ];
 
 /* parse each word path, and attach the level's trail, evil trail, case and hints (all indexed by position) */

@@ -93,6 +93,13 @@
 @keyframes cfFly{from{transform:translate(-520px,260px) rotate(-8deg)}to{transform:none}}
 .cf-bear.sp{left:24%;top:70%}
 
+/* desert */
+.cf-bear.ds{left:24%;top:74%}
+.cf-sway{transform-box:fill-box;transform-origin:0 100%;animation:cfSway 5s ease-in-out infinite alternate}
+@keyframes cfSway{from{transform:rotate(-2.5deg)}to{transform:rotate(2.5deg)}}
+.cf-peek{transform-box:fill-box;transform-origin:50% 100%;animation:cfPeek 2.4s ease-in-out infinite alternate}
+@keyframes cfPeek{from{transform:rotate(-2deg)}to{transform:rotate(2deg)}}
+
 /* reduced motion: the finished scene, no drifting, crossfades only */
 @media (prefers-reduced-motion:reduce){
   .cf-stage *{animation:none !important}

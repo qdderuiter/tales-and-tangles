@@ -11,6 +11,7 @@ import { ChapterFilm } from '../scenes/chapter-film.ts';
 import { Cutscene } from '../scenes/cutscene.ts';
 import { LarryScene } from '../scenes/larry-scene.ts';
 import { PupScene } from '../scenes/pup-scene.ts';
+import { WormScene } from '../scenes/worm-scene.ts';
 import { Store } from '../state/store.ts';
 import { Badges } from '../ui/badges-screen.ts';
 import { MapScreen } from '../ui/map-screen.ts';
@@ -43,8 +44,9 @@ export function initGame() {
   Cutscene.init();
   LarryScene.init();
   PupScene.init();
+  WormScene.init();
   ChapterFilm.init();
-  StoryScreen.init(cast.story, { larry: { host: $('#storyLarry'), portrait: cast.larry }, pup: { host: $('#storyPup'), portrait: cast.pup } });
+  StoryScreen.init(cast.story, { larry: { host: $('#storyLarry'), portrait: cast.larry }, pup: { host: $('#storyPup'), portrait: cast.pup }, worm: { host: $('#storyWorm'), portrait: cast.worm } });
 
   // title
   $('#btnPlay').addEventListener('click', () => {

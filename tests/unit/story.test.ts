@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { LEVELS } from '../../src/data/levels.ts';
+import { EPILOGUE } from '../../src/data/ending.ts';
 import { STORY_EXTRA, STORY_RAW } from '../../src/data/story.ts';
 import type { RawLine } from '../../src/data/types.ts';
 import { DEFAULT_STEPS } from '../../src/game/level-steps.ts';
@@ -21,5 +22,14 @@ describe.each(LEVELS.map(lv => [lv.n, lv]))('story of chapter %i', (_n, lv) => {
         expect(typeof line.e, `${part} line emotion`).toBe('string');
       }
     }
+  });
+});
+
+describe('the epilogue closes the game', () => {
+  it('lives in data/ending.ts, and no level carries it in its own outro (story-builder adds it to the last level)', () => {
+    expect(EPILOGUE.length).toBeGreaterThan(0);
+    EPILOGUE.forEach(l => { expect(l.t.length).toBeGreaterThan(0); expect(l.e.length).toBeGreaterThan(0); });
+    const spoken = new Set(EPILOGUE.map(l => l.t));
+    LEVELS.forEach(lv => STORY_RAW[lv.n].outro.forEach(l => expect(spoken.has(l.t), 'level ' + lv.n).toBe(false)));
   });
 });

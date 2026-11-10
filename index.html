@@ -97,6 +97,7 @@
     <div class="story-bear" id="storyBear"></div>
     <div class="story-larry" id="storyLarry"></div>
     <div class="story-pup" id="storyPup"></div>
+    <div class="story-worm" id="storyWorm"></div>
     <div class="dlg" id="dlg">
       <div class="dlg-name" id="dlgName">Barnaby</div>
       <div class="dlg-text" id="dlgText" aria-live="off"></div>
@@ -309,6 +310,64 @@
     <div class="pf-title" id="pfTitle"><small>LOST IN SPACE</small><b>PICKLE</b><span>a very small visitor</span></div>
     <div class="pf-flash" id="pfFlash"></div>
     <button class="btn small skip film pf-skip" id="pfSkip">Skip</button>
+  </div>
+
+  <!-- BISCUIT THE SAND WORM: the night he got lost (opens Case 6.1) and his homecoming (after Case 6.3). One stage for both;
+       scenes/worm-scene.ts moves the pieces and puts the class "home" on the svg for the second scene. Coordinates are viewBox units. -->
+  <div class="worm-film" id="wormFilm" aria-hidden="true">
+    <div class="wf-stage" id="wfStage">
+      <svg class="wf-art" id="wfArt" viewBox="0 0 400 700" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <defs>
+          <radialGradient id="wfGlow"><stop offset="0" stop-color="#ffe29a" stop-opacity=".9"/><stop offset=".5" stop-color="#ffe29a" stop-opacity=".3"/><stop offset="1" stop-color="#ffe29a" stop-opacity="0"/></radialGradient>
+          <radialGradient id="wfMoonGlow"><stop offset="0" stop-color="#fff1c0" stop-opacity=".5"/><stop offset="1" stop-color="#fff1c0" stop-opacity="0"/></radialGradient>
+          <radialGradient id="wfLamp"><stop offset="0" stop-color="#ffbe6b" stop-opacity=".75"/><stop offset=".45" stop-color="#ffa95a" stop-opacity=".3"/><stop offset="1" stop-color="#ffa95a" stop-opacity="0"/></radialGradient>
+          <radialGradient id="wfInside"><stop offset="0" stop-color="#fff3c8"/><stop offset="1" stop-color="#f4a95c"/></radialGradient>
+          <linearGradient id="wfWater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fc8c8"/><stop offset="1" stop-color="#2b6f98"/></linearGradient>
+          <linearGradient id="wfTail" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff6d0" stop-opacity="0"/><stop offset="1" stop-color="#fff6d0"/></linearGradient>
+        </defs>
+        <g id="wfStars"></g>
+        <g class="wf-intro"><g transform="translate(95 270)"><g class="wf-cstar" id="wfC0"><circle r="15" fill="url(#wfGlow)" opacity=".45"/><path d="M0 -9 L2.2 -2.2 L9 0 L2.2 2.2 L0 9 L-2.2 2.2 L-9 0 L-2.2 -2.2Z" fill="#fff6d0"/></g><text class="wf-num wf-hid" id="wfN0" x="13" y="-11">1</text></g><g transform="translate(150 215)"><g class="wf-cstar" id="wfC1"><circle r="15" fill="url(#wfGlow)" opacity=".45"/><path d="M0 -9 L2.2 -2.2 L9 0 L2.2 2.2 L0 9 L-2.2 2.2 L-9 0 L-2.2 -2.2Z" fill="#fff6d0"/></g><text class="wf-num wf-hid" id="wfN1" x="13" y="-11">2</text></g><g transform="translate(205 262)"><g class="wf-cstar" id="wfC2"><circle r="15" fill="url(#wfGlow)" opacity=".45"/><path d="M0 -9 L2.2 -2.2 L9 0 L2.2 2.2 L0 9 L-2.2 2.2 L-9 0 L-2.2 -2.2Z" fill="#fff6d0"/></g><text class="wf-num wf-hid" id="wfN2" x="13" y="-11">3</text></g><g transform="translate(252 226)"><g class="wf-cstar" id="wfC3"><circle r="15" fill="url(#wfGlow)" opacity=".45"/><path d="M0 -9 L2.2 -2.2 L9 0 L2.2 2.2 L0 9 L-2.2 2.2 L-9 0 L-2.2 -2.2Z" fill="#fff6d0"/></g></g></g>
+        <g transform="translate(70 170) rotate(16)"><g class="wf-hid" id="wfShoot"><path d="M0 0 H74" stroke="url(#wfTail)" stroke-width="2.6" stroke-linecap="round"/><circle cx="74" cy="0" r="3" fill="#fff6d0"/></g></g>
+        <circle cx="300" cy="150" r="120" fill="url(#wfMoonGlow)"/><circle cx="300" cy="150" r="38" fill="#fff3cf"/><circle cx="288" cy="140" r="7" fill="#f1dca6" opacity=".7"/><circle cx="312" cy="164" r="9" fill="#f1dca6" opacity=".6"/><circle cx="314" cy="136" r="4" fill="#f1dca6" opacity=".6"/>
+        <g id="wfDuneFar"><path d="M-160 424 Q-70 396 0 430 Q120 380 250 420 T400 405 T560 432 V700 H-160Z" fill="#6b4a88"/><path d="M-160 424 Q-70 396 0 430 Q120 380 250 420 T400 405 T560 432" fill="none" stroke="#c9a2e0" stroke-width="2.5" opacity=".3"/></g>
+        <g id="wfDuneMid"><path d="M-160 462 Q-60 440 0 470 Q90 420 200 455 T400 440 T560 468 V700 H-160Z" fill="#a35f7e"/><path d="M-160 462 Q-60 440 0 470 Q90 420 200 455 T400 440 T560 468" fill="none" stroke="#ffc6b0" stroke-width="2.5" opacity=".3"/></g>
+        <g class="wf-intro"><g transform="translate(96 560)"><g class="wf-sign" id="wfSign"><rect x="-4" y="-124" width="8" height="126" rx="3" fill="#8d6a4a"/><path d="M-30 -120 H22 L36 -106 L22 -92 H-30Z" fill="#f2c36b" stroke="#a9772e" stroke-width="2.5"/><text x="-5" y="-101.5" text-anchor="middle" font-size="12" font-weight="900" fill="#6b4a2b" font-family="sans-serif">OASIS</text></g></g></g>
+        <g class="wf-home">
+          <rect x="140" y="448" width="14" height="34" rx="3" fill="#c98a5a"/><rect x="137" y="444" width="20" height="7" rx="3" fill="#a96a42"/>
+          <g transform="translate(147 436)"><g class="wf-steam" id="wfSteam"><path class="wf-puff" style="--i:0" d="M0 7 C-13 -1 -7 -13 0 -6 C7 -13 13 -1 0 7Z" fill="#fff4f6"/><path class="wf-puff" style="--i:1" d="M0 7 C-13 -1 -7 -13 0 -6 C7 -13 13 -1 0 7Z" fill="#fff4f6"/><path class="wf-puff" style="--i:2" d="M0 7 C-13 -1 -7 -13 0 -6 C7 -13 13 -1 0 7Z" fill="#fff4f6"/></g></g>
+          <path d="M25 552 Q25 462 105 462 Q185 462 185 552Z" fill="#e3a876"/><path d="M40 520 Q60 478 108 470" fill="none" stroke="#f5c896" stroke-width="6" stroke-linecap="round" opacity=".5"/>
+          <g class="wf-win" id="wfGlowDoor"><circle cx="105" cy="522" r="46" fill="url(#wfGlow)"/></g>
+          <circle cx="105" cy="522" r="24" fill="#2a1a2e"/><g class="wf-win" id="wfInsideOn"><circle cx="105" cy="522" r="24" fill="url(#wfInside)"/></g>
+          <circle cx="58" cy="512" r="9" fill="#5a3a4a" stroke="#a0653f" stroke-width="3"/><circle cx="152" cy="512" r="9" fill="#5a3a4a" stroke="#a0653f" stroke-width="3"/>
+          <g class="wf-win" id="wfWin0"><circle cx="58" cy="512" r="30" fill="url(#wfGlow)"/><circle cx="58" cy="512" r="9" fill="#ffe6a0" stroke="#a0653f" stroke-width="3"/><path d="M58 503 V521 M49 512 H67" stroke="#a0653f" stroke-width="2"/></g>
+          <g class="wf-win" id="wfWin1"><circle cx="152" cy="512" r="30" fill="url(#wfGlow)"/><circle cx="152" cy="512" r="9" fill="#ffe6a0" stroke="#a0653f" stroke-width="3"/><path d="M152 503 V521 M143 512 H161" stroke="#a0653f" stroke-width="2"/></g>
+          <g id="wfPalms"></g>
+        </g>
+        <path d="M-60 560 Q100 522 210 546 T460 530 V700 H-60Z" fill="#d98c6e"/><path d="M-60 560 Q100 522 210 546 T460 530" fill="none" stroke="#ffd9a8" stroke-width="3" opacity=".35"/>
+        <g class="wf-home">
+          <g class="wf-win" id="wfSpill"><ellipse cx="112" cy="558" rx="52" ry="11" fill="#ffe29a" opacity=".4"/></g>
+          <g class="wf-door" id="wfDoor"><circle cx="105" cy="522" r="26" fill="#7a4a35"/><circle cx="105" cy="522" r="21" fill="#a0653f"/><path d="M105 501 V543 M84 522 H126" stroke="#7a4a35" stroke-width="3" opacity=".6"/><circle cx="118" cy="524" r="3.4" fill="#ffd36b"/></g>
+          <path d="M105 488 L91 481 Q88 488 91 495Z M105 488 L119 481 Q122 488 119 495Z" fill="#e8506a"/><rect x="101" y="484" width="8" height="8" rx="3" fill="#c23a57"/>
+          <ellipse cx="285" cy="592" rx="92" ry="19" fill="#f1c690"/><ellipse cx="285" cy="590" rx="82" ry="14" fill="url(#wfWater)"/><ellipse cx="262" cy="587" rx="34" ry="5" fill="#fff3cf" opacity=".28"/>
+          <ellipse cx="250" cy="596" rx="11" ry="4" fill="#4fae7a"/><ellipse cx="304" cy="598" rx="12" ry="4.4" fill="#4fae7a"/><circle cx="250" cy="594" r="3.4" fill="#ff9fc0"/><circle cx="304" cy="596" r="3.4" fill="#ffc0d8"/>
+        </g>
+        <path d="M-60 640 Q150 604 460 634 V700 H-60Z" fill="#c97a5e"/>
+        <g class="wf-intro"><g class="wf-hid" id="wfBear"><circle cx="72" cy="512" r="150" fill="url(#wfLamp)"/><g id="wfBearArt"></g></g></g>
+        <g id="wfWind"></g>
+        <g transform="translate(230 552)"><g class="wf-bump wf-hid" id="wfBump"><ellipse cx="0" cy="0" rx="24" ry="11" fill="#e8b078"/><ellipse cx="-4" cy="-3" rx="14" ry="5" fill="#f3d5a0"/></g></g>
+        <g transform="translate(300 524)"><text class="wf-num wf-q wf-hid" id="wfQ" x="0" y="0" text-anchor="middle">?</text></g>
+        <g id="wfBiscuitPos" transform="translate(130 449)"><g class="wf-biscuit wf-hid" id="wfBiscuit"><g transform="scale(.5)"><g class="biscuit b-happy" id="wfEmo"></g></g></g></g>
+        <g class="wf-intro"><g transform="translate(139 494)"><path class="wf-hid" id="wfTear" d="M0 -6 Q5 1 0 5 Q-5 1 0 -6Z" fill="#a8dcff"/></g></g>
+        <g class="wf-home"><g transform="translate(118 524)"><g class="wf-key wf-hid" id="wfKey"><circle cx="-9" cy="0" r="5.5" fill="none" stroke="#ffd36b" stroke-width="3.4"/><path d="M-3.5 0 H12 M7 0 V5 M11.5 0 V4" stroke="#ffd36b" stroke-width="3.4" stroke-linecap="round" fill="none"/></g></g></g>
+        <g id="wfPuffs"></g>
+        <g class="wf-home" id="wfFlies"></g>
+      </svg>
+    </div>
+    <div class="wf-bar top"></div><div class="wf-bar bot"></div>
+    <div class="wf-cap" id="wfCap"></div>
+    <div class="wf-title" id="wfTitle"><small>LOST IN THE DUNES</small><b>BISCUIT</b><span>a very lost little worm</span></div>
+    <div class="wf-flash" id="wfFlash"></div>
+    <button class="btn small skip film wf-skip" id="wfSkip">Skip</button>
   </div>
 
   <!-- CHAPTER ENDINGS: the short film that closes each chapter (scenes/chapter-film.ts) -->

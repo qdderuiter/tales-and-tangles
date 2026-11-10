@@ -9,7 +9,8 @@ export const FILM_LAYERS: Record<Motif, string[]> = {
   night:   ['sky', 'stars', 'moon', 'clouds', 'town', 'cake', 'candles'],
   sea:     ['sky', 'sea', 'lighthouse', 'beam', 'snow', 'globe'],
   lantern: ['sky', 'stars', 'town', 'rooftop', 'lanterns', 'larry', 'barnaby'],
-  space:   ['sky', 'stars', 'planet', 'hills', 'barnaby', 'trail', 'rocket', 'home']
+  space:   ['sky', 'stars', 'planet', 'hills', 'barnaby', 'trail', 'rocket', 'home'],
+  desert:  ['sky', 'stars', 'moon', 'dunes', 'caravan', 'palms', 'pool', 'house', 'barnaby']
 };
 
 export const CHAPTERS: Chapter[] = [
@@ -74,7 +75,20 @@ export const CHAPTERS: Chapter[] = [
         { caption: 'Sparkles trail behind it, all the way home.', show: ['trail'], cam: { x: -12, y: -12, scale: 1.15, ms: 3200 }, cue: 'sparkle', hold: 2800 },
         { caption: 'A small planet is waiting.', show: ['planet'], cam: { x: -18, y: -14, scale: 1.25, ms: 3600 }, cue: 'bell', hold: 2600 },
         { caption: 'Window by window, it lights up. Pickle is home. Bork!', show: ['home'], flash: 0.35, cue: 'chime', hold: 3000 },
-        { caption: 'And down in the meadow, Barnaby waves back.', cam: { x: 0, y: 4, scale: 1, ms: 3400 }, cue: 'finale', flash: 0.4, hold: 2800 }
+        { caption: 'And down in the meadow, Barnaby waves back.', cam: { x: 0, y: 4, scale: 1, ms: 3400 }, cue: 'chime', flash: 0.4, hold: 2800 },
+        { caption: 'Far to the south, under a midnight moon, a little dune begins to wiggle...', cam: { x: 8, y: 2, scale: 1.04, ms: 3200 }, cue: 'swell', hold: 3200 }
+      ] } },
+  { id: 'oasis', n: 6, title: 'Midnight Oasis', tagline: 'A very small worm in a very big desert.', levels: [14, 15, 16], motif: 'desert', track: 'oasis',
+    palette: { a: '#f9e3c4', b: '#e9a77a', ink: '#33295e', glow: '#ffd98a' },
+    ending: {
+      start: ['sky', 'stars', 'moon', 'dunes'],
+      reducedCaption: 'Midnight in the desert. Under the palms, one little window glows: Biscuit is home.',
+      beats: [
+        { caption: 'Midnight in the desert. The sand is still warm.', cam: { x: 0, scale: 1, ms: 0 }, cue: 'swell', hold: 2800 },
+        { caption: 'A sleepy caravan rests under the stars.', show: ['caravan'], cam: { x: -6, scale: 1.06, ms: 3200 }, cue: 'chime', hold: 3000 },
+        { caption: 'Beyond the last dune, the palms sway.', show: ['palms', 'pool'], cam: { x: -14, y: -2, scale: 1.14, ms: 3400 }, cue: 'sparkle', hold: 3000 },
+        { caption: 'A little round window glows. Biscuit is home.', show: ['house'], cam: { x: -20, y: -4, scale: 1.24, ms: 3400 }, cue: 'bell', flash: 0.35, hold: 3200 },
+        { caption: 'And somewhere out there, every friend we met sleeps safe and sound.', show: ['barnaby'], cam: { x: -6, y: 0, scale: 1, ms: 3600 }, cue: 'chime', hold: 3200 }
       ] } }
 ];
 

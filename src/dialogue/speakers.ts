@@ -15,7 +15,8 @@ export const DEFAULT_SPEAKER = 'Barnaby';
 /* speakers other than Barnaby: nameClass styles the name tag; portrait = their own face on the story screen (Barnaby's does not react to their lines) */
 export const SPEAKERS: Record<string, { nameClass: string; portrait?: string }> = {
   'Evil Larry': { nameClass: 'larry', portrait: 'larry' },
-  'Pickle': { nameClass: 'pup', portrait: 'pup' }
+  'Pickle': { nameClass: 'pup', portrait: 'pup' },
+  'Biscuit': { nameClass: 'worm', portrait: 'worm' }
 };
 
 export const SPEAKER_CLASSES = Object.values(SPEAKERS).map(s => s.nameClass).filter(Boolean);
@@ -24,6 +25,7 @@ export const SPEAKER_CLASSES = Object.values(SPEAKERS).map(s => s.nameClass).fil
 const VOICES: Record<string, BabbleVoice> = {
   'Evil Larry': { base: 330, wave: 'square', spread: 12, every: 2, vol: 0.13 },
   'Pickle': { base: 620, wave: 'sine', spread: 18, every: 2, vol: 0.22 },
+  'Biscuit': { base: 700, wave: 'triangle', spread: 20, every: 2, vol: 0.2 },
   'Barnaby Noir': { base: 150, wave: 'sawtooth', spread: 6, every: 3, vol: 0.15 }
 };
 export const voiceFor = (who: string): BabbleVoice => VOICES[who] || DEFAULT_VOICE;

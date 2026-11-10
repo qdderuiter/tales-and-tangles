@@ -31,7 +31,7 @@ export type Story = Record<number, Record<StoryPart, Line[]>>
 export type StoryPart = 'intro' | 'bridge' | 'caseIntro' | 'outro';
 
 /* ---- Levels ---- */
-export type SceneId = 'larry' | 'pup';
+export type SceneId = 'larry' | 'pup' | 'worm';
 export interface Level {
   n: number; title: string; blurb: string; theme: string; scene: [string, string];
   words: WordEntry[];
@@ -56,7 +56,7 @@ export interface TempLevel {
    A chapter groups several levels ("cases") under one theme and ends with a short film (scenes/chapter-film.ts plays it).
    The film is data: a list of beats. Each beat can move the camera, show / hide stage layers (named in FILM_LAYERS), set a caption,
    fire an audio cue and flash the screen, then holds. The chapter's id is also the key of its synthesized score (audio/film-score.ts). */
-export type Motif = 'meadow' | 'night' | 'sea' | 'lantern' | 'space';
+export type Motif = 'meadow' | 'night' | 'sea' | 'lantern' | 'space' | 'desert';
 export type FilmCue = 'swell' | 'sparkle' | 'chime' | 'whoosh' | 'bell' | 'finale';
 export interface FilmBeat {
   caption?: string;
@@ -71,6 +71,7 @@ export interface Chapter {
   levels: number[];                                                  // level numbers, in play order
   palette: { a: string; b: string; ink: string; glow: string };
   motif: Motif; ending: FilmScript;
+  track?: string;                                                    // the background music of this chapter's levels (a key of TRACKS in audio/music.ts); the shared case track when absent
 }
 
 /* ---- Badges ----

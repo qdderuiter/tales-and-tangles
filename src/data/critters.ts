@@ -36,6 +36,15 @@ export const CRITTERS: Record<string, Critter> = {
   'Luna Lamb':      { color: '#f4eef8', belly: '#ffffff', ear: 'round', acc: 'none' },
   'Sprocket Mole':  { color: '#7b7388', belly: '#d6cfe0', ear: 'round', acc: 'glasses' },
   'Twinkle Toad':   { color: '#7fb8a4', belly: '#e1f3e9', ear: 'round', acc: 'none' },
+  'Fennec Fern':    { color: '#e8c58f', belly: '#fff1d6', ear: 'point', acc: 'none' },
+  'Sol Gecko':      { color: '#9ccf7a', belly: '#eaf6c9', ear: 'round', acc: 'stripes' },
+  'Tumble Tortoise':{ color: '#7e9f6b', belly: '#e3edc9', ear: 'round', acc: 'hat' },
+  'Mirage Meerkat': { color: '#c9a273', belly: '#f5e2c4', ear: 'point', acc: 'glasses' },
+  'Dusty Hedgehog': { color: '#a89078', belly: '#eddcc6', ear: 'round', acc: 'none' },
+  'Pepper Camel':   { color: '#d4a56a', belly: '#f7e3bd', ear: 'round', acc: 'stripes' },
+  'Juniper Jerboa': { color: '#e3b88f', belly: '#fff0dc', ear: 'long', acc: 'none' },
+  'Sage Scorpion':  { color: '#b0866a', belly: '#ecd5bf', ear: 'point', acc: 'hat' },
+  'Nutmeg Hare':    { color: '#c78f5e', belly: '#f8e4cc', ear: 'long', acc: 'glasses' },
   'Evil Larry':     { color: '#3a3442', belly: '#cfc6d8', ear: 'point', acc: 'bandit' }
 };
 

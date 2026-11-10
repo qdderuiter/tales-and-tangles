@@ -51,6 +51,10 @@ describe('chapter endings (the films)', () => {
     });
   });
 
+  it('no script names the finale cue: the engine plays it on the last beat of the last chapter, so the ending always comes last', () => {
+    CHAPTERS.forEach(c => c.ending.beats.forEach((b, i) => expect(b.cue, c.id + ' beat ' + i).not.toBe('finale')));
+  });
+
   it('a film runs a sensible length (10 to 30 seconds)', () => {
     CHAPTERS.forEach(c => {
       const ms = c.ending.beats.reduce((s, b) => s + b.hold, 0);
@@ -65,6 +69,7 @@ describe('chapter helpers', () => {
     expect(chapterOf(1)?.id).toBe('village');
     expect(chapterOf(5)?.id).toBe('dreams');
     expect(chapterOf(12)?.id).toBe('space');
+    expect(chapterOf(16)?.id).toBe('oasis');
     expect(chapterOf(99)).toBeUndefined();
     expect(LEVELS.filter(lv => isChapterEnd(lv.n)).map(lv => lv.n)).toEqual(CHAPTERS.map(c => c.levels[c.levels.length - 1]));
   });

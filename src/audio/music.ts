@@ -1,5 +1,6 @@
 import { AudioFX } from './sfx.ts';
 import { on } from '../core/events.ts';
+import { chapterOf } from '../data/chapters.ts';
 import { session } from '../state/session.ts';
 import { Store } from '../state/store.ts';
 
@@ -7,12 +8,14 @@ import { Store } from '../state/store.ts';
    title = Village at Dusk (title and every menu), case = Curious Melody (story, puzzles, notebook), evil = Smoky Night Sketch (Barnaby Noir).
    Each track is an <audio> element routed through the Web Audio graph (track gain -> duck gain -> AudioFX.master), so it sits under the
    sound effects, ducks under fanfares and speech, and fades out under a chapter film. Changing screens crossfades. */
-export type TrackKey = 'title' | 'case' | 'evil';
+export type TrackKey = 'title' | 'case' | 'evil' | 'oasis';
 
-export const TRACKS: Record<TrackKey, { src: string; bpm: number }> = {
+/* fallback: the track that plays instead while this one's file is missing (a chapter track can ship later) */
+export const TRACKS: Record<TrackKey, { src: string; bpm: number; fallback?: TrackKey }> = {
   title: { src: 'music/village-at-dusk.mp3', bpm: 80 },
   case: { src: 'music/curious-melody.mp3', bpm: 80 },
-  evil: { src: 'music/smoky-night-sketch.mp3', bpm: 70 }
+  evil: { src: 'music/smoky-night-sketch.mp3', bpm: 70 },
+  oasis: { src: 'music/midnight-oasis.mp3', bpm: 84, fallback: 'case' }      // Chapter 6 (data/chapters.ts: track: 'oasis')
 };
 
 const LEVEL = 0.62;     // sits under the sound effects
@@ -41,6 +44,8 @@ export const Music = {
     try {
       const el = new Audio(TRACKS[key].src);
       el.loop = true; el.preload = 'auto';
+      const fb = TRACKS[key].fallback;
+      if (fb) el.addEventListener('error', () => { if (this.current === key) this.switchTo(fb); });      // the file is not there: play the shared track
       let gain: GainNode | null = null;
       if (!DIRECT) { gain = ctx.createGain(); gain.gain.value = 0; ctx.createMediaElementSource(el).connect(gain); gain.connect(this.graph(ctx)); } else el.volume = 0;
       return (this.players[key] = { el, gain, pauseTimer: 0, lvl: 0, cur: 0 });
@@ -108,9 +113,10 @@ export const Music = {
     this.current = null;
   },
   setEnabled(on: boolean) { if (on) this.start(); else this.stop(); },
-  scene(name: string, _level: number, evil: boolean) {
+  scene(name: string, level: number, evil: boolean) {
     const inLevel = name === 'puzzle' || name === 'zip' || name === 'case' || name === 'story';
-    this.want = evil && inLevel ? 'evil' : inLevel ? 'case' : 'title';
+    const chapterTrack = chapterOf(level)?.track as TrackKey | undefined;          // a chapter may bring its own music
+    this.want = evil && inLevel ? 'evil' : inLevel ? (chapterTrack && chapterTrack in TRACKS ? chapterTrack : 'case') : 'title';
     if (this.running) this.switchTo(this.want);
   },
   duck(ms: number, level = 0.35) {                              // dip under fanfares and speech; a shallower dip never cuts a deeper one short

@@ -4,9 +4,10 @@
      npm run build && npm run watch            play dist/index.html
      npm run watch -- --dev                    use the vite dev server instead
      E2E_BROWSER_CHANNEL=chrome npm run watch  pick another installed browser (default msedge)
-     WATCH_SPEED=1 npm run watch               pause lengths are divided by this (default 12)
+     WATCH_SPEED=8 npm run watch               pause lengths are divided by this (default 12)
+     WATCH_FROM=14 npm run watch               start at case 14 (Case 6.1) with every earlier case already solved
 
-   The play is fast (12x by default) but the cutscenes (Evil Larry's films and the chapter endings) always run at regular speed,
+   The play is fast (12x by default) but the cutscenes (Evil Larry's films Biscuit's films and the chapter endings) always run at regular speed,
    to the end, never skipped. Stories are tapped through (not skipped). Answers come from src/data. */
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
@@ -22,6 +23,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const DEV = process.argv.includes('--dev');
 const CHANNEL = process.env.E2E_BROWSER_CHANNEL || 'msedge';
 const SPEED = Number(process.env.WATCH_SPEED) || 12;
+const FROM = Math.max(1, Math.min(LEVELS.length, Number(process.env.WATCH_FROM) || 1));   // the first case to play; earlier ones are solved in the starting save
 const PORT = 5173;
 
 let devServer = null;
@@ -133,6 +135,13 @@ async function main() {
   // viewport: null makes the page fill the real window, so nothing is cut off on a short screen
   const browser = await chromium.launch({ channel: CHANNEL, headless: false, slowMo: Math.round(120 / SPEED), args: ['--window-size=480,820', '--window-position=40,20'] });
   const context = await browser.newContext({ viewport: null });
+  if (FROM > 1) {                                                    // earlier cases solved, their chapter films and cinematics already seen
+    const done = { word: { done: true, stars: 3, best: 1400 }, zip: { done: true, stars: 3, best: 1400 }, solved: true, penalty: 0 };
+    const d = Store.defaults();
+    const save = JSON.stringify({ ...d, unlocked: FROM, levels: Object.fromEntries(Array.from({ length: FROM - 1 }, (_, i) => [i + 1, done])),
+      seen: { ...d.seen, larry: FROM > 8, pup: FROM > 11, endings: Object.fromEntries(CHAPTERS.filter(c => c.levels[c.levels.length - 1] < FROM).map(c => [c.id, true])) } });
+    await context.addInitScript(([key, value]) => { try { if (!sessionStorage.getItem('watch-seeded')) { sessionStorage.setItem('watch-seeded', '1'); localStorage.setItem(key, value); } } catch { /* storage blocked */ } }, [Store.KEY, save]);
+  }
   const page = await context.newPage();
   page.setDefaultTimeout(30000);
   const errors = [];
@@ -142,10 +151,10 @@ async function main() {
   await page.waitForSelector('#titleBear > *', { state: 'attached' });
   await sleep(page, 2000);
 
-  let current = 1;            // the case being played
+  let current = FROM;         // the case being played
   let doneWith = '';          // "screen:case" we already solved, so we don't drag twice
   const last = LEVELS.length;
-  log('Playing all ' + last + ' cases from a new save...');
+  log(FROM > 1 ? `Playing cases ${FROM} to ${last}...` : 'Playing all ' + last + ' cases from a new save...');
   await page.click('#btnPlay');
 
   for (let tick = 0; tick < 4000; tick++) {
@@ -155,6 +164,7 @@ async function main() {
     if (await has(page, '#chapterFilm.show')) { log('  chapter film'); await watchFilm(page, '#chapterFilm'); continue; }
     if (await has(page, '#larryFilm.show')) { log('  Evil Larry cinematic'); await watchFilm(page, '#larryFilm'); continue; }
     if (await has(page, '#pupFilm.show')) { log('  Pickle cinematic'); await watchFilm(page, '#pupFilm'); continue; }
+    if (await has(page, '#wormFilm.show')) { log('  Biscuit cinematic'); await watchFilm(page, '#wormFilm'); continue; }
     if (await has(page, '#noir.show')) { log('  Barnaby Noir interrupts'); await playNoir(page); continue; }
 
     if (await has(page, '#victory.show')) {
@@ -204,7 +214,7 @@ async function main() {
     if (await has(page, '#screen-map.active')) {
       const save = await readSave(page);
       const allDone = LEVELS.every((_, i) => save?.levels?.[i + 1]?.solved);
-      const filmsSeen = CHAPTERS.every(c => save?.seen?.endings?.[c.id]);
+      const filmsSeen = CHAPTERS.every(c => save?.seen?.endings?.[c.id]);   // (a start from WATCH_FROM marks the earlier chapters' films as seen)
       if (allDone && filmsSeen) { log('All cases solved, all films seen.'); await sleep(page, 4000); break; }
       const next = LEVELS.findIndex((_, i) => !save?.levels?.[i + 1]?.solved) + 1;
       if (next === 0) { await sleep(page, 1000); continue; }
