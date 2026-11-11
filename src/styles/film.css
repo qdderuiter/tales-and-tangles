@@ -93,6 +93,10 @@
 @keyframes cfFly{from{transform:translate(-520px,260px) rotate(-8deg)}to{transform:none}}
 .cf-bear.sp{left:24%;top:70%}
 
+/* big top */
+.cf-bear.bt{left:16%;top:76%}
+.cf-layer[data-layer=ball] .ele-ballstar{animation:eleSpin 12s linear infinite}
+
 /* desert */
 .cf-bear.ds{left:24%;top:74%}
 .cf-sway{transform-box:fill-box;transform-origin:0 100%;animation:cfSway 5s ease-in-out infinite alternate}

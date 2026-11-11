@@ -5,4 +5,4 @@ export interface SceneDef { intro(): Promise<void>; caught(): Promise<void> }
 /* the film that ends a chapter, by chapter id (data/chapters.ts); resolves when it has finished or been skipped */
 export interface ChapterFilmDef { play(chapterId: string): Promise<void> }
 
-export const scenes: { larry?: SceneDef; pup?: SceneDef; worm?: SceneDef; chapterEnd?: ChapterFilmDef; [name: string]: SceneDef | ChapterFilmDef | undefined } = {};
+export const scenes: { larry?: SceneDef; pup?: SceneDef; worm?: SceneDef; elephant?: SceneDef; chapterEnd?: ChapterFilmDef; [name: string]: SceneDef | ChapterFilmDef | undefined } = {};

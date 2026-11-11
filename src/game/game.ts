@@ -11,6 +11,7 @@ import { ChapterFilm } from '../scenes/chapter-film.ts';
 import { Cutscene } from '../scenes/cutscene.ts';
 import { LarryScene } from '../scenes/larry-scene.ts';
 import { PupScene } from '../scenes/pup-scene.ts';
+import { ElephantScene } from '../scenes/elephant-scene.ts';
 import { WormScene } from '../scenes/worm-scene.ts';
 import { Store } from '../state/store.ts';
 import { Badges } from '../ui/badges-screen.ts';
@@ -45,8 +46,9 @@ export function initGame() {
   LarryScene.init();
   PupScene.init();
   WormScene.init();
+  ElephantScene.init();
   ChapterFilm.init();
-  StoryScreen.init(cast.story, { larry: { host: $('#storyLarry'), portrait: cast.larry }, pup: { host: $('#storyPup'), portrait: cast.pup }, worm: { host: $('#storyWorm'), portrait: cast.worm } });
+  StoryScreen.init(cast.story, { larry: { host: $('#storyLarry'), portrait: cast.larry }, pup: { host: $('#storyPup'), portrait: cast.pup }, worm: { host: $('#storyWorm'), portrait: cast.worm }, elephant: { host: $('#storyElephant'), portrait: cast.elephant } });
 
   // title
   $('#btnPlay').addEventListener('click', () => {

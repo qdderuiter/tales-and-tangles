@@ -115,6 +115,14 @@ describe('loading', () => {
     expect(load().seen.pup).toBe(true);
   });
 
+  it("Pippy's cinematic flag survives a load, and an older save without it reads as not seen", () => {
+    put(Store.KEY, { seen: { larry: true, pup: true, worm: true, elephant: true } });
+    expect(load().seen.elephant).toBe(true);
+    put(Store.KEY, { seen: { larry: true, pup: true, worm: true } });
+    expect(load().seen.elephant).toBe(false);
+    expect(load().seen.worm).toBe(true);
+  });
+
   it('a save from before endings existed gets an empty endings record', () => {
     put(Store.KEY, { seen: { larry: true } });
     expect(load().seen.endings).toEqual({});

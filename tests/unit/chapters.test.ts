@@ -70,6 +70,7 @@ describe('chapter helpers', () => {
     expect(chapterOf(5)?.id).toBe('dreams');
     expect(chapterOf(12)?.id).toBe('space');
     expect(chapterOf(16)?.id).toBe('oasis');
+    expect(chapterOf(19)?.id).toBe('circus');
     expect(chapterOf(99)).toBeUndefined();
     expect(LEVELS.filter(lv => isChapterEnd(lv.n)).map(lv => lv.n)).toEqual(CHAPTERS.map(c => c.levels[c.levels.length - 1]));
   });

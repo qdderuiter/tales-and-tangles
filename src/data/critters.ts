@@ -45,6 +45,17 @@ export const CRITTERS: Record<string, Critter> = {
   'Juniper Jerboa': { color: '#e3b88f', belly: '#fff0dc', ear: 'long', acc: 'none' },
   'Sage Scorpion':  { color: '#b0866a', belly: '#ecd5bf', ear: 'point', acc: 'hat' },
   'Nutmeg Hare':    { color: '#c78f5e', belly: '#f8e4cc', ear: 'long', acc: 'glasses' },
+  'Marco Monkey':   { color: '#a8744a', belly: '#f2d9b8', ear: 'round', acc: 'hat' },
+  'Trixie Poodle':  { color: '#f3e6ef', belly: '#ffffff', ear: 'round', acc: 'none' },
+  'Juggles Seal':   { color: '#8fa3b5', belly: '#e3ebf1', ear: 'round', acc: 'stripes' },
+  'Hoopla Hippo':   { color: '#b9a6c9', belly: '#ece3f3', ear: 'round', acc: 'none' },
+  'Cosmo Lion':     { color: '#e0a64a', belly: '#fbe6b8', ear: 'round', acc: 'hat' },
+  'Tilly Tightrope':{ color: '#d8cfc8', belly: '#f6efe8', ear: 'round', acc: 'stripes' },
+  'Fizz Flamingo':  { color: '#f08fa8', belly: '#ffd9e4', ear: 'point', acc: 'none' },
+  'Bongo Cub':      { color: '#9a6a48', belly: '#ecd2b4', ear: 'round', acc: 'hat' },
+  'Ziggy Zebra':    { color: '#f1f1f1', belly: '#ffffff', ear: 'point', acc: 'stripes' },
+  'Penny Parrot':   { color: '#6fbf73', belly: '#e6f6cf', ear: 'point', acc: 'none' },
+  'Zuri Zebra':     { color: '#eeeeee', belly: '#ffffff', ear: 'point', acc: 'stripes' },
   'Evil Larry':     { color: '#3a3442', belly: '#cfc6d8', ear: 'point', acc: 'bandit' }
 };
 

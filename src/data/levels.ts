@@ -44,7 +44,15 @@ const RAW_LEVELS: RawLevel[] = [
     words: [['CARAVAN','44 45 35 34 24 25 15'],['STARRY','11 12 22 21 20 30'],['NOMAD','23 33 32 42 43'],['DATES','05 04 14 13 03'],['TENT','02 01 00 10'],['RUG','40 41 31']] },
   { n: 16, title: "The Midnight Oasis", blurb: "One little door key stands between Biscuit and home.", theme: 'OASIS', scene: ['#d4f0e4', '#8fd4c0'],
     caughtScene: () => scenes.worm!.caught(),                                                // Biscuit's homecoming follows the solved case
-    words: [['FIREFLY','42 43 33 34 44 45 35'],['COCONUT','11 21 20 30 31 41 40'],['OASIS','05 04 03 13 12'],['PALM','25 24 14 15'],['LILY','02 01 00 10'],['KEY','23 22 32']] }
+    words: [['FIREFLY','42 43 33 34 44 45 35'],['COCONUT','11 21 20 30 31 41 40'],['OASIS','05 04 03 13 12'],['PALM','25 24 14 15'],['LILY','02 01 00 10'],['KEY','23 22 32']] },
+  { n: 17, title: 'The Vanished Star Ball', blurb: 'The lights blinked, and the lucky ball was gone.', theme: 'STAGE', scene: ['#fbd9d9', '#f09aa8'],
+    introScene: () => scenes.elephant!.intro(), sceneId: 'elephant',                          // Pippy practises on his star ball, and it vanishes: this opens the level
+    words: [['STAGE','10 00 01 11 12'],['PIPPY','22 32 33 43 42'],['TRUNK','25 35 45 44 34'],['BALLS','02 03 13 23 24'],['STAR','14 04 05 15'],['BOWTIE','41 40 30 31 21 20']] },
+  { n: 18, title: 'High Wire Hush', blurb: 'Glitter on the ladder leads up to the roof of the tent.', theme: 'TRAPEZE', scene: ['#fde9c4', '#f2b66e'],
+    words: [['TRAPEZE','44 45 35 25 24 34 33'],['ACROBAT','02 03 13 14 04 05 15'],['SWING','21 20 30 40 41'],['ROPE','11 10 00 01'],['FLIP','31 32 42 43'],['NET','23 22 12']] },
+  { n: 19, title: 'The Greatest Little Show', blurb: 'The curtain rises in one hour.', theme: 'ENCORE', scene: ['#e6d9f7', '#b79be6'],
+    caughtScene: () => scenes.elephant!.caught(),                                             // Pippy's show follows the solved case
+    words: [['ENCORE','03 02 12 13 23 22'],['CURTAIN','43 33 34 44 45 35 25'],['CROWD','20 10 00 01 11'],['CHEER','24 14 15 05 04'],['HORN','40 30 31 21'],['BOW','32 42 41']] }
 ];
 
 /* parse each word path, and attach the level's trail, evil trail, case and hints (all indexed by position) */

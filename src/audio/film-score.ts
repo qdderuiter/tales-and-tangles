@@ -60,6 +60,13 @@ export const SCORES: Record<string, Score> = {
     pad: { type: 'triangle', lp: 1300, vol: 0.05 },
     melody: [[21, null, 22, 21, 18, null, 15, null], [14, null, 15, null, 18, null, 19, null], [22, null, 21, null, 19, 18, 15, null], [14, null, 18, null, 21, null, null, null]],
     bell: { type: 'triangle', vol: 0.075, dur: 0.85 }
+  },
+  /* The Big Top: a bouncy little carousel march, bright bells over a light oom-pah pad (C - F - G - C) */
+  circus: {
+    bpm: 104, chords: [[0, 4, 7, 12], [5, 9, 12, 17], [7, 11, 14, 19], [0, 4, 7, 12]],
+    pad: { type: 'triangle', lp: 1900, vol: 0.05 },
+    melody: [[12, null, 16, 12, 19, null, 16, null], [17, null, 21, 17, 24, null, 21, null], [19, 23, 19, null, 26, null, 23, 19], [24, null, 19, 16, 12, null, null, null]],
+    bell: { type: 'triangle', vol: 0.085, dur: 0.5 }
   }
 };
 
@@ -267,6 +274,72 @@ export const WormScore = {
     for (let i = 0; i < 8; i++) AudioFX.chime(2 + i * 2, i * 0.16, 0.075);
     [0, 4, 7, 12].forEach(n => AudioFX.note(hz(n), { t: 1.4, dur: 2.6, attack: 0.2, vol: 0.05, type: 'triangle', lp: 2200 }));
   }
+};
+
+/* ---------- Pippy's cinematics (scenes/elephant-scene.ts): a lit circus tent, trunk toots, drum rolls and a happy fanfare ----------
+   A soft pad under the whole scene (the only long-lived sound, so a skip can fade it out), then one-shot sounds timed by the scene. */
+export const ElephantScore = {
+  ...padControl([[-12, 'sine', 1], [-5, 'triangle', 0.5], [4, 'sine', 0.35], [12, 'sine', 0.25]], { lp: 900, vol: 0.05, rise: 1.6 }),
+
+  /* a tiny music-box bar for the empty tent */
+  twinkle() { [12, 16, 19, 16, 12].forEach((n, i) => AudioFX.chime(n - 12, i * 0.3, 0.05)); },
+  /* a trunk toot: a bright squeaky horn that bends up */
+  toot() {
+    AudioFX.note(420, { dur: 0.28, vol: 0.08, type: 'sawtooth', slideTo: 520, lp: 1500, attack: 0.02 });
+    AudioFX.note(630, { t: 0.02, dur: 0.26, vol: 0.04, type: 'square', slideTo: 780, lp: 2200, attack: 0.02 });
+  },
+  /* trotting to the ball: soft pats */
+  trot() { [0, 0.18, 0.36, 0.54].forEach(t => { AudioFX.note(150, { t, dur: 0.09, vol: 0.06, type: 'sine', slideTo: 90, lp: 400 }); }); },
+  /* climbing on: a springy boing */
+  boing() { AudioFX.note(260, { dur: 0.4, vol: 0.08, type: 'sine', slideTo: 620, lp: 2400, attack: 0.004 }); AudioFX.note(520, { t: 0.1, dur: 0.3, vol: 0.04, type: 'triangle', slideTo: 280 }); },
+  /* wobbling: a slide whistle that wavers */
+  wobble(i: number) { AudioFX.note(500 + i * 40, { dur: 0.35, vol: 0.05, type: 'sine', slideTo: 380 + i * 40, lp: 2000, attack: 0.02 }); },
+  /* the ball spins: a quick rising whirr and a sparkle */
+  spin() { AudioFX.note(300, { dur: 0.8, vol: 0.04, type: 'triangle', slideTo: 1100, lp: 2600, attack: 0.1 }); sparkleRun(0.4, 0.06, 0.07); },
+  /* the roll of a snare drum, building */
+  drumroll() { for (let i = 0; i < 28; i++) AudioFX.noise(0.07, 1800 + i * 40, 0.035 + i * 0.002, i * 0.06); },
+  /* the lights go out: a low thunk, a falling hum */
+  blackout() { AudioFX.note(160, { dur: 0.6, vol: 0.09, type: 'sawtooth', slideTo: 40, lp: 500, attack: 0.005 }); AudioFX.noise(0.3, 400, 0.07); },
+  /* the ball whisked away in the dark: a quick whoosh and a cymbal tick */
+  whoosh() { AudioFX.noise(0.7, 1800, 0.1); AudioFX.noise(0.5, 4200, 0.04, 0.1); AudioFX.note(900, { dur: 0.5, vol: 0.04, type: 'sine', slideTo: 200, lp: 3000 }); },
+  /* the lights come back on: a bright click and a held chord */
+  lightsOn() { AudioFX.note(1200, { dur: 0.05, vol: 0.06, type: 'square', lp: 3000 }); [0, 4, 7].forEach((n, i) => AudioFX.note(hz(n - 12), { t: 0.1 + i * 0.05, dur: 1.4, attack: 0.2, vol: 0.04, type: 'triangle', lp: 1800 })); },
+  /* "oh no": two sad falling notes, like a trombone */
+  sadTrombone() { AudioFX.note(300, { dur: 0.35, vol: 0.07, type: 'sawtooth', slideTo: 280, lp: 900, attack: 0.04 }); AudioFX.note(240, { t: 0.4, dur: 0.9, vol: 0.07, type: 'sawtooth', slideTo: 170, lp: 800, attack: 0.04 }); },
+  /* a single tear */
+  tear() { AudioFX.note(1300, { dur: 0.3, vol: 0.05, type: 'sine', slideTo: 700, attack: 0.004 }); AudioFX.chime(4, 0.32, 0.05); },
+  /* "hm?": two questioning notes */
+  wonder() { AudioFX.note(hz(9), { dur: 0.16, vol: 0.07, type: 'triangle', lp: 2200 }); AudioFX.note(hz(14), { t: 0.2, dur: 0.3, vol: 0.07, type: 'triangle', slideTo: hz(16), lp: 2200 }); },
+  /* the lantern at the tent flap: a warm chord opening up */
+  lantern() {
+    [0, 7, 12, 16].forEach((n, i) => AudioFX.note(hz(n - 12), { t: i * 0.16, dur: 2.6, attack: 0.5, vol: 0.055, type: 'triangle', lp: 1800 }));
+    AudioFX.chime(9, 0.9, 0.07); AudioFX.chime(12, 1.1, 0.07);
+  },
+  /* the title card: a warm chord and a sparkle */
+  title() {
+    [0, 4, 7, 12].forEach((n, i) => AudioFX.note(hz(n), { t: i * 0.05, dur: 2.2, vol: 0.07, type: 'triangle', attack: 0.03 }));
+    sparkleRun(0.3, 0.08, 0.08);
+  },
+  /* "Ladies and gentlemen!": a bright trumpet call, three rising notes */
+  fanfare() {
+    [[0, 0], [0, 0.16], [4, 0.32], [7, 0.55], [12, 0.8]].forEach(([n, t], i) => {
+      AudioFX.note(hz(n), { t, dur: i === 4 ? 1.1 : 0.2, vol: 0.075, type: 'sawtooth', lp: 2400, attack: 0.02 });
+      AudioFX.note(hz(n + 12), { t, dur: i === 4 ? 1.0 : 0.18, vol: 0.035, type: 'square', lp: 3000, attack: 0.02 });
+    });
+  },
+  /* curtains drawing back: a soft swish */
+  curtain() { AudioFX.noise(1.4, 900, 0.06); AudioFX.noise(1.1, 2600, 0.03, 0.15); },
+  /* rolling the ball in: a gentle rumble */
+  roll() { AudioFX.noise(1.6, 420, 0.06); AudioFX.note(95, { dur: 1.5, vol: 0.05, type: 'sine', slideTo: 120, lp: 300, attack: 0.2 }); },
+  /* a hop on the ball: springy, each a bit higher */
+  hop(i: number) { AudioFX.note(330 + i * 60, { dur: 0.18, vol: 0.075, type: 'triangle', slideTo: 600 + i * 70, lp: 2200, attack: 0.005 }); AudioFX.noise(0.08, 1400, 0.03, 0.18); },
+  /* confetti pops and applause */
+  applause() {
+    AudioFX.note(260, { dur: 0.12, vol: 0.09, type: 'triangle', slideTo: 880, lp: 2800 }); sparkleRun(0.1, 0.05, 0.08);
+    for (let i = 0; i < 40; i++) AudioFX.noise(0.06, 2400 + (i % 5) * 700, 0.04, 0.3 + i * 0.07);
+  },
+  /* the bow: a warm resolving chord */
+  bow() { [0, 4, 7, 12, 16].forEach((n, i) => AudioFX.note(hz(n), { t: i * 0.06, dur: 2.8, attack: 0.1, vol: 0.055, type: 'triangle', lp: 2400 })); AudioFX.chime(19, 0.4, 0.08); AudioFX.chime(24, 0.55, 0.07); }
 };
 
 export const FilmScore = {

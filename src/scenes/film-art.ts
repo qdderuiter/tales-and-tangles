@@ -1,5 +1,6 @@
 import { bearMarkup } from '../characters/barnaby-svg.ts';
 import { rocketInner } from '../characters/pup.ts';
+import { elephantInner, starBall } from '../characters/elephant.ts';
 import { wormInner } from '../characters/worm.ts';
 import { FILM_LAYERS } from '../data/chapters.ts';
 import type { Motif } from '../data/types.ts';
@@ -14,13 +15,14 @@ import type { Film } from './film.ts';
 
 const VIEW = '0 0 800 1000';
 /* the crop each motif's card shows (the whole hero scene; the sky, hills and sea run past it, so a wide card has no empty sides) */
-const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440' };
+const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440', bigtop: '110 400 580 560' };
 
 /* how far each layer follows the camera (0 = fixed, 1 = full) */
 const DEPTH: Record<string, number> = {
   sky: 0.1, sun: 0.15, moon: 0.15, stars: 0.18, clouds: 0.3, hills: 0.4, sea: 0.5, town: 0.5, lighthouse: 0.6, beam: 0.6, library: 0.7,
   garden: 0.85, flowers: 0.9, lamps: 0.75, bees: 0.8, lanterns: 0.8, rooftop: 1, larry: 1, barnaby: 1, cake: 1, candles: 1, snow: 1, globe: 0, planet: 0.2, home: 0.2, trail: 0.6, rocket: 0.6,
-  dunes: 0.8, caravan: 0.82, palms: 0.85, pool: 0.85, house: 0.85
+  dunes: 0.8, caravan: 0.82, palms: 0.85, pool: 0.85, house: 0.85,
+  tent: 0.7, flags: 0.72, lights: 0.75, crowd: 0.9, ring: 0.95, ball: 1, pippy: 1
 };
 
 /* what the map card shows for each motif: the finished-scene layers only */
@@ -30,7 +32,8 @@ export const BAND_LAYERS: Record<Motif, string[]> = {
   sea: ['sky', 'sea', 'lighthouse', 'beam'],
   lantern: ['sky', 'stars', 'town', 'lanterns'],
   space: ['sky', 'stars', 'planet', 'hills', 'home', 'rocket'],
-  desert: ['sky', 'stars', 'moon', 'dunes', 'palms', 'pool', 'house']
+  desert: ['sky', 'stars', 'moon', 'dunes', 'palms', 'pool', 'house'],
+  bigtop: ['sky', 'stars', 'tent', 'flags', 'lights', 'crowd', 'ring', 'ball', 'pippy']
 };
 
 let uid = 0;
@@ -251,6 +254,52 @@ const ART: Record<Motif, Record<string, LayerFn>> = {
       '<path d="M341 770 L321 760 Q317 770 321 780Z M341 770 L361 760 Q365 770 361 780Z" fill="#e8506a"/><rect x="335" y="764" width="12" height="12" rx="4" fill="#c23a57"/>' +
       '<g transform="translate(414 812) scale(.3)"><g class="cf-peek">' + wormInner() + '</g></g>', vb),
     barnaby: () => '<div class="cf-bear ds"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
+  },
+
+  /* ---- the big top at night: a striped tent, string lights, a crowd, and Pippy on his star ball ---- */
+  bigtop: {
+    sky: (u, vb) => svg('<defs>' + grad(u + 's', [[0.2, '#1d0f34'], [0.6, '#5a2060'], [0.92, '#c9605f']]) + '</defs>' + skyRect(u + 's'), vb),
+    stars: (_u, vb) => svg(starField(60, 83, 420), vb),
+    tent: (u, vb) => {
+      let walls = '', roof = '', scallops = '';
+      for (let i = 0; i < 8; i++) walls += '<rect x="' + r1(210 + i * 47.5) + '" y="650" width="47.5" height="240" fill="' + (i % 2 ? '#e8506a' : '#f6e8df') + '"/>';
+      for (let i = 0; i < 6; i++) roof += '<polygon points="400,440 ' + r1(170 + i * 76.7) + ',650 ' + r1(170 + (i + 1) * 76.7) + ',650" fill="' + (i % 2 ? '#e8506a' : '#f6e8df') + '"/>';
+      for (let i = 0; i < 12; i++) scallops += '<circle cx="' + r1(189 + i * 38.3) + '" cy="650" r="19.5" fill="' + (i % 2 ? '#ffd24a' : '#9a8cf0') + '"/>';
+      return svg('<defs>' + glowDef(u + 'g', '#ffe29a', 0.9) + '</defs>' +
+        '<path d="M-300 880 Q200 846 400 868 T1100 866 V1300 H-300Z" fill="#4a1a38"/><path d="M-300 880 Q200 846 400 868 T1100 866" fill="none" stroke="#c9605f" stroke-width="4" opacity=".35"/>' +
+        '<ellipse cx="400" cy="892" rx="260" ry="20" fill="#2a0f33" opacity=".4"/>' + walls + roof + scallops +
+        '<path d="M356 890 V770 Q400 700 444 770 V890Z" fill="#2a0f33"/><path d="M356 890 V770 Q400 700 444 770 V890Z" fill="url(#' + u + 'g)" opacity=".8"/>' +
+        '<g class="cf-halo">' + glow(u + 'g', 400, 820, 80) + '</g>', vb);
+    },
+    flags: (_u, vb) => {
+      const flag = (x: number, y: number, h: number, c: string, i: number) => '<line x1="' + x + '" y1="' + y + '" x2="' + x + '" y2="' + (y - h) + '" stroke="#f6e8df" stroke-width="5" stroke-linecap="round"/>' +
+        '<g class="cf-sway" style="animation-delay:-' + i * 0.7 + 's"><path d="M' + x + ' ' + (y - h) + ' L' + (x + 54) + ' ' + (y - h + 14) + ' L' + x + ' ' + (y - h + 28) + 'Z" fill="' + c + '"/></g>';
+      return svg(flag(400, 442, 54, '#ffd24a', 0) + flag(172, 652, 40, '#9a8cf0', 1) + flag(628, 652, 40, '#6fd3c8', 2), vb);
+    },
+    lights: (u, vb) => {
+      let out = '<defs>' + glowDef(u + 'g', '#ffe29a', 0.9) + '</defs>';
+      const colors = ['#ff6f91', '#ffd24a', '#6fd3c8', '#9a8cf0', '#ff9f5a'];
+      for (let i = 0; i < 12; i++) { const x = r1(189 + i * 38.3); out += '<g class="cf-halo" style="animation-delay:-' + r1(i * 0.4) + 's">' + glow(u + 'g', x, 674, 20) + '</g><circle class="cf-star" style="--i:' + i + '" cx="' + x + '" cy="674" r="5" fill="' + colors[i % 5] + '"/>'; }
+      for (let i = 0; i < 9; i++) { const t = i / 8, x = r1(356 + 88 * t), y = r1(776 - 70 * Math.sin(Math.PI * t)); out += '<circle class="cf-star" style="--i:' + i + '" cx="' + x + '" cy="' + y + '" r="3.6" fill="' + colors[(i + 2) % 5] + '"/>'; }
+      return svg(out, vb);
+    },
+    crowd: (_u, vb) => {
+      const rng = mulberry32(19);
+      let out = '';
+      [70, 140, 215, 590, 665, 735].forEach((x, i) => {
+        const y = 960 + (i % 2) * 8, c = i % 2 ? '#2a0f33' : '#3b1647';
+        out += '<g fill="' + c + '"><ellipse cx="' + x + '" cy="' + y + '" rx="21" ry="26"/><circle cx="' + x + '" cy="' + (y - 34) + '" r="16"/>' +
+          (i % 3 === 0 ? '<path d="M' + (x - 14) + ' ' + (y - 42) + ' L' + (x - 9) + ' ' + (y - 60) + ' L' + (x - 2) + ' ' + (y - 46) + 'Z M' + (x + 14) + ' ' + (y - 42) + ' L' + (x + 9) + ' ' + (y - 60) + ' L' + (x + 2) + ' ' + (y - 46) + 'Z"/>' : '<circle cx="' + (x - 15) + '" cy="' + (y - 42) + '" r="7"/><circle cx="' + (x + 15) + '" cy="' + (y - 42) + '" r="7"/>') + '</g>';
+        if (i % 2 === 0) { const bc = ['#ff6f91', '#ffd24a', '#6fd3c8'][Math.floor(rng() * 3)]; out += '<g class="cf-sway" style="animation-delay:-' + i * 0.6 + 's"><path d="M' + (x + 14) + ' ' + (y - 6) + ' L' + (x + 24) + ' ' + (y - 100) + '" stroke="#f6e8df" stroke-width="2" fill="none"/><ellipse cx="' + (x + 24) + '" cy="' + (y - 118) + '" rx="15" ry="19" fill="' + bc + '"/></g>'; }
+      });
+      return svg(out, vb);
+    },
+    ring: (_u, vb) => svg('<polygon points="380,420 420,420 540,920 260,920" fill="#fff6c8" opacity=".14"/>' +
+      '<ellipse cx="400" cy="928" rx="170" ry="26" fill="#e9c288"/><ellipse cx="400" cy="924" rx="138" ry="17" fill="#f3d5a0"/>' +
+      '<ellipse cx="400" cy="928" rx="170" ry="26" fill="none" stroke="#fff4e0" stroke-width="6"/><ellipse cx="400" cy="928" rx="170" ry="26" fill="none" stroke="#e8506a" stroke-width="6" stroke-dasharray="20 20"/>', vb),
+    ball: (_u, vb) => svg('<g class="cf-peek">' + starBall(400, 900, 38) + '</g>', vb),
+    pippy: (_u, vb) => svg('<g transform="translate(350 760) scale(.5)"><g class="cf-peek">' + elephantInner() + '</g></g>', vb),
+    barnaby: () => '<div class="cf-bear bt"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
   }
 };
 

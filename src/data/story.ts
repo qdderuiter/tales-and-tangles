@@ -279,6 +279,66 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
       { who: 'Biscuit', e: 'wiggle', t: 'Would you like to come in for a cup of cactus tea? It is not prickly, I promise.' },
       { e: 'happy', t: 'We would be honoured.' }
     ]
+  },
+  17: {
+    intro: [
+      { e: 'surprised', t: 'Well, I never. A little elephant in a polka-dot ruff, standing in an empty circus ring at midnight.' },
+      { who: 'Pippy', e: 'shy', t: 'Toot! Oh! Hello. I am Pippy. Tonight is my very first show, and I was just practising.' },
+      { who: 'Pippy', e: 'sad', t: 'I have a lucky star ball. I stand on it, I spin on it, I do all my best tricks on it. But the lights blinked, and now it is gone.' },
+      { e: 'thinking', t: 'A missing ball on the night of a big show? Then we have until curtain-up. And look, partner: a trail of popcorn, leading away from the ring.' },
+      { who: 'Pippy', e: 'wiggle', t: 'You would help me? Even though I am very small, and very wobbly?' },
+      { e: 'proud', t: 'Especially then. Small friends make the best performers. Now, five circus folk, five spots around the grounds. Shall we see who was where?',
+        choices: [
+          { label: "Let's find that ball!", reply: { e: 'happy', t: 'The show must go on. Trace each word, and leave no letter behind.' } },
+          { label: 'Any tips for the big top?', gift: true, reply: { e: 'proud', t: 'Of course. Take my spare notebook. It holds one free hint, tied with a red ribbon.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Marco Monkey! He was in the center ring with his popcorn tub, and when the lights blinked he lunged to catch the ball.' },
+      { e: 'sad', t: 'Marco says: I only wanted to stop it rolling! But it bounced off my tub and away it went, right out of the ring.' },
+      { who: 'Pippy', e: 'sad', t: 'Rolling away? Where to?' },
+      { e: 'thinking', t: 'Somewhere high, I think. Look at the ladder: there are specks of glitter on every rung, all the way up to the wire.' },
+      { who: 'Pippy', e: 'surprised', t: 'Oh. I am afraid of ladders. Elephants and ladders do not get along.' },
+      { e: 'proud', t: 'Then you cheer from the sawdust, and I will climb. Come along, partner.' }
+    ]
+  },
+  18: {
+    intro: [
+      { e: 'neutral', t: 'The high wire. Everything is very still up here. Even the sawdust is holding its breath.' },
+      { who: 'Pippy', e: 'shy', t: 'I will wait down here. Toot. That means good luck.' },
+      { e: 'happy', t: 'Thank you, Pippy. Five performers up here, five spots along the wire. One of them saw where the ball went.' },
+      { e: 'thinking', t: 'Some of these clues only say who stood near whom, so read them slowly, and do not look down.',
+        choices: [
+          { label: 'Hush, and onward!', reply: { e: 'happy', t: 'Quietly now. A tightrope walker hates a loud detective.' } },
+          { label: 'A hint, please?', gift: true, reply: { e: 'proud', t: 'Pippy tossed one up in a paper bag. One free hint, a little bit squashed.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Tilly Tightrope! She was on the high platform with her glitter pot, and she saw a great big ball come rolling across her wire.' },
+      { e: 'neutral', t: 'Tilly says: I did not want it to fall on the audience seats! So I rolled it along the wire to the far side, very carefully. And then Ringo the ringmaster came and said he would look after it.' },
+      { e: 'thinking', t: 'Ringo Raccoon. The ringmaster. He knows where everything in this circus is, and what it is for.' },
+      { e: 'happy', t: 'And Tilly adds: He was smiling an awful lot. I thought that was a good sign.' },
+      { e: 'proud', t: 'So do I. Back down we go, partner. The curtain rises soon.' }
+    ]
+  },
+  19: {
+    intro: [
+      { e: 'surprised', t: 'Listen to that, Pippy. The whole audience is outside. The show begins in an hour.' },
+      { who: 'Pippy', e: 'wiggle', t: 'Toot toot toot! I am so nervous my ears are flapping.' },
+      { e: 'happy', t: 'Breathe, little clown. Five friends are backstage, five spots around the big top. One of them is the ringmaster, and he has your ball.' },
+      { e: 'proud', t: 'One last case. Let us bring the star home.',
+        choices: [
+          { label: 'For Pippy!', reply: { e: 'happy', t: 'For Pippy, and for every small friend about to take a very big bow.' } },
+          { label: 'One last hint, please?', gift: true, reply: { e: 'proud', t: 'For the grand finale? Of course. One free hint, sparkling like a spotlight.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Ringo Raccoon! He took the ball to the prop wagon, and gave it a fresh coat of gold paint, because a lucky star ball deserves to shine on opening night.' },
+      { e: 'happy', t: 'Ringo says: It was meant to be a surprise! I did not know you thought it was lost. I am so sorry, Pippy.' },
+      { who: 'Pippy', e: 'happy', t: 'It sparkles! It really, truly sparkles! Thank you, Ringo!' },
+      { who: 'Pippy', e: 'proud', t: 'Barnaby, will you watch from the front row? I have a trick to show you.' },
+      { e: 'happy', t: 'I would not miss it for all the honey in Honeywick. Places, everyone!' }
+    ]
   }
 };
 
@@ -315,7 +375,13 @@ export const STORY_EXTRA: Record<number, Pick<Record<StoryPart, RawLine[]>, 'bri
   15: { bridge: [{ e: 'proud', t: 'CARAVAN! Biscuit says his compass is trembling. Follow the needle: every tile, numbers in order.' }],
         caseIntro: [{ e: 'neutral', t: 'Who was in the camel tent, and who held what? The neighbours matter tonight. Cross people off until one story fits.' }] },
   16: { bridge: [{ e: 'surprised', t: 'OASIS! The pool is full of ripples. Follow them back to the spring: every tile, numbers in order.' }],
-        caseIntro: [{ e: 'proud', t: 'The very last case. Five friends, five spots around the oasis, and one little key. Trust the notebook, partner.' }] }
+        caseIntro: [{ e: 'proud', t: 'The very last case. Five friends, five spots around the oasis, and one little key. Trust the notebook, partner.' }] },
+  17: { bridge: [{ e: 'happy', t: 'STAGE! There is sawdust on the boards. Now follow the popcorn: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'thinking', t: 'Five circus folk, five spots around the grounds. Somebody was near the ring when the lights blinked. Cross people off until one story fits.' }] },
+  18: { bridge: [{ e: 'surprised', t: 'TRAPEZE! Glitter all over the rungs. Now step along the wire: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'neutral', t: 'Who was on the platform, and who held what? The neighbours matter up here. Trust the notebook, partner.' }] },
+  19: { bridge: [{ e: 'proud', t: 'ENCORE! Now follow the trumpet call backstage: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'proud', t: 'The very last case. Five friends, five spots backstage, and one lucky star ball. Trust the notebook, partner.' }] }
 };
 
 export const REACT = {

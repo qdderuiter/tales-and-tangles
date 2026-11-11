@@ -22,7 +22,7 @@ import { Store } from '../../src/state/store.ts';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const DEV = process.argv.includes('--dev');
 const CHANNEL = process.env.E2E_BROWSER_CHANNEL || 'msedge';
-const SPEED = Number(process.env.WATCH_SPEED) || 12;
+const SPEED = Number(process.env.WATCH_SPEED) || 40;
 const FROM = Math.max(1, Math.min(LEVELS.length, Number(process.env.WATCH_FROM) || 1));   // the first case to play; earlier ones are solved in the starting save
 const PORT = 5173;
 
@@ -165,6 +165,7 @@ async function main() {
     if (await has(page, '#larryFilm.show')) { log('  Evil Larry cinematic'); await watchFilm(page, '#larryFilm'); continue; }
     if (await has(page, '#pupFilm.show')) { log('  Pickle cinematic'); await watchFilm(page, '#pupFilm'); continue; }
     if (await has(page, '#wormFilm.show')) { log('  Biscuit cinematic'); await watchFilm(page, '#wormFilm'); continue; }
+    if (await has(page, '#elephantFilm.show')) { log('  Pippy cinematic'); await watchFilm(page, '#elephantFilm'); continue; }
     if (await has(page, '#noir.show')) { log('  Barnaby Noir interrupts'); await playNoir(page); continue; }
 
     if (await has(page, '#victory.show')) {

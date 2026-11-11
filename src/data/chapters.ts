@@ -10,7 +10,8 @@ export const FILM_LAYERS: Record<Motif, string[]> = {
   sea:     ['sky', 'sea', 'lighthouse', 'beam', 'snow', 'globe'],
   lantern: ['sky', 'stars', 'town', 'rooftop', 'lanterns', 'larry', 'barnaby'],
   space:   ['sky', 'stars', 'planet', 'hills', 'barnaby', 'trail', 'rocket', 'home'],
-  desert:  ['sky', 'stars', 'moon', 'dunes', 'caravan', 'palms', 'pool', 'house', 'barnaby']
+  desert:  ['sky', 'stars', 'moon', 'dunes', 'caravan', 'palms', 'pool', 'house', 'barnaby'],
+  bigtop:  ['sky', 'stars', 'tent', 'flags', 'lights', 'crowd', 'ring', 'ball', 'pippy', 'barnaby']
 };
 
 export const CHAPTERS: Chapter[] = [
@@ -88,7 +89,20 @@ export const CHAPTERS: Chapter[] = [
         { caption: 'A sleepy caravan rests under the stars.', show: ['caravan'], cam: { x: -6, scale: 1.06, ms: 3200 }, cue: 'chime', hold: 3000 },
         { caption: 'Beyond the last dune, the palms sway.', show: ['palms', 'pool'], cam: { x: -14, y: -2, scale: 1.14, ms: 3400 }, cue: 'sparkle', hold: 3000 },
         { caption: 'A little round window glows. Biscuit is home.', show: ['house'], cam: { x: -20, y: -4, scale: 1.24, ms: 3400 }, cue: 'bell', flash: 0.35, hold: 3200 },
-        { caption: 'And somewhere out there, every friend we met sleeps safe and sound.', show: ['barnaby'], cam: { x: -6, y: 0, scale: 1, ms: 3600 }, cue: 'chime', hold: 3200 }
+        { caption: 'And beyond the last dune, a striped tent begins to glow...', show: ['barnaby'], cam: { x: -6, y: 0, scale: 1, ms: 3600 }, cue: 'chime', hold: 3200 }
+      ] } },
+  { id: 'circus', n: 7, title: 'The Big Top', tagline: 'A very small clown and one missing star ball.', levels: [17, 18, 19], motif: 'bigtop',                                         // add track: 'circus' here once public/music/big-top.mp3 exists
+    palette: { a: '#fbd9d9', b: '#f09aa8', ink: '#4a2147', glow: '#ffe08a' },
+    ending: {
+      start: ['sky', 'stars', 'tent'],
+      reducedCaption: 'The curtain is up, the lights are bright, and a very small clown takes a very big bow.',
+      beats: [
+        { caption: 'Night falls on the big top. Every flag is flying.', show: ['flags'], cam: { x: 0, scale: 1, ms: 0 }, cue: 'swell', hold: 2800 },
+        { caption: 'One by one, the string lights come on.', show: ['lights'], cam: { x: -6, scale: 1.06, ms: 3200 }, cue: 'sparkle', hold: 3000 },
+        { caption: 'The whole town has come to the show.', show: ['crowd'], cam: { x: -12, y: -2, scale: 1.14, ms: 3400 }, cue: 'chime', hold: 3000 },
+        { caption: 'A spotlight finds the ring, and a golden star ball rolls in.', show: ['ring', 'ball'], cam: { x: -18, y: -4, scale: 1.24, ms: 3400 }, cue: 'whoosh', flash: 0.3, hold: 3200 },
+        { caption: 'On top of it, a very small clown. Pippy bows!', show: ['pippy'], cue: 'bell', flash: 0.4, hold: 3000 },
+        { caption: 'And in the front row, a bear is clapping very loudly.', show: ['barnaby'], cam: { x: -6, y: 0, scale: 1, ms: 3600 }, cue: 'chime', hold: 3200 }
       ] } }
 ];
 

@@ -98,6 +98,7 @@
     <div class="story-larry" id="storyLarry"></div>
     <div class="story-pup" id="storyPup"></div>
     <div class="story-worm" id="storyWorm"></div>
+    <div class="story-elephant" id="storyElephant"></div>
     <div class="dlg" id="dlg">
       <div class="dlg-name" id="dlgName">Barnaby</div>
       <div class="dlg-text" id="dlgText" aria-live="off"></div>
@@ -368,6 +369,46 @@
     <div class="wf-title" id="wfTitle"><small>LOST IN THE DUNES</small><b>BISCUIT</b><span>a very lost little worm</span></div>
     <div class="wf-flash" id="wfFlash"></div>
     <button class="btn small skip film wf-skip" id="wfSkip">Skip</button>
+  </div>
+
+  <!-- PIPPY THE CLOWN ELEPHANT: the night his lucky star ball vanished (opens Case 7.1) and his show (after Case 7.3). One stage for both;
+       scenes/elephant-scene.ts moves the pieces and puts the class "show" on the svg for the second scene. Coordinates are viewBox units. -->
+  <div class="elephant-film" id="elephantFilm" aria-hidden="true">
+    <div class="ef-stage" id="efStage">
+      <svg class="ef-art" id="efArt" viewBox="0 70 400 700" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="efSpotG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8" stop-opacity=".1"/><stop offset="1" stop-color="#fff6c8" stop-opacity=".5"/></linearGradient>
+          <radialGradient id="efGlow"><stop offset="0" stop-color="#ffe29a" stop-opacity=".9"/><stop offset=".5" stop-color="#ffe29a" stop-opacity=".3"/><stop offset="1" stop-color="#ffe29a" stop-opacity="0"/></radialGradient>
+          <radialGradient id="efLamp"><stop offset="0" stop-color="#ffbe6b" stop-opacity=".75"/><stop offset=".45" stop-color="#ffa95a" stop-opacity=".3"/><stop offset="1" stop-color="#ffa95a" stop-opacity="0"/></radialGradient>
+          <linearGradient id="efCurtain" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a3223f"/><stop offset=".25" stop-color="#d23a5a"/><stop offset=".5" stop-color="#9c1f3b"/><stop offset=".75" stop-color="#d23a5a"/><stop offset="1" stop-color="#8e1a36"/></linearGradient>
+        </defs>
+        <g id="efTent"></g>
+        <g id="efBulbs"></g>
+        <g id="efSeats"></g>
+        <g class="ef-outro" id="efCrowd"></g>
+        <rect x="-60" y="520" width="520" height="300" fill="#5a1f3d"/>
+        <ellipse cx="200" cy="604" rx="186" ry="40" fill="#e9c288"/><ellipse cx="200" cy="600" rx="150" ry="28" fill="#f3d5a0"/>
+        <ellipse cx="200" cy="604" rx="186" ry="40" fill="none" stroke="#fff4e0" stroke-width="8"/><ellipse cx="200" cy="604" rx="186" ry="40" fill="none" stroke="#e8506a" stroke-width="8" stroke-dasharray="24 24"/>
+        <polygon class="ef-spot" points="165,-20 235,-20 345,604 55,604" fill="url(#efSpotG)"/>
+        <ellipse cx="200" cy="602" rx="130" ry="26" fill="#fff6c8" opacity=".3"/>
+        <g transform="translate(200 606)"><g class="ef-ball" id="efBall" data-star="1"></g></g>
+        <g id="efPippyPos" transform="translate(200 606)"><g class="ef-pippy ef-hid" id="efPippy"><g transform="translate(-60 -123) scale(.6)"><g class="pippy b-happy" id="efEmo"></g></g></g></g>
+        <g transform="translate(236 484)"><text class="ef-q ef-hid" id="efQ" x="0" y="0" text-anchor="middle">?</text></g>
+        <g transform="translate(187 540)"><path class="ef-tear ef-hid" id="efTear" d="M0 -6 Q5 1 0 5 Q-5 1 0 -6Z" fill="#a8dcff"/></g>
+        <g class="ef-intro"><g class="ef-hid" id="efBear"><circle cx="66" cy="590" r="150" fill="url(#efLamp)"/><g id="efBearArt"></g></g></g>
+        <g class="ef-outro"><g class="ef-hid" id="efBearShow"><g id="efBearShowArt"></g></g></g>
+        <g id="efSparks"></g>
+        <g id="efConfetti"></g>
+        <g class="ef-outro"><g id="efCurL"><rect x="-80" y="-40" width="290" height="880" fill="url(#efCurtain)"/><path d="M40 -40 V740 M110 -40 V740 M175 -40 V740" stroke="#6a1228" stroke-width="3" opacity=".35"/></g>
+          <g id="efCurR"><rect x="190" y="-40" width="290" height="880" fill="url(#efCurtain)"/><path d="M225 -40 V740 M290 -40 V740 M360 -40 V740" stroke="#6a1228" stroke-width="3" opacity=".35"/></g></g>
+        <rect class="ef-hid" id="efDark" x="-100" y="-100" width="600" height="1000" fill="#05020a"/>
+      </svg>
+    </div>
+    <div class="ef-bar top"></div><div class="ef-bar bot"></div>
+    <div class="ef-cap" id="efCap"></div>
+    <div class="ef-title" id="efTitle"><small>THE BIG TOP</small><b>PIPPY</b><span>a very small clown</span></div>
+    <div class="ef-flash" id="efFlash"></div>
+    <button class="btn small skip film ef-skip" id="efSkip">Skip</button>
   </div>
 
   <!-- CHAPTER ENDINGS: the short film that closes each chapter (scenes/chapter-film.ts) -->

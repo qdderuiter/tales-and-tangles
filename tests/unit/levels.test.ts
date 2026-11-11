@@ -8,7 +8,7 @@ import { allFound, toTrace } from './helpers/word-level.ts';
 /* [twist floor, decoy floor] per case, a gentle-to-hard ramp (see scripts/lay-words.mjs). Case 1 also has a twist cap. */
 const FLOORS: [number, number][] = [
   [0.25, 0], [0.45, 1], [0.55, 2], [0.60, 3], [0.60, 3], [0.65, 4], [0.65, 4], [0.70, 5], [0.70, 5], [0.70, 5],
-  [0.80, 6], [0.80, 6], [0.80, 6], [0.85, 8], [0.85, 8], [0.85, 8]
+  [0.80, 6], [0.80, 6], [0.80, 6], [0.85, 8], [0.85, 8], [0.85, 8], [0.85, 8], [0.85, 8], [0.85, 8]
 ];
 
 describe.each(LEVELS.map(lv => [lv.n, lv]))('level %i', (_n, lv) => {

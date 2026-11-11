@@ -1,0 +1,90 @@
+/* ---------- Pippy, the little clown elephant: portrait and cinematics (characters/elephant.ts, scenes/elephant-scene.ts) ---------- */
+.story-elephant{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 250px);width:min(58%,260px);z-index:1;opacity:0;pointer-events:none;transition:opacity .25s}
+.story-elephant.on{opacity:1}
+.dlg-name.elephant{background:#d9567a;color:#fff1f4}
+.story-elephant .pippy{width:100%;line-height:0}   /* the portrait wrapper only */
+.ele-svg{width:100%;height:auto;overflow:visible;display:block;transform-origin:100px 280px;animation:breathe 3.2s ease-in-out infinite}
+.ele-body,.ele-head,.ele-eyes,.ele-ear,.ele-ruff,.ele-hat,.ele-ballstar,.ele-ball{transform-box:fill-box}
+.ele-head{transform-origin:50% 90%;animation:eleNod 3.4s ease-in-out infinite}
+.ele-ear{transition:transform .25s}
+.ele-ear.l{transform-origin:85% 30%;animation:eleFlapL 3.6s ease-in-out infinite}
+.ele-ear.r{transform-origin:15% 30%;animation:eleFlapR 3.6s ease-in-out infinite}
+.ele-trunk{transform-box:view-box;transform-origin:0 0;animation:eleTrunk 3s ease-in-out infinite}   /* pivots on its root, at the local origin of its wrapper */
+.ele-ruff{transform-origin:50% 50%;animation:eleRuff 2.4s ease-in-out infinite}
+.ele-hat{transform-origin:50% 100%;animation:eleHat 3s ease-in-out infinite}
+.ele-eyes{transform-origin:center;animation:eleBlink 4.6s infinite;transition:transform .15s}
+.ele-brow,.ele-mouth.frown{opacity:0;transition:opacity .15s}
+.ele-blush{transition:opacity .2s}
+.ele-ball{transform-origin:50% 50%}
+.ele-ballstar{transform-origin:50% 50%;animation:eleSpin 6s linear infinite}
+.pippy.b-shy .ele-head{animation:none;transform:rotate(-7deg)}
+.pippy.b-shy .ele-blush{opacity:.95}
+.pippy.b-sad .ele-mouth.smile,.pippy.b-surprised .ele-mouth.smile{opacity:0}
+.pippy.b-sad .ele-mouth.frown,.pippy.b-sad .ele-brow{opacity:1}
+.pippy.b-sad .ele-head{animation:none;transform:rotate(3deg) translateY(5px)}
+.pippy.b-sad .ele-ear.l{animation:none;transform:rotate(18deg)}
+.pippy.b-sad .ele-ear.r{animation:none;transform:rotate(-18deg)}
+.pippy.b-sad .ele-trunk{animation:none;transform:rotate(6deg)}
+.pippy.b-sad .ele-eyes{animation:none;transform:translateY(3px)}
+.pippy.b-surprised .ele-eyes{transform:scale(1.18);animation:none}
+.pippy.b-surprised .ele-ear.l{animation:none;transform:rotate(-14deg)}
+.pippy.b-surprised .ele-ear.r{animation:none;transform:rotate(14deg)}
+.pippy.b-proud .ele-trunk{animation:none;transform:rotate(172deg)}   /* trunk up, a toot */
+.pippy.b-proud .ele-head{animation:none;transform:rotate(-3deg) translateY(-3px)}
+.pippy.b-wiggle .ele-svg{animation:eleWiggle .5s ease-in-out infinite}
+@keyframes eleNod{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg) translateY(-2px)}}
+@keyframes eleFlapL{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(7deg)}}
+@keyframes eleFlapR{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-7deg)}}
+@keyframes eleTrunk{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
+@keyframes eleRuff{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes eleHat{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes eleBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes eleSpin{to{transform:rotate(360deg)}}
+@keyframes eleWiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg) translateY(-4px)}}
+
+/* ----- the cinematics: the night the star ball vanished, and Pippy's show ----- */
+.elephant-film{position:absolute;inset:0;z-index:45;background:#1a0b24;overflow:hidden;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .5s ease,visibility 0s .5s}
+.elephant-film.show{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .5s ease,visibility 0s}
+.ef-stage{position:absolute;inset:0;transform-origin:50% 70%;will-change:transform;background:linear-gradient(180deg,#1d0f34 0%,#4a1f55 45%,#8f3a5e 80%,#c9605f 100%)}
+.ef-art{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ef-art.show .ef-intro,.ef-art:not(.show) .ef-outro{display:none}   /* which pieces belong to which scene */
+.ef-hid{opacity:0}
+.ef-bulb{animation:efBulb 2.4s ease-in-out infinite}
+.ef-bulb:nth-child(2n){animation-delay:-.8s}.ef-bulb:nth-child(3n){animation-delay:-1.5s}
+@keyframes efBulb{0%,100%{opacity:.75}50%{opacity:1}}
+.ef-spot{animation:efSpot 4s ease-in-out infinite alternate}
+@keyframes efSpot{from{opacity:.78}to{opacity:1}}
+.ef-pippy,.ef-ball,.ef-q,.ef-tear,.ef-conf,.ef-fan,.ef-spark{transform-box:fill-box;transform-origin:50% 100%}
+.ef-ball,.ef-conf,.ef-spark,.ef-fan{transform-origin:50% 50%}
+.ef-q{font-weight:900;font-size:30px;fill:#fff6c8;font-family:inherit;paint-order:stroke;stroke:rgba(40,10,50,.6);stroke-width:3px}
+.ef-cap{position:absolute;left:8%;right:8%;bottom:13%;z-index:4;text-align:center;font-weight:800;font-size:18px;line-height:1.35;color:#fff8e8;text-shadow:0 2px 10px #000;opacity:0;transition:opacity .35s;text-wrap:balance}
+.ef-cap.on{opacity:1}
+.ef-bar{position:absolute;left:0;right:0;height:11%;background:#000;z-index:3}
+.ef-bar.top{top:0}.ef-bar.bot{bottom:0}
+.ef-title{position:absolute;left:50%;top:40%;z-index:4;transform:translate(-50%,-50%) scale(1.8);opacity:0;pointer-events:none;text-align:center;padding:18px 30px 16px;border-radius:26px;white-space:nowrap;color:#fff;
+  background:rgba(60,18,64,.5);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.3);border-top-color:rgba(255,255,255,.6);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.ef-title small{display:block;font-weight:900;letter-spacing:.3em;font-size:13px;color:#ffd98a}
+.ef-title b{display:block;font-size:clamp(40px,13vw,58px);font-weight:900;line-height:1.05;letter-spacing:-.02em;color:#fff6c8;text-shadow:0 2px 14px rgba(0,0,0,.4)}
+.ef-title span{display:block;font-style:italic;font-weight:800;font-size:17px;margin-top:2px;opacity:.92}
+.ef-title.on{opacity:1;transform:translate(-50%,-50%) scale(1);transition:transform .5s cubic-bezier(.2,1.4,.4,1),opacity .2s}
+.ef-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:5}
+.ef-skip{position:absolute;top:calc(var(--sat) + 12px);right:calc(var(--sar) + 14px);z-index:6;opacity:0;pointer-events:none;transition:opacity .3s}
+.ef-skip.on{opacity:1;pointer-events:auto}
+
+/* on the stage Pippy has no portrait svg around him, so his happy wiggle moves the drawing itself */
+#efEmo{transform-box:fill-box;transform-origin:50% 100%}
+#efEmo.b-wiggle{animation:eleWiggle .5s ease-in-out infinite}
+/* on the stage the scene turns the whole ball itself, so the star does not idle-spin as it does in the portrait */
+#efBall .ele-ballstar{animation:none}
+
+/* reduced motion: the finished picture, no drifting */
+@media (prefers-reduced-motion:reduce){
+  .ele-svg,.ele-head,.ele-eyes,.ele-ear,.ele-trunk,.ele-ruff,.ele-hat,.ele-ballstar,.ef-bulb,.ef-spot,#efEmo.b-wiggle{animation:none !important}
+}
+@media (prefers-contrast:more){
+  .ef-title{-webkit-backdrop-filter:none;backdrop-filter:none;background:#2a1030;border:2px solid #fff}
+  .ef-cap{background:rgba(0,0,0,.7);padding:8px 12px;border-radius:12px}
+}
+@media (prefers-reduced-transparency:reduce){
+  .ef-title{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(60,18,64,.94)}
+}
