@@ -99,6 +99,7 @@
     <div class="story-pup" id="storyPup"></div>
     <div class="story-worm" id="storyWorm"></div>
     <div class="story-elephant" id="storyElephant"></div>
+    <div class="story-dino" id="storyDino"></div>
     <div class="dlg" id="dlg">
       <div class="dlg-name" id="dlgName">Barnaby</div>
       <div class="dlg-text" id="dlgText" aria-live="off"></div>
@@ -409,6 +410,19 @@
     <div class="ef-title" id="efTitle"><small>THE BIG TOP</small><b>PIPPY</b><span>a very small clown</span></div>
     <div class="ef-flash" id="efFlash"></div>
     <button class="btn small skip film ef-skip" id="efSkip">Skip</button>
+  </div>
+
+  <!-- REXY THE T. REX: the afternoon a meteor fell on the meadow (opens Case 8.1) and the stomp-launch that smashed it (after Case 8.3). One stage for both;
+       scenes/dino-scene.ts builds the art into #dfArt, moves the pieces and puts the class "show" on the svg for the second scene. Coordinates are viewBox units. -->
+  <div class="dino-film" id="dinoFilm" aria-hidden="true">
+    <div class="df-stage" id="dfStage">
+      <svg class="df-art" id="dfArt" viewBox="0 70 400 700" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
+    </div>
+    <div class="df-bar top"></div><div class="df-bar bot"></div>
+    <div class="df-cap" id="dfCap"></div>
+    <div class="df-title" id="dfTitle"><small>CHAPTER 8</small><b>DINO STRIKES BACK</b><span>friendly dinos vs. one very big rock</span></div>
+    <div class="df-flash" id="dfFlash"></div>
+    <button class="btn small skip film df-skip" id="dfSkip">Skip</button>
   </div>
 
   <!-- CHAPTER ENDINGS: the short film that closes each chapter (scenes/chapter-film.ts) -->

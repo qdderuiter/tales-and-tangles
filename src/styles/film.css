@@ -97,6 +97,9 @@
 .cf-bear.bt{left:16%;top:76%}
 .cf-layer[data-layer=ball] .ele-ballstar{animation:eleSpin 12s linear infinite}
 
+/* meadow after the meteor */
+.cf-bear.mt{left:12%;top:74%}
+
 /* desert */
 .cf-bear.ds{left:24%;top:74%}
 .cf-sway{transform-box:fill-box;transform-origin:0 100%;animation:cfSway 5s ease-in-out infinite alternate}

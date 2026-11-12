@@ -52,7 +52,15 @@ const RAW_LEVELS: RawLevel[] = [
     words: [['TRAPEZE','44 45 35 25 24 34 33'],['ACROBAT','02 03 13 14 04 05 15'],['SWING','21 20 30 40 41'],['ROPE','11 10 00 01'],['FLIP','31 32 42 43'],['NET','23 22 12']] },
   { n: 19, title: 'The Greatest Little Show', blurb: 'The curtain rises in one hour.', theme: 'ENCORE', scene: ['#e6d9f7', '#b79be6'],
     caughtScene: () => scenes.elephant!.caught(),                                             // Pippy's show follows the solved case
-    words: [['ENCORE','03 02 12 13 23 22'],['CURTAIN','43 33 34 44 45 35 25'],['CROWD','20 10 00 01 11'],['CHEER','24 14 15 05 04'],['HORN','40 30 31 21'],['BOW','32 42 41']] }
+    words: [['ENCORE','03 02 12 13 23 22'],['CURTAIN','43 33 34 44 45 35 25'],['CROWD','20 10 00 01 11'],['CHEER','24 14 15 05 04'],['HORN','40 30 31 21'],['BOW','32 42 41']] },
+  { n: 20, title: 'The Missing Stomp Drum', blurb: 'Something fell from the sky, and the big drum is gone.', theme: 'MEADOW', scene: ['#e0f1d0', '#a9d98a'],
+    introScene: () => scenes.dino!.intro(), sceneId: 'dino',                                  // the dinos are playing in the meadow when a meteor streaks into view: this opens the level
+    words: [['MEADOW','23 24 34 44 45 35'],['DINOS','41 40 30 31 21'],['FERNS','25 15 05 04 14'],['GRASS','22 32 33 43 42'],['STOMP','20 10 11 01 00'],['EGGS','13 03 02 12']] },
+  { n: 21, title: 'The Boing Ball Mix-up', blurb: 'A great big bouncy ball has rolled off.', theme: 'METEOR', scene: ['#f9e0c8', '#f0a878'],
+    words: [['METEOR','41 40 30 31 21 20'],['CRATER','11 12 02 03 13 14'],['SPARKS','35 45 44 34 24 23'],['FLAME','22 32 33 43 42'],['DUST','04 05 15 25'],['SKY','10 00 01']] },
+  { n: 22, title: 'The Great Spring Plank', blurb: 'The last piece of the plan has gone astray.', theme: 'LAUNCH', scene: ['#d9d2f5', '#9aa7e6'],
+    caughtScene: () => scenes.dino!.caught(),                                                // the stomp-launch that smashes the meteor follows the solved case
+    words: [['LAUNCH','00 10 11 21 20 30'],['STARS','05 15 25 24 14'],['STOMP','43 44 45 35 34'],['SPRING','04 03 13 12 02 01'],['SWING','40 41 31 32 42'],['SUN','33 23 22']] }
 ];
 
 /* parse each word path, and attach the level's trail, evil trail, case and hints (all indexed by position) */

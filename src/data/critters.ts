@@ -56,6 +56,15 @@ export const CRITTERS: Record<string, Critter> = {
   'Ziggy Zebra':    { color: '#f1f1f1', belly: '#ffffff', ear: 'point', acc: 'stripes' },
   'Penny Parrot':   { color: '#6fbf73', belly: '#e6f6cf', ear: 'point', acc: 'none' },
   'Zuri Zebra':     { color: '#eeeeee', belly: '#ffffff', ear: 'point', acc: 'stripes' },
+  'Stella Stegosaurus':  { color: '#8ec28a', belly: '#e6f4d0', ear: 'round', acc: 'stripes' },
+  'Trixie Triceratops':  { color: '#e59fb4', belly: '#fde4ec', ear: 'point', acc: 'none' },
+  'Dilly Diplodocus':    { color: '#7fb4d6', belly: '#dff0fa', ear: 'round', acc: 'glasses' },
+  'Pip Pterodactyl':     { color: '#e8a24a', belly: '#fbe3bc', ear: 'point', acc: 'hat' },
+  'Ronnie Raptor':       { color: '#b3c46a', belly: '#f1f6cf', ear: 'point', acc: 'bandit' },
+  'Nubby Ankylosaurus':  { color: '#a98d78', belly: '#efddca', ear: 'round', acc: 'none' },
+  'Penny Parasaurolophus': { color: '#c79ad9', belly: '#f1e2f7', ear: 'long', acc: 'none' },
+  'Bronte Brontosaurus': { color: '#77b79c', belly: '#dcf2e8', ear: 'round', acc: 'hat' },
+  'Gus Gallimimus':      { color: '#e9c06a', belly: '#fdf0cc', ear: 'point', acc: 'stripes' },
   'Evil Larry':     { color: '#3a3442', belly: '#cfc6d8', ear: 'point', acc: 'bandit' }
 };
 

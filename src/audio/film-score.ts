@@ -67,6 +67,13 @@ export const SCORES: Record<string, Score> = {
     pad: { type: 'triangle', lp: 1900, vol: 0.05 },
     melody: [[12, null, 16, 12, 19, null, 16, null], [17, null, 21, 17, 24, null, 21, null], [19, 23, 19, null, 26, null, 23, 19], [24, null, 19, 16, 12, null, null, null]],
     bell: { type: 'triangle', vol: 0.085, dur: 0.5 }
+  },
+  /* Dino Strikes Back: a bouncy marimba stomp-along over a warm pad (C - Am - F - G) */
+  dino: {
+    bpm: 112, chords: [[0, 4, 7, 12], [-3, 0, 4, 9], [-7, -3, 0, 5], [-5, -1, 2, 7]],
+    pad: { type: 'triangle', lp: 1700, vol: 0.05 },
+    melody: [[12, null, 16, 19, 16, null, 12, null], [9, null, 12, 16, 12, null, 9, null], [5, null, 9, 12, 9, 12, 17, null], [7, 11, 14, null, 19, null, 14, null]],
+    bell: { type: 'triangle', vol: 0.085, dur: 0.45 }
   }
 };
 
@@ -340,6 +347,56 @@ export const ElephantScore = {
   },
   /* the bow: a warm resolving chord */
   bow() { [0, 4, 7, 12, 16].forEach((n, i) => AudioFX.note(hz(n), { t: i * 0.06, dur: 2.8, attack: 0.1, vol: 0.055, type: 'triangle', lp: 2400 })); AudioFX.chime(19, 0.4, 0.08); AudioFX.chime(24, 0.55, 0.07); }
+};
+
+/* ---------- Rexy's cinematics (scenes/dino-scene.ts): a sunny meadow, a falling meteor, big stomps and one very big boom ----------
+   A soft pad under the whole scene (the only long-lived sound, so a skip can fade it out), then one-shot sounds timed by the scene. */
+export const DinoScore = {
+  ...padControl([[-12, 'sine', 1], [-5, 'triangle', 0.5], [4, 'sine', 0.35], [7, 'sine', 0.25]], { lp: 1000, vol: 0.05, rise: 1.6 }),
+
+  /* a sunny marimba bar for the playing dinos */
+  sunny() { [12, 16, 19, 16, 21, 19, 16, 12].forEach((n, i) => AudioFX.note(hz(n), { t: i * 0.22, dur: 0.3, vol: 0.06, type: 'triangle', lp: 2600, attack: 0.005 })); },
+  /* a happy little roar */
+  roar() { AudioFX.note(210, { dur: 0.45, vol: 0.08, type: 'sawtooth', slideTo: 150, lp: 700, attack: 0.04 }); AudioFX.note(320, { t: 0.04, dur: 0.4, vol: 0.04, type: 'square', slideTo: 230, lp: 900, attack: 0.04 }); },
+  /* a gasp: a quick rising squeak */
+  gasp() { AudioFX.note(380, { dur: 0.22, vol: 0.07, type: 'sine', slideTo: 760, lp: 2400, attack: 0.01 }); },
+  /* the meteor appears: a low ominous swell and a thin falling whistle */
+  warning() { AudioFX.note(hz(-24), { dur: 2.6, attack: 1.4, vol: 0.07, type: 'sawtooth', lp: 380 }); AudioFX.note(hz(-17), { dur: 2.4, attack: 1.5, vol: 0.04, type: 'sawtooth', lp: 380 }); AudioFX.note(2200, { dur: 2.2, vol: 0.02, type: 'sine', slideTo: 1500, attack: 0.5 }); },
+  /* it gets closer: a rumble and a whistle that falls */
+  rumble(len = 2) { AudioFX.noise(len, 220, 0.1); AudioFX.note(70, { dur: len, vol: 0.07, type: 'sine', slideTo: 48, lp: 200, attack: 0.3 }); AudioFX.note(1800, { dur: len, vol: 0.03, type: 'sine', slideTo: 900, attack: 0.2 }); },
+  /* Barnaby arrives with a friendly little chime */
+  arrive() { AudioFX.chime(7, 0, 0.1); AudioFX.chime(12, 0.15, 0.1); AudioFX.chime(16, 0.3, 0.1); },
+  /* the title card */
+  title() { [0, 4, 7, 12].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.08, dur: 2.2, vol: 0.06, type: 'triangle', attack: 0.04, lp: 2400 })); sparkleRun(0.3, 0.07, 0.07); },
+  /* a stomp that shakes the ground, each a bit heavier (i = 0, 1, 2...) */
+  stomp(i: number) { AudioFX.note(110 - i * 8, { dur: 0.3, vol: 0.14 + i * 0.02, type: 'sine', slideTo: 45, lp: 260, attack: 0.003 }); AudioFX.noise(0.22, 180, 0.1 + i * 0.02); },
+  /* the drum under it: a taiko-ish hit */
+  drum(i: number) { AudioFX.note(180 - i * 10, { dur: 0.22, vol: 0.09, type: 'triangle', slideTo: 80, lp: 700, attack: 0.002 }); },
+  /* a springy plank: the big dino lands and the plank snaps */
+  spring() { AudioFX.note(140, { dur: 0.2, vol: 0.12, type: 'sine', slideTo: 60, lp: 300, attack: 0.003 }); AudioFX.note(300, { t: 0.05, dur: 0.5, vol: 0.08, type: 'sine', slideTo: 1200, lp: 2600, attack: 0.004 }); AudioFX.noise(0.25, 1600, 0.05, 0.05); },
+  /* the ball whooshes up */
+  launch() { AudioFX.noise(1.0, 900, 0.1); AudioFX.note(260, { dur: 1.0, vol: 0.06, type: 'sine', slideTo: 1400, lp: 3000, attack: 0.05 }); },
+  /* the tail-bat: a whoosh, then a big WHACK */
+  swing() { AudioFX.noise(0.4, 1500, 0.1); AudioFX.note(220, { dur: 0.3, vol: 0.05, type: 'sine', slideTo: 600, attack: 0.05 }); },
+  whack() { AudioFX.note(210, { dur: 0.22, vol: 0.18, type: 'square', slideTo: 70, lp: 900, attack: 0.002 }); AudioFX.noise(0.2, 2200, 0.12); [0.02, 0.12].forEach(t => AudioFX.chime(12, t, 0.08)); },
+  /* the meteor goes BOOM, then a tumble of sparkles */
+  boom() {
+    AudioFX.note(80, { dur: 1.6, vol: 0.2, type: 'sine', slideTo: 30, lp: 220, attack: 0.003 }); AudioFX.noise(1.5, 500, 0.18); AudioFX.noise(1.0, 2600, 0.08, 0.05);
+    [0, 4, 7, 12, 16].forEach((s, i) => AudioFX.note(hz(s + 12), { t: 0.25 + i * 0.05, dur: 2.4, vol: 0.06, type: 'triangle', attack: 0.03 }));
+    sparkleRun(0.35, 0.06, 0.09);
+  },
+  /* confetti and stars raining down, and cheering */
+  cheer() { for (let i = 0; i < 36; i++) AudioFX.noise(0.06, 2400 + (i % 5) * 700, 0.04, 0.2 + i * 0.07); AudioFX.note(300, { dur: 0.15, vol: 0.08, type: 'triangle', slideTo: 880, lp: 2800 }); sparkleRun(0.15, 0.05, 0.08); },
+  /* the ball bouncing off a head: a soft rubbery bop (i picks the pitch) */
+  bop(i: number) { AudioFX.note(300 + i * 70, { dur: 0.16, vol: 0.07, type: 'sine', slideTo: 520 + i * 90, lp: 2200, attack: 0.004 }); },
+  /* ... and off the wrong head: a hollow bonk */
+  bonk() { AudioFX.note(240, { dur: 0.2, vol: 0.12, type: 'triangle', slideTo: 120, lp: 900, attack: 0.002 }); AudioFX.note(520, { t: 0.02, dur: 0.12, vol: 0.05, type: 'sine', slideTo: 300 }); },
+  /* the meteor cracks: a dry snap, each one louder */
+  crack(i: number) { AudioFX.noise(0.09, 3200, 0.1 + i * 0.03); AudioFX.note(900 - i * 120, { dur: 0.1, vol: 0.07 + i * 0.02, type: 'square', slideTo: 300, lp: 2600, attack: 0.001 }); AudioFX.noise(0.3, 400, 0.05 + i * 0.02, 0.04); },
+  /* Rexy catches her star: a rising run of bells */
+  catchStar() { [7, 12, 16, 19, 24].forEach((n, i) => AudioFX.chime(n, i * 0.09, 0.1)); AudioFX.note(hz(12), { t: 0.45, dur: 2, vol: 0.05, type: 'triangle', attack: 0.05, lp: 2400 }); },
+  /* the last roar and a warm chord */
+  bow() { DinoScore.roar(); [0, 4, 7, 12, 16].forEach((n, i) => AudioFX.note(hz(n), { t: 0.5 + i * 0.06, dur: 2.8, attack: 0.1, vol: 0.055, type: 'triangle', lp: 2400 })); AudioFX.chime(19, 0.9, 0.08); AudioFX.chime(24, 1.05, 0.07); }
 };
 
 export const FilmScore = {

@@ -339,6 +339,68 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
       { who: 'Pippy', e: 'proud', t: 'Barnaby, will you watch from the front row? I have a trick to show you.' },
       { e: 'happy', t: 'I would not miss it for all the honey in Honeywick. Places, everyone!' }
     ]
+  },
+  20: {
+    intro: [
+      { e: 'happy', t: 'What a sunny meadow. Ferns, tall grass, and a whole herd of dinosaurs playing tag. I have never seen so many friendly tails.' },
+      { who: 'Rexy', e: 'happy', t: 'Roar! ...Oh. Sorry. That was a happy roar. I am Rexy, and these are my friends. We were just playing, until that thing showed up in the sky.' },
+      { e: 'surprised', t: 'A glowing rock, getting bigger. That is a meteor, and it is headed straight for the meadow.' },
+      { who: 'Rexy', e: 'sad', t: 'We cannot stop it with my tiny arms. But maybe with a very loud stomp? We keep our big stomp drum at the edge of the field, to keep the beat. And it has vanished.' },
+      { e: 'thinking', t: 'A missing drum, a falling rock, and a whole meadow of dinosaurs counting on us. Look, partner: heavy footprints, leading off through the grass.' },
+      { who: 'Rexy', e: 'wiggle', t: 'You would help us? Even though I am so small, and my arms are so very short?' },
+      { e: 'proud', t: 'Especially then. Five dinosaurs, five spots around the meadow. Shall we find out who was where?',
+        choices: [
+          { label: "Let's find that drum!", reply: { e: 'happy', t: 'The meteor will have to wait. Trace each word, and leave no letter behind.' } },
+          { label: 'Any tips for the meadow?', gift: true, reply: { e: 'proud', t: 'Of course. Take my spare notebook. It holds one free hint, wrapped in a fern leaf.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Pip Pterodactyl! He was in the mud pit with a bouncy ball, and the big drum made the softest, roundest nest for his warm egg.' },
+      { e: 'sad', t: 'Pip says: I only borrowed it! A baby egg needs a warm, bouncy bed. I did not know a meteor was coming. I am so sorry.' },
+      { who: 'Rexy', e: 'surprised', t: 'An egg! Is it close to hatching?' },
+      { e: 'thinking', t: 'Not yet, I think. But the drum is safe, and Pip has promised to bring it back to the field. And look, partner: something big and round has rolled through the clearing, just past the pond.' },
+      { who: 'Rexy', e: 'happy', t: 'Our Boing Ball! It is the biggest, bounciest thing in the whole meadow.' },
+      { e: 'proud', t: 'Then we are going to need it. Come along, partner.' }
+    ]
+  },
+  21: {
+    intro: [
+      { e: 'neutral', t: 'The sky is getting redder, Rexy. We have not got long.' },
+      { who: 'Rexy', e: 'shy', t: 'The Boing Ball is our best chance. It is as big as a boulder, and it bounces higher than a mountain. If we can find it, a launch could knock that rock clean out of the sky.' },
+      { e: 'happy', t: 'A launch. I like the sound of that. Five dinosaurs, five spots around the meadow, and one of them knows where the ball went.' },
+      { e: 'thinking', t: 'Some of these clues only say who stood near whom, so read them slowly. A bouncy ball leaves a lot of tracks.',
+        choices: [
+          { label: 'Onward!', reply: { e: 'happy', t: 'Quickly, but carefully. A hurried detective trips over a very big tail.' } },
+          { label: 'A hint, please?', gift: true, reply: { e: 'proud', t: 'Rexy found one under a rock. One free hint, only a little bit dusty.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Penny Parasaurolophus! She was on the rocky ridge with a paint bucket, painting a mural of the whole herd, and she had been using the ball as a comfy seat.' },
+      { e: 'sad', t: 'Penny says: It was so round and so comfy! I did not mean to keep it so long. And then I heard the roaring, and I looked up.' },
+      { who: 'Rexy', e: 'proud', t: 'That is all right, Penny. Now we have the ball, and we have the drum. All we need is something to launch it with.' },
+      { e: 'thinking', t: 'Something long and springy, I think. A great big plank, to turn a stomp into a leap. Do you have one?' },
+      { who: 'Rexy', e: 'surprised', t: 'The Great Spring Plank! We use it as a seesaw. And now that you ask... I have not seen it since the sun came up.' },
+      { e: 'proud', t: 'Then the very last case begins. Come along, partner.' }
+    ]
+  },
+  22: {
+    intro: [
+      { e: 'surprised', t: 'Look up, Rexy. You can see it now. The meteor, and a long, fiery tail behind it.' },
+      { who: 'Rexy', e: 'wiggle', t: 'Roar roar roar! I am so nervous that my tail is shaking.' },
+      { e: 'happy', t: 'Breathe, little dino. Five friends are at the launch site, five spots around the meadow. One of them has the plank.' },
+      { e: 'proud', t: 'One last case. Let us save the meadow.',
+        choices: [
+          { label: 'For the meadow!', reply: { e: 'happy', t: 'For the meadow, for the egg, and for every dinosaur about to do something very brave.' } },
+          { label: 'One last hint, please?', gift: true, reply: { e: 'proud', t: 'For the grand finale? Of course. One free hint, sparkling like a falling star.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Nubby Ankylosaurus! She took the plank to the egg nest, and gave it a fresh coat of rainbow paint, whistling on her tin whistle all the while. A bright seesaw, to cheer everyone up.' },
+      { e: 'sad', t: 'Nubby says: It was meant to be a surprise for the whole herd! I did not know you needed it. I am so sorry.' },
+      { who: 'Rexy', e: 'happy', t: 'It is beautiful! And it is perfect. Thank you, Nubby!' },
+      { who: 'Rexy', e: 'proud', t: 'Barnaby, will you help us with the launch? I have a plan.' },
+      { e: 'happy', t: 'I would not miss it for all the honey in Honeywick. Places, everyone!' }
+    ]
   }
 };
 
@@ -381,7 +443,13 @@ export const STORY_EXTRA: Record<number, Pick<Record<StoryPart, RawLine[]>, 'bri
   18: { bridge: [{ e: 'surprised', t: 'TRAPEZE! Glitter all over the rungs. Now step along the wire: every tile, numbers in order.' }],
         caseIntro: [{ e: 'neutral', t: 'Who was on the platform, and who held what? The neighbours matter up here. Trust the notebook, partner.' }] },
   19: { bridge: [{ e: 'proud', t: 'ENCORE! Now follow the trumpet call backstage: every tile, numbers in order.' }],
-        caseIntro: [{ e: 'proud', t: 'The very last case. Five friends, five spots backstage, and one lucky star ball. Trust the notebook, partner.' }] }
+        caseIntro: [{ e: 'proud', t: 'The very last case. Five friends, five spots backstage, and one lucky star ball. Trust the notebook, partner.' }] },
+  20: { bridge: [{ e: 'happy', t: 'MEADOW! Rexy says the thief left a trail of stomps. Now follow the drumbeat: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'thinking', t: 'Five dinosaurs, five spots around the meadow. Somebody was near the drum when the sky turned red. Cross people off until one story fits.' }] },
+  21: { bridge: [{ e: 'surprised', t: 'METEOR dust! It is already falling on the meadow. Now follow the bounce marks: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'neutral', t: 'Who was by the ridge, and who held what? The neighbours matter tonight. Trust the notebook, partner.' }] },
+  22: { bridge: [{ e: 'proud', t: 'LAUNCH! The countdown is scribbled right here. Now follow the glitter, tile by tile, numbers in order.' }],
+        caseIntro: [{ e: 'proud', t: 'The very last case. Five friends, five spots around the meadow, and one plank. Trust the notebook, partner.' }] }
 };
 
 export const REACT = {

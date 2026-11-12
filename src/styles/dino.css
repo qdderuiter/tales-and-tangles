@@ -1,0 +1,98 @@
+/* ---------- Rexy, the very small T. rex: portrait and cinematics (characters/dino.ts, scenes/dino-scene.ts) ---------- */
+.story-dino{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 250px);width:min(58%,260px);z-index:1;opacity:0;pointer-events:none;transition:opacity .25s}
+.story-dino.on{opacity:1}
+.dlg-name.dino{background:#4fae60;color:#f2fff0}
+.story-dino .rexy{width:100%;line-height:0}   /* the portrait wrapper only */
+.dn-svg{width:100%;height:auto;overflow:visible;display:block;transform-origin:100px 220px;animation:breathe 3.2s ease-in-out infinite}
+.dn-body,.dn-head,.dn-eyes,.dn-tail,.dn-arm,.dn-plates{transform-box:fill-box}
+.dn-head{transform-origin:40% 90%;animation:dnNod 3.4s ease-in-out infinite}
+.dn-tail{transform-origin:90% 20%;animation:dnTail 2.2s ease-in-out infinite}
+.dn-arm{transform-origin:0 0;animation:dnArm 1.6s ease-in-out infinite}
+.dn-eyes{transform-origin:center;animation:dnBlink 4.6s infinite;transition:transform .15s}
+.dn-brow,.dn-mouth.frown{opacity:0;transition:opacity .15s}
+.dn-blush{transition:opacity .2s}
+.rexy.b-shy .dn-head{animation:none;transform:rotate(-7deg)}
+.rexy.b-shy .dn-blush{opacity:.95}
+.rexy.b-sad .dn-mouth.smile,.rexy.b-surprised .dn-mouth.smile{opacity:0}
+.rexy.b-sad .dn-mouth.frown,.rexy.b-sad .dn-brow{opacity:1}
+.rexy.b-sad .dn-head{animation:none;transform:rotate(3deg) translateY(5px)}
+.rexy.b-sad .dn-tail{animation:none;transform:rotate(14deg)}
+.rexy.b-sad .dn-eyes{animation:none;transform:translateY(3px)}
+.rexy.b-surprised .dn-eyes{transform:scale(1.25);animation:none}
+.rexy.b-surprised .dn-head{animation:none;transform:translateY(-4px)}
+.rexy.b-proud .dn-head{animation:none;transform:rotate(-4deg) translateY(-4px)}
+.rexy.b-proud .dn-arm{animation:none;transform:rotate(-30deg)}
+.rexy.b-wiggle .dn-svg{animation:dnWiggle .5s ease-in-out infinite}
+@keyframes dnNod{0%,100%{transform:rotate(-1.5deg)}50%{transform:rotate(1.5deg) translateY(-2px)}}
+@keyframes dnTail{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(7deg)}}
+@keyframes dnArm{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(8deg)}}
+@keyframes dnBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes dnWiggle{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg) translateY(-4px)}}
+.dn-ballspin{transform-box:fill-box;transform-origin:50% 50%}
+
+/* ----- the cinematics: the meteor over the meadow, and the stomp-launch ----- */
+.dino-film{position:absolute;inset:0;z-index:45;background:#16324a;overflow:hidden;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .5s ease,visibility 0s .5s}
+.dino-film.show{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .5s ease,visibility 0s}
+.df-stage{position:absolute;inset:0;will-change:transform;background:#7fd0f2}
+.df-art{position:absolute;inset:0;width:100%;height:100%;overflow:hidden}
+.df-hid{opacity:0}
+#dfSky,#dfFar,#dfMid,#dfWorld{will-change:transform}
+.df-fig,.df-ball,.df-spark,.df-plank,.df-word,.df-flame,.df-tw,.df-smoke{transform-box:fill-box}
+.df-fig{transform-origin:50% 100%}
+.df-ball,.df-spark,.df-plank,.df-word,.df-tw{transform-origin:50% 50%}
+.df-idle{animation:dfBob 1.6s ease-in-out infinite}
+#dfF_Penny.df-idle{animation-delay:-.4s}#dfF_Stella.df-idle{animation-delay:-.8s}#dfF_Trixie.df-idle{animation-delay:-1.2s}#dfF_Rexy.df-idle{animation-duration:1.1s}
+@keyframes dfBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.df-flame{transform-origin:0 100%;animation:dfFlame .2s ease-in-out infinite alternate}
+.df-flame.f2{animation-duration:.16s}.df-flame.f3{animation-duration:.13s}
+@keyframes dfFlame{from{transform:scale(1,1)}to{transform:scale(1.14,.92)}}
+.df-ember{animation:dfEmber 1.2s linear infinite}
+@keyframes dfEmber{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(120px,-136px) scale(.3);opacity:0}}
+.df-cloud{animation:dfCloud 28s ease-in-out infinite alternate}
+@keyframes dfCloud{from{transform:translateX(-18px)}to{transform:translateX(18px)}}
+.df-smoke{transform-origin:50% 100%;animation:dfSmoke 4s ease-out infinite}
+.df-smoke.s2{animation-delay:-2s}
+@keyframes dfSmoke{from{transform:translate(0,0) scale(.5);opacity:.8}to{transform:translate(14px,-46px) scale(1.7);opacity:0}}
+.df-tw{animation:dfTwinkle 1.8s ease-in-out infinite alternate}
+@keyframes dfTwinkle{from{transform:scale(.7) rotate(0deg);opacity:.65}to{transform:scale(1.15) rotate(20deg);opacity:1}}
+.df-word{font-weight:900;font-family:inherit;letter-spacing:.02em;paint-order:stroke;stroke:#3a2a4a;stroke-width:5px;stroke-linejoin:round}
+.df-cap{position:absolute;left:8%;right:8%;bottom:13%;z-index:4;text-align:center;font-weight:800;font-size:18px;line-height:1.35;color:#fff8e8;text-shadow:0 2px 10px #000;opacity:0;transition:opacity .35s;text-wrap:balance}
+.df-cap.on{opacity:1}
+.df-bar{position:absolute;left:0;right:0;height:11%;background:#000;z-index:3}
+.df-bar.top{top:0}.df-bar.bot{bottom:0}
+.df-title{position:absolute;left:50%;top:40%;z-index:4;transform:translate(-50%,-50%) scale(1.8);opacity:0;pointer-events:none;text-align:center;padding:18px 30px 16px;border-radius:26px;white-space:nowrap;color:#fff;
+  background:rgba(20,60,40,.5);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.3);border-top-color:rgba(255,255,255,.6);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.df-title small{display:block;font-weight:900;letter-spacing:.3em;font-size:13px;color:#ffd98a}
+.df-title b{display:block;font-size:clamp(34px,11vw,50px);font-weight:900;line-height:1.05;letter-spacing:-.02em;color:#fff6c8;text-shadow:0 2px 14px rgba(0,0,0,.4)}
+.df-title span{display:block;font-style:italic;font-weight:800;font-size:17px;margin-top:2px;opacity:.92}
+.df-title.on{opacity:1;transform:translate(-50%,-50%) scale(1);transition:transform .5s cubic-bezier(.2,1.4,.4,1),opacity .2s}
+.df-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:5}
+.df-skip{position:absolute;top:calc(var(--sat) + 12px);right:calc(var(--sar) + 14px);z-index:6;opacity:0;pointer-events:none;transition:opacity .3s}
+.df-skip.on{opacity:1;pointer-events:auto}
+
+/* the stage dinos' faces (the portrait's rules above are scoped to .rexy) */
+.df-fig.b-look .dn-head,.df-fig.b-scared .dn-head{animation:none;transform:rotate(-17deg)}
+.df-fig.b-surprised .dn-eyes,.df-fig.b-scared .dn-eyes{transform:scale(1.3);animation:none}
+.df-fig.b-surprised .dn-mouth.smile,.df-fig.b-scared .dn-mouth.smile,.df-fig.b-sad .dn-mouth.smile{opacity:0}
+.df-fig.b-scared .dn-mouth.frown,.df-fig.b-sad .dn-mouth.frown,.df-fig.b-sad .dn-brow{opacity:1}
+.df-fig.b-scared{animation:dfTremble .1s linear infinite alternate}
+@keyframes dfTremble{from{transform:translateX(-1.6px)}to{transform:translateX(1.6px)}}
+.df-fig.b-sad .dn-head{animation:none;transform:rotate(9deg) translateY(4px)}
+.df-fig.b-sad .dn-tail{animation:none;transform:rotate(14deg)}
+.df-fig.b-proud .dn-head{animation:none;transform:rotate(-7deg) translateY(-3px)}
+.df-fig.b-proud .dn-arm{animation:none;transform:rotate(-34deg)}
+.df-fig.b-wiggle{animation:dnWiggle .5s ease-in-out infinite}
+/* the stage ball is turned by the scene, not by an idle spin */
+#dfBall .dn-ballspin{animation:none}
+
+/* reduced motion: the finished picture, no drifting */
+@media (prefers-reduced-motion:reduce){
+  .dn-svg,.dn-head,.dn-eyes,.dn-tail,.dn-arm,.df-idle,.df-flame,.df-ember,.df-cloud,.df-smoke,.df-tw,.df-fig.b-wiggle,.df-fig.b-scared{animation:none !important}
+}
+@media (prefers-contrast:more){
+  .df-title{-webkit-backdrop-filter:none;backdrop-filter:none;background:#10301f;border:2px solid #fff}
+  .df-cap{background:rgba(0,0,0,.7);padding:8px 12px;border-radius:12px}
+}
+@media (prefers-reduced-transparency:reduce){
+  .df-title{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(20,60,40,.94)}
+}

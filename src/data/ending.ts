@@ -6,9 +6,9 @@ import type { RawLine } from './types.ts';
 
 /* Barnaby's goodbye, after the last case's own outro */
 export const EPILOGUE: RawLine[] = [
-  { e: 'proud', t: 'Honey jars, moons, lighthouses, lanterns, a space pup, a very brave little worm and a clown on a star ball. What a journey, partner.' },
+  { e: 'proud', t: 'Honey jars, moons, lighthouses, lanterns, a space pup, a very brave little worm and a clown on a star ball, and a meadow of dinosaurs with a meteor to smash. What a journey, partner.' },
   { e: 'happy', t: 'Every case is solved, and everyone is home. Thank you for walking it with me.' }
 ];
 
 /* the credit lines that scroll under "The End" */
-export const CREDITS = ['Tales & Tangles', 'Barnaby, detective bear', 'Evil Larry, thief of lanterns', 'Pickle, space pup', 'Biscuit, little sand worm', 'Pippy, a very small clown', 'Thank you for playing'];
+export const CREDITS = ['Tales & Tangles', 'Barnaby, detective bear', 'Evil Larry, thief of lanterns', 'Pickle, space pup', 'Biscuit, little sand worm', 'Pippy, a very small clown', 'Rexy, a very small T. rex', 'Thank you for playing'];

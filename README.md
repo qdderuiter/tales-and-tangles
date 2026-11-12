@@ -1,6 +1,6 @@
 # Tales & Tangles
 
-A cosy detective game: Barnaby Bear solves nineteen cases with a word-search, a scent trail and a murdle-style notebook. The cases are grouped into seven themed **chapters**, and each chapter ends with a short film. Strict TypeScript ES modules under `src/` (no framework); Vite builds them into **one self-contained `dist/index.html`**.
+A cosy detective game: Barnaby Bear solves twenty-two cases with a word-search, a scent trail and a murdle-style notebook. The cases are grouped into eight themed **chapters**, and each chapter ends with a short film. Strict TypeScript ES modules under `src/` (no framework); Vite builds them into **one self-contained `dist/index.html`**.
 
 **Words used in the code:** a *level* is one case (`LEVELS`, `Store.level(n)`, shown to players as "Case 1.2"); a *chapter* is a group of levels with a theme and an ending film (`data/chapters.ts`). Story line ids keep the old `ch<n>_...` prefix because voice clips attach to them by file name.
 
@@ -27,7 +27,7 @@ npm run check        # lint + typecheck + unit tests + build + browser playthrou
 |---|---|
 | `main.ts` | entry point: styles, then boot |
 | `core/` | tiny helpers with no game knowledge: `util`, `grid`, `dom`, `events` (publish/subscribe bus), `layout`, `scenes`, `spring` (pure spring / momentum / rubber-band maths) |
-| `data/` | **content only, no code**: `chapters` (the seven chapters and their film scripts), `ending` (the epilogue and credits of the whole game), `levels`, `zips`, `cases`, `hints`, `story`, `badges`, `wardrobe`, `words`, `palette`, `critters` |
+| `data/` | **content only, no code**: `chapters` (the eight chapters and their film scripts), `ending` (the epilogue and credits of the whole game), `levels`, `zips`, `cases`, `hints`, `story`, `badges`, `wardrobe`, `words`, `palette`, `critters` |
 | `puzzles/` | the three puzzles. `*-rules.ts` and `*-generator.ts` are **pure** (testable in Node); `*-puzzle.ts` / `case-screen.ts` add the DOM. `registry.ts` lists the puzzle kinds, `evil.ts` the Barnaby Noir remix, `daily*.js` the Daily Case |
 | `game/` | the flow between screens: `level-flow` runs a level (and plays a chapter's film after its last level), `level-steps` defines the step order, plus `noir-flow`, `daily-flow`, `nav`, `evil-mode` |
 | `state/` | `store.ts` (the save file and everything derived from it), `migrations.ts` (pure save upgrade and clean-up), `session.ts` (what is happening right now) |
@@ -41,7 +41,7 @@ Rules the tests enforce (`tests/unit/architecture.test.ts`): no import cycles; `
 ## Recipes
 
 ### Add a chapter
-The ending of the whole game is not part of any chapter: the epilogue dialogue (`data/ending.ts`) follows the outro of the last level, and the finale sting, "The End" card and credits belong to the last chapter's film. Append your chapter and the ending moves to it; do not put `finale` in a chapter script. A chapter can bring its own music: set `track` to a key of `TRACKS` in `audio/music.ts` (Chapter 6 uses `public/music/midnight-oasis.mp3`; Chapter 7 has a `circus` track key waiting for `public/music/big-top.mp3`: add the file, then set `track: 'circus'` on the chapter; until then it plays the shared case track).
+The ending of the whole game is not part of any chapter: the epilogue dialogue (`data/ending.ts`) follows the outro of the last level, and the finale sting, "The End" card and credits belong to the last chapter's film. Append your chapter and the ending moves to it; do not put `finale` in a chapter script. A chapter can bring its own music: set `track` to a key of `TRACKS` in `audio/music.ts` (Chapter 6 uses `public/music/midnight-oasis.mp3` and Chapter 8 `public/music/curious-whistle.mp3`; Chapter 7 has a `circus` track key waiting for `public/music/big-top.mp3`: add the file, then set `track: 'circus'` on the chapter; until then it plays the shared case track).
 
 A chapter is an entry in `CHAPTERS` (`data/chapters.ts`): the level numbers it groups (consecutive, and together all levels exactly once), its palette, a `motif` and an `ending` film script. A script lists the `start` layers on stage and a list of beats (caption, camera move, layers to `show` / `hide`, an audio `cue`, a `flash`, how long to `hold`); layer ids come from `FILM_LAYERS`. A new motif needs its layers drawn in `scenes/film-art.ts` and its crop in `BAND_VIEWS`; the chapter's id needs a score in `audio/film-score.ts` (`SCORES`). `npm test` (`chapters.test.ts`) checks the grouping, the layer ids, the cues and the film length. Watch the film with `ChapterFilm.play(id)` from the dev console, or from its card on the map once seen.
 

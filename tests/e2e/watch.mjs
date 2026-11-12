@@ -166,6 +166,7 @@ async function main() {
     if (await has(page, '#pupFilm.show')) { log('  Pickle cinematic'); await watchFilm(page, '#pupFilm'); continue; }
     if (await has(page, '#wormFilm.show')) { log('  Biscuit cinematic'); await watchFilm(page, '#wormFilm'); continue; }
     if (await has(page, '#elephantFilm.show')) { log('  Pippy cinematic'); await watchFilm(page, '#elephantFilm'); continue; }
+    if (await has(page, '#dinoFilm.show')) { log('  Rexy cinematic'); await watchFilm(page, '#dinoFilm'); continue; }
     if (await has(page, '#noir.show')) { log('  Barnaby Noir interrupts'); await playNoir(page); continue; }
 
     if (await has(page, '#victory.show')) {

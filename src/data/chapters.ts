@@ -11,7 +11,8 @@ export const FILM_LAYERS: Record<Motif, string[]> = {
   lantern: ['sky', 'stars', 'town', 'rooftop', 'lanterns', 'larry', 'barnaby'],
   space:   ['sky', 'stars', 'planet', 'hills', 'barnaby', 'trail', 'rocket', 'home'],
   desert:  ['sky', 'stars', 'moon', 'dunes', 'caravan', 'palms', 'pool', 'house', 'barnaby'],
-  bigtop:  ['sky', 'stars', 'tent', 'flags', 'lights', 'crowd', 'ring', 'ball', 'pippy', 'barnaby']
+  bigtop:  ['sky', 'stars', 'tent', 'flags', 'lights', 'crowd', 'ring', 'ball', 'pippy', 'barnaby'],
+  meteor:  ['sky', 'sun', 'stars', 'hills', 'dinos', 'burst', 'ball', 'barnaby']
 };
 
 export const CHAPTERS: Chapter[] = [
@@ -102,7 +103,20 @@ export const CHAPTERS: Chapter[] = [
         { caption: 'The whole town has come to the show.', show: ['crowd'], cam: { x: -12, y: -2, scale: 1.14, ms: 3400 }, cue: 'chime', hold: 3000 },
         { caption: 'A spotlight finds the ring, and a golden star ball rolls in.', show: ['ring', 'ball'], cam: { x: -18, y: -4, scale: 1.24, ms: 3400 }, cue: 'whoosh', flash: 0.3, hold: 3200 },
         { caption: 'On top of it, a very small clown. Pippy bows!', show: ['pippy'], cue: 'bell', flash: 0.4, hold: 3000 },
-        { caption: 'And in the front row, a bear is clapping very loudly.', show: ['barnaby'], cam: { x: -6, y: 0, scale: 1, ms: 3600 }, cue: 'chime', hold: 3200 }
+        { caption: 'And in the front row, a bear is clapping very loudly.', show: ['barnaby'], cam: { x: -6, y: 0, scale: 1, ms: 3600 }, cue: 'chime', hold: 3200 },
+        { caption: 'Far away, over a sunny meadow, a tiny red light begins to fall...', cam: { x: 8, y: -4, scale: 1.04, ms: 3400 }, cue: 'swell', hold: 3200 }
+      ] } },
+  { id: 'dino', n: 8, title: 'Dino Strikes Back', tagline: 'A herd of friendly dinos and one very big rock.', levels: [20, 21, 22], motif: 'meteor', track: 'dino',
+    palette: { a: '#d8f3c9', b: '#8fd68a', ink: '#27472f', glow: '#ffe08a' },
+    ending: {
+      start: ['sky', 'hills', 'dinos'],
+      reducedCaption: 'The meteor is stardust, the meadow is safe, and a very small T. rex gives a very big roar.',
+      beats: [
+        { caption: 'The sky is quiet. The dust settles over the meadow.', cam: { x: 0, scale: 1, ms: 0 }, cue: 'swell', hold: 2800 },
+        { caption: 'Where the meteor was, a thousand new stars begin to glow.', show: ['stars', 'burst'], cam: { x: 0, y: -6, scale: 1.06, ms: 3400 }, cue: 'sparkle', flash: 0.35, hold: 3200 },
+        { caption: 'The sun comes out, and the dinos come out to play.', show: ['sun'], cam: { x: -8, y: 0, scale: 1.1, ms: 3400 }, cue: 'chime', hold: 3000 },
+        { caption: 'The Boing Ball bounces home, higher than ever.', show: ['ball'], cam: { x: -16, y: 2, scale: 1.18, ms: 3400 }, cue: 'whoosh', hold: 3000 },
+        { caption: 'And a very small T. rex gives a very big roar. Thank you, Barnaby!', show: ['barnaby'], cam: { x: -6, y: 0, scale: 1, ms: 3600 }, cue: 'bell', flash: 0.3, hold: 3400 }
       ] } }
 ];
 

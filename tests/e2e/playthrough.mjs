@@ -18,10 +18,13 @@
      I  declining Barnaby Noir mid-level: the dark theme stays off and the level carries on
      J  chapter 5, case 1: Pickle's crash-landing film, Pickle speaking with his own portrait, then the whole case
      K  chapter 5, case 3: the whole case, Pickle's lift-off, and the chapter's closing film (an ordinary chapter end: the story goes on)
-     L  the LAST case of the game (chapter 7, case 3): the whole case, Pippy's show, "Hear the ending", the last film with The End and the credits
+     L  the LAST case of the game (chapter 8, case 3): the whole case, the stomp-launch that smashes the meteor, "Hear the ending", the last film with The End and the credits
      M  chapter 6, case 1: Biscuit pops out of the dunes, speaks with his own portrait, then the whole case
      N  chapter 7, case 1: Pippy loses his star ball, speaks with his own portrait, then the whole case
      O  chapter 6, case 3: the whole case, Biscuit's homecoming, and the chapter's closing film (an ordinary chapter end: the story goes on)
+
+     P  chapter 7, case 3: the whole case, Pippy's show, and the chapter's closing film (an ordinary chapter end: the dinos are next)
+     Q  chapter 8, case 1: the meteor appears over the meadow, Rexy speaks with her own portrait, then the whole case
 
    Answers (word paths, trail, culprit, item) are read from src/data, so the test follows the content. Anything logged with
    console.error, or any uncaught page error, fails the scenario. Screenshots go to tests/e2e/out/ (git-ignored). */
@@ -178,7 +181,7 @@ async function tapNoirUntil(page, done) {
 }
 
 /* ---------- scenarios ---------- */
-const lv1 = LEVELS[0], lv8 = LEVELS[7], lv11 = LEVELS[10], lv13 = LEVELS[12], lv14 = LEVELS[13], lv16 = LEVELS[15], lv17 = LEVELS[16];
+const lv1 = LEVELS[0], lv8 = LEVELS[7], lv11 = LEVELS[10], lv13 = LEVELS[12], lv14 = LEVELS[13], lv16 = LEVELS[15], lv17 = LEVELS[16], lv19 = LEVELS[18], lv20 = LEVELS[19];
 const lvLast = LEVELS[LEVELS.length - 1];                          // the ending always follows the last level, however many there are
 const chLast = CHAPTERS[CHAPTERS.length - 1];
 
@@ -495,11 +498,11 @@ const scenarios = {
     await victory(page, 'Trail Followed!');
     await pressContinue(page);
     await accuse(page, lvLast);
-    await page.waitForSelector('#elephantFilm.show');               // Pippy's show plays before the victory card
-    await shot('pippy-show');
-    await page.waitForSelector('#efSkip.on');
-    await page.click('#efSkip');
-    await page.waitForSelector('#elephantFilm:not(.show)');
+    await page.waitForSelector('#dinoFilm.show');               // the stomp-launch plays before the victory card
+    await shot('dino-finale');
+    await page.waitForSelector('#dfSkip.on');
+    await page.click('#dfSkip');
+    await page.waitForSelector('#dinoFilm:not(.show)');
     await victory(page, 'Case Solved!', 'Hear the ending');
     expect(await page.textContent('#vUnlock'), 'the last case closes the whole story').toBe('Every mystery solvedYou are a true detective!');
     await pressContinue(page);
@@ -513,7 +516,8 @@ const scenarios = {
     expect(await page.textContent('#cfKicker'), 'the last chapter says The End').toBe('The End');
     expect(await page.textContent('#cfTitle'), 'film card title').toBe(chLast.title);
     expect((await page.textContent('#cfCredits')).includes('Pippy'), 'the credits thank Pippy').toBe(true);
-    await shot('circus-film');
+    expect((await page.textContent('#cfCredits')).includes('Rexy'), 'the credits thank Rexy').toBe(true);
+    await shot('dino-film');
     await page.waitForSelector('#cfSkip.on');
     await page.click('#cfSkip');
     await page.waitForSelector('#chapterFilm:not(.show)');
@@ -603,6 +607,46 @@ const scenarios = {
     expect(save.unlocked, 'case 7.2 unlocked').toBe(18);
   },
 
+  async Q({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'dino');
+    await caseButton(page, 20).click();
+    await page.waitForSelector('#dinoFilm.show');               // the meteor appears over the meadow, and the case opens
+    await page.waitForSelector('#dfTitle.on');                      // (reduced motion: the finished scene, then the title card)
+    expect(await page.textContent('#dfTitle b'), 'title card names the chapter').toBe('DINO STRIKES BACK');
+    await shot('dino-intro');
+    await page.waitForSelector('#dfSkip.on');
+    await page.click('#dfSkip');
+    await page.waitForSelector('#dinoFilm:not(.show)');
+    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.dino === true, Store.KEY);
+    await onScreen(page, 'story');
+    for (let i = 0; i < 14 && await page.textContent('#dlgName') !== 'Rexy'; i++) {      // tap on to Rexy's first line
+      await page.click('#screen-story', { position: { x: 200, y: 300 } });
+      await page.waitForTimeout(300);
+    }
+    expect(await page.textContent('#dlgName'), 'Rexy speaks').toBe('Rexy');
+    expect(await page.evaluate(() => document.getElementById('storyDino').classList.contains('on')), "Rexy's portrait is up").toBe(true);
+    expect(await page.evaluate(() => document.getElementById('storyBear').classList.contains('away')), 'Barnaby steps aside').toBe(true);
+    await shot('rexy-speaks');
+    await skipStory(page);                                          // intro
+    await solveWords(page, lv20);
+    await victory(page, 'Clue Found!', 'Follow the trail');
+    await pressContinue(page);
+    await skipStory(page);                                          // bridge
+    await solveTrail(page, lv20);
+    await victory(page, 'Trail Followed!', 'To the suspects');
+    await pressContinue(page);
+    await accuse(page, lv20);
+    await victory(page, 'Case Solved!', 'Continue the story');
+    await pressContinue(page);
+    await skipStory(page);                                          // outro
+    await onScreen(page, 'map');
+    const save = await readSave(page);
+    expect(save.levels[20].solved, 'case 8.1 solved').toBe(true);
+    expect(save.unlocked, 'case 8.2 unlocked').toBe(21);
+  },
+
   async O({ page, shot }) {
     await page.click('#btnPlay');
     await onScreen(page, 'map');
@@ -643,6 +687,49 @@ const scenarios = {
     expect(save.levels[16].solved, 'case 6.3 solved').toBe(true);
     expect(save.seen.endings.oasis, 'the ending is marked as seen').toBe(true);
     expect(save.unlocked, 'case 7.1 unlocked').toBe(17);
+  },
+
+  async P({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'circus');
+    await caseButton(page, 19).click();
+    await skipStory(page);                                          // intro
+    await solveWords(page, lv19);
+    await victory(page, 'Clue Found!');
+    await pressContinue(page);
+    await skipStory(page);                                          // bridge
+    await solveTrail(page, lv19);
+    await victory(page, 'Trail Followed!');
+    await pressContinue(page);
+    await accuse(page, lv19);
+    await page.waitForSelector('#elephantFilm.show');               // Pippy's show plays before the victory card
+    await shot('pippy-show');
+    await page.waitForSelector('#efSkip.on');
+    await page.click('#efSkip');
+    await page.waitForSelector('#elephantFilm:not(.show)');
+    await victory(page, 'Case Solved!', 'Continue the story');
+    expect(await page.textContent('#vUnlock'), 'a chapter end, not the end of the game').toBe('Chapter completeThe Big Top');
+    await pressContinue(page);
+    await onScreen(page, 'story');                                  // outro, then Barnaby's epilogue: skip until the film shows
+    for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
+      await page.evaluate(() => document.getElementById('btnSkip').click());
+      await page.waitForTimeout(200);
+    }
+    await page.waitForSelector('#chapterFilm.show');                // chapter 7's film
+    await page.waitForSelector('#cfCard.on');
+    expect(await page.textContent('#cfKicker'), 'chapter 7 is not the end').toBe('Chapter 7 complete');
+    expect(await page.textContent('#cfTitle'), 'film card title').toBe('The Big Top');
+    expect(await page.textContent('#cfNext'), 'the card points to chapter 8').toBe('Next: Chapter 8 · Dino Strikes Back');
+    await shot('circus-film');
+    await page.waitForSelector('#cfSkip.on');
+    await page.click('#cfSkip');
+    await page.waitForSelector('#chapterFilm:not(.show)');
+    await onScreen(page, 'map');
+    const save = await readSave(page);
+    expect(save.levels[19].solved, 'case 7.3 solved').toBe(true);
+    expect(save.seen.endings.circus, 'the ending is marked as seen').toBe(true);
+    expect(save.unlocked, 'case 8.1 unlocked').toBe(20);
   }
 };
 
@@ -662,7 +749,9 @@ const seeds = {
   L: makeSave(solvedUpTo(lvLast.n - 1)),
   M: makeSave(solvedUpTo(13)),
   N: makeSave(solvedUpTo(16)),
-  O: makeSave(solvedUpTo(15))
+  O: makeSave(solvedUpTo(15)),
+  P: makeSave(solvedUpTo(18)),
+  Q: makeSave(solvedUpTo(19))
 };
 
 /* ---------- run ---------- */

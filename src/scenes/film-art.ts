@@ -1,5 +1,6 @@
 import { bearMarkup } from '../characters/barnaby-svg.ts';
 import { rocketInner } from '../characters/pup.ts';
+import { HERD, boingBall, dinoInner } from '../characters/dino.ts';
 import { elephantInner, starBall } from '../characters/elephant.ts';
 import { wormInner } from '../characters/worm.ts';
 import { FILM_LAYERS } from '../data/chapters.ts';
@@ -15,14 +16,15 @@ import type { Film } from './film.ts';
 
 const VIEW = '0 0 800 1000';
 /* the crop each motif's card shows (the whole hero scene; the sky, hills and sea run past it, so a wide card has no empty sides) */
-const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440', bigtop: '110 400 580 560' };
+const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440', bigtop: '110 400 580 560', meteor: '110 420 600 520' };
 
 /* how far each layer follows the camera (0 = fixed, 1 = full) */
 const DEPTH: Record<string, number> = {
   sky: 0.1, sun: 0.15, moon: 0.15, stars: 0.18, clouds: 0.3, hills: 0.4, sea: 0.5, town: 0.5, lighthouse: 0.6, beam: 0.6, library: 0.7,
   garden: 0.85, flowers: 0.9, lamps: 0.75, bees: 0.8, lanterns: 0.8, rooftop: 1, larry: 1, barnaby: 1, cake: 1, candles: 1, snow: 1, globe: 0, planet: 0.2, home: 0.2, trail: 0.6, rocket: 0.6,
   dunes: 0.8, caravan: 0.82, palms: 0.85, pool: 0.85, house: 0.85,
-  tent: 0.7, flags: 0.72, lights: 0.75, crowd: 0.9, ring: 0.95, ball: 1, pippy: 1
+  tent: 0.7, flags: 0.72, lights: 0.75, crowd: 0.9, ring: 0.95, ball: 1, pippy: 1,
+  dinos: 0.95, burst: 0.3
 };
 
 /* what the map card shows for each motif: the finished-scene layers only */
@@ -33,7 +35,8 @@ export const BAND_LAYERS: Record<Motif, string[]> = {
   lantern: ['sky', 'stars', 'town', 'lanterns'],
   space: ['sky', 'stars', 'planet', 'hills', 'home', 'rocket'],
   desert: ['sky', 'stars', 'moon', 'dunes', 'palms', 'pool', 'house'],
-  bigtop: ['sky', 'stars', 'tent', 'flags', 'lights', 'crowd', 'ring', 'ball', 'pippy']
+  bigtop: ['sky', 'stars', 'tent', 'flags', 'lights', 'crowd', 'ring', 'ball', 'pippy'],
+  meteor: ['sky', 'sun', 'stars', 'hills', 'dinos', 'burst', 'ball']
 };
 
 let uid = 0;
@@ -300,6 +303,30 @@ const ART: Record<Motif, Record<string, LayerFn>> = {
     ball: (_u, vb) => svg('<g class="cf-peek">' + starBall(400, 900, 38) + '</g>', vb),
     pippy: (_u, vb) => svg('<g transform="translate(350 760) scale(.5)"><g class="cf-peek">' + elephantInner() + '</g></g>', vb),
     barnaby: () => '<div class="cf-bear bt"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
+  },
+
+  /* ---- the meadow after the meteor: a sunny sky of new stars, rolling hills and the whole dino herd ---- */
+  meteor: {
+    sky: (u, vb) => svg('<defs>' + grad(u + 's', [[0.2, '#5fb8ea'], [0.62, '#a9def4'], [0.92, '#ffe9b8']]) + '</defs>' + skyRect(u + 's'), vb),
+    sun: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#fff2b0', 0.95) + '</defs><g class="cf-halo">' + glow(u + 'g', 640, 250, 180) + '</g><circle cx="640" cy="250" r="54" fill="#ffe27a"/>', vb),
+    stars: (_u, vb) => svg(starField(46, 91, 360), vb),
+    hills: (_u, vb) => svg('<path d="M-300 760 Q100 640 420 730 T1100 700 V1300 H-300Z" fill="#8fd68a"/><path d="M-300 820 Q150 730 520 800 T1100 780 V1300 H-300Z" fill="#6cc474"/>' +
+      '<path d="M-300 900 Q300 840 700 900 T1100 880 V1300 H-300Z" fill="#4fae60"/>', vb),
+    dinos: (_u, vb) => {
+      const herd = [['Dilly', 170, 720, 0.74], ['Stella', 310, 750, 0.5], ['Penny', 690, 720, 0.5], ['Trixie', 570, 770, 0.56], ['Rexy', 440, 800, 0.42]] as const;
+      return svg(herd.map(([n, x, y, k], i) => '<g transform="translate(' + (x - 100 * k) + ' ' + (y - 208 * k) + ') scale(' + k + ')"><g class="cf-peek" style="animation-delay:-' + i * 0.5 + 's">' + dinoInner(HERD[n].kind, HERD[n].pal) + '</g></g>').join(''), vb);
+    },
+    burst: (_u, vb) => {
+      const rng = mulberry32(37), cols = ['#fff6c8', '#ffd24a', '#ff9fb4', '#9be7ff', '#c8a8ff'];
+      let out = '';
+      for (let i = 0; i < 26; i++) {
+        const x = r1(120 + rng() * 560), y = r1(80 + rng() * 300), s = r1(0.6 + rng() * 1.1);
+        out += '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')"><path class="cf-star" style="--i:' + i + '" d="M0 -10 L3 -3 L10 0 L3 3 L0 10 L-3 3 L-10 0 L-3 -3Z" fill="' + cols[i % cols.length] + '"/></g>';
+      }
+      return svg(out, vb);
+    },
+    ball: (_u, vb) => svg('<g class="cf-peek">' + boingBall(300, 880, 44) + '</g>', vb),
+    barnaby: () => '<div class="cf-bear mt"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
   }
 };
 
