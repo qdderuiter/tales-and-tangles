@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SPRING_FLICK, SPRING_NAV, isSettled, project, releaseVelocity, rubberband, stepSpring } from '../../src/core/spring.ts';
+import { SPRING_NAV, project, releaseVelocity, stepSpring } from '../../src/core/spring.ts';
 import type { SpringOpts, SpringState } from '../../src/core/spring.ts';
 
 /* run a spring in small fixed frames, returning every sample */
@@ -18,7 +18,7 @@ describe('stepSpring', () => {
   });
 
   it('an under-damped spring overshoots, then settles', () => {
-    const xs = run({ x: 0, v: 0 }, 100, SPRING_FLICK, 3).map(s => s.x);
+    const xs = run({ x: 0, v: 0 }, 100, { damping: 0.8, response: 0.35 }, 3).map(s => s.x);
     expect(Math.max(...xs)).toBeGreaterThan(100);
     expect(xs[xs.length - 1]).toBeCloseTo(100, 2);
   });
@@ -29,13 +29,8 @@ describe('stepSpring', () => {
     expect(xs[xs.length - 1]).toBeCloseTo(100, 1);
   });
 
-  it('settles in about a response-time or two', () => {
-    const s = run({ x: 0, v: 0 }, 1, SPRING_NAV, 1.5).pop()!;
-    expect(isSettled(s, 1, 0.01)).toBe(true);
-  });
-
   it('is frame-rate independent: one big step equals many small ones', () => {
-    for (const o of [SPRING_NAV, SPRING_FLICK, { damping: 2, response: 0.5 }]) {
+    for (const o of [SPRING_NAV, { damping: 0.8, response: 0.35 }, { damping: 2, response: 0.5 }]) {
       const small = run({ x: 10, v: 200 }, -30, o, 0.4, 1 / 1000).pop()!;
       const big = stepSpring({ x: 10, v: 200 }, -30, 0.4, o);
       expect(big.x).toBeCloseTo(small.x, 1);
@@ -66,22 +61,6 @@ describe('project (momentum)', () => {
     expect(project(-1000)).toBeCloseTo(-499, 6);
     expect(project(0)).toBe(0);
     expect(project(1000, 0.99)).toBeCloseTo(0.99 / 0.01, 6);
-  });
-});
-
-describe('rubberband', () => {
-  it('follows less and less the further past the edge', () => {
-    const near = rubberband(20, 400), far = rubberband(200, 400);
-    expect(near).toBeGreaterThan(0);
-    expect(near).toBeLessThan(20);
-    expect(far).toBeLessThan(200);
-    expect(far / 200).toBeLessThan(near / 20);
-  });
-
-  it('approaches but never reaches the dimension, and is odd in the overshoot', () => {
-    expect(rubberband(1e6, 400)).toBeLessThan(400);
-    expect(rubberband(-30, 400)).toBeCloseTo(-rubberband(30, 400), 9);
-    expect(rubberband(0, 400)).toBe(0);
   });
 });
 

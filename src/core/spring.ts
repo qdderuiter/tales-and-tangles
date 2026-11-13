@@ -1,4 +1,4 @@
-/* ---------- springs, momentum and rubber-banding (pure maths: no DOM, so tests run in Node) ----------
+/* ---------- springs and momentum (pure maths: no DOM, so tests run in Node) ----------
    A spring is described the way Apple's designers do it, with two numbers instead of mass / stiffness / damping:
      damping   1 = critically damped (settles, never overshoots); below 1 it overshoots and wobbles
      response  seconds for the motion to "arrive" (not a duration: a spring has no fixed end)
@@ -8,9 +8,8 @@
 export interface SpringOpts { damping: number; response: number }
 export interface SpringState { x: number; v: number }          // position and velocity (units per second)
 
-/* house styles: navigation never bounces; a flick or a celebration may */
+/* house style: navigation never bounces */
 export const SPRING_NAV: SpringOpts = { damping: 1, response: 0.35 };
-export const SPRING_FLICK: SpringOpts = { damping: 0.8, response: 0.35 };
 
 export function stepSpring(s: SpringState, target: number, dt: number, o: SpringOpts): SpringState {
   if (dt <= 0) return s;
@@ -30,15 +29,8 @@ export function stepSpring(s: SpringState, target: number, dt: number, o: Spring
   return { x: target + c1 * e1 + c2 * e2, v: c1 * r1 * e1 + c2 * r2 * e2 };
 }
 
-/* close enough to stop animating: within half a unit-thousandth of the target and nearly still */
-export const isSettled = (s: SpringState, target: number, eps = 0.001): boolean => Math.abs(s.x - target) < eps && Math.abs(s.v) < eps * 10;
-
 /* where a flick at `velocity` (px/s) would come to rest if it simply decelerated like scrolling (Apple's exponential-decay form) */
 export const project = (velocity: number, deceleration = 0.998): number => (velocity / 1000) * deceleration / (1 - deceleration);
-
-/* the further past a bound you drag, the less the content follows: continuous resistance instead of a hard stop */
-export const rubberband = (overshoot: number, dimension: number, constant = 0.55): number =>
-  (overshoot * dimension * constant) / (dimension + constant * Math.abs(overshoot));
 
 /* velocity from the last few pointer samples [{ x, t(ms) }]: a short window, so a pause before release reads as zero */
 export function releaseVelocity(samples: { x: number; t: number }[], windowMs = 100): number {
