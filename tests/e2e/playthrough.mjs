@@ -970,24 +970,31 @@ async function main() {
   }
 
   console.log(`Target: ${target.url}  (browser: ${CHANNEL})`);
-  const results = [];
-  for (const id of Object.keys(scenarios)) {
-    if (ONLY.length && !ONLY.includes(id)) continue;
-    if ((id === 'E' || id === 'G') && !target.dev) { console.log(`- ${id} skipped: needs the dev server (use --dev)`); continue; }
+  /* scenarios use isolated browser contexts, so a few run side by side; results print in scenario order */
+  const WORKERS = Math.max(1, Number(process.env.E2E_WORKERS) || 4);
+  const ids = Object.keys(scenarios).filter(id => !ONLY.length || ONLY.includes(id));
+  const lines = {}, results = [];
+  const runOne = async id => {
+    if ((id === 'E' || id === 'G') && !target.dev) { lines[id] = `- ${id} skipped: needs the dev server (use --dev)`; return; }
     const started = Date.now();
     const session = await openPage(browser, target, { save: seeds[id], name: id });
     try {
       await scenarios[id](session);
       if (session.errors.length) throw new Error('the page logged errors:\n    ' + session.errors.join('\n    '));
       results.push([id, true]);
-      console.log(`✓ ${id} (${((Date.now() - started) / 1000).toFixed(1)}s)`);
+      lines[id] = `✓ ${id} (${((Date.now() - started) / 1000).toFixed(1)}s)`;
     } catch (e) {
       results.push([id, false]);
       await session.shot('FAILED').catch(() => {});
-      console.log(`✗ ${id}: ${e.message}${session.errors.length && !/logged errors/.test(e.message) ? '\n    page errors: ' + session.errors.join('; ') : ''}`);
+      lines[id] = `✗ ${id}: ${e.message}${session.errors.length && !/logged errors/.test(e.message) ? '\n    page errors: ' + session.errors.join('; ') : ''}`;
     }
     await session.context.close();
-  }
+  };
+  const queue = [...ids];
+  await Promise.all(Array.from({ length: Math.min(WORKERS, queue.length) }, async () => {
+    for (let id = queue.shift(); id; id = queue.shift()) await runOne(id);
+  }));
+  for (const id of ids) console.log(lines[id]);
   await browser.close();
   const failed = results.filter(([, ok]) => !ok).length;
   console.log(failed ? `\n${failed} of ${results.length} scenarios failed (screenshots in tests/e2e/out/)` : `\nAll ${results.length} scenarios passed`);
