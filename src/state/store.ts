@@ -1,7 +1,7 @@
 import { LEVELS } from '../data/levels.ts';
 import { OUTFIT_DEFAULT, WARDROBE, WARDROBE_BY_ID } from '../data/wardrobe.ts';
 import { blankLevel, migrate, ownsItem, sanitize } from './migrations.ts';
-import type { Json, SaveData } from './migrations.ts';
+import type { Json, PuzzleKey, SaveData } from './migrations.ts';
 import type { PuzzleResult } from '../core/types.ts';
 
 export const Store = {
@@ -50,9 +50,8 @@ export const Store = {
   },
   save() { try { localStorage.setItem(this.KEY, JSON.stringify(this.data)); } catch { /* private mode: play on without saving */ } },
   level(n: number) { return this.data.levels[n] || blankLevel(); },
-  /* kind: 'word' | 'zip' */
-  recordPuzzle(n: number, kind: 'word' | 'zip', result: Pick<PuzzleResult, 'score' | 'stars'>) {
-    const ch = this.level(n), prev = ch[kind];
+  recordPuzzle(n: number, kind: PuzzleKey, result: Pick<PuzzleResult, 'score' | 'stars'>) {
+    const ch = this.level(n), prev = ch[kind] ?? { done: false, stars: 0, best: 0 };
     const isBest = result.score > prev.best;
     ch[kind] = { done: true, stars: Math.max(prev.stars, result.stars), best: Math.max(prev.best, result.score) };
     this.data.levels[n] = ch;
@@ -67,8 +66,11 @@ export const Store = {
     this.data.unlocked = Math.max(this.data.unlocked, Math.min(n + 1, LEVELS.length));
     this.save();
   },
-  stars(n: number) { const ch = this.level(n); return ch.solved ? Math.max(1, Math.round((ch.word.stars + ch.zip.stars) / 2) - (ch.penalty | 0)) : 0; },
-  score(n: number) { const ch = this.level(n); return ch.word.best + ch.zip.best; },
+  stars(n: number) {      // the average over the puzzles played: the Sketch Artist counts only once it has been done
+    const ch = this.level(n), all = [ch.word, ch.zip, ...(ch.sketch && ch.sketch.done ? [ch.sketch] : [])];
+    return ch.solved ? Math.max(1, Math.round(all.reduce((s, p) => s + p.stars, 0) / all.length) - (ch.penalty | 0)) : 0;
+  },
+  score(n: number) { const ch = this.level(n); return ch.word.best + ch.zip.best + (ch.sketch ? ch.sketch.best : 0); },
   totalStars() { return LEVELS.reduce((s, lv) => s + this.stars(lv.n), 0); },
   hasProgress() { return Object.keys(this.data.levels).length > 0; },
   reset() { this.data = this.defaults(); this.save(); }

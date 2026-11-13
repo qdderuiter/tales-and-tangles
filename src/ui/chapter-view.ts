@@ -147,9 +147,11 @@ export const ChapterView = {
     (['a', 'b', 'ink', 'glow'] as const).forEach(k => this.sheet.style.setProperty('--ch-' + k, ch.palette[k]));
     const nodes = levels.map((lv, i) => {
       const rec = S.level(lv.n), locked = lv.n > S.data.unlocked, done = rec.solved, fresh = session.justUnlocked === lv.n;
-      const noir = S.data.evil.cleared[Evil.key('word', lv)] || S.data.evil.cleared[Evil.key('zip', lv)];
+      const noir = S.data.evil.cleared[Evil.key('word', lv)] || S.data.evil.cleared[Evil.key('zip', lv)] || S.data.evil.cleared[Evil.key('sketch', lv)];
+      const pipList: [string, string, boolean][] = [['word', 'Words', rec.word.done], ['zip', 'Trail', rec.zip.done],
+        ...(lv.steps?.includes('sketch') ? [['sketch', 'Sketch', !!rec.sketch?.done] as [string, string, boolean]] : []), ['case', 'Case', rec.solved]];      // a level's own steps decide which pips it has
       const pips = locked ? '' : '<div class="cnode-pips">' +
-        ([['word', 'Words', rec.word.done], ['zip', 'Trail', rec.zip.done], ['case', 'Case', rec.solved]] as [string, string, boolean][]).map(([kind, label, ok]) =>
+        pipList.map(([kind, label, ok]) =>
           '<button class="pip' + (ok ? ' done' : '') + '" data-step="' + lv.n + ':' + kind + '"' + (rec.solved ? '' : ' disabled') + '>' + (ok ? '✓ ' : '') + label + '</button>').join('') +
         (lv.introScene && lv.sceneId && S.data.seen[lv.sceneId] ? '<button class="pip" data-intro="' + lv.n + '">🎬 ' + SCENE_NAME[lv.sceneId] + '</button>' : '') + '</div>';       // rewatch the cinematic once it has been seen
       return '<li class="cnode' + (done ? ' done' : '') + (locked ? ' locked' : '') + (!locked && !done ? ' current' : '') + (fresh ? ' fresh' : '') + '" style="--i:' + i + '">' +

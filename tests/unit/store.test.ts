@@ -67,6 +67,22 @@ describe('loading', () => {
     expect(load()).toEqual(Store.defaults());
   });
 
+  it('a save from before the Sketch Artist loads with no sketch record, and keeps its stars and score', () => {
+    put(Store.KEY, { levels: { 26: solved(3, 2) } });
+    const d = load();
+    expect(d.levels[26].sketch).toBeUndefined();
+    expect(Store.stars(26)).toBe(3);                     // 2.5 rounds up, exactly as before
+    expect(Store.score(26)).toBe(2000);
+  });
+
+  it('a sketch record is kept (whole numbers), and a junk one is dropped', () => {
+    put(Store.KEY, { levels: { 26: { ...solved(3, 3), sketch: { done: 1, stars: '2', best: 910.8 } }, 27: { ...solved(3, 3), sketch: 'no' }, 28: { ...solved(3, 3), sketch: null } } });
+    const d = load();
+    expect(d.levels[26].sketch).toEqual({ done: true, stars: 2, best: 910 });
+    expect(d.levels[27].sketch).toBeUndefined();
+    expect(d.levels[28].sketch).toBeUndefined();
+  });
+
   it('level records with the wrong shape become blank levels; numbers are coerced to whole numbers', () => {
     put(Store.KEY, { levels: { 1: null, 2: 'x', 3: { word: { done: 1, stars: '2', best: 12.9 }, zip: 'no', solved: 'yes', penalty: 1.7 } } });
     const d = load();
@@ -303,6 +319,24 @@ describe('recording results', () => {
     expect(Store.level(2).zip.done).toBe(true);
     expect(Store.level(2).word.done).toBe(false);
     expect(JSON.parse(disk[Store.KEY]).levels[2].zip.best).toBe(500);
+  });
+
+  it('recordPuzzle(sketch) works on a level that has no sketch record yet, and saves it', () => {
+    expect(Store.level(26).sketch).toBeUndefined();
+    expect(Store.recordPuzzle(26, 'sketch', { score: 900, stars: 2 })).toEqual({ isBest: true, prevBest: 0 });
+    expect(Store.level(26).sketch).toEqual({ done: true, stars: 2, best: 900 });
+    expect(Store.recordPuzzle(26, 'sketch', { score: 700, stars: 3 })).toEqual({ isBest: false, prevBest: 900 });
+    expect(Store.level(26).sketch).toEqual({ done: true, stars: 3, best: 900 });
+    expect(Store.level(26).word.done).toBe(false);
+    expect(JSON.parse(disk[Store.KEY]).levels[26].sketch.best).toBe(900);
+  });
+
+  it('the sketch counts toward stars and score only once it has been played', () => {
+    Store.data.levels[26] = solved(3, 3);
+    expect(Store.stars(26)).toBe(3); expect(Store.score(26)).toBe(2000);
+    Store.data.levels[26] = { ...solved(3, 3), sketch: { done: true, stars: 0, best: 100 } };
+    expect(Store.stars(26)).toBe(2);                    // (3 + 3 + 0) / 3
+    expect(Store.score(26)).toBe(2100);
   });
 
   it('recordSolved keeps the lower penalty and unlocks the next chapter', () => {

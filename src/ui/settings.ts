@@ -18,7 +18,7 @@ export const SETTINGS: Record<SettingKey, { btn: string; label: string; blip?: b
 /* autocross is stored only once changed, so a missing value means on */
 const isOn = (key: SettingKey): boolean => key === 'autocross' ? Store.data.settings.autocross !== false : Store.data.settings[key];
 
-export const TOPBAR_MUSIC = ['#btnPzSound', '#btnZSound'];
+export const TOPBAR_MUSIC = ['#btnPzSound', '#btnZSound', '#btnKSound'];
 
 export const Settings = {
   init() {

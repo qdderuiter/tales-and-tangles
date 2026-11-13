@@ -4,7 +4,7 @@ import type { Level, StoryPart } from '../data/types.ts';
 /* The order of a level (a "case") is data: a list of step ids. A level may carry its own `steps`; most use this default.
      intro -> Words (clue 1) -> bridge -> Scent Trail (clue 2) -> Suspects (the notebook) -> outro
    A step id is either one of STEPS below (story parts and the notebook) or a puzzle kind registered in puzzles/registry.ts.
-   To add a puzzle: register it and put its id in a level's `steps`. */
+   To add a puzzle: register it and put its id in a level's `steps`. Chapter 10's levels add the Sketch Artist ('sketch') after the Scent Trail. */
 export const DEFAULT_STEPS = ['intro', 'word', 'bridge', 'zip', 'case', 'outro'];
 
 /* `label` is the text on the button that leads INTO the step (the victory card of the step before it).
@@ -27,4 +27,7 @@ export const STEPS: Record<string, Step> = {
   outro:  story('outro',  lv => caseLabel(lv.n) + ' complete')
 };
 
-export const stepLabel = (id: string) => (STEPS[id] && STEPS[id].label) || 'Continue';
+/* the button into a puzzle step (puzzles are not in STEPS: level-flow starts them from the registry) */
+const PUZZLE_LABELS: Record<string, string> = { sketch: 'Draw the sketch' };
+
+export const stepLabel = (id: string) => (STEPS[id] && STEPS[id].label) || PUZZLE_LABELS[id] || 'Continue';

@@ -3,9 +3,14 @@ import type { Level, SceneId } from './types.ts';
 import { CASES } from './cases.ts';
 import { THEME_HINTS, TRAIL_HINTS } from './hints.ts';
 import { EVIL_ZIPS, ZIPS, parseZip } from './zips.ts';
+import { SKETCHES } from './sketches.ts';
+import { parseSketch } from '../puzzles/sketch/sketch-rules.ts';
 import { scenes } from '../core/scenes.ts';
 
-interface RawLevel { n: number; title: string; blurb: string; theme: string; scene: [string, string]; words: [string, string][]; introScene?: Level['introScene']; caughtScene?: Level['caughtScene']; sceneId?: SceneId }
+interface RawLevel { n: number; title: string; blurb: string; theme: string; scene: [string, string]; words: [string, string][]; introScene?: Level['introScene']; caughtScene?: Level['caughtScene']; sceneId?: SceneId; steps?: string[] }
+
+/* Chapter 10 adds the Sketch Artist nonogram between the Scent Trail and the suspects */
+const SKETCH_STEPS = ['intro', 'word', 'bridge', 'zip', 'sketch', 'case', 'outro'];
 
 const RAW_LEVELS: RawLevel[] = [
   { n: 1, title: 'The Missing Honey Jar', blurb: 'Sticky pawprints lead the way.', theme: 'HONEY', scene: ['#fdeccb', '#f9cfa6'],
@@ -67,16 +72,16 @@ const RAW_LEVELS: RawLevel[] = [
     words: [['BRICK','10 00 01 02 03'],['BEAMS','25 24 34 35 45'],['BOARD','13 14 04 05 15'],['BUILD','44 43 33 32 42'],['PEBBLE','23 22 12 11 21 20'],['WALL','41 40 30 31']] },
   { n: 25, title: 'Home Sweet Cave', blurb: 'One chimney cap stands between Rocky and a cosy home.', theme: 'CHIMNEY', scene: ['#e9d4b5', '#c79a5d'],
     words: [['CHIMNEY','20 21 22 32 33 43 42'],['ROOF','25 35 45 44'],['DOOR','34 24 23 13'],['CAVE','41 40 30 31'],['HOME','14 15 05 04'],['RUG','03 02 12'],['BEDS','11 01 00 10']] },
-  { n: 26, title: 'Wreck on the Beach', blurb: 'The plane is down, and the island is very quiet.', theme: 'WRECK', scene: ['#bfe6f2', '#f2d7a0'],
+  { n: 26, title: 'Wreck on the Beach', blurb: 'The plane is down, and the island is very quiet.', theme: 'WRECK', scene: ['#bfe6f2', '#f2d7a0'], steps: SKETCH_STEPS,
     introScene: () => scenes.crash!.intro(), sceneId: 'crash',
     words: [['WRECK','42 43 33 32 22'],['COAST','24 34 44 45 35'],['SMOKE','25 15 14 04 05'],['SANDY','21 31 30 40 41'],['BEACH','00 01 11 10 20'],['STORM','12 02 03 13 23']] },
-  { n: 27, title: 'Stripes in the Jungle', blurb: 'Something orange is moving in the bushes.', theme: 'TIGER', scene: ['#cfe8b0', '#6fa35a'],
+  { n: 27, title: 'Stripes in the Jungle', blurb: 'Something orange is moving in the bushes.', theme: 'TIGER', scene: ['#cfe8b0', '#6fa35a'], steps: SKETCH_STEPS,
     introScene: () => scenes.tiger!.intro(), sceneId: 'tiger',
     words: [['TIGER','41 40 30 31 21'],['ROARS','24 14 15 05 04'],['CLAWS','20 10 00 01 11'],['VINES','03 02 12 13 23'],['SCARE','34 44 45 35 25'],['BUSHY','22 32 33 43 42']] },
-  { n: 28, title: 'Biscuit Digs In', blurb: 'A very small worm has a very big idea.', theme: 'TUNNEL', scene: ['#f0d9a8', '#c79a5d'],
+  { n: 28, title: 'Biscuit Digs In', blurb: 'A very small worm has a very big idea.', theme: 'TUNNEL', scene: ['#f0d9a8', '#c79a5d'], steps: SKETCH_STEPS,
     introScene: () => scenes.dig!.intro(), sceneId: 'dig',
     words: [['TUNNEL','42 43 33 32 22 23'],['HOLE','13 12 02 03'],['SPADE','04 05 15 14 24'],['STEPS','21 31 30 40 41'],['SHAFT','25 35 45 44 34'],['DIRTY','00 01 11 10 20']] },
-  { n: 29, title: 'Signal Fire', blurb: 'One last spark between the castaways and home.', theme: 'SIGNAL', scene: ['#ffd9a8', '#e8837a'],
+  { n: 29, title: 'Signal Fire', blurb: 'One last spark between the castaways and home.', theme: 'SIGNAL', scene: ['#ffd9a8', '#e8837a'], steps: SKETCH_STEPS,
     caughtScene: () => scenes.crash!.caught(),                                               // the rescue (a flare, a ship's light) follows the solved case
     words: [['SIGNAL','00 01 11 10 20 21'],['FLAME','12 22 23 13 14'],['LIGHT','45 35 34 24 25'],['SMOKE','42 32 33 43 44'],['FLARE','15 05 04 03 02'],['FIRE','31 30 40 41']] }
 ];
@@ -85,5 +90,6 @@ const RAW_LEVELS: RawLevel[] = [
 export const LEVELS: Level[] = RAW_LEVELS.map((lv, i) => ({
   ...lv,
   words: lv.words.map(([w, p]) => ({ w, p: P(p), gold: w === lv.theme })),
-  zip: parseZip(ZIPS[i]), evilZip: parseZip(EVIL_ZIPS[i]), case: CASES[i], hint: THEME_HINTS[i], trailHint: TRAIL_HINTS[ZIPS[i].word]
+  zip: parseZip(ZIPS[i]), evilZip: parseZip(EVIL_ZIPS[i]), case: CASES[i], hint: THEME_HINTS[i], trailHint: TRAIL_HINTS[ZIPS[i].word],
+  ...(SKETCHES[lv.n] ? { sketch: parseSketch(SKETCHES[lv.n]) } : {})
 }));

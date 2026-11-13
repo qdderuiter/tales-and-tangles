@@ -164,6 +164,34 @@
     <div class="zbottom"><button class="btn small lav" id="btnZReset">Reset trail</button></div>
   </section>
 
+  <!-- SKETCH ARTIST: NONOGRAM -->
+  <section id="screen-sketch" class="screen" aria-label="Sketch Artist puzzle">
+    <div class="topbar">
+      <button class="btn round" id="btnKBack" aria-label="Back to case files">&#8592;</button>
+      <div class="topmid"><b id="kTitle">Sketch Artist</b><small><span id="kProg">0/0</span> squares &middot; <span id="kTime">0:00</span></small></div>
+      <button class="btn round butter" id="btnKHint" aria-label="Hint">?<span class="badge hide" id="kHintBadge">0</span></button>
+      <button class="btn round mint" id="btnKSound" aria-label="Toggle sound">&#9835;</button>
+    </div>
+    <div class="pz-bearrow">
+      <div class="pz-bear" id="kBear"></div>
+      <div class="bubble"><span id="kBubble"></span></div>
+    </div>
+    <div class="theme-line" id="kTheme"></div>
+    <div class="board-wrap">
+      <div class="board kboard">
+        <div class="kframe" id="kFrame">
+          <div class="kcols" id="kCols" aria-label="Column clues"></div>
+          <div class="krows" id="kRows" aria-label="Row clues"></div>
+          <div class="kgrid" id="kGrid"></div>
+        </div>
+      </div>
+    </div>
+    <div class="zbottom kbottom">
+      <button class="btn small butter kmode" id="btnKMode">&#9632; Fill</button>
+      <button class="btn small lav" id="btnKReset">Clear grid</button>
+    </div>
+  </section>
+
     <!-- CASE: NOTEBOOK -->
   <section id="screen-case" class="screen" aria-label="Case notebook">
     <div class="topbar">

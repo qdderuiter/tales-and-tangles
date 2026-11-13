@@ -10,6 +10,7 @@ import { CaseScreen } from '../puzzles/case/case-screen.ts';
 import { PUZZLE_KINDS } from '../puzzles/registry.ts';
 import { levelRun, currentLevel, session } from '../state/session.ts';
 import type { LevelRun } from '../state/session.ts';
+import type { PuzzleKey } from '../state/migrations.ts';
 import { Store } from '../state/store.ts';
 import { StoryScreen } from '../ui/story-screen.ts';
 import { UI } from '../ui/ui.ts';
@@ -31,7 +32,9 @@ export const LevelFlow = {
     const earned: Record<string, boolean> = {}; steps.forEach(id => { if (PUZZLE_KINDS[id]) earned[id] = false; });      // each puzzle step earns one clue
     return { n, replay: !!replay, freeHints: 0, earned, notes: null, steps, step: 0 };
   },
-  earnedText(kind: string) { const c = this.lv().case.clues.find(x => x.earned === kind); return CaseScreen.highlight(c ? c.t : ''); },
+  /* what the victory card shows: the clue this puzzle unlocked, or (the Sketch Artist unlocks none) what the picture turned out to be */
+  earnedText(kind: string) { const lv = this.lv(), c = lv.case.clues.find(x => x.earned === kind); return c ? CaseScreen.highlight(c.t) : kind === 'sketch' && lv.sketch ? lv.sketch.name : ''; },
+  earnedLine(kind: string) { return kind === 'sketch' ? 'Evidence sketched<b>' + this.earnedText(kind) + '</b>' : 'New clue in your notebook<b>' + this.earnedText(kind) + '</b>'; },
 
   start(n: number) {
     session.run = this.newRun(n, false);
@@ -96,11 +99,11 @@ export const LevelFlow = {
   onPuzzleWin(kind: string, result: PuzzleResult) {
     const run = levelRun(), k = PUZZLE_KINDS[kind];
     run.freeHints = k.obj.freeHints; run.earned[kind] = true;
-    const rec = Store.recordPuzzle(run.n, kind as 'word' | 'zip', result);
+    const rec = Store.recordPuzzle(run.n, kind as PuzzleKey, result);
     emit('puzzle:won', { kind, result, fresh: true });
     const bw = result.bonusWords || 0;
     Victory.show({
-      title: k.title, result, rec, unlock: 'New clue in your notebook<b>' + this.earnedText(kind) + '</b>' +
+      title: k.title, result, rec, unlock: this.earnedLine(kind) +
         (bw ? '<small class="note">+' + bw + ' hidden word' + (bw === 1 ? '' : 's') + ' found</small>' : ''),
       continueLabel: run.replay ? 'Back to case files' : stepLabel(run.steps[run.step + 1]), replayLabel: 'Replay',
       onContinue: () => Noir.gate(kind, () => run.replay ? toMap() : this.advance()),

@@ -29,9 +29,11 @@
      R  chapter 8, case 3: the whole case, the stomp-launch that smashes the meteor, and the closing film (an ordinary chapter end: Rocky is next)
      S  chapter 9, case 1: Rocky speaks with his own portrait, then the whole case
      T  chapter 9, case 3: the whole case and the closing film (an ordinary chapter end: the castaways are next)
-     U  chapter 10, case 1: the plane crash opens it, then the whole case
+     U  chapter 10, case 1: the plane crash opens it, then the whole case with its Sketch Artist (a wrong square, a hint, a 360px screenshot, the replay pip)
      V  chapter 10, case 2: the tiger and Evil Larry's look open it, then Evil Larry speaks with his own portrait
      W  chapter 10, case 3: Biscuit's dig opens it
+
+     X  chapter 10: Barnaby Noir remixes the Sketch Artist (replayed from its pip): no warnings, no dimmed clues, a wrong square stays, and the real picture wins
 
    Answers (word paths, trail, culprit, item) are read from src/data, so the test follows the content. Anything logged with
    console.error, or any uncaught page error, fails the scenario. Screenshots go to tests/e2e/out/ (git-ignored). */
@@ -151,6 +153,44 @@ async function solveTrail(page, lv) {
   await dragPath(page, '#zGrid', lv.zip.path, lv.zip.size, lv.zip.size);
 }
 
+/* the Sketch Artist: tap every filled square of the picture.
+   probe: first check a wrong square is caught (it turns into a cross and nothing is filled) and that a hint names a line; shot: also screenshot it on a 360px phone */
+async function solveSketch(page, lv, { probe, shot } = {}) {
+  const sk = lv.sketch, n = sk.size;
+  await onScreen(page, 'sketch');
+  await page.waitForFunction(k => document.querySelectorAll('#kGrid .kt').length === k, n * n);
+  const measure = async () => { const box = await page.locator('#kGrid').boundingBox(); return (r, c) => ({ x: box.x + (c + 0.5) * box.width / n, y: box.y + (r + 0.5) * box.height / n }); };
+  let at = await measure();
+  const tap = async (r, c) => { const p = at(r, c); await page.mouse.click(p.x, p.y); };
+  if (probe) {
+    expect(await page.textContent('#kTheme'), 'the witness speaks').toBeTruthy();
+    expect(await page.locator('#kCols .kc').count(), 'a clue for every column').toBe(n);
+    expect(await page.locator('#kRows .kr').count(), 'a clue for every row').toBe(n);
+    if (shot) {
+      await page.setViewportSize({ width: 360, height: 740 });
+      await page.waitForTimeout(200);
+      const w = await page.evaluate(() => document.querySelector('#kGrid').getBoundingClientRect().width);
+      expect(w >= 200, 'the grid stays usable on a 360px phone (' + Math.round(w) + 'px wide)').toBe(true);
+      await shot('sketch-360');
+      await page.setViewportSize({ width: 430, height: 900 });
+      await page.waitForTimeout(200);
+      at = await measure();
+    }
+    let er = 0, ec = 0; outer: for (er = 0; er < n; er++) for (ec = 0; ec < n; ec++) if (!sk.solution[er][ec]) break outer;
+    await tap(er, ec);
+    expect(await page.locator('#kGrid .kt.x').count(), 'a wrong square turns into a cross').toBe(1);
+    expect(await page.locator('#kGrid .kt.f').count(), 'a wrong square is not filled').toBe(0);
+    await page.click('#btnKHint');
+    expect(await page.locator('#kCols .kc.hint, #kRows .kr.hint').count(), 'the first hint names a line').toBeGreaterThan(0);
+  }
+  const cells = []; for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (sk.solution[r][c]) cells.push([r, c]);
+  for (const [i, [r, c]] of cells.entries()) {
+    await tap(r, c);
+    if (probe && shot && i === Math.floor(cells.length / 2)) await shot('sketch-half');
+  }
+  if (probe && shot) { await page.waitForSelector('#kFrame.won'); await page.waitForTimeout(900); await shot('sketch-won'); }      // the grid has turned into the coloured picture
+}
+
 async function accuse(page, lv) {
   await onScreen(page, 'case');
   await page.click(`#cSus button.chip[data-s="${lv.case.culprit}"]`);
@@ -196,16 +236,23 @@ async function startCase(page, chapterId, n) {
   await caseButton(page, n).click();
 }
 
-/* a whole ordinary case: intro, Words, bridge, Scent Trail, the accusation (it stops on the victory card of the case, or on a film before it) */
-async function playCase(page, lv) {
+/* a whole ordinary case: intro, Words, bridge, Scent Trail, (Sketch Artist in chapter 10), the accusation (it stops on the victory card of the case, or on a film before it) */
+async function playCase(page, lv, sketchOpts) {
+  const sketch = (lv.steps || []).includes('sketch');
   await skipStory(page);                                            // intro
   await solveWords(page, lv);
   await victory(page, 'Clue Found!', 'Follow the trail');
   await pressContinue(page);
   await skipStory(page);                                            // bridge
   await solveTrail(page, lv);
-  await victory(page, 'Trail Followed!', 'To the suspects');
+  await victory(page, 'Trail Followed!', sketch ? 'Draw the sketch' : 'To the suspects');
   await pressContinue(page);
+  if (sketch) {                                                     // chapter 10: the Sketch Artist comes between the trail and the suspects
+    await solveSketch(page, lv, sketchOpts);
+    await victory(page, 'Sketch Complete!', 'To the suspects');
+    if (sketchOpts) expect(await page.textContent('#vUnlock'), 'the card names the evidence').toBe('Evidence sketched' + lv.sketch.name);
+    await pressContinue(page);
+  }
   await accuse(page, lv);
 }
 
@@ -640,9 +687,52 @@ const scenarios = {
     const { page } = s;
     await startCase(page, 'castaways', 26);
     await openingFilm(s, 'island', { title: 'CASTAWAYS', titleSel: '#ifTitleMain', seen: 'crash', shot: 'island-crash' });
-    await playCase(page, lv26);
+    await playCase(page, lv26, { probe: true, shot: s.shot });         // chapter 10 adds the Sketch Artist; the probe also checks a wrong square and a hint
     await finishCase(page);
     await expectSolved(page, 26, { unlocked: 27, seen: 'crash' });
+    const save = await readSave(page);
+    expect(save.levels[26].sketch.done, 'the sketch is saved').toBe(true);
+    await page.click('.chv-back').catch(() => {});
+    await openChapter(page, 'castaways');
+    expect(await page.locator('#chvSheet [data-step="26:sketch"].done').count(), 'the sketch pip is ticked').toBe(1);
+    await page.click('#chvSheet [data-step="26:sketch"]');                // replay it from the case files
+    await solveSketch(page, lv26);
+    await victory(page, 'Sketch Complete!', 'Back to case files');
+  },
+
+  async X(s) {
+    const { page, shot } = s;
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'castaways');
+    await page.click('#chvSheet [data-step="26:sketch"]');
+    await solveSketch(page, lv26);                                  // a perfect result: the EVIL_STREAK-th one summons Noir
+    await victory(page, 'Sketch Complete!', 'Back to case files');
+    await pressContinue(page);
+    await page.waitForSelector('#noir.show');
+    const accept = page.locator('#noirChoices .choice', { hasText: 'Bring it on.' });
+    await tapNoirUntil(page, () => accept.count());
+    await page.waitForTimeout(450);
+    await accept.click();
+    await tapNoirUntil(page, async () => !await page.locator('#noir.show').count());
+    await onScreen(page, 'sketch');
+    await page.waitForTimeout(800);                                 // the cutscene hands the board back (and starts the clock) a moment after Noir's overlay hides
+    const sk = lv26.sketch, n = sk.size;
+    await page.waitForFunction(k => document.querySelectorAll('#kGrid .kt').length === k, n * n);
+    expect(await page.evaluate(() => document.body.classList.contains('evil')), 'Noir skin on').toBe(true);
+    expect(await page.textContent('#kTitle'), 'a Noir title').toBe('Noir Sketch · ' + lv26.title);
+    const box = await page.locator('#kGrid').boundingBox();
+    const tap = async (r, c) => { await page.mouse.click(box.x + (c + 0.5) * box.width / n, box.y + (r + 0.5) * box.height / n); };
+    let er = 0, ec = 0; outer: for (er = 0; er < n; er++) for (ec = 0; ec < n; ec++) if (!sk.solution[er][ec]) break outer;
+    await tap(er, ec);                                              // a wrong square: Noir does not correct it
+    expect(await page.locator('#kGrid .kt.f').count(), 'a wrong square stays filled in Noir').toBe(1);
+    expect(await page.locator('#kGrid .kt.x').count(), 'no correcting cross in Noir').toBe(0);
+    await tap(er, ec);                                              // tapping it again clears it
+    expect(await page.locator('#kGrid .kt.f').count(), 'a second tap clears the square').toBe(0);
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (sk.solution[r][c]) await tap(r, c);
+    expect(await page.locator('#kCols .kc.done, #kRows .kr.done').count(), 'Noir hides which lines are done').toBe(0);
+    await shot('noir-sketch');
+    await victory(page, 'Noir Defeated!', 'Back to the light');
   },
 
   async V(s) {
@@ -684,6 +774,7 @@ const seeds = {
   R: makeSave(solvedUpTo(21)),
   S: makeSave(solvedUpTo(22)),
   T: makeSave(solvedUpTo(24)),
+  X: makeSave({ ...solvedUpTo(26), perfect: { streak: EVIL_STREAK - 1 } }),
   U: makeSave(solvedUpTo(25)),
   V: makeSave(solvedUpTo(26)),
   W: makeSave(solvedUpTo(27))

@@ -8,6 +8,13 @@ export interface RawZip { size: number; word: string; path: string; cps: [number
 export interface Checkpoint { idx: number; num: number; letter: string; r: number; c: number }
 export interface ParsedZip { size: number; word: string; path: Cell[]; cps: Checkpoint[]; walls: Set<string> }
 
+/* ---- Sketch Artist (a nonogram): '#' is a filled cell, '.' an empty one ---- */
+export interface RawSketch { name: string; witness: string; color: string; rows: string[] }
+export interface ParsedSketch {
+  name: string; witness: string; color: string; size: number;
+  solution: number[][]; rowClues: number[][]; colClues: number[][];
+}
+
 /* ---- Cases (the notebook) ---- */
 export type ClueConstraint = [kind: string, ...args: number[]];
 export interface Clue { t: string; c: ClueConstraint; earned: 'word' | 'zip' | null; key?: string }
@@ -40,6 +47,7 @@ export interface Level {
   caughtScene?: () => Promise<void>;
   sceneId?: SceneId;                         // whose cinematic this level carries (the chapter view offers a rewatch once it has been seen)
   zip: ParsedZip; evilZip: ParsedZip;
+  sketch?: ParsedSketch;                     // the Sketch Artist picture, for levels whose `steps` include 'sketch'
   case: Case;
   hint: string; trailHint: string;
   evil?: boolean;

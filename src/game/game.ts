@@ -6,6 +6,7 @@ import { $ } from '../core/dom.ts';
 import { scenes } from '../core/scenes.ts';
 import { CaseScreen } from '../puzzles/case/case-screen.ts';
 import { WordPuzzle } from '../puzzles/word/word-puzzle.ts';
+import { SketchPuzzle } from '../puzzles/sketch/sketch-puzzle.ts';
 import { ZipPuzzle } from '../puzzles/zip/zip-puzzle.ts';
 import { ChapterFilm } from '../scenes/chapter-film.ts';
 import { Cutscene } from '../scenes/cutscene.ts';
@@ -42,6 +43,7 @@ export function initGame() {
 
   WordPuzzle.init(cast.pz);
   ZipPuzzle.init(cast.z);
+  SketchPuzzle.init(cast.k);
   CaseScreen.init(cast.c);
   Victory.init(cast.v);
   Cutscene.init();
@@ -72,9 +74,10 @@ export function initGame() {
   $('#btnMapBack').addEventListener('click', () => UI.show('title'));
   $('#btnBBack').addEventListener('click', () => toMap());
 
-  // the three playing screens
+  // the playing screens
   $('#btnPzBack').addEventListener('click', () => { WordPuzzle.stop(); toMap(); });
   $('#btnZBack').addEventListener('click', () => { ZipPuzzle.stop(); toMap(); });
+  $('#btnKBack').addEventListener('click', () => { SketchPuzzle.stop(); toMap(); });
   $('#btnCBack').addEventListener('click', () => { CaseScreen.stop(); toMap(); });
 
   // victory

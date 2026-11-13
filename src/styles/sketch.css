@@ -1,0 +1,52 @@
+/* ---------- Sketch Artist (nonogram) ----------
+   .kboard is a size container: --u is one square's width, worked out from the board width, the grid size --n and the clue gutter --g (all in squares),
+   so the clue numbers scale with the squares. The row-clue gutter is --g wide and the column-clue band --h tall. */
+.kboard{width:min(100%,calc(100vh - 380px));width:min(100%,calc(100dvh - 380px));min-width:260px;container-type:inline-size}
+.kframe{--u:calc(100cqw / (var(--n) + var(--g)));--ink-fill:#5b4636;
+  display:grid;grid-template-columns:calc(var(--g) * var(--u)) 1fr;grid-template-rows:calc(var(--h) * var(--u)) auto}
+.kcols{grid-column:2;grid-row:1;display:grid;grid-template-columns:repeat(var(--n),1fr)}
+.krows{grid-column:1;grid-row:2;display:grid;grid-template-rows:repeat(var(--n),1fr)}
+.kgrid{grid-column:2;grid-row:2;position:relative;width:100%;aspect-ratio:1/1;display:grid;touch-action:none}
+.kc,.kr{display:flex;align-items:center;font-weight:900;font-size:max(11px,calc(var(--u) * .46));line-height:1.05;color:var(--ink);font-variant-numeric:tabular-nums;transition:opacity .25s}
+.kc{flex-direction:column;justify-content:flex-end;gap:calc(var(--u) * .08);padding-bottom:calc(var(--u) * .12)}
+.kr{flex-direction:row;justify-content:flex-end;gap:calc(var(--u) * .24);padding-right:calc(var(--u) * .2)}
+.kc i,.kr i{font-style:normal}
+.kc.done,.kr.done{opacity:.32}
+.kc.hint,.kr.hint{background:#fff1b8;border-radius:calc(var(--u) * .3);animation:cluePulse .9s ease-in-out infinite}
+.kt{padding:1px}
+.kt.gr{border-right:2px solid rgba(91,70,54,.2)}
+.kt.gb{border-bottom:2px solid rgba(91,70,54,.2)}
+.kf{position:relative;width:100%;height:100%;border-radius:22%;background:#fffaf1;box-shadow:1px 1px 3px var(--sh-d),-1px -1px 3px var(--sh-l);
+  transition:background .2s,transform .2s var(--spring),opacity .5s}
+.kt.f .kf{background:var(--ink-fill);box-shadow:inset 1px 1px 3px rgba(0,0,0,.35);transform:scale(.94)}
+.kt.x .kf::after{content:"\2715";position:absolute;inset:0;display:grid;place-items:center;font-weight:900;font-size:calc(var(--u) * .5);color:#a8957f}
+.kt.bad .kf{animation:kshake .45s;background:#ffc9bd}
+.kt.bad .kf::after{color:#c0392b}
+.kt.hint .kf{animation:hintPulse .9s ease-in-out infinite;background:#fff1b8}
+@keyframes kshake{20%,60%{transform:translateX(-3px)}40%,80%{transform:translateX(3px)}}
+
+/* done: the grid becomes the coloured picture and the numbers step back */
+.kframe.won .kt.f .kf{background:var(--kcolor);box-shadow:none;transform:scale(1.04);transition-duration:.6s}
+.kframe.won .kt:not(.f) .kf{background:transparent;box-shadow:none}
+.kframe.won .kt.x .kf::after{opacity:0}
+.kframe.won .kc,.kframe.won .kr{opacity:.12}
+.kframe.won .kt{border-color:transparent}
+
+.kbottom{gap:12px;align-items:center}
+.kmode{min-width:96px}
+.kmode.cross{background:var(--lav)}
+
+/* Noir */
+body.evil .kf{background:#3b2f55;box-shadow:2px 2px 6px rgba(0,0,0,.5),-1px -1px 4px rgba(150,110,210,.18)}
+body.evil .kframe{--ink-fill:#d4c2ff}
+body.evil .kc,body.evil .kr{color:#e4d8fb}
+body.evil .kt.x .kf::after{color:#9784c0}
+body.evil .kt.gr{border-right-color:rgba(200,180,255,.22)}
+body.evil .kt.gb{border-bottom-color:rgba(200,180,255,.22)}
+
+/* reduced motion: no pulsing, shaking or springing; the state is still shown */
+@media (prefers-reduced-motion:reduce){
+  .kt.hint .kf,.kc.hint,.kr.hint{animation:none;background:#fff1b8;outline:3px solid #f0c040}
+  .kt.bad .kf{animation:none}
+  .kt.f .kf,.kframe.won .kt.f .kf{transform:none}
+}

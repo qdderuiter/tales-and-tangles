@@ -1,6 +1,6 @@
 # Tales & Tangles
 
-A cosy detective game: Barnaby Bear solves twenty-nine cases with a word-search, a scent trail and a murdle-style notebook. The cases are grouped into ten themed **chapters**, and each chapter ends with a short film. Strict TypeScript ES modules under `src/` (no framework); Vite builds them into **one self-contained `dist/index.html`**.
+A cosy detective game: Barnaby Bear solves twenty-nine cases with a word-search, a scent trail and a murdle-style notebook (and, in Chapter 10, a Sketch Artist nonogram). The cases are grouped into ten themed **chapters**, and each chapter ends with a short film. Strict TypeScript ES modules under `src/` (no framework); Vite builds them into **one self-contained `dist/index.html`**.
 
 **Words used in the code:** a *level* is one case (`LEVELS`, `Store.level(n)`, shown to players as "Case 1.2"); a *chapter* is a group of levels with a theme and an ending film (`data/chapters.ts`). Story line ids keep the old `ch<n>_...` prefix because voice clips attach to them by file name.
 
@@ -27,8 +27,8 @@ npm run check        # lint + typecheck + unit tests + build + browser playthrou
 |---|---|
 | `main.ts` | entry point: styles, then boot |
 | `core/` | tiny helpers with no game knowledge: `util`, `grid`, `dom`, `events` (publish/subscribe bus), `layout`, `scenes`, `spring` (pure spring / momentum maths) |
-| `data/` | **content only, no code**: `chapters` (the ten chapters and their film scripts), `ending` (the epilogue and credits of the whole game), `levels`, `zips`, `cases`, `hints`, `story`, `badges`, `wardrobe`, `words`, `palette`, `critters` |
-| `puzzles/` | the three puzzles. `*-rules.ts` and `*-generator.ts` are **pure** (testable in Node); `*-puzzle.ts` / `case-screen.ts` add the DOM. `registry.ts` lists the puzzle kinds, `evil.ts` the Barnaby Noir remix, `daily*.js` the Daily Case |
+| `data/` | **content only, no code**: `chapters` (the ten chapters and their film scripts), `ending` (the epilogue and credits of the whole game), `levels`, `zips`, `sketches`, `cases`, `hints`, `story`, `badges`, `wardrobe`, `words`, `palette`, `critters` |
+| `puzzles/` | the puzzles: words, the scent trail (`zip`), the case notebook and the Sketch Artist nonogram (`sketch`). `*-rules.ts` and `*-generator.ts` are **pure** (testable in Node); `*-puzzle.ts` / `case-screen.ts` add the DOM. `registry.ts` lists the puzzle kinds, `evil.ts` the Barnaby Noir remix, `daily*.js` the Daily Case |
 | `game/` | the flow between screens: `level-flow` runs a level (and plays a chapter's film after its last level), `level-steps` defines the step order, plus `noir-flow`, `daily-flow`, `nav`, `evil-mode` |
 | `state/` | `store.ts` (the save file and everything derived from it), `migrations.ts` (pure save upgrade and clean-up), `session.ts` (what is happening right now) |
 | `ui/` | screens: map (chapter cards), `chapter-view` (the sheet that grows out of a card), `motion` (the spring frame loop), story, wardrobe, badges, victory card, settings |
@@ -53,13 +53,15 @@ A level (case) *n* is spread over a few data files, all indexed by position (so 
 4. `data/hints.ts`: a `THEME_HINTS` entry, and a `TRAIL_HINTS` entry keyed by the trail word.
 5. `data/story.ts`: a `STORY_RAW` entry (`intro`, `outro`) and a `STORY_EXTRA` entry (`bridge`, `caseIntro`).
 
-Then `npm test`: `levels`, `zips`, `cases`, `case-hints` and `story` tell you which rule you broke. Run `npm run test:e2e` to see it play.
+**Sketch Artist (optional).** A level gets a nonogram by listing `sketch` in its `steps` (`data/levels.ts`: chapter 10 uses `SKETCH_STEPS`) and adding a `SKETCHES` entry keyed by its level number in `data/sketches.ts` (a name, a witness line, a colour, and `#`/`.` rows: 8x8 or 10x10). It unlocks no clue, so `cases.ts` is untouched. The picture must be solvable by line logic alone: `node scripts/check-sketch.mjs` shows the clues and the solver's verdict, and `sketches.test.ts` enforces it.
+
+Then `npm test`: `levels`, `zips`, `sketches`, `cases`, `case-hints` and `story` tell you which rule you broke. Run `npm run test:e2e` to see it play.
 
 ### Add a puzzle type
 1. Write the engine in `puzzles/<kind>/` (extend `PuzzleBase`; keep the rules in a pure `*-rules.ts`, with a unit test).
 2. End the file with `registerPuzzle('<kind>', { obj, screen, board, tileSel, title, evil })` (see `puzzles/registry.ts`).
 3. Put its id in a level's `steps` list (`data/levels.ts`; the default order is `DEFAULT_STEPS` in `game/level-steps.ts`).
-4. Add its id to the list in `tests/unit/registry.test.ts` (`word`, `zip`) and a scenario to `tests/e2e/playthrough.mjs`. `registry.test.ts` fails on an unknown step id.
+4. Add its id to the list in `tests/unit/registry.test.ts` (`word`, `zip`, `sketch`) and a scenario to `tests/e2e/playthrough.mjs`. `registry.test.ts` fails on an unknown step id.
 
 ### Add a badge, a wardrobe item or a setting
 - **Badge**: `data/badges.ts` (`id`, `name`, `desc`, and a `test(d, ev, S)` function). Covered by: nothing yet beyond `store.test.ts` (unknown badge ids are dropped on load) and e2e scenario A (the first badge). Add a case to `store.test.ts` when a badge has real logic.

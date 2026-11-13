@@ -11,7 +11,9 @@ import { BONUS_DICT } from '../data/words.ts';
      sanitize(saved, defaults) copy only the valid, still-existing fields of a saved object onto `defaults`, and return it */
 
 export interface PuzzleRecord { done: boolean; stars: number; best: number }
-export interface LevelRecord { word: PuzzleRecord; zip: PuzzleRecord; solved: boolean; penalty: number }
+export type PuzzleKey = 'word' | 'zip' | 'sketch';
+/* `sketch` exists only once the Sketch Artist has been played, so a save from before it keeps its stars and score unchanged */
+export interface LevelRecord { word: PuzzleRecord; zip: PuzzleRecord; sketch?: PuzzleRecord; solved: boolean; penalty: number }
 export interface DailyResult { stars: number; score: number; secs: number; squares: string }
 export interface Settings { sound: boolean; voice: boolean; music: boolean; speech: number; autocross?: boolean }   // speech: 0..1, how loud the characters talk
 
@@ -66,6 +68,7 @@ export function sanitize(saved: Json | null, d: SaveData): SaveData {
     Object.keys(records).forEach(n => {
       const s = records[n] || {}, lv = blankLevel();
       (['word', 'zip'] as const).forEach(k => { if (s[k]) lv[k] = { done: !!s[k].done, stars: s[k].stars | 0, best: s[k].best | 0 }; });
+      if (s.sketch && typeof s.sketch === 'object') lv.sketch = { done: !!s.sketch.done, stars: s.sketch.stars | 0, best: s.sketch.best | 0 };
       lv.solved = !!s.solved; lv.penalty = s.penalty | 0;
       d.levels[n] = lv;
     });

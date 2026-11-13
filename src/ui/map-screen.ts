@@ -18,7 +18,7 @@ import { UI } from './ui.ts';
 
 /* The case-files map: a poster card for each chapter. It only draws and reports taps: what a tap DOES is handed in by whoever sets it up (see game/game.ts):
      handlers = { level(n), step(n, kind), intro(lv), ending(chapterId), daily(done) }
-   level: play a level from the start    step: replay one step ('word' | 'zip' | 'case') of a solved level
+   level: play a level from the start    step: replay one step ('word' | 'zip' | 'sketch' | 'case') of a solved level
    intro: rewatch a level's cinematic    ending: rewatch a chapter's film    daily: open today's Daily Case (done = today's saved result, if any)
    Tapping a chapter card opens the chapter view (chapter-view.ts), a sheet that grows out of the card and lists its cases.
    Coming back from a level reopens the chapter you were in; coming back from a chapter's ending shows the next card unlocking. */

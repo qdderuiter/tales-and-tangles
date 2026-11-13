@@ -19,8 +19,8 @@ describe('registerPuzzle', () => {
 describe('chapter steps', () => {
   const puzzleIds = registeredPuzzleIds();   // see helpers/puzzle-ids.ts for why this reads the source text
 
-  it('the game registers the word and zip puzzles', () => {
-    expect(puzzleIds.sort()).toEqual(['word', 'zip']);
+  it('the game registers the word, zip and sketch puzzles', () => {
+    expect(puzzleIds.sort()).toEqual(['sketch', 'word', 'zip']);
   });
 
   it('puzzle ids and story-step ids never clash', () => {
@@ -39,8 +39,19 @@ describe('chapter steps', () => {
     expect(new Set(steps).size).toBe(steps.length);
   });
 
+  it('the Sketch Artist is a step of Chapter 10 only, after the Scent Trail and before the notebook', () => {
+    const withSketch = LEVELS.filter(lv => (lv.steps || DEFAULT_STEPS).includes('sketch')).map(lv => lv.n);
+    expect(withSketch).toEqual([26, 27, 28, 29]);
+    for (const lv of LEVELS.filter(l => withSketch.includes(l.n))) {
+      const steps = lv.steps!;
+      expect(steps.indexOf('sketch')).toBe(steps.indexOf('zip') + 1);
+      expect(steps.indexOf('case')).toBe(steps.indexOf('sketch') + 1);
+    }
+  });
+
   it('every step has a button label (falls back to Continue)', () => {
     expect(stepLabel('word')).toBe('Continue');
+    expect(stepLabel('sketch')).toBe('Draw the sketch');
     for (const id of Object.keys(STEPS)) expect(stepLabel(id)).toBeTruthy();
   });
 });

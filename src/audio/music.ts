@@ -118,7 +118,7 @@ export const Music = {
   },
   setEnabled(on: boolean) { if (on) this.start(); else this.stop(); },
   scene(name: string, level: number, evil: boolean) {
-    const inLevel = name === 'puzzle' || name === 'zip' || name === 'case' || name === 'story';
+    const inLevel = name === 'puzzle' || name === 'zip' || name === 'sketch' || name === 'case' || name === 'story';
     const chapterTrack = chapterOf(level)?.track as TrackKey | undefined;          // a chapter may bring its own music
     this.want = evil && inLevel ? 'evil' : inLevel ? (chapterTrack && chapterTrack in TRACKS ? chapterTrack : 'case') : 'title';
     if (this.running) this.switchTo(this.want);
