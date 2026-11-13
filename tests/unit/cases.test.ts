@@ -74,3 +74,24 @@ describe('"neither" clue kinds', () => {
     expect(caseFits(3, item, place, ['notLinkEither', 2, 0, 1])).toBe(false);
   });
 });
+
+/* each clue's wording must name exactly the suspects, items and rooms its constraint points at */
+describe.each(LEVELS.map(lv => [lv.n, lv.case] as const))('clue wording of case %i', (_n, c) => {
+  it('mentions every suspect, item and room its constraint refers to', () => {
+    const S = (i: number) => c.suspects[i], I = (i: number) => c.items[i].name, P = (i: number) => c.places[i].name;
+    c.clues.forEach(cl => {
+      const [k, ...a] = cl.c;
+      const need: Record<string, () => string[]> = {
+        next: () => [S(a[0]), S(a[1])], left: () => [S(a[0]), S(a[1])], notNext: () => [S(a[0]), S(a[1])],
+        end: () => [S(a[0])],
+        eitherPlace: () => [S(a[0]), P(a[1]), P(a[2])], notEitherPlace: () => [S(a[0]), P(a[1]), P(a[2])], notPlace: () => [S(a[0]), P(a[1])], isPlace: () => [S(a[0]), P(a[1])],
+        eitherItem: () => [S(a[0]), I(a[1]), I(a[2])], notEitherItem: () => [S(a[0]), I(a[1]), I(a[2])], notItem: () => [S(a[0]), I(a[1])], isItem: () => [S(a[0]), I(a[1])],
+        linkIP: () => [I(a[0]), P(a[1])], notLinkIP: () => [I(a[0]), P(a[1])],
+        linkEither: () => [I(a[0]), P(a[1]), P(a[2])], notLinkEither: () => [I(a[0]), P(a[1]), P(a[2])],
+        itemNext: () => [I(a[0]), I(a[1])]
+      };
+      expect(need[k], 'unknown clue kind ' + k).toBeDefined();
+      need[k]().forEach(name => expect(cl.t, cl.t).toContain(name));
+    });
+  });
+});

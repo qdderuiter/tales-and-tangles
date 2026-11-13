@@ -480,9 +480,9 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
         ] }
     ],
     outro: [
-      { e: 'happy', t: 'Tilly Turtle! She was in the fuselage, with the radio tucked in her shell.' },
-      { e: 'sad', t: 'Tilly says: I thought a big wave was coming, so I hid the radio somewhere safe. Then I forgot where I was. I am so sorry.' },
-      { e: 'surprised', t: 'And she has a point. The radio is soaked, and its little antenna is snapped. It will not call anybody tonight.' },
+      { e: 'happy', t: 'Hermie Hermit! He was in the fuselage, with the radio tucked deep inside his shell, right behind his snack box.' },
+      { e: 'sad', t: 'Hermie says: I thought a big wave was coming, so I hid the radio somewhere safe. Then I forgot where I was. I am so sorry.' },
+      { e: 'surprised', t: 'And he has a point. The radio is soaked, and its little antenna is snapped. It will not call anybody tonight.' },
       { e: 'thinking', t: 'Wait. Did the sand just move?' },
       { who: 'Biscuit', e: 'surprised', t: 'Eep! Barnaby? Is that you? I was in seat 14C, and then everything went bump, and then I just kept digging!' },
       { e: 'happy', t: 'Biscuit! Of all the beaches in all the world! Are you hurt?' },
@@ -497,7 +497,7 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
       { who: 'Evil Larry', e: 'sneaky', t: 'Seat 1A, bear. I do not fly economy. I was on my way to a very quiet little heist, and now the plane is a wreck and so is my schedule.' },
       { who: 'Biscuit', e: 'shy', t: 'Mr. Larry? Please do not steal anything. We are all stuck here together. I think.' },
       { who: 'Evil Larry', e: 'angry', t: 'Hmph. I would never steal from a fellow castaway. Not before dinner.' },
-      { e: 'thinking', t: 'Dinner is exactly the problem. The last crate of food was in the clearing, and now it is gone. Five suspects out in the jungle, and one very empty stomach.' },
+      { e: 'thinking', t: 'Dinner is exactly the problem. The last crate of food was in the bamboo thicket, and now it is gone. Five suspects out in the jungle, and one very empty stomach.' },
       { who: 'Biscuit', e: 'surprised', t: 'Barnaby? Something is wrong. The bushes are very quiet. The birds stopped singing.' },
       { e: 'neutral', t: 'Stay close, you two. Five suspects, five spots, and one crate. Let us find out who was where.',
         choices: [
@@ -506,9 +506,9 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
         ] }
     ],
     outro: [
-      { e: 'happy', t: 'Sully Sloth! He was in the clearing, sound asleep on top of the crate. He thought it was a very comfortable pillow.' },
-      { e: 'sad', t: 'Sully says: I am so sorry. Please take it. Sloths do not do anything quickly, but I can say sorry quickly.' },
-      { who: 'Evil Larry', e: 'smug', t: 'Ha! A sloth. Not even a good crime.' },
+      { e: 'happy', t: 'Zuri Zebra! She was in the bamboo thicket, with the crate tied up in her rope. She was hiding the food from the tiger.' },
+      { e: 'sad', t: 'Zuri says: I only wanted to keep it safe. I should have asked first. I am so sorry.' },
+      { who: 'Evil Larry', e: 'smug', t: 'Ha! A zebra. All those stripes, and not even a good crime.' },
       { who: 'Biscuit', e: 'sad', t: 'Barnaby, that growl again. It is coming from the bushes. It is very close.' },
       { e: 'surprised', t: 'The tiger! It is coming back. We cannot outrun it.' },
       { who: 'Evil Larry', e: 'sneaky', t: 'Leave the stripes to me, bear. I am the scariest thing on this island, and it is about time somebody noticed.' },
@@ -531,8 +531,8 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
         ] }
     ],
     outro: [
-      { e: 'happy', t: 'Percy Prairiedog! He was at the dig site, with the map folded into his hat. He wanted to keep it dry.' },
-      { e: 'sad', t: 'Percy says: I was going to give it back once I finished drawing the way out. I am so sorry.' },
+      { e: 'happy', t: 'Ned Numbat! He was at the palm stump, with the map rolled up and tied with his rope. He wanted to keep it dry.' },
+      { e: 'sad', t: 'Ned says: I was going to give it back once I finished drawing the way out. I am so sorry.' },
       { who: 'Biscuit', e: 'surprised', t: 'The map shows a tunnel that goes under the whole island, and it ends at a lagoon on the far side. Nobody there but the open sea.' },
       { who: 'Evil Larry', e: 'sneaky', t: 'A lagoon, an open sea, and a clear sky. And a perfectly good bonfire waiting to be lit, if somebody had the stuff to light it.' },
       { e: 'thinking', t: 'Larry, are you thinking what I am thinking?' },
@@ -545,7 +545,7 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
       { e: 'happy', t: 'Fresh air! Sunshine! And the lagoon is as blue as a jar of honey. Biscuit, Larry, we made it through the tunnel.' },
       { who: 'Biscuit', e: 'happy', t: 'I have never been so proud of a hole in my life.' },
       { who: 'Evil Larry', e: 'smug', t: 'Spare me. Light the fire, bear, so the whole world can see it.' },
-      { e: 'surprised', t: 'There is just one problem. The very last flare was on the lookout hill, and now the lookout hill is empty.' },
+      { e: 'surprised', t: 'There is just one problem. The very last flare was on the raft, and now the raft is empty.' },
       { e: 'thinking', t: 'Five castaways, five spots, and one flare. A ship could pass by at any moment, so we must find it before the sun sets.' },
       { who: 'Evil Larry', e: 'sneaky', t: 'I would never take it. I am only mentioning that I do not know where it is.' },
       { e: 'proud', t: 'The very last case. Let us bring everybody home.',
@@ -555,8 +555,8 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
         ] }
     ],
     outro: [
-      { e: 'happy', t: 'Ruby Raccoon! She was at the lookout hill, polishing the flare gun. She wanted it to be shiny for the rescue.' },
-      { e: 'sad', t: 'Ruby says: I did not know somebody would need it. I am so sorry.' },
+      { e: 'happy', t: 'Sasha Seagull! She was on the raft, whistle in her beak and the flare tucked under her wing. She wanted to keep it dry for the rescue.' },
+      { e: 'sad', t: 'Sasha says: I did not know somebody would need it. I am so sorry.' },
       { who: 'Biscuit', e: 'surprised', t: 'Barnaby! Look! A ship on the horizon, and it has a great big spotlight!' },
       { who: 'Evil Larry', e: 'smug', t: 'Well, do not just stand there. Light the flare, detective, and give them a show.' },
       { e: 'proud', t: 'Three, two, one. Everybody, wave!' },
@@ -622,7 +622,7 @@ export const STORY_EXTRA: Record<number, Pick<Record<StoryPart, RawLine[]>, 'bri
   26: { bridge: [{ e: 'surprised', t: 'WRECK! Twisted metal and scattered suitcases. Now follow the coconut trail: every tile, numbers in order.' }],
         caseIntro: [{ e: 'thinking', t: 'Five castaways, five spots around the wreck, and one missing radio. Cross people off until one story fits.' }] },
   27: { bridge: [{ e: 'surprised', t: 'TIGER! Huge paw prints in the mud. Now follow the stripes: every tile, numbers in order.' }],
-        caseIntro: [{ e: 'neutral', t: 'Who was in the clearing, and who held what? The neighbours matter in the jungle. Trust the notebook, partner.' }] },
+        caseIntro: [{ e: 'neutral', t: 'Who was in the bamboo thicket, and who held what? The neighbours matter in the jungle. Trust the notebook, partner.' }] },
   28: { bridge: [{ e: 'proud', t: 'TUNNEL! Fresh sand, and it is still warm. Now follow the shovel marks: every tile, numbers in order.' }],
         caseIntro: [{ e: 'neutral', t: 'Five diggers, five spots along the tunnel, and one lost map. Trust the notebook, partner.' }] },
   29: { bridge: [{ e: 'happy', t: 'SIGNAL! The light is blinking. Now follow the sound of the engine: every tile, numbers in order.' }],

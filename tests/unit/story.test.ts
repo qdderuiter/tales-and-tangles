@@ -33,3 +33,14 @@ describe('the epilogue closes the game', () => {
     LEVELS.forEach(lv => STORY_RAW[lv.n].outro.forEach(l => expect(spoken.has(l.t), 'level ' + lv.n).toBe(false)));
   });
 });
+
+describe('outro reveals match each case', () => {
+  it.each(LEVELS.map(lv => [lv.n, lv] as const))('level %i outro names the real culprit, and nobody else', (_n, lv) => {
+    const c = lv.case, text = STORY_RAW[lv.n].outro[0].t;
+    c.suspects.forEach((name, i) => { if (i !== c.culprit) expect(text, 'names ' + name).not.toContain(name); });
+    if (lv.n >= 14) {
+      expect(text).toContain(c.suspects[c.culprit]);
+      expect(text).toContain(c.places[c.crimePlace].name);
+    }
+  });
+});
