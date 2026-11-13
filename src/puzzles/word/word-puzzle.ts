@@ -35,7 +35,7 @@ export const WordPuzzle = definePuzzle({
   cols: COLS, rows: ROWS, hitR2: 0.2304,
   lvl: late<TempLevel>(), grid: [] as GridCell[][], found: new Set<number>(), locked: {} as Record<number, number>, trace: [] as Step[], tracing: false, pointerId: null as number | null, lastPt: late<Pt>(),
   wrongs: 0, hints: 0, freeHints: 0, hinted: new Set<number>(), elapsed: 0, running: false, lastTick: 0, timerId: 0, shownSec: -1, rect: late<DOMRect>(), rectEpoch: -1, lastSay: 0,
-  tiles: [] as HTMLElement[], selEls: [] as HTMLElement[], hintTimers: [] as number[], order: [] as number[], onWin: null as ((r: PuzzleResult) => void) | null, bear: late<Bear>(), bubble: late<Typer>(),
+  tiles: [] as HTMLElement[], selEls: [] as HTMLElement[], hintTimers: [] as number[], comboTimer: 0, order: [] as number[], onWin: null as ((r: PuzzleResult) => void) | null, bear: late<Bear>(), bubble: late<Typer>(),
   combo: 0, maxCombo: 0, bonus: 0, squares: [] as string[], sinceWrong: false, sinceHint: false, bonusFound: new Set<string>(),
   els: {} as WordEls,
 
@@ -62,7 +62,7 @@ export const WordPuzzle = definePuzzle({
     this.wrongs = 0; this.hints = 0; this.hinted = new Set(); this.elapsed = 0; this.shownSec = -1; this.selEls = [];
     this.combo = 0; this.maxCombo = 0; this.bonus = 0; this.squares = []; this.sinceWrong = false; this.sinceHint = false;
     this.bonusFound = new Set();
-    this.els.combo.classList.remove('on');
+    this.hideCombo();
     this.els.theme.innerHTML = '<b>Theme:</b> ' + lvl.hint;
     this.grid = buildGrid(lvl);
 
@@ -222,7 +222,7 @@ export const WordPuzzle = definePuzzle({
       return;
     }
     if (t.length >= 3) { this.wrongs++; this.sinceWrong = true; }
-    this.combo = 0; this.els.combo.classList.remove('on');
+    this.combo = 0; this.hideCombo();
     AudioFX.thud();
     Haptics.tangle();
     t.forEach(p => {
@@ -275,9 +275,16 @@ export const WordPuzzle = definePuzzle({
 
   showCombo() {
     const c = this.els.combo;
-    if (this.combo < 2) { c.classList.remove('on'); return; }
+    if (this.combo < 2) { this.hideCombo(); return; }
     c.textContent = 'Combo ×' + this.combo;
     replayClass(c, 'on');
+    clearTimeout(this.comboTimer);
+    this.comboTimer = window.setTimeout(() => this.hideCombo(), 2500);        // the pill is a flash of praise, not a status: gone after 2.5 s (the combo itself carries on)
+  },
+
+  hideCombo() {
+    clearTimeout(this.comboTimer);
+    this.els.combo.classList.remove('on');
   },
 
   toast(text: string, gold?: boolean, extra?: string, sub?: string) {
