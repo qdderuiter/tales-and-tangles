@@ -62,3 +62,15 @@ describe.each(LEVELS.map(lv => [lv.n, lv]))('case of chapter %i', (_n, lv) => {
     }
   });
 });
+
+describe('"neither" clue kinds', () => {
+  const item = [0, 1, 2], place = [2, 0, 1];                    // suspect s holds item[s] in place[s]
+  it('notEitherPlace, notEitherItem and notLinkEither rule out two values at once', () => {
+    expect(caseFits(3, item, place, ['notEitherPlace', 0, 0, 1])).toBe(true);
+    expect(caseFits(3, item, place, ['notEitherPlace', 0, 2, 1])).toBe(false);
+    expect(caseFits(3, item, place, ['notEitherItem', 1, 0, 2])).toBe(true);
+    expect(caseFits(3, item, place, ['notEitherItem', 1, 0, 1])).toBe(false);
+    expect(caseFits(3, item, place, ['notLinkEither', 2, 0, 2])).toBe(true);
+    expect(caseFits(3, item, place, ['notLinkEither', 2, 0, 1])).toBe(false);
+  });
+});

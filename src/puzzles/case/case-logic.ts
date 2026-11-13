@@ -35,6 +35,9 @@ export function caseFits(N: number, item: number[], place: number[], c: ClueCons
     case 'linkIP': return place[item.indexOf(c[1])] === c[2];
     case 'notLinkIP': return place[item.indexOf(c[1])] !== c[2];
     case 'linkEither': { const p = place[item.indexOf(c[1])]; return p === c[2] || p === c[3]; }
+    case 'notEitherPlace': return place[c[1]] !== c[2] && place[c[1]] !== c[3];
+    case 'notEitherItem': return item[c[1]] !== c[2] && item[c[1]] !== c[3];
+    case 'notLinkEither': { const p = place[item.indexOf(c[1])]; return p !== c[2] && p !== c[3]; }
     case 'itemNext': return caseAdj(place[item.indexOf(c[1])], place[item.indexOf(c[2])]);
     case 'isPlace': return place[c[1]] === c[2];
     case 'isItem': return item[c[1]] === c[2];
@@ -103,6 +106,9 @@ export function propagate(c: Case, start: Domains, ks: number[], links = true): 
       case 'linkIP': unary(IP, t[1], v => v === t[2]); break;
       case 'notLinkIP': unary(IP, t[1], v => v !== t[2]); break;
       case 'linkEither': unary(IP, t[1], v => v === t[2] || v === t[3]); break;
+      case 'notEitherPlace': unary(SP, t[1], v => v !== t[2] && v !== t[3]); break;
+      case 'notEitherItem': unary(SI, t[1], v => v !== t[2] && v !== t[3]); break;
+      case 'notLinkEither': unary(IP, t[1], v => v !== t[2] && v !== t[3]); break;
       case 'itemNext': binary(IP, t[1], t[2], caseAdj); break;
     }
   };
