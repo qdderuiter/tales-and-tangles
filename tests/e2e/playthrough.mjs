@@ -5,6 +5,7 @@
      E2E_URL=http://host/ npm run test:e2e     play any URL
      E2E_BROWSER_CHANNEL=chrome ...            installed browser to drive (default: msedge). No browser is downloaded.
      npm run test:e2e -- A C                   run only the named scenarios
+     E2E_WORKERS=1 npm run test:e2e            scenarios run 4 at a time by default; set how many
 
    Scenarios ("level" = one case; a chapter groups several levels and ends with a film)
      A  level 1 start to finish, the chapter view it returns to, then the side screens (wardrobe, badges) and the first badge
@@ -184,6 +185,105 @@ const caseButton = (page, n) => page.locator(`#chvSheet [data-level="${n}"]`);
 /* tap Noir's dialogue (up to 40 times, 300 ms apart) until done() is true */
 async function tapNoirUntil(page, done) {
   for (let i = 0; i < 40 && !await done(); i++) { await tapNoir(page); await page.waitForTimeout(300); }
+}
+
+/* ---------- shared steps for the chapter scenarios ---------- */
+/* from the title screen into a case of a chapter */
+async function startCase(page, chapterId, n) {
+  await page.click('#btnPlay');
+  await onScreen(page, 'map');
+  await openChapter(page, chapterId);
+  await caseButton(page, n).click();
+}
+
+/* a whole ordinary case: intro, Words, bridge, Scent Trail, the accusation (it stops on the victory card of the case, or on a film before it) */
+async function playCase(page, lv) {
+  await skipStory(page);                                            // intro
+  await solveWords(page, lv);
+  await victory(page, 'Clue Found!', 'Follow the trail');
+  await pressContinue(page);
+  await skipStory(page);                                            // bridge
+  await solveTrail(page, lv);
+  await victory(page, 'Trail Followed!', 'To the suspects');
+  await pressContinue(page);
+  await accuse(page, lv);
+}
+
+/* the victory card of an ordinary case, then its outro, then the map */
+async function finishCase(page) {
+  await victory(page, 'Case Solved!', 'Continue the story');
+  await pressContinue(page);
+  await skipStory(page);                                            // outro
+  await onScreen(page, 'map');
+}
+
+async function expectSolved(page, n, { unlocked, ending, seen } = {}) {
+  await onScreen(page, 'map');
+  const save = await readSave(page);
+  expect(save.levels[n].solved, `case ${n} solved`).toBe(true);
+  if (unlocked) expect(save.unlocked, `case ${unlocked} unlocked`).toBe(unlocked);
+  if (ending) expect(save.seen.endings[ending], 'the ending is marked as seen').toBe(true);
+  if (seen) expect(save.seen[seen], `${seen} is marked as seen`).toBe(true);
+}
+
+/* each film: the overlay's element id and its id prefix (index.html) */
+const FILMS = { pup: ['pupFilm', 'pf'], worm: ['wormFilm', 'wf'], elephant: ['elephantFilm', 'ef'], dino: ['dinoFilm', 'df'], island: ['islandFilm', 'if'] };
+
+/* a film that opens a case: title card (reduced motion shows the finished scene, then the card), Skip, and the save keeps `seen` */
+async function openingFilm({ page, shot }, film, { title, titleSel, seen, shot: shotName }) {
+  const [root, p] = FILMS[film];
+  await page.waitForSelector(`#${root}.show`);
+  await page.waitForSelector(`#${p}Title.on`);
+  expect(await page.textContent(titleSel), 'the title card').toBe(title);
+  await shot(shotName);
+  await page.waitForSelector(`#${p}Skip.on`);
+  await page.click(`#${p}Skip`);
+  await page.waitForSelector(`#${root}:not(.show)`);
+  await page.waitForFunction(([key, k]) => JSON.parse(localStorage.getItem(key) || '{}').seen?.[k] === true, [Store.KEY, seen]);   // saved once the film has faded out
+}
+
+/* a film that plays after the accusation, before the victory card */
+async function closingFilm({ page, shot }, film, shotName) {
+  const [root, p] = FILMS[film];
+  await page.waitForSelector(`#${root}.show`);
+  await shot(shotName);
+  await page.waitForSelector(`#${p}Skip.on`);
+  await page.click(`#${p}Skip`);
+  await page.waitForSelector(`#${root}:not(.show)`);
+}
+
+/* tap on through the story until `name` speaks, with their portrait up and Barnaby stepped aside */
+async function speakerAppears({ page, shot }, name, portraitId, shotName) {
+  await onScreen(page, 'story');
+  for (let i = 0; i < 14 && await page.textContent('#dlgName') !== name; i++) {
+    await page.click('#screen-story', { position: { x: 200, y: 300 } });
+    await page.waitForTimeout(300);
+  }
+  expect(await page.textContent('#dlgName'), `${name} speaks`).toBe(name);
+  if (portraitId) {
+    expect(await page.evaluate(id => document.getElementById(id).classList.contains('on'), portraitId), `${name}'s portrait is up`).toBe(true);
+    expect(await page.evaluate(() => document.getElementById('storyBear').classList.contains('away')), 'Barnaby steps aside').toBe(true);
+  }
+  await shot(shotName);
+}
+
+/* the outro (and any epilogue) is skipped until the chapter's film shows; check its card, then Skip */
+async function chapterEndFilm({ page, shot }, { kicker, title, next, check, shot: shotName }) {
+  await onScreen(page, 'story');
+  for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
+    await page.evaluate(() => document.getElementById('btnSkip').click());
+    await page.waitForTimeout(200);
+  }
+  await page.waitForSelector('#chapterFilm.show');
+  await page.waitForSelector('#cfCard.on');
+  expect(await page.textContent('#cfKicker'), 'film card kicker').toBe(kicker);
+  if (title) expect(await page.textContent('#cfTitle'), 'film card title').toBe(title);
+  if (next) expect(await page.textContent('#cfNext'), 'the card points to the next chapter').toBe(next);
+  if (check) await check();
+  await shot(shotName);
+  await page.waitForSelector('#cfSkip.on');
+  await page.click('#cfSkip');
+  await page.waitForSelector('#chapterFilm:not(.show)');
 }
 
 /* ---------- scenarios ---------- */
@@ -406,526 +506,159 @@ const scenarios = {
     await shot('locked-chapter');
   },
 
-  async J({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'space');
-    await caseButton(page, 11).click();
-    await page.waitForSelector('#pupFilm.show');                    // Pickle's crash landing opens the case
-    await page.waitForSelector('#pfTitle.on');                      // (reduced motion: the finished scene, then the title card)
-    expect(await page.textContent('#pfTitle b'), 'title card names Pickle').toBe('PICKLE');
-    await shot('pickle-landing');
-    await page.waitForSelector('#pfSkip.on');
-    await page.click('#pfSkip');
-    await page.waitForSelector('#pupFilm:not(.show)');
-    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.pup === true, Store.KEY);   // saved once the film has faded out
-    await onScreen(page, 'story');
-    for (let i = 0; i < 14 && await page.textContent('#dlgName') !== 'Pickle'; i++) {      // tap on to Pickle's first line
-      await page.click('#screen-story', { position: { x: 200, y: 300 } });
-      await page.waitForTimeout(300);
-    }
-    expect(await page.textContent('#dlgName'), 'Pickle speaks').toBe('Pickle');
-    expect(await page.evaluate(() => document.getElementById('storyPup').classList.contains('on')), "Pickle's portrait is up").toBe(true);
-    expect(await page.evaluate(() => document.getElementById('storyBear').classList.contains('away')), "Barnaby steps aside").toBe(true);
-    await shot('pickle-speaks');
-    await skipStory(page);                                          // intro
-    await solveWords(page, lv11);
-    await victory(page, 'Clue Found!', 'Follow the trail');
-    await pressContinue(page);
-    await skipStory(page);                                          // bridge
-    await solveTrail(page, lv11);
-    await victory(page, 'Trail Followed!', 'To the suspects');
-    await pressContinue(page);
-    await accuse(page, lv11);
-    await victory(page, 'Case Solved!', 'Continue the story');
-    await pressContinue(page);
-    await skipStory(page);                                          // outro
-    await onScreen(page, 'map');
-    const save = await readSave(page);
-    expect(save.levels[11].solved, 'case 5.1 solved').toBe(true);
-    expect(save.unlocked, 'case 5.2 unlocked').toBe(12);
+  async J(s) {
+    const { page } = s;
+    await startCase(page, 'space', 11);
+    await openingFilm(s, 'pup', { title: 'PICKLE', titleSel: '#pfTitle b', seen: 'pup', shot: 'pickle-landing' });
+    await speakerAppears(s, 'Pickle', 'storyPup', 'pickle-speaks');
+    await playCase(page, lv11);
+    await finishCase(page);
+    await expectSolved(page, 11, { unlocked: 12 });
     await page.click('.chv-back').catch(() => {});                  // the pip to watch Pickle's arrival again appears once it has been seen
     await openChapter(page, 'space');
     expect(await page.locator('#chvSheet [data-intro="11"]').count(), 'a replay button for the landing').toBe(1);
   },
 
-  async K({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'space');
-    await caseButton(page, 13).click();
-    await skipStory(page);                                          // intro
-    await solveWords(page, lv13);
-    await victory(page, 'Clue Found!');
-    await pressContinue(page);
-    await skipStory(page);                                          // bridge
-    await solveTrail(page, lv13);
-    await victory(page, 'Trail Followed!');
-    await pressContinue(page);
-    await accuse(page, lv13);
-    await page.waitForSelector('#pupFilm.show');                    // Pickle lifts off before the victory card
-    await shot('pickle-liftoff');
-    await page.waitForSelector('#pupFilm:not(.show)');
+  async K(s) {
+    const { page } = s;
+    await startCase(page, 'space', 13);
+    await playCase(page, lv13);
+    await closingFilm(s, 'pup', 'pickle-liftoff');                  // Pickle lifts off before the victory card
     await victory(page, 'Case Solved!', 'Continue the story');
     expect(await page.textContent('#vUnlock'), 'a chapter end, not the end of the game').toBe('Chapter completeLost in Space');
     await pressContinue(page);
-    await onScreen(page, 'story');                                  // outro (Pickle on the radio): the film starts over the story screen, so skip until it shows
-    for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
-      await page.evaluate(() => document.getElementById('btnSkip').click());
-      await page.waitForTimeout(200);
-    }
-    await page.waitForSelector('#chapterFilm.show');                // the last chapter's film
-    await page.waitForSelector('#cfCard.on');
-    expect(await page.textContent('#cfKicker'), 'chapter 5 is not the end').toBe('Chapter 5 complete');
-    expect(await page.textContent('#cfTitle'), 'film card title').toBe('Lost in Space');
-    expect(await page.textContent('#cfNext'), 'the card points to chapter 6').toBe('Next: Chapter 6 · Midnight Oasis');
-    await shot('space-film');
-    await page.waitForSelector('#cfSkip.on');
-    await page.click('#cfSkip');
-    await page.waitForSelector('#chapterFilm:not(.show)');
-    await onScreen(page, 'map');
-    const save = await readSave(page);
-    expect(save.levels[13].solved, 'case 5.3 solved').toBe(true);
-    expect(save.seen.endings.space, 'the ending is marked as seen').toBe(true);
-    expect(save.unlocked, 'case 6.1 unlocked').toBe(14);
+    await chapterEndFilm(s, { kicker: 'Chapter 5 complete', title: 'Lost in Space', next: 'Next: Chapter 6 · Midnight Oasis', shot: 'space-film' });
+    await expectSolved(page, 13, { ending: 'space', unlocked: 14 });
   },
 
-  async L({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, chLast.id);
-    await caseButton(page, lvLast.n).click();
-    await skipStory(page);                                          // intro
-    await solveWords(page, lvLast);
-    await victory(page, 'Clue Found!');
-    await pressContinue(page);
-    await skipStory(page);                                          // bridge
-    await solveTrail(page, lvLast);
-    await victory(page, 'Trail Followed!');
-    await pressContinue(page);
-    await accuse(page, lvLast);
-    await page.waitForSelector('#islandFilm.show');                 // the rescue plays before the victory card
-    await shot('island-rescue');
-    await page.waitForSelector('#ifSkip.on');
-    await page.click('#ifSkip');
-    await page.waitForSelector('#islandFilm:not(.show)');
+  async L(s) {
+    const { page } = s;
+    await startCase(page, chLast.id, lvLast.n);
+    await playCase(page, lvLast);
+    await closingFilm(s, 'island', 'island-rescue');                // the rescue plays before the victory card
     await victory(page, 'Case Solved!', 'Hear the ending');
     expect(await page.textContent('#vUnlock'), 'the last case closes the whole story').toBe('Every mystery solvedYou are a true detective!');
     await pressContinue(page);
-    await onScreen(page, 'story');                                  // outro, then Barnaby's epilogue: skip until the film shows
-    for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
-      await page.evaluate(() => document.getElementById('btnSkip').click());
-      await page.waitForTimeout(200);
-    }
-    await page.waitForSelector('#chapterFilm.show');                // the last chapter's film
-    await page.waitForSelector('#cfCard.on');
-    expect(await page.textContent('#cfKicker'), 'the last chapter says The End').toBe('The End');
-    expect(await page.textContent('#cfTitle'), 'film card title').toBe(chLast.title);
-    expect((await page.textContent('#cfCredits')).includes('Pippy'), 'the credits thank Pippy').toBe(true);
-    expect((await page.textContent('#cfCredits')).includes('Rexy'), 'the credits thank Rexy').toBe(true);
-    expect((await page.textContent('#cfCredits')).includes('Rocky'), 'the credits thank Rocky').toBe(true);
-    expect((await page.textContent('#cfCredits')).includes('castaways'), 'the credits thank the castaways').toBe(true);
-    await shot('castaways-film');
-    await page.waitForSelector('#cfSkip.on');
-    await page.click('#cfSkip');
-    await page.waitForSelector('#chapterFilm:not(.show)');
-    await onScreen(page, 'map');
-    const save = await readSave(page);
-    expect(save.levels[lvLast.n].solved, 'the last case solved').toBe(true);
-    expect(save.seen.endings[chLast.id], 'the ending is marked as seen').toBe(true);
+    await chapterEndFilm(s, {
+      kicker: 'The End', title: chLast.title, shot: 'castaways-film',
+      check: async () => {
+        const credits = await page.textContent('#cfCredits');
+        for (const who of ['Pippy', 'Rexy', 'Rocky', 'castaways']) expect(credits.includes(who), `the credits thank ${who}`).toBe(true);
+      }
+    });
+    await expectSolved(page, lvLast.n, { ending: chLast.id });
   },
 
-  async M({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'oasis');
-    await caseButton(page, 14).click();
-    await page.waitForSelector('#wormFilm.show');                   // Biscuit pops out of the dunes and opens the case
-    await page.waitForSelector('#wfTitle.on');                      // (reduced motion: the finished scene, then the title card)
-    expect(await page.textContent('#wfTitle b'), 'title card names Biscuit').toBe('BISCUIT');
-    await shot('biscuit-intro');
-    await page.waitForSelector('#wfSkip.on');
-    await page.click('#wfSkip');
-    await page.waitForSelector('#wormFilm:not(.show)');
-    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.worm === true, Store.KEY);
-    await onScreen(page, 'story');
-    for (let i = 0; i < 14 && await page.textContent('#dlgName') !== 'Biscuit'; i++) {      // tap on to Biscuit's first line
-      await page.click('#screen-story', { position: { x: 200, y: 300 } });
-      await page.waitForTimeout(300);
-    }
-    expect(await page.textContent('#dlgName'), 'Biscuit speaks').toBe('Biscuit');
-    expect(await page.evaluate(() => document.getElementById('storyWorm').classList.contains('on')), "Biscuit's portrait is up").toBe(true);
-    expect(await page.evaluate(() => document.getElementById('storyBear').classList.contains('away')), 'Barnaby steps aside').toBe(true);
-    await shot('biscuit-speaks');
-    await skipStory(page);                                          // intro
-    await solveWords(page, lv14);
-    await victory(page, 'Clue Found!', 'Follow the trail');
-    await pressContinue(page);
-    await skipStory(page);                                          // bridge
-    await solveTrail(page, lv14);
-    await victory(page, 'Trail Followed!', 'To the suspects');
-    await pressContinue(page);
-    await accuse(page, lv14);
-    await victory(page, 'Case Solved!', 'Continue the story');
-    await pressContinue(page);
-    await skipStory(page);                                          // outro
-    await onScreen(page, 'map');
-    const save = await readSave(page);
-    expect(save.levels[14].solved, 'case 6.1 solved').toBe(true);
-    expect(save.unlocked, 'case 6.2 unlocked').toBe(15);
+  async M(s) {
+    const { page } = s;
+    await startCase(page, 'oasis', 14);
+    await openingFilm(s, 'worm', { title: 'BISCUIT', titleSel: '#wfTitle b', seen: 'worm', shot: 'biscuit-intro' });
+    await speakerAppears(s, 'Biscuit', 'storyWorm', 'biscuit-speaks');
+    await playCase(page, lv14);
+    await finishCase(page);
+    await expectSolved(page, 14, { unlocked: 15 });
   },
 
-  async N({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'circus');
-    await caseButton(page, 17).click();
-    await page.waitForSelector('#elephantFilm.show');               // the lights blink, the star ball is gone, and the case opens
-    await page.waitForSelector('#efTitle.on');                      // (reduced motion: the finished scene, then the title card)
-    expect(await page.textContent('#efTitle b'), 'title card names Pippy').toBe('PIPPY');
-    await shot('pippy-intro');
-    await page.waitForSelector('#efSkip.on');
-    await page.click('#efSkip');
-    await page.waitForSelector('#elephantFilm:not(.show)');
-    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.elephant === true, Store.KEY);
-    await onScreen(page, 'story');
-    for (let i = 0; i < 14 && await page.textContent('#dlgName') !== 'Pippy'; i++) {      // tap on to Pippy's first line
-      await page.click('#screen-story', { position: { x: 200, y: 300 } });
-      await page.waitForTimeout(300);
-    }
-    expect(await page.textContent('#dlgName'), 'Pippy speaks').toBe('Pippy');
-    expect(await page.evaluate(() => document.getElementById('storyElephant').classList.contains('on')), "Pippy's portrait is up").toBe(true);
-    expect(await page.evaluate(() => document.getElementById('storyBear').classList.contains('away')), 'Barnaby steps aside').toBe(true);
-    await shot('pippy-speaks');
-    await skipStory(page);                                          // intro
-    await solveWords(page, lv17);
-    await victory(page, 'Clue Found!', 'Follow the trail');
-    await pressContinue(page);
-    await skipStory(page);                                          // bridge
-    await solveTrail(page, lv17);
-    await victory(page, 'Trail Followed!', 'To the suspects');
-    await pressContinue(page);
-    await accuse(page, lv17);
-    await victory(page, 'Case Solved!', 'Continue the story');
-    await pressContinue(page);
-    await skipStory(page);                                          // outro
-    await onScreen(page, 'map');
-    const save = await readSave(page);
-    expect(save.levels[17].solved, 'case 7.1 solved').toBe(true);
-    expect(save.unlocked, 'case 7.2 unlocked').toBe(18);
+  async N(s) {
+    const { page } = s;
+    await startCase(page, 'circus', 17);
+    await openingFilm(s, 'elephant', { title: 'PIPPY', titleSel: '#efTitle b', seen: 'elephant', shot: 'pippy-intro' });
+    await speakerAppears(s, 'Pippy', 'storyElephant', 'pippy-speaks');
+    await playCase(page, lv17);
+    await finishCase(page);
+    await expectSolved(page, 17, { unlocked: 18 });
   },
 
-  async Q({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'dino');
-    await caseButton(page, 20).click();
-    await page.waitForSelector('#dinoFilm.show');               // the meteor appears over the meadow, and the case opens
-    await page.waitForSelector('#dfTitle.on');                      // (reduced motion: the finished scene, then the title card)
-    expect(await page.textContent('#dfTitle b'), 'title card names the chapter').toBe('DINO STRIKES BACK');
-    await shot('dino-intro');
-    await page.waitForSelector('#dfSkip.on');
-    await page.click('#dfSkip');
-    await page.waitForSelector('#dinoFilm:not(.show)');
-    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.dino === true, Store.KEY);
-    await onScreen(page, 'story');
-    for (let i = 0; i < 14 && await page.textContent('#dlgName') !== 'Rexy'; i++) {      // tap on to Rexy's first line
-      await page.click('#screen-story', { position: { x: 200, y: 300 } });
-      await page.waitForTimeout(300);
-    }
-    expect(await page.textContent('#dlgName'), 'Rexy speaks').toBe('Rexy');
-    expect(await page.evaluate(() => document.getElementById('storyDino').classList.contains('on')), "Rexy's portrait is up").toBe(true);
-    expect(await page.evaluate(() => document.getElementById('storyBear').classList.contains('away')), 'Barnaby steps aside').toBe(true);
-    await shot('rexy-speaks');
-    await skipStory(page);                                          // intro
-    await solveWords(page, lv20);
-    await victory(page, 'Clue Found!', 'Follow the trail');
-    await pressContinue(page);
-    await skipStory(page);                                          // bridge
-    await solveTrail(page, lv20);
-    await victory(page, 'Trail Followed!', 'To the suspects');
-    await pressContinue(page);
-    await accuse(page, lv20);
-    await victory(page, 'Case Solved!', 'Continue the story');
-    await pressContinue(page);
-    await skipStory(page);                                          // outro
-    await onScreen(page, 'map');
-    const save = await readSave(page);
-    expect(save.levels[20].solved, 'case 8.1 solved').toBe(true);
-    expect(save.unlocked, 'case 8.2 unlocked').toBe(21);
+  async Q(s) {
+    const { page } = s;
+    await startCase(page, 'dino', 20);
+    await openingFilm(s, 'dino', { title: 'DINO STRIKES BACK', titleSel: '#dfTitle b', seen: 'dino', shot: 'dino-intro' });
+    await speakerAppears(s, 'Rexy', 'storyDino', 'rexy-speaks');
+    await playCase(page, lv20);
+    await finishCase(page);
+    await expectSolved(page, 20, { unlocked: 21 });
   },
 
-  async O({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'oasis');
-    await caseButton(page, 16).click();
-    await skipStory(page);                                          // intro
-    await solveWords(page, lv16);
-    await victory(page, 'Clue Found!');
-    await pressContinue(page);
-    await skipStory(page);                                          // bridge
-    await solveTrail(page, lv16);
-    await victory(page, 'Trail Followed!');
-    await pressContinue(page);
-    await accuse(page, lv16);
-    await page.waitForSelector('#wormFilm.show');                   // Biscuit's homecoming plays before the victory card
-    await shot('biscuit-homecoming');
-    await page.waitForSelector('#wfSkip.on');
-    await page.click('#wfSkip');
-    await page.waitForSelector('#wormFilm:not(.show)');
+  async O(s) {
+    const { page } = s;
+    await startCase(page, 'oasis', 16);
+    await playCase(page, lv16);
+    await closingFilm(s, 'worm', 'biscuit-homecoming');             // Biscuit's homecoming plays before the victory card
     await victory(page, 'Case Solved!', 'Continue the story');
     expect(await page.textContent('#vUnlock'), 'a chapter end, not the end of the game').toBe('Chapter completeMidnight Oasis');
     await pressContinue(page);
-    await onScreen(page, 'story');                                  // outro: the film starts over the story screen, so skip until it shows
-    for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
-      await page.evaluate(() => document.getElementById('btnSkip').click());
-      await page.waitForTimeout(200);
-    }
-    await page.waitForSelector('#chapterFilm.show');
-    await page.waitForSelector('#cfCard.on');
-    expect(await page.textContent('#cfKicker'), 'chapter 6 is not the end').toBe('Chapter 6 complete');
-    expect(await page.textContent('#cfNext'), 'the card points to chapter 7').toBe('Next: Chapter 7 · The Big Top');
-    await shot('oasis-film');
-    await page.waitForSelector('#cfSkip.on');
-    await page.click('#cfSkip');
-    await page.waitForSelector('#chapterFilm:not(.show)');
-    await onScreen(page, 'map');
-    const save = await readSave(page);
-    expect(save.levels[16].solved, 'case 6.3 solved').toBe(true);
-    expect(save.seen.endings.oasis, 'the ending is marked as seen').toBe(true);
-    expect(save.unlocked, 'case 7.1 unlocked').toBe(17);
+    await chapterEndFilm(s, { kicker: 'Chapter 6 complete', next: 'Next: Chapter 7 · The Big Top', shot: 'oasis-film' });
+    await expectSolved(page, 16, { ending: 'oasis', unlocked: 17 });
   },
 
-  async P({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'circus');
-    await caseButton(page, 19).click();
-    await skipStory(page);                                          // intro
-    await solveWords(page, lv19);
-    await victory(page, 'Clue Found!');
-    await pressContinue(page);
-    await skipStory(page);                                          // bridge
-    await solveTrail(page, lv19);
-    await victory(page, 'Trail Followed!');
-    await pressContinue(page);
-    await accuse(page, lv19);
-    await page.waitForSelector('#elephantFilm.show');               // Pippy's show plays before the victory card
-    await shot('pippy-show');
-    await page.waitForSelector('#efSkip.on');
-    await page.click('#efSkip');
-    await page.waitForSelector('#elephantFilm:not(.show)');
+  async P(s) {
+    const { page } = s;
+    await startCase(page, 'circus', 19);
+    await playCase(page, lv19);
+    await closingFilm(s, 'elephant', 'pippy-show');                 // Pippy's show plays before the victory card
     await victory(page, 'Case Solved!', 'Continue the story');
     expect(await page.textContent('#vUnlock'), 'a chapter end, not the end of the game').toBe('Chapter completeThe Big Top');
     await pressContinue(page);
-    await onScreen(page, 'story');                                  // outro, then Barnaby's epilogue: skip until the film shows
-    for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
-      await page.evaluate(() => document.getElementById('btnSkip').click());
-      await page.waitForTimeout(200);
-    }
-    await page.waitForSelector('#chapterFilm.show');                // chapter 7's film
-    await page.waitForSelector('#cfCard.on');
-    expect(await page.textContent('#cfKicker'), 'chapter 7 is not the end').toBe('Chapter 7 complete');
-    expect(await page.textContent('#cfTitle'), 'film card title').toBe('The Big Top');
-    expect(await page.textContent('#cfNext'), 'the card points to chapter 8').toBe('Next: Chapter 8 · Dino Strikes Back');
-    await shot('circus-film');
-    await page.waitForSelector('#cfSkip.on');
-    await page.click('#cfSkip');
-    await page.waitForSelector('#chapterFilm:not(.show)');
-    await onScreen(page, 'map');
-    const save = await readSave(page);
-    expect(save.levels[19].solved, 'case 7.3 solved').toBe(true);
-    expect(save.seen.endings.circus, 'the ending is marked as seen').toBe(true);
-    expect(save.unlocked, 'case 8.1 unlocked').toBe(20);
+    await chapterEndFilm(s, { kicker: 'Chapter 7 complete', title: 'The Big Top', next: 'Next: Chapter 8 · Dino Strikes Back', shot: 'circus-film' });
+    await expectSolved(page, 19, { ending: 'circus', unlocked: 20 });
   },
 
-  async R({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'dino');
-    await caseButton(page, 22).click();
-    await skipStory(page);                                          // intro
-    await solveWords(page, lv22);
-    await victory(page, 'Clue Found!');
-    await pressContinue(page);
-    await skipStory(page);                                          // bridge
-    await solveTrail(page, lv22);
-    await victory(page, 'Trail Followed!');
-    await pressContinue(page);
-    await accuse(page, lv22);
-    await page.waitForSelector('#dinoFilm.show');                   // the stomp-launch plays before the victory card
-    await shot('dino-finale');
-    await page.waitForSelector('#dfSkip.on');
-    await page.click('#dfSkip');
-    await page.waitForSelector('#dinoFilm:not(.show)');
+  async R(s) {
+    const { page } = s;
+    await startCase(page, 'dino', 22);
+    await playCase(page, lv22);
+    await closingFilm(s, 'dino', 'dino-finale');                    // the stomp-launch plays before the victory card
     await victory(page, 'Case Solved!', 'Continue the story');
     expect(await page.textContent('#vUnlock'), 'a chapter end, not the end of the game').toBe('Chapter completeDino Strikes Back');
     await pressContinue(page);
-    await onScreen(page, 'story');                                  // outro, then the chapter film: skip until it shows
-    for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
-      await page.evaluate(() => document.getElementById('btnSkip').click());
-      await page.waitForTimeout(200);
-    }
-    await page.waitForSelector('#chapterFilm.show');                // chapter 8 film
-    await page.waitForSelector('#cfCard.on');
-    expect(await page.textContent('#cfKicker'), 'chapter 8 is not the end').toBe('Chapter 8 complete');
-    expect(await page.textContent('#cfTitle'), 'film card title').toBe('Dino Strikes Back');
-    expect(await page.textContent('#cfNext'), 'the card points to chapter 9').toBe('Next: Chapter 9 · Rocky Rebuilds');
-    await shot('dino-film');
-    await page.waitForSelector('#cfSkip.on');
-    await page.click('#cfSkip');
-    await page.waitForSelector('#chapterFilm:not(.show)');
-    await onScreen(page, 'map');
-    const save = await readSave(page);
-    expect(save.levels[22].solved, 'case 8.3 solved').toBe(true);
-    expect(save.seen.endings.dino, 'the ending is marked as seen').toBe(true);
-    expect(save.unlocked, 'case 9.1 unlocked').toBe(23);
+    await chapterEndFilm(s, { kicker: 'Chapter 8 complete', title: 'Dino Strikes Back', next: 'Next: Chapter 9 · Rocky Rebuilds', shot: 'dino-film' });
+    await expectSolved(page, 22, { ending: 'dino', unlocked: 23 });
   },
 
-  async S({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'rocky');
-    await caseButton(page, 23).click();
+  async S(s) {
+    const { page } = s;
+    await startCase(page, 'rocky', 23);
     await onScreen(page, 'story');
-    for (let i = 0; i < 14 && await page.textContent('#dlgName') !== 'Rocky'; i++) {      // tap on to Rocky first line
-      await page.click('#screen-story', { position: { x: 200, y: 300 } });
-      await page.waitForTimeout(300);
-    }
-    expect(await page.textContent('#dlgName'), 'Rocky speaks').toBe('Rocky');
-    expect(await page.evaluate(() => document.getElementById('storyRocky').classList.contains('on')), 'Rocky portrait is up').toBe(true);
-    expect(await page.evaluate(() => document.getElementById('storyBear').classList.contains('away')), 'Barnaby steps aside').toBe(true);
-    await shot('rocky-speaks');
-    await skipStory(page);                                          // intro
-    await solveWords(page, lv23);
-    await victory(page, 'Clue Found!', 'Follow the trail');
-    await pressContinue(page);
-    await skipStory(page);                                          // bridge
-    await solveTrail(page, lv23);
-    await victory(page, 'Trail Followed!', 'To the suspects');
-    await pressContinue(page);
-    await accuse(page, lv23);
-    await victory(page, 'Case Solved!', 'Continue the story');
-    await pressContinue(page);
-    await skipStory(page);                                          // outro
-    await onScreen(page, 'map');
-    const save = await readSave(page);
-    expect(save.levels[23].solved, 'case 9.1 solved').toBe(true);
-    expect(save.unlocked, 'case 9.2 unlocked').toBe(24);
+    await speakerAppears(s, 'Rocky', 'storyRocky', 'rocky-speaks');
+    await playCase(page, lv23);
+    await finishCase(page);
+    await expectSolved(page, 23, { unlocked: 24 });
   },
 
-  async T({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'rocky');
-    await caseButton(page, 25).click();
-    await skipStory(page);                                          // intro
-    await solveWords(page, lv25);
-    await victory(page, 'Clue Found!');
-    await pressContinue(page);
-    await skipStory(page);                                          // bridge
-    await solveTrail(page, lv25);
-    await victory(page, 'Trail Followed!');
-    await pressContinue(page);
-    await accuse(page, lv25);
+  async T(s) {
+    const { page } = s;
+    await startCase(page, 'rocky', 25);
+    await playCase(page, lv25);
     await victory(page, 'Case Solved!', 'Continue the story');
     expect(await page.textContent('#vUnlock'), 'a chapter end, not the end of the game').toBe('Chapter completeRocky Rebuilds');
     await pressContinue(page);
-    await onScreen(page, 'story');                                  // outro, then the chapter film: skip until it shows
-    for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
-      await page.evaluate(() => document.getElementById('btnSkip').click());
-      await page.waitForTimeout(200);
-    }
-    await page.waitForSelector('#chapterFilm.show');                // chapter 9 film
-    await page.waitForSelector('#cfCard.on');
-    expect(await page.textContent('#cfKicker'), 'chapter 9 is not the end').toBe('Chapter 9 complete');
-    expect(await page.textContent('#cfTitle'), 'film card title').toBe('Rocky Rebuilds');
-    expect(await page.textContent('#cfNext'), 'the card points to chapter 10').toBe('Next: Chapter 10 · Castaways');
-    await shot('rocky-film');
-    await page.waitForSelector('#cfSkip.on');
-    await page.click('#cfSkip');
-    await page.waitForSelector('#chapterFilm:not(.show)');
-    await onScreen(page, 'map');
-    const save = await readSave(page);
-    expect(save.levels[25].solved, 'case 9.3 solved').toBe(true);
-    expect(save.seen.endings.rocky, 'the ending is marked as seen').toBe(true);
-    expect(save.unlocked, 'case 10.1 unlocked').toBe(26);
+    await chapterEndFilm(s, { kicker: 'Chapter 9 complete', title: 'Rocky Rebuilds', next: 'Next: Chapter 10 · Castaways', shot: 'rocky-film' });
+    await expectSolved(page, 25, { ending: 'rocky', unlocked: 26 });
   },
 
-  async U({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'castaways');
-    await caseButton(page, 26).click();
-    await page.waitForSelector('#islandFilm.show');                 // the plane crash, and the case opens
-    await page.waitForSelector('#ifTitle.on');                      // (reduced motion: the finished beach, then the title card)
-    expect(await page.textContent('#ifTitleMain'), 'title card names the chapter').toBe('CASTAWAYS');
-    await shot('island-crash');
-    await page.waitForSelector('#ifSkip.on');
-    await page.click('#ifSkip');
-    await page.waitForSelector('#islandFilm:not(.show)');
-    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.crash === true, Store.KEY);
-    await onScreen(page, 'story');
-    await skipStory(page);                                          // intro
-    await solveWords(page, lv26);
-    await victory(page, 'Clue Found!', 'Follow the trail');
-    await pressContinue(page);
-    await skipStory(page);                                          // bridge
-    await solveTrail(page, lv26);
-    await victory(page, 'Trail Followed!', 'To the suspects');
-    await pressContinue(page);
-    await accuse(page, lv26);
-    await victory(page, 'Case Solved!', 'Continue the story');
-    await pressContinue(page);
-    await skipStory(page);                                          // outro
-    await onScreen(page, 'map');
-    const save = await readSave(page);
-    expect(save.levels[26].solved, 'case 10.1 solved').toBe(true);
-    expect(save.seen.crash, 'the crash is marked as seen').toBe(true);
-    expect(save.unlocked, 'case 10.2 unlocked').toBe(27);
+  async U(s) {
+    const { page } = s;
+    await startCase(page, 'castaways', 26);
+    await openingFilm(s, 'island', { title: 'CASTAWAYS', titleSel: '#ifTitleMain', seen: 'crash', shot: 'island-crash' });
+    await playCase(page, lv26);
+    await finishCase(page);
+    await expectSolved(page, 26, { unlocked: 27, seen: 'crash' });
   },
 
-  async V({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'castaways');
-    await caseButton(page, 27).click();
-    await page.waitForSelector('#islandFilm.show');                 // the tiger ambush, and Evil Larry's look
-    await page.waitForSelector('#ifTitle.on');
-    expect(await page.textContent('#ifTitleMain'), 'title card names the look').toBe('THE LOOK');
-    await shot('island-tiger');
-    await page.waitForSelector('#ifSkip.on');
-    await page.click('#ifSkip');
-    await page.waitForSelector('#islandFilm:not(.show)');
-    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.tiger === true, Store.KEY);
-    await onScreen(page, 'story');
-    for (let i = 0; i < 14 && await page.textContent('#dlgName') !== 'Evil Larry'; i++) {      // tap on to Evil Larry's first line
-      await page.click('#screen-story', { position: { x: 200, y: 300 } });
-      await page.waitForTimeout(300);
-    }
-    expect(await page.textContent('#dlgName'), 'Evil Larry speaks').toBe('Evil Larry');
-    await shot('island-larry-speaks');
-    const save = await readSave(page);
-    expect(save.seen.tiger, 'the tiger scene is marked as seen').toBe(true);
+  async V(s) {
+    const { page } = s;
+    await startCase(page, 'castaways', 27);
+    await openingFilm(s, 'island', { title: 'THE LOOK', titleSel: '#ifTitleMain', seen: 'tiger', shot: 'island-tiger' });
+    await speakerAppears(s, 'Evil Larry', null, 'island-larry-speaks');
+    expect((await readSave(page)).seen.tiger, 'the tiger scene is marked as seen').toBe(true);
   },
 
-  async W({ page, shot }) {
-    await page.click('#btnPlay');
-    await onScreen(page, 'map');
-    await openChapter(page, 'castaways');
-    await caseButton(page, 28).click();
-    await page.waitForSelector('#islandFilm.show');                 // Biscuit's dig
-    await page.waitForSelector('#ifTitle.on');
-    expect(await page.textContent('#ifTitleMain'), 'title card names the dig').toBe('DIGS IN');
-    await shot('island-dig');
-    await page.waitForSelector('#ifSkip.on');
-    await page.click('#ifSkip');
-    await page.waitForSelector('#islandFilm:not(.show)');
-    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.dig === true, Store.KEY);
+  async W(s) {
+    const { page } = s;
+    await startCase(page, 'castaways', 28);
+    await openingFilm(s, 'island', { title: 'DIGS IN', titleSel: '#ifTitleMain', seen: 'dig', shot: 'island-dig' });
     await onScreen(page, 'story');
-    const save = await readSave(page);
-    expect(save.seen.dig, 'the dig is marked as seen').toBe(true);
+    expect((await readSave(page)).seen.dig, 'the dig is marked as seen').toBe(true);
   }
 };
 
