@@ -190,6 +190,7 @@ export const IslandScene = {
 
   /* a clean stage in a mode */
   reset(mode: Mode, extra = '') {
+    this.ensure();
     const e = this.els;
     this.film.clearAnimations();
     e.ifArt.setAttribute('class', 'if-art m-' + mode + (extra ? ' ' + extra : ''));
