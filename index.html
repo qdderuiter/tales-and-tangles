@@ -315,6 +315,18 @@
     <button class="btn small skip film pf-skip" id="pfSkip">Skip</button>
   </div>
 
+  <!-- THE ISLAND (chapter 10): the plane crash (opens Case 10.1), the tiger and Evil Larry's look (opens 10.2), Biscuit's dig (opens 10.3) and the rescue (after 10.4).
+       One stage for all four; scenes/island-scene.ts builds the art into #ifArt, moves the pieces and sets a mode class (m-flight, m-beach, m-jungle, m-under, m-rescue) on the svg. Coordinates are viewBox units. -->
+  <div class="island-film" id="islandFilm" aria-hidden="true">
+    <div class="if-stage" id="ifStage"><svg class="if-art" id="ifArt" viewBox="0 0 400 700" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg></div>
+    <div class="if-dim" id="ifDim"></div>
+    <div class="if-black" id="ifBlack"></div>
+    <div class="if-cap" id="ifCap"></div>
+    <div class="if-title" id="ifTitle"><small id="ifTitleSmall"></small><b id="ifTitleMain"></b><span id="ifTitleSub"></span></div>
+    <div class="if-flash" id="ifFlash"></div>
+    <button class="btn small skip film if-skip" id="ifSkip">Skip</button>
+  </div>
+
   <!-- BISCUIT THE SAND WORM: the night he got lost (opens Case 6.1) and his homecoming (after Case 6.3). One stage for both;
        scenes/worm-scene.ts moves the pieces and puts the class "home" on the svg for the second scene. Coordinates are viewBox units. -->
   <div class="worm-film" id="wormFilm" aria-hidden="true">

@@ -2,7 +2,7 @@ import { WormScore } from '../audio/film-score.ts';
 import { Haptics } from '../audio/haptics.ts';
 import { bearMarkup } from '../characters/barnaby-svg.ts';
 import { wormInner } from '../characters/worm.ts';
-import { $ } from '../core/dom.ts';
+import { $, svgEl } from '../core/dom.ts';
 import { scenes } from '../core/scenes.ts';
 import { REDUCED, late, mulberry32 } from '../core/util.ts';
 import { Store } from '../state/store.ts';
@@ -18,7 +18,6 @@ import { Film } from './film.ts';
 
    Every move is written as "the end state, plus an animation that leads to it" (move()), so a skipped or reduced-motion film simply
    shows the end states. Skippable (the Skip button appears after 1.5 s the first time). The playback mechanics are shared: see film.ts. */
-const SVG_NS = 'http://www.w3.org/2000/svg';
 const TAU = Math.PI * 2;
 
 const ON_DUNE = 'translate(130 449)';      // Biscuit's box while he counts the stars
@@ -33,12 +32,6 @@ const ON_DOORSTEP = 'translate(-36px,4px) scale(.94)';
 const LIGHTS = ['wfGlowDoor', 'wfInsideOn', 'wfSpill', 'wfWin0', 'wfWin1'];     // the doorway first (as the door opens), then the two windows
 const HEART = { x: 214, y: 392, size: 3.5, count: 18 };
 const EASE_OUT_BACK = 'cubic-bezier(.3,1.35,.5,1)';
-
-const svgEl = (tag: string, attrs: Record<string, string | number>): SVGElement => {
-  const e = document.createElementNS(SVG_NS, tag);
-  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
-  return e;
-};
 
 export const WormScene = {
   els: {} as Record<string, HTMLElement>, film: late<Film>(),

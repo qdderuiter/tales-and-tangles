@@ -2,7 +2,9 @@ import { bearMarkup } from '../characters/barnaby-svg.ts';
 import { rocketInner } from '../characters/pup.ts';
 import { HERD, boingBall, dinoInner } from '../characters/dino.ts';
 import { elephantInner, starBall } from '../characters/elephant.ts';
+import { larryInner } from '../characters/larry.ts';
 import { rockyInner } from '../characters/rocky.ts';
+import { tigerInner } from '../characters/tiger.ts';
 import { wormInner } from '../characters/worm.ts';
 import { FILM_LAYERS } from '../data/chapters.ts';
 import type { Motif } from '../data/types.ts';
@@ -17,7 +19,7 @@ import type { Film } from './film.ts';
 
 const VIEW = '0 0 800 1000';
 /* the crop each motif's card shows (the whole hero scene; the sky, hills and sea run past it, so a wide card has no empty sides) */
-const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440', bigtop: '110 400 580 560', meteor: '110 420 600 520', underground: '110 560 640 380' };
+const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440', bigtop: '110 400 580 560', meteor: '110 420 600 520', island: '110 430 600 430', underground: '110 560 640 380' };
 
 /* how far each layer follows the camera (0 = fixed, 1 = full) */
 const DEPTH: Record<string, number> = {
@@ -26,7 +28,8 @@ const DEPTH: Record<string, number> = {
   dunes: 0.8, caravan: 0.82, palms: 0.85, pool: 0.85, house: 0.85,
   tent: 0.7, flags: 0.72, lights: 0.75, crowd: 0.9, ring: 0.95, ball: 1, pippy: 1,
   dinos: 0.95, burst: 0.3,
-  crystals: 0.35, rubble: 0.9, drill: 0.85, crew: 0.9, rocky: 1
+  crystals: 0.35, rubble: 0.9, drill: 0.85, crew: 0.9, rocky: 1,
+  island: 0.7, wreck: 0.85, tiger: 0.95, hole: 0.9, fire: 0.95, ship: 0.55
 };
 
 /* what the map card shows for each motif: the finished-scene layers only */
@@ -39,8 +42,19 @@ export const BAND_LAYERS: Record<Motif, string[]> = {
   desert: ['sky', 'stars', 'moon', 'dunes', 'palms', 'pool', 'house'],
   bigtop: ['sky', 'stars', 'tent', 'flags', 'lights', 'crowd', 'ring', 'ball', 'pippy'],
   meteor: ['sky', 'sun', 'stars', 'hills', 'dinos', 'burst', 'ball'],
-  underground: ['sky', 'crystals', 'house', 'lamps', 'rocky']
+  underground: ['sky', 'crystals', 'house', 'lamps', 'rocky'],
+  island: ['sky', 'sea', 'island', 'palms', 'wreck']
 };
+
+
+/* a palm tree: a leaning trunk, a crown of fronds and a few coconuts */
+export function palmTree(x: number, base: number, top: number, bend: number, scale: number, shade = 0): string {
+  const cx = x + bend * 0.4, g1 = shade ? '#2a7a58' : '#3aa07a', g2 = shade ? '#226a4a' : '#2f8a6a';
+  let fronds = '';
+  for (let k = 0; k < 7; k++) fronds += '<path d="M0 0 Q42 -34 100 -6 Q46 -16 0 0Z" fill="' + (k % 2 ? g2 : g1) + '" transform="rotate(' + (-160 + k * 22) + ')"/>';
+  return '<path d="M' + x + ' ' + base + ' Q' + (x + bend) + ' ' + r1(base - (base - top) * 0.55) + ' ' + r1(cx) + ' ' + top + '" fill="none" stroke="#6b4a3a" stroke-width="' + r1(12 * scale + 4) + '" stroke-linecap="round"/>' +
+    '<g transform="translate(' + r1(cx) + ' ' + top + ') scale(' + scale + ')"><g class="cf-sway">' + fronds + '<circle cx="-4" cy="8" r="7" fill="#6b4a2a"/><circle cx="8" cy="10" r="7" fill="#7a5532"/></g></g>';
+}
 
 let uid = 0;
 const svg = (inner: string, vb: string) => '<svg viewBox="' + vb + '" preserveAspectRatio="' + (vb === VIEW ? 'xMidYMid slice' : 'xMidYMid meet') + '" aria-hidden="true">' + inner + '</svg>';
@@ -374,6 +388,35 @@ const ART: Record<Motif, Record<string, LayerFn>> = {
       [200, 520].map(x => '<rect x="' + (x - 3) + '" y="850" width="6" height="52" fill="#5c5560"/><g class="cf-halo">' + glow(u + 'g', x, 842, 60) + '</g><circle cx="' + x + '" cy="842" r="11" fill="#ffe6a0"/>').join(''), vb),
     rocky: (_u, vb) => svg('<g transform="translate(494 788) scale(.56)"><g class="cf-peek">' + rockyInner() + '</g></g>', vb),
     barnaby: () => '<div class="cf-bear ug"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
+  },
+  /* ---- a small island at sunset: the sea, sand and jungle, palms, the crashed plane, the tiger, a hole, a bonfire, the rescue ship ---- */
+  island: {
+    sky: (u, vb) => svg('<defs>' + grad(u + 's', [[0.1, '#4c5fb0'], [0.45, '#e58fa0'], [0.78, '#ffc58a'], [1, '#ffe2b0']]) + glowDef(u + 'g', '#fff1b0', 0.8) + '</defs>' + skyRect(u + 's') +
+      '<g class="cf-halo">' + glow(u + 'g', 560, 690, 230) + '</g><circle cx="560" cy="690" r="46" fill="#fff4c4"/>' +
+      '<g fill="#fff" opacity=".55"><ellipse cx="170" cy="280" rx="84" ry="22"/><ellipse cx="230" cy="264" rx="58" ry="18"/><ellipse cx="640" cy="370" rx="96" ry="20"/><ellipse cx="700" cy="354" rx="54" ry="16"/></g>', vb),
+    stars: (u, vb) => svg(starField(34, 71, 400), vb),
+    sea: (u, vb) => svg('<defs>' + grad(u + 'w', [[0, '#4fb8cc'], [1, '#1d6a93']]) + '</defs><rect x="-300" y="700" width="1400" height="700" fill="url(#' + u + 'w)"/>' +
+      '<g class="cf-sway" fill="none" stroke="#fff" stroke-width="3" opacity=".45" stroke-linecap="round"><path d="M40 730 q30 -8 60 0 t60 0"/><path d="M420 742 q30 -8 60 0 t60 0"/><path d="M640 724 q30 -8 60 0 t60 0"/><path d="M200 758 q30 -8 60 0 t60 0"/></g>' +
+      '<path d="M470 700 L650 700 L610 780 L520 780Z" fill="#fff4c4" opacity=".22"/>', vb),
+    island: (_u, vb) => svg('<ellipse cx="400" cy="830" rx="420" ry="86" fill="#000" opacity=".12"/>' +
+      '<path d="M-60 840 Q60 770 220 790 T460 770 T760 800 T900 850 V900 H-60Z" fill="#f2d7a0"/><path d="M-60 856 Q120 810 300 828 T620 820 T900 860 V900 H-60Z" fill="#e8c88a"/>' +
+      '<path d="M470 780 Q520 690 600 700 Q690 700 740 786 Z" fill="#3f9a5a"/><path d="M500 786 Q560 722 624 726 Q700 732 726 786 Z" fill="#2f8a4a"/>' +
+      '<g fill="#fff" opacity=".6"><path d="M-40 868 q40 -10 80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0" stroke="#fff" stroke-width="4" fill="none" opacity=".7"/></g>', vb),
+    palms: (_u, vb) => svg(palmTree(150, 840, 610, -28, 0.9) + palmTree(246, 846, 660, 18, 0.7, 1) + palmTree(700, 800, 600, 20, 0.8, 1), vb),
+    wreck: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#8a8a96', 0.5) + '</defs>' +
+      '<g transform="translate(210 800) rotate(-9)"><ellipse cx="60" cy="40" rx="150" ry="40" fill="#cfd6e0"/><path d="M-80 40 Q-100 0 -40 -6 L140 -8 Q200 0 190 40 Z" fill="#e8edf3"/>' +
+      '<rect x="20" y="4" width="26" height="18" rx="6" fill="#4aa8d8"/><rect x="62" y="4" width="26" height="18" rx="6" fill="#4aa8d8"/><rect x="104" y="4" width="26" height="18" rx="6" fill="#4aa8d8"/>' +
+      '<path d="M-90 40 L-140 -70 L-96 -66 L-60 8Z" fill="#e8527a"/><path d="M-70 24 L-130 22 L-120 40 L-60 40Z" fill="#c9d0da"/></g>' +
+      '<g class="cf-halo">' + glow(u + 'g', 420, 740, 70) + '</g><g class="cf-peek" opacity=".5"><circle cx="372" cy="760" r="12" fill="#8a8a96"/><circle cx="388" cy="738" r="16" fill="#9a9aa6"/></g>', vb),
+    tiger: (_u, vb) => svg('<g transform="translate(470 700) scale(.55)"><g class="cf-peek">' + tigerInner() + '</g></g>', vb),
+    hole: (_u, vb) => svg('<ellipse cx="560" cy="836" rx="86" ry="22" fill="#b98c4c"/><ellipse cx="560" cy="838" rx="72" ry="16" fill="#2a1c12"/><ellipse cx="560" cy="842" rx="46" ry="9" fill="#120c08"/>', vb),
+    fire: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#ffb14a', 0.95) + '</defs><g class="cf-halo">' + glow(u + 'g', 360, 806, 150) + '</g>' +
+      '<g stroke="#5a3a24" stroke-width="12" stroke-linecap="round"><path d="M320 836 L398 812"/><path d="M322 812 L400 836"/></g>' +
+      '<g class="cf-peek"><path d="M360 818 Q330 790 350 756 Q356 774 372 760 Q380 790 360 818Z" fill="#ff8a2a"/><path d="M360 818 Q346 800 358 780 Q368 796 360 818Z" fill="#ffe27a"/></g>', vb),
+    ship: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#fff4c4', 0.9) + '</defs><g class="cf-sway"><path d="M570 704 L720 704 L700 726 L592 726Z" fill="#2b3d4f"/><rect x="620" y="672" width="40" height="32" fill="#e8edf3"/><rect x="636" y="654" width="12" height="18" fill="#e8527a"/>' +
+      '<g class="cf-halo">' + glow(u + 'g', 648, 690, 70) + '</g><circle cx="648" cy="690" r="7" fill="#fff4c4"/></g>', vb),
+    crew: (_u, vb) => svg('<g transform="translate(250 700) scale(.4)">' + larryInner() + '</g><g transform="translate(176 774) scale(.4)"><g class="biscuit b-happy">' + wormInner() + '</g></g>', vb),
+    barnaby: () => '<div class="cf-bear is"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
   }
 };
 

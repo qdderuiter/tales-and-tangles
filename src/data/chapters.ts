@@ -13,7 +13,8 @@ export const FILM_LAYERS: Record<Motif, string[]> = {
   desert:  ['sky', 'stars', 'moon', 'dunes', 'caravan', 'palms', 'pool', 'house', 'barnaby'],
   bigtop:  ['sky', 'stars', 'tent', 'flags', 'lights', 'crowd', 'ring', 'ball', 'pippy', 'barnaby'],
   meteor:  ['sky', 'sun', 'stars', 'hills', 'dinos', 'burst', 'ball', 'barnaby'],
-  underground: ['sky', 'crystals', 'rubble', 'drill', 'crew', 'house', 'lamps', 'rocky', 'barnaby']
+  underground: ['sky', 'crystals', 'rubble', 'drill', 'crew', 'house', 'lamps', 'rocky', 'barnaby'],
+  island: ['sky', 'stars', 'sea', 'island', 'palms', 'wreck', 'tiger', 'hole', 'fire', 'ship', 'crew', 'barnaby']
 };
 
 export const CHAPTERS: Chapter[] = [
@@ -131,7 +132,20 @@ export const CHAPTERS: Chapter[] = [
         { caption: 'Brick by brick, a little house stands where the rubble was.', show: ['house'], hide: ['rubble'], cam: { x: -6, y: 0, scale: 1.12, ms: 3400 }, cue: 'sparkle', flash: 0.3, hold: 3200 },
         { caption: 'A round window glows, and smoke curls from the chimney.', show: ['lamps'], cam: { x: -10, y: 2, scale: 1.2, ms: 3400 }, cue: 'bell', flash: 0.3, hold: 3000 },
         { caption: 'And a very cute stone sits at the door. Rocky is home. Thank you, Barnaby!', show: ['rocky', 'barnaby'], cam: { x: -4, y: 0, scale: 1, ms: 3600 }, cue: 'chime', flash: 0.35, hold: 3400 },
-        { caption: 'The quakes are over. Sleep tight, little stone.', cam: { x: 0, y: 0, scale: 1, ms: 3000 }, cue: 'swell', hold: 3200 }
+        { caption: 'The quakes are over. Sleep tight, little stone.', cam: { x: 0, y: 0, scale: 1, ms: 3000 }, cue: 'swell', hold: 3200 },
+        { caption: 'But far above the clouds, a little plane hums towards the sea...', cam: { x: 4, y: -8, scale: 1.05, ms: 3400 }, cue: 'whoosh', hold: 3200 }
+      ] } },
+  { id: 'castaways', n: 10, title: 'Castaways', tagline: 'A bear, a worm and a thief on a very small island.', levels: [26, 27, 28, 29], motif: 'island', track: 'island',
+    palette: { a: '#bfe6f2', b: '#f2d7a0', ink: '#2b3d4f', glow: '#ffd47a' },
+    ending: {
+      start: ['sky', 'sea', 'island', 'palms', 'wreck'],
+      reducedCaption: 'A bear, a worm and a thief light a signal fire, and a ship sails in to take them all home.',
+      beats: [
+        { caption: 'On a tiny island, three very unlikely friends sit by a fire.', show: ['fire', 'crew', 'barnaby'], cam: { x: 0, y: 0, scale: 1, ms: 0 }, cue: 'swell', hold: 3000 },
+        { caption: 'The signal climbs into the sunset, higher than any flare.', show: ['stars'], cam: { x: 6, y: -6, scale: 1.1, ms: 3400 }, cue: 'sparkle', flash: 0.3, hold: 3200 },
+        { caption: 'Far out on the water, a tiny light begins to blink back.', show: ['ship'], cam: { x: -8, y: 0, scale: 1.15, ms: 3400 }, cue: 'chime', hold: 3200 },
+        { caption: 'The tiger watches from the trees, and for once it only waves a tail.', show: ['tiger'], hide: ['wreck'], cam: { x: 10, y: 2, scale: 1.2, ms: 3400 }, cue: 'whoosh', hold: 3000 },
+        { caption: 'And a very strange team sails home, together. Thank you, Barnaby, Biscuit and Larry!', cam: { x: 0, y: 0, scale: 1, ms: 3600 }, cue: 'bell', flash: 0.4, hold: 3600 }
       ] } }
 ];
 

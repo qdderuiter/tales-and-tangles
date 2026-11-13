@@ -24,7 +24,11 @@ export const THEME_HINTS: string[] = [
   'the big launch - stars, springs and a great big swing',
   'deep underground - quakes, tunnels and a drilling crew',
   'building a house - bricks, walls and beams',
-  'a cosy cave home - roof, door and a warm bed'
+  'a cosy cave home - roof, door and a warm bed',
+  'a crash on the coast - storms, smoke and sandy beaches',
+  'a hungry jungle cat - stripes, claws and a very big roar',
+  'a very small digger - tunnels, spades and a hole in the dirt',
+  'a fire on the beach - flames, smoke and a signal light'
 ];
 
 export const TRAIL_HINTS: Record<string, string> = { HIVE: 'where bees live', NIGHT: 'when the owls come out', MOLE: 'a tunnelling garden digger', CLOCK: 'it chimes the hours', PARTY: 'a birthday celebration',
@@ -33,4 +37,5 @@ export const TRAIL_HINTS: Record<string, string> = { HIVE: 'where bees live', NI
   BURROW: 'a tunnel a worm digs to get home', COMPASS: 'it always points north', SPRING: 'where fresh water bubbles up',
   POPCORN: 'a crunchy snack at the show', BALANCE: 'staying steady on a wire', FANFARE: 'a trumpet blast to announce the star',
   DRUM: 'it goes boom when you hit it', BOUNCE: 'what a rubber ball does', GLITTER: 'it sparkles on everything',
-  TREMBLE: 'what the ground does in an earthquake', MORTAR: 'the sticky stuff between the bricks', WINDOW: 'you look through it to see outside' };
+  TREMBLE: 'what the ground does in an earthquake', MORTAR: 'the sticky stuff between the bricks', WINDOW: 'you look through it to see outside',
+  COCONUT: 'a hairy brown nut with milk inside', STRIPES: 'what a tiger wears', SHOVEL: 'you scoop sand with it', RESCUE: 'being brought safely home' };

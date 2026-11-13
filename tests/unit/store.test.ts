@@ -131,6 +131,16 @@ describe('loading', () => {
     expect(load().seen.elephant).toBe(true);
   });
 
+  it("the island cinematics' flags survive a load, and an older save without them reads as not seen", () => {
+    put(Store.KEY, { seen: { larry: true, dino: true, crash: true, tiger: true, dig: true } });
+    const d = load();
+    expect([d.seen.crash, d.seen.tiger, d.seen.dig]).toEqual([true, true, true]);
+    put(Store.KEY, { seen: { larry: true, dino: true } });
+    const old = load();
+    expect([old.seen.crash, old.seen.tiger, old.seen.dig]).toEqual([false, false, false]);
+    expect(old.seen.dino).toBe(true);
+  });
+
   it('a save from before endings existed gets an empty endings record', () => {
     put(Store.KEY, { seen: { larry: true } });
     expect(load().seen.endings).toEqual({});

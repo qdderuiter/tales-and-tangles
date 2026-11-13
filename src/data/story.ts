@@ -466,6 +466,104 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
       { who: 'Rocky', e: 'happy', t: 'The cap goes on the chimney, the door is shut, and the doorbell goes ding! I am home! Thank you, Barnaby!' },
       { e: 'happy', t: 'Places, everyone. The drill goes up, the walls stay down, and the earth goes back to sleep.' }
     ]
+  },
+  26: {
+    intro: [
+      { e: 'surprised', t: 'Ow. Sand. Why is there sand in my hat? The last thing I remember is a bump, a bang, and a very rude cloud.' },
+      { e: 'sad', t: 'The plane! It came down on a desert island, and I am the only bear on this beach. No Honeywick, no honey, not one single jar.' },
+      { e: 'thinking', t: 'Right. A detective does not panic. A detective looks for clues. Wreckage, footprints, a radio to call for help.' },
+      { e: 'surprised', t: 'The emergency radio was in the fuselage, and now the fuselage is empty. Somebody took it. Five other passengers washed ashore, and every one of them is acting very casual about it.' },
+      { e: 'neutral', t: 'Five castaways, five spots around the wreck. Somebody knows where our one way home went.',
+        choices: [
+          { label: 'We will find it, Barnaby!', reply: { e: 'happy', t: 'That is the spirit. Trace each word, and leave no letter behind.' } },
+          { label: 'Any survival tips?', gift: true, reply: { e: 'proud', t: 'Always. Take my spare notebook, it holds one free hint, washed up and perfectly dry.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Tilly Turtle! She was in the fuselage, with the radio tucked in her shell.' },
+      { e: 'sad', t: 'Tilly says: I thought a big wave was coming, so I hid the radio somewhere safe. Then I forgot where I was. I am so sorry.' },
+      { e: 'surprised', t: 'And she has a point. The radio is soaked, and its little antenna is snapped. It will not call anybody tonight.' },
+      { e: 'thinking', t: 'Wait. Did the sand just move?' },
+      { who: 'Biscuit', e: 'surprised', t: 'Eep! Barnaby? Is that you? I was in seat 14C, and then everything went bump, and then I just kept digging!' },
+      { e: 'happy', t: 'Biscuit! Of all the beaches in all the world! Are you hurt?' },
+      { who: 'Biscuit', e: 'shy', t: 'Only a little sandy. And there is somebody else from the plane. Somebody in a striped jumper who is hiding in the wreck and pretending he is not.' },
+      { e: 'thinking', t: 'A striped jumper. Oh no. Oh no, no, no.' }
+    ]
+  },
+  27: {
+    intro: [
+      { e: 'surprised', t: 'Evil Larry! You were on my plane? And you just saved me from a tiger!' },
+      { who: 'Evil Larry', e: 'smug', t: 'Do not get sentimental, detective. Of all the desert islands in all the oceans, you had to land on mine, and I could not let a cat eat my only company.' },
+      { who: 'Evil Larry', e: 'sneaky', t: 'Seat 1A, bear. I do not fly economy. I was on my way to a very quiet little heist, and now the plane is a wreck and so is my schedule.' },
+      { who: 'Biscuit', e: 'shy', t: 'Mr. Larry? Please do not steal anything. We are all stuck here together. I think.' },
+      { who: 'Evil Larry', e: 'angry', t: 'Hmph. I would never steal from a fellow castaway. Not before dinner.' },
+      { e: 'thinking', t: 'Dinner is exactly the problem. The last crate of food was in the clearing, and now it is gone. Five suspects out in the jungle, and one very empty stomach.' },
+      { who: 'Biscuit', e: 'surprised', t: 'Barnaby? Something is wrong. The bushes are very quiet. The birds stopped singing.' },
+      { e: 'neutral', t: 'Stay close, you two. Five suspects, five spots, and one crate. Let us find out who was where.',
+        choices: [
+          { label: 'Stay close, everyone!', reply: { e: 'happy', t: 'Together. Trace each word, and leave no letter behind.' } },
+          { label: 'A jungle hint, please?', gift: true, reply: { e: 'proud', t: 'Of course. One free hint, wrapped in a big green leaf.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Sully Sloth! He was in the clearing, sound asleep on top of the crate. He thought it was a very comfortable pillow.' },
+      { e: 'sad', t: 'Sully says: I am so sorry. Please take it. Sloths do not do anything quickly, but I can say sorry quickly.' },
+      { who: 'Evil Larry', e: 'smug', t: 'Ha! A sloth. Not even a good crime.' },
+      { who: 'Biscuit', e: 'sad', t: 'Barnaby, that growl again. It is coming from the bushes. It is very close.' },
+      { e: 'surprised', t: 'The tiger! It is coming back. We cannot outrun it.' },
+      { who: 'Evil Larry', e: 'sneaky', t: 'Leave the stripes to me, bear. I am the scariest thing on this island, and it is about time somebody noticed.' },
+      { who: 'Biscuit', e: 'surprised', t: 'And leave the ground to me! I have a plan. A very small plan, and a very deep one.' }
+    ]
+  },
+  28: {
+    intro: [
+      { who: 'Biscuit', e: 'wiggle', t: 'Down, down, down, and everybody in! I dug as fast as I could, and I hope nobody minds the dark.' },
+      { e: 'surprised', t: 'A hole! A real tunnel, right under the jungle. Biscuit, we are safe, and the tiger cannot follow us in here.' },
+      { who: 'Evil Larry', e: 'caught', t: 'I will have you know my look worked beautifully the first time. It is not my fault the cat has a short memory.' },
+      { e: 'happy', t: 'We are all very grateful, Larry. I mean it. A thief, a worm and a bear. A very strange team.' },
+      { who: 'Evil Larry', e: 'caught', t: 'Do not get used to it. I am only helping because the exit is on the far side of the island, and the only way to it is through the tunnels. And because I am hungry.' },
+      { e: 'thinking', t: 'Look at the walls, partner. Old lanterns, a rope, and the tunnel keeps going. Somebody used these caves before us. And the treasure map that explains them is missing.' },
+      { who: 'Biscuit', e: 'shy', t: 'I met some diggers down here. They were very friendly. Five of them, at five places along the tunnel.' },
+      { e: 'neutral', t: 'Then let us ask them, one by one. Somebody has that map.',
+        choices: [
+          { label: 'Lead the way, Biscuit!', reply: { e: 'happy', t: 'Biscuit wiggles with joy. Follow the worm! Trace each word, and leave no letter behind.' } },
+          { label: 'A hint for the dark?', gift: true, reply: { e: 'proud', t: 'Always. One free hint, glowing like a lantern in the tunnel.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Percy Prairiedog! He was at the dig site, with the map folded into his hat. He wanted to keep it dry.' },
+      { e: 'sad', t: 'Percy says: I was going to give it back once I finished drawing the way out. I am so sorry.' },
+      { who: 'Biscuit', e: 'surprised', t: 'The map shows a tunnel that goes under the whole island, and it ends at a lagoon on the far side. Nobody there but the open sea.' },
+      { who: 'Evil Larry', e: 'sneaky', t: 'A lagoon, an open sea, and a clear sky. And a perfectly good bonfire waiting to be lit, if somebody had the stuff to light it.' },
+      { e: 'thinking', t: 'Larry, are you thinking what I am thinking?' },
+      { who: 'Evil Larry', e: 'smug', t: 'A signal, bear. The biggest signal this ocean has ever seen. Let us go and light it.' },
+      { e: 'proud', t: 'Then let us go home, all three of us. One last climb, and one last case.' }
+    ]
+  },
+  29: {
+    intro: [
+      { e: 'happy', t: 'Fresh air! Sunshine! And the lagoon is as blue as a jar of honey. Biscuit, Larry, we made it through the tunnel.' },
+      { who: 'Biscuit', e: 'happy', t: 'I have never been so proud of a hole in my life.' },
+      { who: 'Evil Larry', e: 'smug', t: 'Spare me. Light the fire, bear, so the whole world can see it.' },
+      { e: 'surprised', t: 'There is just one problem. The very last flare was on the lookout hill, and now the lookout hill is empty.' },
+      { e: 'thinking', t: 'Five castaways, five spots, and one flare. A ship could pass by at any moment, so we must find it before the sun sets.' },
+      { who: 'Evil Larry', e: 'sneaky', t: 'I would never take it. I am only mentioning that I do not know where it is.' },
+      { e: 'proud', t: 'The very last case. Let us bring everybody home.',
+        choices: [
+          { label: 'Light the signal!', reply: { e: 'happy', t: 'Light the signal, and bring everybody home. Trace each word, and leave no letter behind.' } },
+          { label: 'One last hint, please?', gift: true, reply: { e: 'proud', t: 'For the grand finale? Of course. One free hint, glowing like a sunset.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Ruby Raccoon! She was at the lookout hill, polishing the flare gun. She wanted it to be shiny for the rescue.' },
+      { e: 'sad', t: 'Ruby says: I did not know somebody would need it. I am so sorry.' },
+      { who: 'Biscuit', e: 'surprised', t: 'Barnaby! Look! A ship on the horizon, and it has a great big spotlight!' },
+      { who: 'Evil Larry', e: 'smug', t: 'Well, do not just stand there. Light the flare, detective, and give them a show.' },
+      { e: 'proud', t: 'Three, two, one. Everybody, wave!' },
+      { who: 'Evil Larry', e: 'caught', t: 'I will say this once, bear. It was a pleasure to be saved by you. Do not tell anyone I said so.' },
+      { who: 'Biscuit', e: 'happy', t: 'We did it! A worm, a thief and a bear, all together, and all going home.' },
+      { e: 'happy', t: 'A very strange team, and the best one I have ever had. Places, everyone. The ship is coming in.' }
+    ]
   }
 };
 
@@ -520,7 +618,15 @@ export const STORY_EXTRA: Record<number, Pick<Record<StoryPart, RawLine[]>, 'bri
   24: { bridge: [{ e: 'proud', t: 'BRICK! Red dust everywhere. Now follow the mortar trail, tile by tile, numbers in order.' }],
         caseIntro: [{ e: 'neutral', t: 'Who was by the scaffold, and who held what? The neighbours matter down here. Trust the notebook, partner.' }] },
   25: { bridge: [{ e: 'happy', t: 'CHIMNEY! There is soot on the floor. Now follow the glint through the window: every tile, numbers in order.' }],
-        caseIntro: [{ e: 'proud', t: 'The very last case. Five friends, five spots around Rocky\'s house, and one little chimney cap. Trust the notebook, partner.' }] }
+        caseIntro: [{ e: 'proud', t: 'The very last case. Five friends, five spots around Rocky\'s house, and one little chimney cap. Trust the notebook, partner.' }] },
+  26: { bridge: [{ e: 'surprised', t: 'WRECK! Twisted metal and scattered suitcases. Now follow the coconut trail: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'thinking', t: 'Five castaways, five spots around the wreck, and one missing radio. Cross people off until one story fits.' }] },
+  27: { bridge: [{ e: 'surprised', t: 'TIGER! Huge paw prints in the mud. Now follow the stripes: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'neutral', t: 'Who was in the clearing, and who held what? The neighbours matter in the jungle. Trust the notebook, partner.' }] },
+  28: { bridge: [{ e: 'proud', t: 'TUNNEL! Fresh sand, and it is still warm. Now follow the shovel marks: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'neutral', t: 'Five diggers, five spots along the tunnel, and one lost map. Trust the notebook, partner.' }] },
+  29: { bridge: [{ e: 'happy', t: 'SIGNAL! The light is blinking. Now follow the sound of the engine: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'proud', t: 'The very last case. Five castaways, five spots around the lagoon, and one little flare. Trust the notebook, partner.' }] }
 };
 
 export const REACT = {

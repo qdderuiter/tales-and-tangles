@@ -2,7 +2,7 @@ import { ElephantScore } from '../audio/film-score.ts';
 import { Haptics } from '../audio/haptics.ts';
 import { bearMarkup } from '../characters/barnaby-svg.ts';
 import { elephantInner, starBall } from '../characters/elephant.ts';
-import { $ } from '../core/dom.ts';
+import { $, svgEl } from '../core/dom.ts';
 import { scenes } from '../core/scenes.ts';
 import { REDUCED, late, mulberry32 } from '../core/util.ts';
 import { Store } from '../state/store.ts';
@@ -18,7 +18,6 @@ import { Film } from './film.ts';
 
    Every move is written as "the end state, plus an animation that leads to it" (move()), so a skipped or reduced-motion film simply
    shows the end states. Skippable (the Skip button appears after 1.5 s the first time). The playback mechanics are shared: see film.ts. */
-const SVG_NS = 'http://www.w3.org/2000/svg';
 const TAU = Math.PI * 2;
 
 /* Pippy's group sits on the ring floor, at the ball's centre column; these are offsets from there */
@@ -34,12 +33,6 @@ const INTRO_BEAR = { x: 14, y: 534, width: 104, height: 120 };     // Barnaby at
 const SHOW_BEAR = { x: 286, y: 548, width: 92, height: 106 };      // ... and in the front row for the show
 const CONFETTI = ['#ff6f91', '#ffd24a', '#6fd3c8', '#9a8cf0', '#ff9f5a', '#8ee07a'];
 const EASE_OUT_BACK = 'cubic-bezier(.3,1.35,.5,1)';
-
-const svgEl = (tag: string, attrs: Record<string, string | number>): SVGElement => {
-  const e = document.createElementNS(SVG_NS, tag);
-  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
-  return e;
-};
 
 export const ElephantScene = {
   els: {} as Record<string, HTMLElement>, film: late<Film>(),

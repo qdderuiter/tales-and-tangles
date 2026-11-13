@@ -8,7 +8,7 @@ import { Store } from '../state/store.ts';
    title = Village at Dusk (title and every menu), case = Curious Melody (story, puzzles, notebook), evil = Smoky Night Sketch (Barnaby Noir).
    Each track is an <audio> element routed through the Web Audio graph (track gain -> duck gain -> AudioFX.master), so it sits under the
    sound effects, ducks under fanfares and speech, and fades out under a chapter film. Changing screens crossfades. */
-export type TrackKey = 'title' | 'case' | 'evil' | 'oasis' | 'circus' | 'dino' | 'cave';
+export type TrackKey = 'title' | 'case' | 'evil' | 'oasis' | 'circus' | 'dino' | 'cave' | 'island';
 
 /* fallback: the track that plays instead while this one's file is missing (a chapter track can ship later) */
 export const TRACKS: Record<TrackKey, { src: string; bpm: number; fallback?: TrackKey }> = {
@@ -18,6 +18,7 @@ export const TRACKS: Record<TrackKey, { src: string; bpm: number; fallback?: Tra
   oasis: { src: 'music/midnight-oasis.mp3', bpm: 84, fallback: 'case' },     // Chapter 6 (data/chapters.ts: track: 'oasis')
   dino: { src: 'music/curious-whistle.mp3', bpm: 110, fallback: 'case' },      // Chapter 8 (data/chapters.ts: track: 'dino')
   cave: { src: 'music/cave-puzzle.mp3', bpm: 90, fallback: 'case' },          // Chapter 9 (data/chapters.ts: track: 'cave'); the bpm is a guess
+  island: { src: 'music/island-puzzle.mp3', bpm: 100, fallback: 'case' },       // Chapter 10 (data/chapters.ts: track: 'island'); the bpm is a guess
   circus: { src: 'music/big-top.mp3', bpm: 100, fallback: 'case' }          // Chapter 7: not used until public/music/big-top.mp3 exists AND data/chapters.ts sets track: 'circus' on it
 };
 

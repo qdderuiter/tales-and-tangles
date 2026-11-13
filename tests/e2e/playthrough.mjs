@@ -18,7 +18,7 @@
      I  declining Barnaby Noir mid-level: the dark theme stays off and the level carries on
      J  chapter 5, case 1: Pickle's crash-landing film, Pickle speaking with his own portrait, then the whole case
      K  chapter 5, case 3: the whole case, Pickle's lift-off, and the chapter's closing film (an ordinary chapter end: the story goes on)
-     L  the LAST case of the game (chapter 9, case 3): the whole case, "Hear the ending", the last film with The End and the credits
+     L  the LAST case of the game (chapter 10, case 4): the whole case, the rescue, "Hear the ending", the last film with The End and the credits
      M  chapter 6, case 1: Biscuit pops out of the dunes, speaks with his own portrait, then the whole case
      N  chapter 7, case 1: Pippy loses his star ball, speaks with his own portrait, then the whole case
      O  chapter 6, case 3: the whole case, Biscuit's homecoming, and the chapter's closing film (an ordinary chapter end: the story goes on)
@@ -27,6 +27,10 @@
      Q  chapter 8, case 1: the meteor appears over the meadow, Rexy speaks with her own portrait, then the whole case
      R  chapter 8, case 3: the whole case, the stomp-launch that smashes the meteor, and the closing film (an ordinary chapter end: Rocky is next)
      S  chapter 9, case 1: Rocky speaks with his own portrait, then the whole case
+     T  chapter 9, case 3: the whole case and the closing film (an ordinary chapter end: the castaways are next)
+     U  chapter 10, case 1: the plane crash opens it, then the whole case
+     V  chapter 10, case 2: the tiger and Evil Larry's look open it, then Evil Larry speaks with his own portrait
+     W  chapter 10, case 3: Biscuit's dig opens it
 
    Answers (word paths, trail, culprit, item) are read from src/data, so the test follows the content. Anything logged with
    console.error, or any uncaught page error, fails the scenario. Screenshots go to tests/e2e/out/ (git-ignored). */
@@ -183,7 +187,7 @@ async function tapNoirUntil(page, done) {
 }
 
 /* ---------- scenarios ---------- */
-const lv1 = LEVELS[0], lv8 = LEVELS[7], lv11 = LEVELS[10], lv13 = LEVELS[12], lv14 = LEVELS[13], lv16 = LEVELS[15], lv17 = LEVELS[16], lv19 = LEVELS[18], lv20 = LEVELS[19], lv22 = LEVELS[21], lv23 = LEVELS[22];
+const lv1 = LEVELS[0], lv8 = LEVELS[7], lv11 = LEVELS[10], lv13 = LEVELS[12], lv14 = LEVELS[13], lv16 = LEVELS[15], lv17 = LEVELS[16], lv19 = LEVELS[18], lv20 = LEVELS[19], lv22 = LEVELS[21], lv23 = LEVELS[22], lv25 = LEVELS[24], lv26 = LEVELS[25];
 const lvLast = LEVELS[LEVELS.length - 1];                          // the ending always follows the last level, however many there are
 const chLast = CHAPTERS[CHAPTERS.length - 1];
 
@@ -500,6 +504,11 @@ const scenarios = {
     await victory(page, 'Trail Followed!');
     await pressContinue(page);
     await accuse(page, lvLast);
+    await page.waitForSelector('#islandFilm.show');                 // the rescue plays before the victory card
+    await shot('island-rescue');
+    await page.waitForSelector('#ifSkip.on');
+    await page.click('#ifSkip');
+    await page.waitForSelector('#islandFilm:not(.show)');
     await victory(page, 'Case Solved!', 'Hear the ending');
     expect(await page.textContent('#vUnlock'), 'the last case closes the whole story').toBe('Every mystery solvedYou are a true detective!');
     await pressContinue(page);
@@ -515,7 +524,8 @@ const scenarios = {
     expect((await page.textContent('#cfCredits')).includes('Pippy'), 'the credits thank Pippy').toBe(true);
     expect((await page.textContent('#cfCredits')).includes('Rexy'), 'the credits thank Rexy').toBe(true);
     expect((await page.textContent('#cfCredits')).includes('Rocky'), 'the credits thank Rocky').toBe(true);
-    await shot('rocky-film');
+    expect((await page.textContent('#cfCredits')).includes('castaways'), 'the credits thank the castaways').toBe(true);
+    await shot('castaways-film');
     await page.waitForSelector('#cfSkip.on');
     await page.click('#cfSkip');
     await page.waitForSelector('#chapterFilm:not(.show)');
@@ -803,6 +813,119 @@ const scenarios = {
     const save = await readSave(page);
     expect(save.levels[23].solved, 'case 9.1 solved').toBe(true);
     expect(save.unlocked, 'case 9.2 unlocked').toBe(24);
+  },
+
+  async T({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'rocky');
+    await caseButton(page, 25).click();
+    await skipStory(page);                                          // intro
+    await solveWords(page, lv25);
+    await victory(page, 'Clue Found!');
+    await pressContinue(page);
+    await skipStory(page);                                          // bridge
+    await solveTrail(page, lv25);
+    await victory(page, 'Trail Followed!');
+    await pressContinue(page);
+    await accuse(page, lv25);
+    await victory(page, 'Case Solved!', 'Continue the story');
+    expect(await page.textContent('#vUnlock'), 'a chapter end, not the end of the game').toBe('Chapter completeRocky Rebuilds');
+    await pressContinue(page);
+    await onScreen(page, 'story');                                  // outro, then the chapter film: skip until it shows
+    for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
+      await page.evaluate(() => document.getElementById('btnSkip').click());
+      await page.waitForTimeout(200);
+    }
+    await page.waitForSelector('#chapterFilm.show');                // chapter 9 film
+    await page.waitForSelector('#cfCard.on');
+    expect(await page.textContent('#cfKicker'), 'chapter 9 is not the end').toBe('Chapter 9 complete');
+    expect(await page.textContent('#cfTitle'), 'film card title').toBe('Rocky Rebuilds');
+    expect(await page.textContent('#cfNext'), 'the card points to chapter 10').toBe('Next: Chapter 10 · Castaways');
+    await shot('rocky-film');
+    await page.waitForSelector('#cfSkip.on');
+    await page.click('#cfSkip');
+    await page.waitForSelector('#chapterFilm:not(.show)');
+    await onScreen(page, 'map');
+    const save = await readSave(page);
+    expect(save.levels[25].solved, 'case 9.3 solved').toBe(true);
+    expect(save.seen.endings.rocky, 'the ending is marked as seen').toBe(true);
+    expect(save.unlocked, 'case 10.1 unlocked').toBe(26);
+  },
+
+  async U({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'castaways');
+    await caseButton(page, 26).click();
+    await page.waitForSelector('#islandFilm.show');                 // the plane crash, and the case opens
+    await page.waitForSelector('#ifTitle.on');                      // (reduced motion: the finished beach, then the title card)
+    expect(await page.textContent('#ifTitleMain'), 'title card names the chapter').toBe('CASTAWAYS');
+    await shot('island-crash');
+    await page.waitForSelector('#ifSkip.on');
+    await page.click('#ifSkip');
+    await page.waitForSelector('#islandFilm:not(.show)');
+    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.crash === true, Store.KEY);
+    await onScreen(page, 'story');
+    await skipStory(page);                                          // intro
+    await solveWords(page, lv26);
+    await victory(page, 'Clue Found!', 'Follow the trail');
+    await pressContinue(page);
+    await skipStory(page);                                          // bridge
+    await solveTrail(page, lv26);
+    await victory(page, 'Trail Followed!', 'To the suspects');
+    await pressContinue(page);
+    await accuse(page, lv26);
+    await victory(page, 'Case Solved!', 'Continue the story');
+    await pressContinue(page);
+    await skipStory(page);                                          // outro
+    await onScreen(page, 'map');
+    const save = await readSave(page);
+    expect(save.levels[26].solved, 'case 10.1 solved').toBe(true);
+    expect(save.seen.crash, 'the crash is marked as seen').toBe(true);
+    expect(save.unlocked, 'case 10.2 unlocked').toBe(27);
+  },
+
+  async V({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'castaways');
+    await caseButton(page, 27).click();
+    await page.waitForSelector('#islandFilm.show');                 // the tiger ambush, and Evil Larry's look
+    await page.waitForSelector('#ifTitle.on');
+    expect(await page.textContent('#ifTitleMain'), 'title card names the look').toBe('THE LOOK');
+    await shot('island-tiger');
+    await page.waitForSelector('#ifSkip.on');
+    await page.click('#ifSkip');
+    await page.waitForSelector('#islandFilm:not(.show)');
+    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.tiger === true, Store.KEY);
+    await onScreen(page, 'story');
+    for (let i = 0; i < 14 && await page.textContent('#dlgName') !== 'Evil Larry'; i++) {      // tap on to Evil Larry's first line
+      await page.click('#screen-story', { position: { x: 200, y: 300 } });
+      await page.waitForTimeout(300);
+    }
+    expect(await page.textContent('#dlgName'), 'Evil Larry speaks').toBe('Evil Larry');
+    await shot('island-larry-speaks');
+    const save = await readSave(page);
+    expect(save.seen.tiger, 'the tiger scene is marked as seen').toBe(true);
+  },
+
+  async W({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'castaways');
+    await caseButton(page, 28).click();
+    await page.waitForSelector('#islandFilm.show');                 // Biscuit's dig
+    await page.waitForSelector('#ifTitle.on');
+    expect(await page.textContent('#ifTitleMain'), 'title card names the dig').toBe('DIGS IN');
+    await shot('island-dig');
+    await page.waitForSelector('#ifSkip.on');
+    await page.click('#ifSkip');
+    await page.waitForSelector('#islandFilm:not(.show)');
+    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key) || '{}').seen?.dig === true, Store.KEY);
+    await onScreen(page, 'story');
+    const save = await readSave(page);
+    expect(save.seen.dig, 'the dig is marked as seen').toBe(true);
   }
 };
 
@@ -826,7 +949,11 @@ const seeds = {
   P: makeSave(solvedUpTo(18)),
   Q: makeSave(solvedUpTo(19)),
   R: makeSave(solvedUpTo(21)),
-  S: makeSave(solvedUpTo(22))
+  S: makeSave(solvedUpTo(22)),
+  T: makeSave(solvedUpTo(24)),
+  U: makeSave(solvedUpTo(25)),
+  V: makeSave(solvedUpTo(26)),
+  W: makeSave(solvedUpTo(27))
 };
 
 /* ---------- run ---------- */

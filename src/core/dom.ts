@@ -16,3 +16,10 @@ export function fitCanvas(cv: HTMLCanvasElement, w?: number, h?: number) {
   const ctx = cv.getContext('2d') as CanvasRenderingContext2D; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   return { ctx, w, h, dpr };
 }
+
+/* an SVG element with attributes (the cinematic stages are built with it) */
+export const svgEl = (tag: string, attrs: Record<string, string | number>): SVGElement => {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
+  return e;
+};

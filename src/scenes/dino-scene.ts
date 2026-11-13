@@ -2,7 +2,7 @@
 import { Haptics } from '../audio/haptics.ts';
 import { bearMarkup } from '../characters/barnaby-svg.ts';
 import { HERD, boingBall, dinoInner } from '../characters/dino.ts';
-import { $ } from '../core/dom.ts';
+import { $, svgEl } from '../core/dom.ts';
 import { scenes } from '../core/scenes.ts';
 import { REDUCED, late, mulberry32 } from '../core/util.ts';
 import { Store } from '../state/store.ts';
@@ -21,7 +21,6 @@ import { Film } from './film.ts';
 
    Every move is written as "the end state, plus an animation that leads to it" (move()), so a skipped or reduced-motion film simply
    shows the end states. Skippable (the Skip button appears after 1.5 s the first time). The playback mechanics are shared: see film.ts. */
-const SVG_NS = 'http://www.w3.org/2000/svg';
 const TAU = Math.PI * 2;
 
 interface Cam { x: number; y: number; z: number }
@@ -58,11 +57,6 @@ const COLORS = ['#ff6f91', '#ffd24a', '#6fd3c8', '#9a8cf0', '#ff9f5a', '#8ee07a'
 const STAR = 'M0 -9 L2.6 -2.6 L9 0 L2.6 2.6 L0 9 L-2.6 2.6 L-9 0 L-2.6 -2.6Z';
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
-const svgEl = (tag: string, attrs: Record<string, string | number>): SVGElement => {
-  const e = document.createElementNS(SVG_NS, tag);
-  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
-  return e;
-};
 const at = (x: number, y: number) => 'translate(' + r1(x) + 'px,' + r1(y) + 'px)';
 const tr = (n: Name, [x, y, flip]: Spot) => at(x, y) + ' scale(' + flip * SIZE[n] + ',' + SIZE[n] + ')';
 const camT = (c: Cam, d: number) => {

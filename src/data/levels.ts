@@ -66,7 +66,19 @@ const RAW_LEVELS: RawLevel[] = [
   { n: 24, title: 'Brick by Brick', blurb: 'A little stone needs a lot of walls.', theme: 'BRICK', scene: ['#e6c9b0', '#b5805f'],
     words: [['BRICK','10 00 01 02 03'],['BEAMS','25 24 34 35 45'],['BOARD','13 14 04 05 15'],['BUILD','44 43 33 32 42'],['PEBBLE','23 22 12 11 21 20'],['WALL','41 40 30 31']] },
   { n: 25, title: 'Home Sweet Cave', blurb: 'One chimney cap stands between Rocky and a cosy home.', theme: 'CHIMNEY', scene: ['#e9d4b5', '#c79a5d'],
-    words: [['CHIMNEY','20 21 22 32 33 43 42'],['ROOF','25 35 45 44'],['DOOR','34 24 23 13'],['CAVE','41 40 30 31'],['HOME','14 15 05 04'],['RUG','03 02 12'],['BEDS','11 01 00 10']] }
+    words: [['CHIMNEY','20 21 22 32 33 43 42'],['ROOF','25 35 45 44'],['DOOR','34 24 23 13'],['CAVE','41 40 30 31'],['HOME','14 15 05 04'],['RUG','03 02 12'],['BEDS','11 01 00 10']] },
+  { n: 26, title: 'Wreck on the Beach', blurb: 'The plane is down, and the island is very quiet.', theme: 'WRECK', scene: ['#bfe6f2', '#f2d7a0'],
+    introScene: () => scenes.crash!.intro(), sceneId: 'crash',
+    words: [['WRECK','42 43 33 32 22'],['COAST','24 34 44 45 35'],['SMOKE','25 15 14 04 05'],['SANDY','21 31 30 40 41'],['BEACH','00 01 11 10 20'],['STORM','12 02 03 13 23']] },
+  { n: 27, title: 'Stripes in the Jungle', blurb: 'Something orange is moving in the bushes.', theme: 'TIGER', scene: ['#cfe8b0', '#6fa35a'],
+    introScene: () => scenes.tiger!.intro(), sceneId: 'tiger',
+    words: [['TIGER','41 40 30 31 21'],['ROARS','24 14 15 05 04'],['CLAWS','20 10 00 01 11'],['VINES','03 02 12 13 23'],['SCARE','34 44 45 35 25'],['BUSHY','22 32 33 43 42']] },
+  { n: 28, title: 'Biscuit Digs In', blurb: 'A very small worm has a very big idea.', theme: 'TUNNEL', scene: ['#f0d9a8', '#c79a5d'],
+    introScene: () => scenes.dig!.intro(), sceneId: 'dig',
+    words: [['TUNNEL','42 43 33 32 22 23'],['HOLE','13 12 02 03'],['SPADE','04 05 15 14 24'],['STEPS','21 31 30 40 41'],['SHAFT','25 35 45 44 34'],['DIRTY','00 01 11 10 20']] },
+  { n: 29, title: 'Signal Fire', blurb: 'One last spark between the castaways and home.', theme: 'SIGNAL', scene: ['#ffd9a8', '#e8837a'],
+    caughtScene: () => scenes.crash!.caught(),                                               // the rescue (a flare, a ship's light) follows the solved case
+    words: [['SIGNAL','00 01 11 10 20 21'],['FLAME','12 22 23 13 14'],['LIGHT','45 35 34 24 25'],['SMOKE','42 32 33 43 44'],['FLARE','15 05 04 03 02'],['FIRE','31 30 40 41']] }
 ];
 
 /* parse each word path, and attach the level's trail, evil trail, case and hints (all indexed by position) */

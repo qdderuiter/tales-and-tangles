@@ -24,7 +24,7 @@ export interface SaveData {
   daily: { lastDate: string | null; streak: number; best: number; results: Record<string, DailyResult> };
   perfect: { streak: number };
   evil: { cleared: Record<string, boolean> };
-  seen: { larry: boolean; pup: boolean; worm: boolean; elephant: boolean; dino: boolean; endings: Record<string, boolean> };      // endings: chapter ids whose closing film has played
+  seen: { larry: boolean; pup: boolean; worm: boolean; elephant: boolean; dino: boolean; crash: boolean; tiger: boolean; dig: boolean; endings: Record<string, boolean> };      // endings: chapter ids whose closing film has played
   badges: Record<string, string>;
   bonusWords: string[];
 }
@@ -94,6 +94,9 @@ export function sanitize(saved: Json | null, d: SaveData): SaveData {
     d.seen.worm = !!saved.seen.worm;
     d.seen.elephant = !!saved.seen.elephant;
     d.seen.dino = !!saved.seen.dino;
+    d.seen.crash = !!saved.seen.crash;
+    d.seen.tiger = !!saved.seen.tiger;
+    d.seen.dig = !!saved.seen.dig;
     const e = saved.seen.endings;
     if (e && typeof e === 'object') CHAPTERS.forEach(c => { if (e[c.id] === true) d.seen.endings[c.id] = true; });   // only chapters that still exist
   }

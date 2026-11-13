@@ -13,7 +13,7 @@ import { animateSpring } from './motion.ts';
 import type { SpringHandle } from './motion.ts';
 import { UI } from './ui.ts';
 
-const SCENE_NAME: Record<SceneId, string> = { larry: 'Larry', pup: 'Pickle', worm: 'Biscuit', elephant: 'Pippy', dino: 'Rexy' };
+const SCENE_NAME: Record<SceneId, string> = { larry: 'Larry', pup: 'Pickle', worm: 'Biscuit', elephant: 'Pippy', dino: 'Rexy', crash: 'The crash', tiger: 'The tiger', dig: 'The dig' };
 
 /* ---------- the chapter view: one chapter's cases, as a sheet that grows out of its card ----------
    `p` is how open the sheet is, 0 (it is the card) to 1 (full screen). Everything on screen is a function of p (apply), so the same

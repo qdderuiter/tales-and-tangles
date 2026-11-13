@@ -81,6 +81,13 @@ export const SCORES: Record<string, Score> = {
     pad: { type: 'triangle', lp: 1200, vol: 0.055 },
     melody: [[15, null, 12, null, 14, null, 15, null], [12, null, 15, null, 17, null, 15, null], [19, null, 17, null, 15, 12, 14, null], [14, null, 11, null, 12, null, null, null]],
     bell: { type: 'sine', vol: 0.09, dur: 0.9 }
+  },
+  /* Castaways: warm and rolling, marimba-like bells over a sunny pad (C - F - Am - G) */
+  castaways: {
+    bpm: 96, chords: [[0, 4, 7, 12], [-7, -3, 0, 5], [-3, 0, 4, 9], [-5, -1, 2, 7]],
+    pad: { type: 'triangle', lp: 1400, vol: 0.05 },
+    melody: [[16, null, 19, null, 21, 19, 16, null], [17, null, 21, null, 24, 21, 17, null], [16, null, 19, null, 21, null, 19, 16], [14, null, 19, 17, 14, null, 12, null]],
+    bell: { type: 'triangle', vol: 0.085, dur: 0.5 }
   }
 };
 
@@ -481,4 +488,65 @@ export const FilmScore = {
         break;
     }
   }
+};
+
+/* ---------- the island cinematics (scenes/island-scene.ts): the crash, the tiger and Evil Larry's look, Biscuit's dig, and the rescue ----------
+   A low, hopeful pad under each scene (the only long-lived sound), then one-shot hits timed by the scene: a plane's whine and falling slide,
+   the crash, surf, a stalking tiger, a roar, the thunder-and-flash of Larry's look, a yelp, digging, a cave-in, and the rescue horn. */
+export const IslandScore = {
+  ...padControl([[-12, 'sine', 1], [-5, 'triangle', 0.6], [4, 'sine', 0.45], [9, 'sine', 0.3]], { lp: 800, vol: 0.055, rise: 2.5 }),
+
+  /* the engines of a little plane: a steady drone that wobbles */
+  engine() { [0, 0.5, 1].forEach(t => AudioFX.note(96 + t * 6, { t, dur: 0.7, vol: 0.05, type: 'sawtooth', lp: 420 })); AudioFX.noise(1.6, 900, 0.03); },
+  /* one sputtering cough */
+  cough() { [0, 0.22, 0.5].forEach((t, i) => AudioFX.note(130 - i * 22, { t, dur: 0.18, vol: 0.07, type: 'sawtooth', slideTo: 70, lp: 380 })); AudioFX.noise(0.5, 700, 0.06); },
+  /* falling: a long whistle down */
+  fall() { AudioFX.note(1500, { dur: 2.4, vol: 0.05, type: 'sine', slideTo: 180, lp: 3000 }); AudioFX.noise(2.2, 1800, 0.05, 0.1); },
+  /* the crash: a heavy thud and a spray of rubble */
+  crash() {
+    AudioFX.note(95, { dur: 0.55, vol: 0.2, type: 'sine', slideTo: 38, lp: 420 }); AudioFX.noise(1.2, 900, 0.18); AudioFX.noise(0.9, 3000, 0.07, 0.05);
+    [0.35, 0.55, 0.9].forEach(t => AudioFX.note(520, { t, dur: 0.1, vol: 0.03, type: 'triangle', slideTo: 220 }));
+  },
+  /* surf washing up and back */
+  surf() { AudioFX.noise(3.2, 700, 0.07); AudioFX.noise(2.8, 2400, 0.03, 0.3); },
+  /* a rustle in the leaves */
+  rustle() { [0, 0.18, 0.4].forEach(t => AudioFX.noise(0.22, 3200, 0.05, t)); },
+  /* soft padded paw steps */
+  steps(n = 4) { for (let i = 0; i < n; i++) AudioFX.note(78, { t: i * 0.42, dur: 0.16, vol: 0.07, type: 'sine', slideTo: 52, lp: 260 }); },
+  /* a low growl */
+  growl() { AudioFX.note(70, { dur: 1.3, vol: 0.09, type: 'sawtooth', slideTo: 56, lp: 300, attack: 0.18 }); AudioFX.note(72, { t: 0.05, dur: 1.2, vol: 0.05, type: 'square', slideTo: 52, lp: 260 }); },
+  /* the roar: a big rough blast */
+  roar() {
+    AudioFX.note(150, { dur: 1.1, vol: 0.12, type: 'sawtooth', slideTo: 82, lp: 900, attack: 0.05 }); AudioFX.note(110, { t: 0.04, dur: 1.0, vol: 0.09, type: 'square', slideTo: 60, lp: 700 });
+    AudioFX.noise(1.0, 1400, 0.1);
+  },
+  /* the pounce: a quick whoosh */
+  pounce() { AudioFX.noise(0.5, 1800, 0.1); AudioFX.note(220, { dur: 0.4, vol: 0.05, type: 'triangle', slideTo: 520 }); },
+  /* a tiny squeak of fright */
+  eep() { AudioFX.note(950, { dur: 0.1, vol: 0.07, type: 'sine', slideTo: 1400, attack: 0.004 }); AudioFX.note(1100, { t: 0.14, dur: 0.12, vol: 0.07, type: 'sine', slideTo: 1600, attack: 0.004 }); },
+  /* Evil Larry's look: a thunderclap and a falling minor drone as his eyes blaze */
+  menace() {
+    AudioFX.noise(1.6, 500, 0.2); AudioFX.note(58, { dur: 1.8, vol: 0.14, type: 'sawtooth', slideTo: 44, lp: 260, attack: 0.04 });
+    AudioFX.note(hz(-3), { t: 0.1, dur: 1.6, vol: 0.06, type: 'triangle', slideTo: hz(-9), lp: 700 }); AudioFX.note(hz(-9), { t: 0.1, dur: 1.6, vol: 0.05, type: 'square', lp: 500 });
+  },
+  /* a lightning crack */
+  zap() { AudioFX.noise(0.5, 4200, 0.14); AudioFX.note(2200, { dur: 0.18, vol: 0.04, type: 'sawtooth', slideTo: 300 }); },
+  /* the tiger's yelp as it flees */
+  yelp() { AudioFX.note(620, { dur: 0.22, vol: 0.1, type: 'triangle', slideTo: 1050, attack: 0.01 }); AudioFX.note(900, { t: 0.2, dur: 0.3, vol: 0.09, type: 'triangle', slideTo: 380 }); },
+  /* a little victory sting for the three heroes */
+  hero() { [0, 4, 7, 12].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.09, dur: 0.9, vol: 0.07, type: 'triangle', attack: 0.02 })); sparkleRun(0.45, 0.07, 0.07); },
+  /* Biscuit's dive and tunnelling, as in the desert */
+  dive() { AudioFX.note(420, { dur: 0.22, vol: 0.08, type: 'triangle', slideTo: 150, lp: 1400 }); AudioFX.noise(0.4, 1800, 0.06, 0.05); },
+  dig() { [0, 0.28, 0.52, 0.9, 1.15, 1.5, 1.8].forEach(t => { AudioFX.note(105, { t, dur: 0.2, vol: 0.06, type: 'sine', slideTo: 70, lp: 300 }); AudioFX.noise(0.2, 700, 0.04, t); }); },
+  /* the ground gives way */
+  cave() { AudioFX.noise(1.6, 450, 0.18); AudioFX.note(82, { dur: 1.2, vol: 0.14, type: 'sine', slideTo: 36, lp: 300 }); [0.5, 0.8, 1.2].forEach(t => AudioFX.note(300, { t, dur: 0.1, vol: 0.03, type: 'triangle', slideTo: 120 })); },
+  /* tumbling down: three falling squeaks */
+  tumble() { [0, 0.16, 0.34].forEach((t, i) => AudioFX.note(780 - i * 120, { t, dur: 0.3, vol: 0.06, type: 'triangle', slideTo: 260 })); },
+  /* a gentle thud and dust */
+  thud() { AudioFX.note(90, { dur: 0.3, vol: 0.12, type: 'sine', slideTo: 45, lp: 280 }); AudioFX.noise(0.5, 900, 0.07); },
+  /* a ship's far-off horn: two low, warm notes */
+  horn() { AudioFX.note(hz(-17), { dur: 1.6, vol: 0.09, type: 'sawtooth', lp: 380, attack: 0.1 }); AudioFX.note(hz(-12), { t: 0.5, dur: 2.0, vol: 0.09, type: 'sawtooth', lp: 380, attack: 0.1 }); },
+  /* the flare shoots up, and bursts */
+  flare() { AudioFX.noise(0.9, 2600, 0.08); AudioFX.note(300, { dur: 0.9, vol: 0.05, type: 'triangle', slideTo: 1400 }); sparkleRun(0.9, 0.06, 0.08); },
+  title() { [0, 4, 7, 12, 16].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.06, dur: 2.4, vol: 0.06, type: 'triangle', attack: 0.03 })); sparkleRun(0.5, 0.08, 0.08); }
 };
