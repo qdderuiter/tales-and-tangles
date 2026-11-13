@@ -60,7 +60,13 @@ const RAW_LEVELS: RawLevel[] = [
     words: [['METEOR','41 40 30 31 21 20'],['CRATER','11 12 02 03 13 14'],['SPARKS','35 45 44 34 24 23'],['FLAME','22 32 33 43 42'],['DUST','04 05 15 25'],['SKY','10 00 01']] },
   { n: 22, title: 'The Great Spring Plank', blurb: 'The last piece of the plan has gone astray.', theme: 'LAUNCH', scene: ['#d9d2f5', '#9aa7e6'],
     caughtScene: () => scenes.dino!.caught(),                                                // the stomp-launch that smashes the meteor follows the solved case
-    words: [['LAUNCH','00 10 11 21 20 30'],['STARS','05 15 25 24 14'],['STOMP','43 44 45 35 34'],['SPRING','04 03 13 12 02 01'],['SWING','40 41 31 32 42'],['SUN','33 23 22']] }
+    words: [['LAUNCH','00 10 11 21 20 30'],['STARS','05 15 25 24 14'],['STOMP','43 44 45 35 34'],['SPRING','04 03 13 12 02 01'],['SWING','40 41 31 32 42'],['SUN','33 23 22']] },
+  { n: 23, title: 'The Rumbling Deep', blurb: 'The ground shakes, and something far below is drilling.', theme: 'DRILL', scene: ['#cdbfae', '#8a7a6a'],
+    words: [['DRILL','35 25 24 14 15'],['DUSTY','43 33 34 44 45'],['DEPTH','02 12 13 23 22'],['DEBRIS','21 20 10 11 01 00'],['TUNNEL','32 42 41 40 30 31'],['DIG','05 04 03']] },
+  { n: 24, title: 'Brick by Brick', blurb: 'A little stone needs a lot of walls.', theme: 'BRICK', scene: ['#e6c9b0', '#b5805f'],
+    words: [['BRICK','10 00 01 02 03'],['BEAMS','25 24 34 35 45'],['BOARD','13 14 04 05 15'],['BUILD','44 43 33 32 42'],['PEBBLE','23 22 12 11 21 20'],['WALL','41 40 30 31']] },
+  { n: 25, title: 'Home Sweet Cave', blurb: 'One chimney cap stands between Rocky and a cosy home.', theme: 'CHIMNEY', scene: ['#e9d4b5', '#c79a5d'],
+    words: [['CHIMNEY','20 21 22 32 33 43 42'],['ROOF','25 35 45 44'],['DOOR','34 24 23 13'],['CAVE','41 40 30 31'],['HOME','14 15 05 04'],['RUG','03 02 12'],['BEDS','11 01 00 10']] }
 ];
 
 /* parse each word path, and attach the level's trail, evil trail, case and hints (all indexed by position) */

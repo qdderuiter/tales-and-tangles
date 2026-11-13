@@ -401,6 +401,71 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
       { who: 'Rexy', e: 'proud', t: 'Barnaby, will you help us with the launch? I have a plan.' },
       { e: 'happy', t: 'I would not miss it for all the honey in Honeywick. Places, everyone!' }
     ]
+  },
+  23: {
+    intro: [
+      { e: 'surprised', t: 'Did you feel that, partner? The whole of Honeywick just wobbled. Jars rattled, teacups danced, and that is the fifth earthquake this week.' },
+      { e: 'thinking', t: 'And look, a hole in the meadow, deep and round, with a faint hum coming up out of it. Something is drilling down there.' },
+      { e: 'neutral', t: 'Down we go. A lift shaft, a mine cart and a crew in hard hats. They are drilling straight down to the core of the earth!' },
+      { who: 'Rocky', e: 'sad', t: 'Hm? Hello? Is that the rumbling again? I was sound asleep, and then everything went bump, and my house fell down.' },
+      { e: 'surprised', t: 'A little stone, halfway down! And a heap of rubble where a house used to be.' },
+      { who: 'Rocky', e: 'shy', t: 'I am Rocky. That was my cosy home. Walls, roof, everything. And now my little brass doorbell is gone too. It was the only thing left.' },
+      { e: 'happy', t: 'Then we will find your doorbell, and after that we will build you a better house than before. Five crew members, five spots around the drill. Somebody knows where it went.',
+        choices: [
+          { label: 'We will help, Rocky!', reply: { e: 'happy', t: 'That is the spirit. Trace each word, and leave no letter behind.' } },
+          { label: 'Any tips for down here?', gift: true, reply: { e: 'proud', t: 'Of course. Take my spare notebook. It holds one free hint, glittering like a crystal.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Wally Wombat! He was on the lift shaft, with his brass whistle. He thought Rocky\'s little doorbell was the shift signal, and he rang it every time the crew took a break.' },
+      { e: 'sad', t: 'Wally says: I did not know it belonged to anyone! It sounded so cheerful. I am so sorry.' },
+      { who: 'Rocky', e: 'happy', t: 'You can ring it a little, if you bring it back. It only wants to be rung on a home.' },
+      { e: 'thinking', t: 'And Rocky, you have given me an idea. I will need a pile of good bricks, and a great many hands. Where does a stone find walls, partner?' },
+      { who: 'Rocky', e: 'proud', t: 'Down in the foundation pit, maybe? Come on, I will show you the way.' }
+    ]
+  },
+  24: {
+    intro: [
+      { who: 'Rocky', e: 'shy', t: 'Here is where my house used to be. Right here, with the little round window. I can still see the shape of it.' },
+      { e: 'thinking', t: 'We will start with the foundation, then the walls. Brick by brick, beam by beam.' },
+      { who: 'Rocky', e: 'surprised', t: 'But the bricks! I saved a whole pile of good red ones, and now the pile has vanished too!' },
+      { e: 'neutral', t: 'Another puzzle, partner. Five crew members around the pit, and everyone is wearing the same dusty smile. Let us find out who was where.' },
+      { e: 'proud', t: 'One more thing. Every time the drill spins, the whole cave shakes. I do not think the earthquakes are an accident.',
+        choices: [
+          { label: 'Brick by brick!', reply: { e: 'happy', t: 'Brick by brick. Trace the words, and leave no letter behind.' } },
+          { label: 'A hint for the pit, please?', gift: true, reply: { e: 'proud', t: 'Of course. One free hint, wrapped in a little red brick.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Dottie Dormouse! She was up on the scaffold with her wheelbarrow, hauling the bricks to prop up the drill, because it was wobbling so badly.' },
+      { e: 'sad', t: 'Dottie says: The drill shakes everything, so I thought it needed a strong stand. I did not know they were Rocky\'s. I am so sorry.' },
+      { who: 'Rocky', e: 'surprised', t: 'The drill shakes everything? Is it the drill that makes the earthquakes?' },
+      { e: 'thinking', t: 'Every deep hole in the world makes the ground tremble, Rocky. So the crew is not just in the way. They are the reason your house fell down.' },
+      { who: 'Rocky', e: 'sad', t: 'Oh. Then they have to stop, before everyone else loses a home too.' },
+      { e: 'proud', t: 'We will talk to the foreman. But first, the roof, the door and the chimney. Let us finish what we started.' }
+    ]
+  },
+  25: {
+    intro: [
+      { e: 'happy', t: 'Look at those walls! Straight and strong, and a round window facing the crystal cave. Rocky, it is beginning to look like a home.' },
+      { who: 'Rocky', e: 'proud', t: 'Hee hee! A roof, a door, a warm bed. All I need now is the chimney cap, and it has vanished!' },
+      { e: 'thinking', t: 'And the crew is packing up a bigger drill for one last dive toward the core. If we want Rocky to sleep soundly tonight, we need that cap, and we need a word with the foreman.' },
+      { e: 'neutral', t: 'Five crew members, five spots around the house, and one tiny chimney cap. Shall we?' },
+      { e: 'proud', t: 'The very last case. Let us finish the house, and end the earthquakes.',
+        choices: [
+          { label: 'For Rocky\'s home!', reply: { e: 'happy', t: 'For Rocky\'s home, and for every little stone that wants a quiet night.' } },
+          { label: 'One last hint, please?', gift: true, reply: { e: 'proud', t: 'For the grand finale? Of course. One free hint, glowing like lantern light.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Mack Mongoose, the foreman! He was in the parlour, holding a roof tile, and the chimney cap sat on his desk like a paperweight.' },
+      { e: 'sad', t: 'Mack says: I thought the cap would make a fine lid for the core. It is so shiny. I am so sorry.' },
+      { e: 'thinking', t: 'Mack, the core of the earth is a ball of fire, and every hole you drill makes the ground shake. Look at what the shaking did to Rocky\'s home.' },
+      { who: 'Rocky', e: 'shy', t: 'I only wanted a quiet place to sleep. I did not mean to make anyone sad.' },
+      { e: 'surprised', t: 'Mack takes off his hard hat. He says: Then we will pull up the drill, fill in the shaft, and go and dig somewhere with nobody home. Sorry, little Rocky.' },
+      { who: 'Rocky', e: 'happy', t: 'The cap goes on the chimney, the door is shut, and the doorbell goes ding! I am home! Thank you, Barnaby!' },
+      { e: 'happy', t: 'Places, everyone. The drill goes up, the walls stay down, and the earth goes back to sleep.' }
+    ]
   }
 };
 
@@ -449,7 +514,13 @@ export const STORY_EXTRA: Record<number, Pick<Record<StoryPart, RawLine[]>, 'bri
   21: { bridge: [{ e: 'surprised', t: 'METEOR dust! It is already falling on the meadow. Now follow the bounce marks: every tile, numbers in order.' }],
         caseIntro: [{ e: 'neutral', t: 'Who was by the ridge, and who held what? The neighbours matter tonight. Trust the notebook, partner.' }] },
   22: { bridge: [{ e: 'proud', t: 'LAUNCH! The countdown is scribbled right here. Now follow the glitter, tile by tile, numbers in order.' }],
-        caseIntro: [{ e: 'proud', t: 'The very last case. Five friends, five spots around the meadow, and one plank. Trust the notebook, partner.' }] }
+        caseIntro: [{ e: 'proud', t: 'The very last case. Five friends, five spots around the meadow, and one plank. Trust the notebook, partner.' }] },
+  23: { bridge: [{ e: 'surprised', t: 'DRILL! So that deep hum was the crew. Now follow the shaking: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'thinking', t: 'Five crew members, five spots around the drill. Somebody was near the lift shaft when the doorbell rang. Cross people off until one story fits.' }] },
+  24: { bridge: [{ e: 'proud', t: 'BRICK! Red dust everywhere. Now follow the mortar trail, tile by tile, numbers in order.' }],
+        caseIntro: [{ e: 'neutral', t: 'Who was by the scaffold, and who held what? The neighbours matter down here. Trust the notebook, partner.' }] },
+  25: { bridge: [{ e: 'happy', t: 'CHIMNEY! There is soot on the floor. Now follow the glint through the window: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'proud', t: 'The very last case. Five friends, five spots around Rocky\'s house, and one little chimney cap. Trust the notebook, partner.' }] }
 };
 
 export const REACT = {

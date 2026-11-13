@@ -1,0 +1,28 @@
+/* ---------- Rocky, the very cute stone: portrait (characters/rocky.ts) and the underground film ---------- */
+.story-rocky{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 250px);width:min(54%,240px);z-index:1;opacity:0;pointer-events:none;transition:opacity .25s}
+.story-rocky.on{opacity:1}
+.dlg-name.rocky{background:#8c847b;color:#fffaf2}
+.story-rocky .rocky{width:100%;line-height:0}   /* the portrait wrapper only: the name tag shares the class "rocky" and must not stretch */
+.rk-svg{width:100%;height:auto;overflow:visible;display:block;transform-origin:100px 220px;animation:breathe 3.4s ease-in-out infinite}
+.rk-body,.rk-eyes,.rk-moss,.rk-arm,.rk-face{transform-box:fill-box}
+.rk-moss{transform-origin:50% 100%;animation:rkMoss 2.8s ease-in-out infinite}
+.rk-arm.l{transform-origin:100% 0;animation:rkArm 1.8s ease-in-out infinite}
+.rk-arm.r{transform-origin:0 0;animation:rkArm 1.8s ease-in-out infinite reverse}
+.rk-eyes{transform-origin:center;animation:rkBlink 4.8s infinite;transition:transform .15s}
+.rk-brow,.rk-mouth.frown{opacity:0;transition:opacity .15s}
+.rk-blush{transition:opacity .2s}
+.rocky.b-shy .rk-blush{opacity:.95}
+.rocky.b-shy .rk-face{transform:translateY(2px)}
+.rocky.b-sad .rk-mouth.smile,.rocky.b-surprised .rk-mouth.smile{opacity:0}
+.rocky.b-sad .rk-mouth.frown,.rocky.b-sad .rk-brow{opacity:1}
+.rocky.b-sad .rk-moss{animation:none;transform:rotate(-12deg)}
+.rocky.b-sad .rk-svg{animation:none;transform:translateY(4px) scaleY(.97)}
+.rocky.b-surprised .rk-eyes{transform:scale(1.25);animation:none}
+.rocky.b-surprised .rk-svg{animation:none;transform:translateY(-5px)}
+.rocky.b-proud .rk-svg{animation:none;transform:translateY(-3px) scale(1.03)}
+.rocky.b-proud .rk-arm{animation:none;transform:rotate(-28deg)}
+.rocky.b-wiggle .rk-svg{animation:rkWiggle .5s ease-in-out infinite}
+@keyframes rkMoss{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
+@keyframes rkArm{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(8deg)}}
+@keyframes rkBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes rkWiggle{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateY(-4px)}}

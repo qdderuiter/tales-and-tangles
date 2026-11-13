@@ -18,13 +18,15 @@
      I  declining Barnaby Noir mid-level: the dark theme stays off and the level carries on
      J  chapter 5, case 1: Pickle's crash-landing film, Pickle speaking with his own portrait, then the whole case
      K  chapter 5, case 3: the whole case, Pickle's lift-off, and the chapter's closing film (an ordinary chapter end: the story goes on)
-     L  the LAST case of the game (chapter 8, case 3): the whole case, the stomp-launch that smashes the meteor, "Hear the ending", the last film with The End and the credits
+     L  the LAST case of the game (chapter 9, case 3): the whole case, "Hear the ending", the last film with The End and the credits
      M  chapter 6, case 1: Biscuit pops out of the dunes, speaks with his own portrait, then the whole case
      N  chapter 7, case 1: Pippy loses his star ball, speaks with his own portrait, then the whole case
      O  chapter 6, case 3: the whole case, Biscuit's homecoming, and the chapter's closing film (an ordinary chapter end: the story goes on)
 
      P  chapter 7, case 3: the whole case, Pippy's show, and the chapter's closing film (an ordinary chapter end: the dinos are next)
      Q  chapter 8, case 1: the meteor appears over the meadow, Rexy speaks with her own portrait, then the whole case
+     R  chapter 8, case 3: the whole case, the stomp-launch that smashes the meteor, and the closing film (an ordinary chapter end: Rocky is next)
+     S  chapter 9, case 1: Rocky speaks with his own portrait, then the whole case
 
    Answers (word paths, trail, culprit, item) are read from src/data, so the test follows the content. Anything logged with
    console.error, or any uncaught page error, fails the scenario. Screenshots go to tests/e2e/out/ (git-ignored). */
@@ -181,7 +183,7 @@ async function tapNoirUntil(page, done) {
 }
 
 /* ---------- scenarios ---------- */
-const lv1 = LEVELS[0], lv8 = LEVELS[7], lv11 = LEVELS[10], lv13 = LEVELS[12], lv14 = LEVELS[13], lv16 = LEVELS[15], lv17 = LEVELS[16], lv19 = LEVELS[18], lv20 = LEVELS[19];
+const lv1 = LEVELS[0], lv8 = LEVELS[7], lv11 = LEVELS[10], lv13 = LEVELS[12], lv14 = LEVELS[13], lv16 = LEVELS[15], lv17 = LEVELS[16], lv19 = LEVELS[18], lv20 = LEVELS[19], lv22 = LEVELS[21], lv23 = LEVELS[22];
 const lvLast = LEVELS[LEVELS.length - 1];                          // the ending always follows the last level, however many there are
 const chLast = CHAPTERS[CHAPTERS.length - 1];
 
@@ -498,11 +500,6 @@ const scenarios = {
     await victory(page, 'Trail Followed!');
     await pressContinue(page);
     await accuse(page, lvLast);
-    await page.waitForSelector('#dinoFilm.show');               // the stomp-launch plays before the victory card
-    await shot('dino-finale');
-    await page.waitForSelector('#dfSkip.on');
-    await page.click('#dfSkip');
-    await page.waitForSelector('#dinoFilm:not(.show)');
     await victory(page, 'Case Solved!', 'Hear the ending');
     expect(await page.textContent('#vUnlock'), 'the last case closes the whole story').toBe('Every mystery solvedYou are a true detective!');
     await pressContinue(page);
@@ -517,7 +514,8 @@ const scenarios = {
     expect(await page.textContent('#cfTitle'), 'film card title').toBe(chLast.title);
     expect((await page.textContent('#cfCredits')).includes('Pippy'), 'the credits thank Pippy').toBe(true);
     expect((await page.textContent('#cfCredits')).includes('Rexy'), 'the credits thank Rexy').toBe(true);
-    await shot('dino-film');
+    expect((await page.textContent('#cfCredits')).includes('Rocky'), 'the credits thank Rocky').toBe(true);
+    await shot('rocky-film');
     await page.waitForSelector('#cfSkip.on');
     await page.click('#cfSkip');
     await page.waitForSelector('#chapterFilm:not(.show)');
@@ -730,6 +728,81 @@ const scenarios = {
     expect(save.levels[19].solved, 'case 7.3 solved').toBe(true);
     expect(save.seen.endings.circus, 'the ending is marked as seen').toBe(true);
     expect(save.unlocked, 'case 8.1 unlocked').toBe(20);
+  },
+
+  async R({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'dino');
+    await caseButton(page, 22).click();
+    await skipStory(page);                                          // intro
+    await solveWords(page, lv22);
+    await victory(page, 'Clue Found!');
+    await pressContinue(page);
+    await skipStory(page);                                          // bridge
+    await solveTrail(page, lv22);
+    await victory(page, 'Trail Followed!');
+    await pressContinue(page);
+    await accuse(page, lv22);
+    await page.waitForSelector('#dinoFilm.show');                   // the stomp-launch plays before the victory card
+    await shot('dino-finale');
+    await page.waitForSelector('#dfSkip.on');
+    await page.click('#dfSkip');
+    await page.waitForSelector('#dinoFilm:not(.show)');
+    await victory(page, 'Case Solved!', 'Continue the story');
+    expect(await page.textContent('#vUnlock'), 'a chapter end, not the end of the game').toBe('Chapter completeDino Strikes Back');
+    await pressContinue(page);
+    await onScreen(page, 'story');                                  // outro, then the chapter film: skip until it shows
+    for (let i = 0; i < 40 && !await page.locator('#chapterFilm.show').count(); i++) {
+      await page.evaluate(() => document.getElementById('btnSkip').click());
+      await page.waitForTimeout(200);
+    }
+    await page.waitForSelector('#chapterFilm.show');                // chapter 8 film
+    await page.waitForSelector('#cfCard.on');
+    expect(await page.textContent('#cfKicker'), 'chapter 8 is not the end').toBe('Chapter 8 complete');
+    expect(await page.textContent('#cfTitle'), 'film card title').toBe('Dino Strikes Back');
+    expect(await page.textContent('#cfNext'), 'the card points to chapter 9').toBe('Next: Chapter 9 · Rocky Rebuilds');
+    await shot('dino-film');
+    await page.waitForSelector('#cfSkip.on');
+    await page.click('#cfSkip');
+    await page.waitForSelector('#chapterFilm:not(.show)');
+    await onScreen(page, 'map');
+    const save = await readSave(page);
+    expect(save.levels[22].solved, 'case 8.3 solved').toBe(true);
+    expect(save.seen.endings.dino, 'the ending is marked as seen').toBe(true);
+    expect(save.unlocked, 'case 9.1 unlocked').toBe(23);
+  },
+
+  async S({ page, shot }) {
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    await openChapter(page, 'rocky');
+    await caseButton(page, 23).click();
+    await onScreen(page, 'story');
+    for (let i = 0; i < 14 && await page.textContent('#dlgName') !== 'Rocky'; i++) {      // tap on to Rocky first line
+      await page.click('#screen-story', { position: { x: 200, y: 300 } });
+      await page.waitForTimeout(300);
+    }
+    expect(await page.textContent('#dlgName'), 'Rocky speaks').toBe('Rocky');
+    expect(await page.evaluate(() => document.getElementById('storyRocky').classList.contains('on')), 'Rocky portrait is up').toBe(true);
+    expect(await page.evaluate(() => document.getElementById('storyBear').classList.contains('away')), 'Barnaby steps aside').toBe(true);
+    await shot('rocky-speaks');
+    await skipStory(page);                                          // intro
+    await solveWords(page, lv23);
+    await victory(page, 'Clue Found!', 'Follow the trail');
+    await pressContinue(page);
+    await skipStory(page);                                          // bridge
+    await solveTrail(page, lv23);
+    await victory(page, 'Trail Followed!', 'To the suspects');
+    await pressContinue(page);
+    await accuse(page, lv23);
+    await victory(page, 'Case Solved!', 'Continue the story');
+    await pressContinue(page);
+    await skipStory(page);                                          // outro
+    await onScreen(page, 'map');
+    const save = await readSave(page);
+    expect(save.levels[23].solved, 'case 9.1 solved').toBe(true);
+    expect(save.unlocked, 'case 9.2 unlocked').toBe(24);
   }
 };
 
@@ -751,7 +824,9 @@ const seeds = {
   N: makeSave(solvedUpTo(16)),
   O: makeSave(solvedUpTo(15)),
   P: makeSave(solvedUpTo(18)),
-  Q: makeSave(solvedUpTo(19))
+  Q: makeSave(solvedUpTo(19)),
+  R: makeSave(solvedUpTo(21)),
+  S: makeSave(solvedUpTo(22))
 };
 
 /* ---------- run ---------- */

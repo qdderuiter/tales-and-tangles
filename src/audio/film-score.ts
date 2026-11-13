@@ -74,6 +74,13 @@ export const SCORES: Record<string, Score> = {
     pad: { type: 'triangle', lp: 1700, vol: 0.05 },
     melody: [[12, null, 16, 19, 16, null, 12, null], [9, null, 12, 16, 12, null, 9, null], [5, null, 9, 12, 9, 12, 17, null], [7, 11, 14, null, 19, null, 14, null]],
     bell: { type: 'triangle', vol: 0.085, dur: 0.45 }
+  },
+  /* Rocky Rebuilds: a slow, warm cave lullaby, soft bells over a low pad (Cm - Ab - Eb - G) */
+  rocky: {
+    bpm: 78, chords: [[0, 3, 7, 12], [-4, 0, 3, 8], [-9, -5, -2, 3], [-5, -1, 2, 7]],
+    pad: { type: 'triangle', lp: 1200, vol: 0.055 },
+    melody: [[15, null, 12, null, 14, null, 15, null], [12, null, 15, null, 17, null, 15, null], [19, null, 17, null, 15, 12, 14, null], [14, null, 11, null, 12, null, null, null]],
+    bell: { type: 'sine', vol: 0.09, dur: 0.9 }
   }
 };
 

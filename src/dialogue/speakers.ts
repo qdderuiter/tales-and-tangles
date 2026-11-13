@@ -18,7 +18,8 @@ export const SPEAKERS: Record<string, { nameClass: string; portrait?: string }> 
   'Pickle': { nameClass: 'pup', portrait: 'pup' },
   'Biscuit': { nameClass: 'worm', portrait: 'worm' },
   'Pippy': { nameClass: 'elephant', portrait: 'elephant' },
-  'Rexy': { nameClass: 'dino', portrait: 'dino' }
+  'Rexy': { nameClass: 'dino', portrait: 'dino' },
+  'Rocky': { nameClass: 'rocky', portrait: 'rocky' }
 };
 
 export const SPEAKER_CLASSES = Object.values(SPEAKERS).map(s => s.nameClass).filter(Boolean);
@@ -30,6 +31,7 @@ const VOICES: Record<string, BabbleVoice> = {
   'Biscuit': { base: 700, wave: 'triangle', spread: 20, every: 2, vol: 0.2 },
   'Pippy': { base: 520, wave: 'triangle', spread: 22, every: 2, vol: 0.2 },
   'Rexy': { base: 240, wave: 'triangle', spread: 16, every: 2, vol: 0.2 },
+  'Rocky': { base: 380, wave: 'sine', spread: 10, every: 2, vol: 0.22 },
   'Barnaby Noir': { base: 150, wave: 'sawtooth', spread: 6, every: 3, vol: 0.15 }
 };
 export const voiceFor = (who: string): BabbleVoice => VOICES[who] || DEFAULT_VOICE;

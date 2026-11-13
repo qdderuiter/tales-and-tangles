@@ -50,7 +50,7 @@ export function initGame() {
   ElephantScene.init();
   DinoScene.init();
   ChapterFilm.init();
-  StoryScreen.init(cast.story, { larry: { host: $('#storyLarry'), portrait: cast.larry }, pup: { host: $('#storyPup'), portrait: cast.pup }, worm: { host: $('#storyWorm'), portrait: cast.worm }, elephant: { host: $('#storyElephant'), portrait: cast.elephant }, dino: { host: $('#storyDino'), portrait: cast.dino } });
+  StoryScreen.init(cast.story, { larry: { host: $('#storyLarry'), portrait: cast.larry }, pup: { host: $('#storyPup'), portrait: cast.pup }, worm: { host: $('#storyWorm'), portrait: cast.worm }, elephant: { host: $('#storyElephant'), portrait: cast.elephant }, dino: { host: $('#storyDino'), portrait: cast.dino }, rocky: { host: $('#storyRocky'), portrait: cast.rocky } });
 
   // title
   $('#btnPlay').addEventListener('click', () => {

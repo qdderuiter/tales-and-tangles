@@ -11,11 +11,13 @@ import { Elephant } from './elephant.ts';
 import type { ElephantPortrait } from './elephant.ts';
 import { Dino } from './dino.ts';
 import type { DinoPortrait } from './dino.ts';
+import { Rocky } from './rocky.ts';
+import type { RockyPortrait } from './rocky.ts';
 
 /* The recurring characters that live on the screens, created once at boot (createCast).
      title / story / pz / z / c / v / w   Barnaby on the title, story, Words, Trail, notebook, victory and wardrobe screens
      larry                                Evil Larry's portrait on the story screen */
-export const cast = {} as { title: Bear; story: Bear; pz: Bear; z: Bear; c: Bear; v: Bear; w: Bear; larry: LarryPortrait; pup: PupPortrait; worm: WormPortrait; elephant: ElephantPortrait; dino: DinoPortrait };   // filled by createCast() at boot
+export const cast = {} as { title: Bear; story: Bear; pz: Bear; z: Bear; c: Bear; v: Bear; w: Bear; larry: LarryPortrait; pup: PupPortrait; worm: WormPortrait; elephant: ElephantPortrait; dino: DinoPortrait; rocky: RockyPortrait };   // filled by createCast() at boot
 
 /* the bears that switch to their Noir look while Barnaby Noir is on (the others are on screens Noir never shows) */
 const NOIR_SKINNED = ['pz', 'z', 'c', 'v'] as const;
@@ -34,6 +36,7 @@ export function createCast() {
   cast.worm = Worm.create($('#storyWorm'));
   cast.elephant = Elephant.create($('#storyElephant'));
   cast.dino = Dino.create($('#storyDino'));
+  cast.rocky = Rocky.create($('#storyRocky'));
 }
 
 export function setNoirSkin(on: boolean) {

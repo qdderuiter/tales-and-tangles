@@ -12,7 +12,8 @@ export const FILM_LAYERS: Record<Motif, string[]> = {
   space:   ['sky', 'stars', 'planet', 'hills', 'barnaby', 'trail', 'rocket', 'home'],
   desert:  ['sky', 'stars', 'moon', 'dunes', 'caravan', 'palms', 'pool', 'house', 'barnaby'],
   bigtop:  ['sky', 'stars', 'tent', 'flags', 'lights', 'crowd', 'ring', 'ball', 'pippy', 'barnaby'],
-  meteor:  ['sky', 'sun', 'stars', 'hills', 'dinos', 'burst', 'ball', 'barnaby']
+  meteor:  ['sky', 'sun', 'stars', 'hills', 'dinos', 'burst', 'ball', 'barnaby'],
+  underground: ['sky', 'crystals', 'rubble', 'drill', 'crew', 'house', 'lamps', 'rocky', 'barnaby']
 };
 
 export const CHAPTERS: Chapter[] = [
@@ -116,7 +117,21 @@ export const CHAPTERS: Chapter[] = [
         { caption: 'Where the meteor was, a thousand new stars begin to glow.', show: ['stars', 'burst'], cam: { x: 0, y: -6, scale: 1.06, ms: 3400 }, cue: 'sparkle', flash: 0.35, hold: 3200 },
         { caption: 'The sun comes out, and the dinos come out to play.', show: ['sun'], cam: { x: -8, y: 0, scale: 1.1, ms: 3400 }, cue: 'chime', hold: 3000 },
         { caption: 'The Boing Ball bounces home, higher than ever.', show: ['ball'], cam: { x: -16, y: 2, scale: 1.18, ms: 3400 }, cue: 'whoosh', hold: 3000 },
-        { caption: 'And a very small T. rex gives a very big roar. Thank you, Barnaby!', show: ['barnaby'], cam: { x: -6, y: 0, scale: 1, ms: 3600 }, cue: 'bell', flash: 0.3, hold: 3400 }
+        { caption: 'And a very small T. rex gives a very big roar. Thank you, Barnaby!', show: ['barnaby'], cam: { x: -6, y: 0, scale: 1, ms: 3600 }, cue: 'bell', flash: 0.3, hold: 3400 },
+        { caption: 'But far below the meadow, the ground begins to tremble...', cam: { x: 6, y: 6, scale: 1.04, ms: 3400 }, cue: 'swell', hold: 3200 }
+      ] } },
+  { id: 'rocky', n: 9, title: 'Rocky Rebuilds', tagline: 'A very cute stone and a house deep underground.', levels: [23, 24, 25], motif: 'underground', track: 'cave',
+    palette: { a: '#d9cfc2', b: '#a79a8c', ink: '#3a2c46', glow: '#ffe29a' },
+    ending: {
+      start: ['sky', 'crystals', 'rubble', 'drill', 'crew'],
+      reducedCaption: 'The drill is gone, the quakes have stopped, and a very cute stone is home at last.',
+      beats: [
+        { caption: 'Deep underground, the ground is shaking, and a little stone has no home.', cam: { x: 0, scale: 1, ms: 0 }, cue: 'swell', hold: 2800 },
+        { caption: 'The crew packs up, and the great drill rises, all the way back to the top.', hide: ['drill', 'crew'], cam: { x: 6, y: -4, scale: 1.06, ms: 3400 }, cue: 'whoosh', hold: 3200 },
+        { caption: 'Brick by brick, a little house stands where the rubble was.', show: ['house'], hide: ['rubble'], cam: { x: -6, y: 0, scale: 1.12, ms: 3400 }, cue: 'sparkle', flash: 0.3, hold: 3200 },
+        { caption: 'A round window glows, and smoke curls from the chimney.', show: ['lamps'], cam: { x: -10, y: 2, scale: 1.2, ms: 3400 }, cue: 'bell', flash: 0.3, hold: 3000 },
+        { caption: 'And a very cute stone sits at the door. Rocky is home. Thank you, Barnaby!', show: ['rocky', 'barnaby'], cam: { x: -4, y: 0, scale: 1, ms: 3600 }, cue: 'chime', flash: 0.35, hold: 3400 },
+        { caption: 'The quakes are over. Sleep tight, little stone.', cam: { x: 0, y: 0, scale: 1, ms: 3000 }, cue: 'swell', hold: 3200 }
       ] } }
 ];
 

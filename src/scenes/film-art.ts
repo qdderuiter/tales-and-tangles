@@ -2,6 +2,7 @@ import { bearMarkup } from '../characters/barnaby-svg.ts';
 import { rocketInner } from '../characters/pup.ts';
 import { HERD, boingBall, dinoInner } from '../characters/dino.ts';
 import { elephantInner, starBall } from '../characters/elephant.ts';
+import { rockyInner } from '../characters/rocky.ts';
 import { wormInner } from '../characters/worm.ts';
 import { FILM_LAYERS } from '../data/chapters.ts';
 import type { Motif } from '../data/types.ts';
@@ -16,7 +17,7 @@ import type { Film } from './film.ts';
 
 const VIEW = '0 0 800 1000';
 /* the crop each motif's card shows (the whole hero scene; the sky, hills and sea run past it, so a wide card has no empty sides) */
-const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440', bigtop: '110 400 580 560', meteor: '110 420 600 520' };
+const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440', bigtop: '110 400 580 560', meteor: '110 420 600 520', underground: '110 560 640 380' };
 
 /* how far each layer follows the camera (0 = fixed, 1 = full) */
 const DEPTH: Record<string, number> = {
@@ -24,7 +25,8 @@ const DEPTH: Record<string, number> = {
   garden: 0.85, flowers: 0.9, lamps: 0.75, bees: 0.8, lanterns: 0.8, rooftop: 1, larry: 1, barnaby: 1, cake: 1, candles: 1, snow: 1, globe: 0, planet: 0.2, home: 0.2, trail: 0.6, rocket: 0.6,
   dunes: 0.8, caravan: 0.82, palms: 0.85, pool: 0.85, house: 0.85,
   tent: 0.7, flags: 0.72, lights: 0.75, crowd: 0.9, ring: 0.95, ball: 1, pippy: 1,
-  dinos: 0.95, burst: 0.3
+  dinos: 0.95, burst: 0.3,
+  crystals: 0.35, rubble: 0.9, drill: 0.85, crew: 0.9, rocky: 1
 };
 
 /* what the map card shows for each motif: the finished-scene layers only */
@@ -36,7 +38,8 @@ export const BAND_LAYERS: Record<Motif, string[]> = {
   space: ['sky', 'stars', 'planet', 'hills', 'home', 'rocket'],
   desert: ['sky', 'stars', 'moon', 'dunes', 'palms', 'pool', 'house'],
   bigtop: ['sky', 'stars', 'tent', 'flags', 'lights', 'crowd', 'ring', 'ball', 'pippy'],
-  meteor: ['sky', 'sun', 'stars', 'hills', 'dinos', 'burst', 'ball']
+  meteor: ['sky', 'sun', 'stars', 'hills', 'dinos', 'burst', 'ball'],
+  underground: ['sky', 'crystals', 'house', 'lamps', 'rocky']
 };
 
 let uid = 0;
@@ -327,9 +330,52 @@ const ART: Record<Motif, Record<string, LayerFn>> = {
     },
     ball: (_u, vb) => svg('<g class="cf-peek">' + boingBall(300, 880, 44) + '</g>', vb),
     barnaby: () => '<div class="cf-bear mt"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
+  },
+
+  /* ---- deep underground: a dim cave of crystals, the drill rig and its crew, and Rocky's little brick house ---- */
+  underground: {
+    sky: (u, vb) => svg('<defs>' + grad(u + 's', [[0.15, '#2b2038'], [0.6, '#4b3a55'], [0.92, '#7a5a52']]) + '</defs>' + skyRect(u + 's') + starField(26, 53, 520), vb),
+    crystals: (u, vb) => {
+      const spike = (x: number, y: number, h: number, w: number, c: string, i: number) =>
+        '<g class="cf-halo" style="animation-delay:-' + r1(i * 0.6) + 's">' + glow(u + 'g', x, y - h * 0.5, h * 0.9) + '</g><polygon points="' + (x - w) + ',' + y + ' ' + r1(x - w * 0.3) + ',' + (y - h) + ' ' + r1(x + w * 0.5) + ',' + (y - h * 0.8) + ' ' + (x + w) + ',' + y + '" fill="' + c + '"/>' +
+        '<polygon points="' + r1(x - w * 0.3) + ',' + (y - h) + ' ' + r1(x + w * 0.5) + ',' + (y - h * 0.8) + ' ' + r1(x + w * 0.1) + ',' + y + '" fill="#fff" opacity=".22"/>';
+      return svg('<defs>' + glowDef(u + 'g', '#c8a8ff', 0.7) + '</defs>' +
+        '<path d="M-300 760 Q60 700 220 760 T600 740 T1100 770 V1300 H-300Z" fill="#3a2c46"/>' +
+        spike(90, 800, 150, 34, '#9a7aea', 0) + spike(160, 806, 96, 24, '#6fd3c8', 1) + spike(700, 802, 170, 38, '#ff9fc0', 2) + spike(640, 808, 100, 22, '#9a7aea', 3) + spike(30, 810, 80, 22, '#ff9fc0', 4), vb);
+    },
+    rubble: (_u, vb) => svg('<ellipse cx="360" cy="900" rx="200" ry="22" fill="#000" opacity=".25"/>' +
+      '<path d="M170 900 L200 836 L250 856 L300 800 L350 846 L410 820 L460 866 L520 900Z" fill="#8a7e76"/>' +
+      '<polygon points="214,884 240,860 270,880 250,900" fill="#b0a398"/><polygon points="330,884 362,858 394,880 372,900" fill="#6f655e"/>' +
+      '<rect x="262" y="838" width="44" height="22" rx="3" fill="#c0674f" transform="rotate(-14 284 849)"/><rect x="404" y="850" width="40" height="20" rx="3" fill="#c0674f" transform="rotate(12 424 860)"/>' +
+      '<path d="M300 800 L318 760 L334 800Z" fill="#b8472f" opacity=".7"/>', vb),
+    drill: (_u, vb) => svg('<ellipse cx="690" cy="900" rx="110" ry="14" fill="#000" opacity=".28"/>' +
+      '<g stroke="#5c5560" stroke-width="10" stroke-linecap="round"><line x1="610" y1="900" x2="650" y2="560"/><line x1="770" y1="900" x2="730" y2="560"/><line x1="624" y1="760" x2="756" y2="760"/><line x1="636" y1="660" x2="744" y2="660"/></g>' +
+      '<rect x="640" y="540" width="100" height="36" rx="8" fill="#e8a23a"/><rect x="676" y="576" width="28" height="270" fill="#8d8793"/>' +
+      '<g class="cf-peek"><polygon points="662,846 718,846 690,910" fill="#c9c3d0"/><path d="M668 856 L712 868 M672 876 L706 886" stroke="#6a6475" stroke-width="5"/></g>' +
+      '<circle cx="690" cy="522" r="14" fill="#ff6f5a"/>', vb),
+    crew: (_u, vb) => {
+      const guy = (x: number, c: string, i: number) => '<g class="cf-peek" style="animation-delay:-' + r1(i * 0.7) + 's"><ellipse cx="' + x + '" cy="900" rx="22" ry="5" fill="#000" opacity=".25"/>' +
+        '<ellipse cx="' + x + '" cy="866" rx="22" ry="28" fill="' + c + '"/><circle cx="' + x + '" cy="824" r="19" fill="' + c + '"/>' +
+        '<path d="M' + (x - 22) + ' 820 Q' + x + ' 790 ' + (x + 22) + ' 820Z" fill="#ffd24a"/><rect x="' + (x - 24) + '" y="818" width="48" height="6" rx="3" fill="#e8a23a"/>' +
+        '<circle cx="' + (x - 7) + '" cy="828" r="3" fill="#2f2b33"/><circle cx="' + (x + 7) + '" cy="828" r="3" fill="#2f2b33"/></g>';
+      return svg(guy(560, '#9a8a7a', 0) + guy(612, '#8d8a94', 1) + guy(786, '#b08560', 2), vb);
+    },
+    house: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#ffe29a', 0.85) + '</defs><ellipse cx="360" cy="902" rx="168" ry="16" fill="#000" opacity=".28"/>' +
+      '<rect x="250" y="780" width="220" height="120" rx="6" fill="#c0674f"/>' +
+      Array.from({ length: 5 }, (_, i) => '<path d="M250 ' + (804 + i * 24) + ' H470" stroke="#e7b9a4" stroke-width="3" opacity=".5"/>').join('') +
+      '<path d="M236 784 L360 690 L484 784Z" fill="#7a3d33"/><path d="M252 782 L360 704" stroke="#a65a49" stroke-width="6" opacity=".6" stroke-linecap="round"/>' +
+      '<rect x="420" y="700" width="30" height="62" rx="4" fill="#8a4a3c"/><rect x="414" y="692" width="42" height="12" rx="4" fill="#5c5560"/>' +
+      '<path class="cf-sway" d="M435 690 Q425 668 440 654 Q452 640 440 622" fill="none" stroke="#e8e0f0" stroke-width="7" stroke-linecap="round" opacity=".55"/>' +
+      '<rect x="318" y="824" width="52" height="76" rx="26" fill="#6a3f35"/><circle cx="360" cy="866" r="4" fill="#ffd36b"/>' +
+      '<circle cx="290" cy="826" r="22" fill="#ffe29a" stroke="#7a3d33" stroke-width="6"/><path d="M290 804 V848 M268 826 H312" stroke="#7a3d33" stroke-width="4"/>' +
+      '<circle cx="402" cy="868" r="7" fill="#ffd24a" stroke="#8a6a1a" stroke-width="2"/>', vb),
+    lamps: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#ffe29a', 0.9) + '</defs><g class="cf-halo">' + glow(u + 'g', 290, 826, 110) + glow(u + 'g', 360, 880, 90) + '</g>' +
+      '<circle cx="290" cy="826" r="16" fill="#fff2b8"/>' +
+      [200, 520].map(x => '<rect x="' + (x - 3) + '" y="850" width="6" height="52" fill="#5c5560"/><g class="cf-halo">' + glow(u + 'g', x, 842, 60) + '</g><circle cx="' + x + '" cy="842" r="11" fill="#ffe6a0"/>').join(''), vb),
+    rocky: (_u, vb) => svg('<g transform="translate(494 788) scale(.56)"><g class="cf-peek">' + rockyInner() + '</g></g>', vb),
+    barnaby: () => '<div class="cf-bear ug"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
   }
 };
-
 
 /* the transform a layer wears for a camera position: far layers move less (parallax) and zoom less */
 export function layerTransform(depth: number, cam: { x: number; y: number; scale: number }): string {

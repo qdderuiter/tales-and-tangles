@@ -56,7 +56,7 @@ export interface TempLevel {
    A chapter groups several levels ("cases") under one theme and ends with a short film (scenes/chapter-film.ts plays it).
    The film is data: a list of beats. Each beat can move the camera, show / hide stage layers (named in FILM_LAYERS), set a caption,
    fire an audio cue and flash the screen, then holds. The chapter's id is also the key of its synthesized score (audio/film-score.ts). */
-export type Motif = 'meadow' | 'night' | 'sea' | 'lantern' | 'space' | 'desert' | 'bigtop' | 'meteor';
+export type Motif = 'meadow' | 'night' | 'sea' | 'lantern' | 'space' | 'desert' | 'bigtop' | 'meteor' | 'underground';
 export type FilmCue = 'swell' | 'sparkle' | 'chime' | 'whoosh' | 'bell' | 'finale';
 export interface FilmBeat {
   caption?: string;

@@ -65,6 +65,21 @@ export const CRITTERS: Record<string, Critter> = {
   'Penny Parasaurolophus': { color: '#c79ad9', belly: '#f1e2f7', ear: 'long', acc: 'none' },
   'Bronte Brontosaurus': { color: '#77b79c', belly: '#dcf2e8', ear: 'round', acc: 'hat' },
   'Gus Gallimimus':      { color: '#e9c06a', belly: '#fdf0cc', ear: 'point', acc: 'stripes' },
+  'Marla Mole':     { color: '#7d6a5c', belly: '#e6d8cb', ear: 'round', acc: 'hat' },
+  'Digby Badger':   { color: '#8f8f98', belly: '#f0f0f4', ear: 'round', acc: 'stripes' },
+  'Gus Groundhog':  { color: '#b08560', belly: '#f3e0c8', ear: 'round', acc: 'hat' },
+  'Wally Wombat':   { color: '#9a8a7a', belly: '#eee2d4', ear: 'round', acc: 'hat' },
+  'Rusty Raccoon':  { color: '#8d8a94', belly: '#e9e6ee', ear: 'round', acc: 'bandit' },
+  'Dottie Dormouse':  { color: '#d9b48a', belly: '#fbead6', ear: 'round', acc: 'hat' },
+  'Ferdie Ferret':    { color: '#c9a77f', belly: '#f6e6cf', ear: 'long', acc: 'bandit' },
+  'Hattie Hedgehog':  { color: '#a2866a', belly: '#f1e1cd', ear: 'round', acc: 'stripes' },
+  'Boris Beaver':     { color: '#9a6a48', belly: '#ecd2b4', ear: 'round', acc: 'hat' },
+  'Otis Otter':       { color: '#7a6554', belly: '#e3d3c2', ear: 'round', acc: 'glasses' },
+  'Cora Chipmunk':    { color: '#c98f5a', belly: '#f8e4cc', ear: 'round', acc: 'stripes' },
+  'Mack Mongoose':    { color: '#b9a07a', belly: '#f4e8d2', ear: 'point', acc: 'hat' },
+  'Pearl Porcupine':  { color: '#8e7f74', belly: '#ece1d6', ear: 'round', acc: 'none' },
+  'Tobias Toad':      { color: '#7fae6a', belly: '#e6f2cf', ear: 'round', acc: 'glasses' },
+  'Nellie Newt':      { color: '#e2915a', belly: '#fbe0c8', ear: 'point', acc: 'none' },
   'Evil Larry':     { color: '#3a3442', belly: '#cfc6d8', ear: 'point', acc: 'bandit' }
 };
 
