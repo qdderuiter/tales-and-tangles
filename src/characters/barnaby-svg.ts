@@ -22,7 +22,9 @@ export const MOUTHS: Record<string, [string, string]> = {  // [closed, open]
 export const Outfit = {
   current: Object.assign({}, OUTFIT_DEFAULT) as Record<Slot, string>,
   item(slot: Slot, id: string): WardrobeItem { const it = WARDROBE_BY_ID[id]; return it && it.slot === slot ? it : WARDROBE_BY_ID[OUTFIT_DEFAULT[slot]]!; },
-  svg(slot: Slot, id: string) { return this.item(slot, id).svg; }
+  svg(slot: Slot, id: string) { return this.item(slot, id).svg; },
+  /* the parts of an outfit that hang behind him (capes) */
+  back(outfit: Record<Slot, string>) { return (Object.keys(outfit) as Slot[]).map(slot => this.item(slot, outfit[slot]).back || '').join(''); }
 };
 
 export const bearEye = (x: number) => '<g class="eye" style="transform-origin:' + x + 'px 94px"><ellipse cx="' + x + '" cy="94" rx="7" ry="8.5" fill="#fff"/>' +
@@ -30,9 +32,10 @@ export const bearEye = (x: number) => '<g class="eye" style="transform-origin:' 
 
 export function bearMarkup(outfit?: Record<Slot, string>) {
   outfit = outfit || Outfit.current;
-  return '<div class="bear"><svg viewBox="0 0 200 230" class="bear-svg" role="img" aria-label="Barnaby the Detective Bear">' +
+  return '<div class="bear"><div class="bear-nod"><svg viewBox="0 0 200 230" class="bear-svg" role="img" aria-label="Barnaby the Detective Bear">' +
   '<ellipse cx="100" cy="224" rx="64" ry="7" fill="rgba(120,90,60,.18)"/>' +
   '<g class="bear-idle">' +
+    '<g class="slot-back">' + Outfit.back(outfit) + '</g>' +
     '<path class="coatfill" d="M50 218 Q44 158 76 148 L124 148 Q156 158 150 218 Z" fill="url(#coat)"/>' +
     '<path d="M78 148 L100 186 L122 148 Z" fill="#fff6e8"/>' +
     '<path d="M76 148 L100 192 L82 150 Z" fill="#b78649"/><path d="M124 148 L100 192 L118 150 Z" fill="#b78649"/>' +
@@ -61,5 +64,5 @@ export function bearMarkup(outfit?: Record<Slot, string>) {
     '<path class="mouth-closed" d="' + MOUTHS.neutral[0] + '" stroke="#4a3326" stroke-width="3.5" stroke-linecap="round" fill="none"/>' +
     '<path class="mouth-open" d="' + MOUTHS.neutral[1] + '" fill="#7a2f35" stroke="#4a3326" stroke-width="2.5" stroke-linejoin="round"/>' +
     '<g class="slot-hat">' + Outfit.svg('hat', outfit.hat) + '</g>' +
-  '</g></svg></div>';
+  '</g></svg></div></div>';
 }

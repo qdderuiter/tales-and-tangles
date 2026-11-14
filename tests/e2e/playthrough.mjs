@@ -39,6 +39,8 @@
      AA chapter 11, case 2: the red thread opens it
      AB chapter 11, case 3: the footprints open it
      AC chapter 11, cases 1-3 with MOTION allowed: each opening cinematic animates from its first frame to its title card without a page error
+     AD the idle budget, with MOTION allowed: on the title, the story, a puzzle, the victory card and the map only a handful of animations run
+        (hidden screens are paused: styles/offscreen.css). `npm run perf` prints the full numbers
 
    Answers (word paths, trail, culprit, item) are read from src/data, so the test follows the content. Anything logged with
    console.error, or any uncaught page error, fails the scenario. Screenshots go to tests/e2e/out/ (git-ignored). */
@@ -805,6 +807,28 @@ const scenarios = {
     }
   },
 
+  async AD({ page }) {
+    /* every screen stays in the DOM, so an animation that is not paused while hidden runs for ever (it kept phones warm) */
+    const idle = async (name, budget) => {
+      await page.waitForTimeout(1500);                                // entrance animations finish
+      const running = await page.evaluate(() => document.getAnimations().filter(a => a.playState === 'running')
+        .map(a => (a.animationName || 'transition') + ' on .' + String(a.effect.target.className.baseVal ?? a.effect.target.className).split(' ')[0]));
+      if (running.length > budget) throw new Error(`${name}: ${running.length} animations are running while idle (budget ${budget}): ${[...new Set(running)].slice(0, 12).join(', ')}`);
+    };
+    await idle('title', 14);
+    await page.click('#btnPlay');
+    await onScreen(page, 'story');
+    await idle('story', 14);
+    await skipStory(page);
+    await solveWords(page, lv1);
+    await page.waitForSelector('#victory.show');
+    await page.waitForTimeout(5000);                                  // the stars and the confetti land
+    await idle('victory', 14);
+    await page.click('#vMap');
+    await onScreen(page, 'map');
+    await idle('map', 6);
+  },
+
   async AB(s) {
     const { page } = s;
     await startCase(page, 'cats', 32);
@@ -814,7 +838,7 @@ const scenarios = {
 };
 
 /* scenarios that play with motion allowed (every other one runs with reduced motion, which skips the animated code paths) */
-const MOTION = new Set(['AC']);
+const MOTION = new Set(['AC', 'AD']);
 
 /* which save each scenario starts from (none = a brand-new player) */
 const seeds = {
@@ -846,7 +870,8 @@ const seeds = {
   Z: makeSave({ ...solvedUpTo(29), unlocked: 29 }),   // exactly what a player who finished the old last case has on disk
   AA: makeSave(solvedUpTo(30)),
   AB: makeSave(solvedUpTo(31)),
-  AC: makeSave({ ...solvedUpTo(29), unlocked: 33 })
+  AC: makeSave({ ...solvedUpTo(29), unlocked: 33 }),
+  AD: null
 };
 
 /* ---------- run ---------- */

@@ -176,7 +176,7 @@ export const SketchPuzzle = definePuzzle({
     this.els.theme.innerHTML = '<b>' + this.sk.name + '!</b>';
     this.say(REACT.sketchDone);
     AudioFX.chime(7); Haptics.found(); this.bear.react('proud');
-    setTimeout(() => { if (this.onWin) this.onWin(result); }, 1700);
+    setTimeout(() => { if (this.onWin) this.onWin(result); }, 3700);                      // long enough to enjoy the finished picture
   },
 
   /* ---- hint ladder: name a line (free) -> flash it -> fill one square for you ---- */

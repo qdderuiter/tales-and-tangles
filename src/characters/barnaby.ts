@@ -10,9 +10,9 @@ import { UI } from '../ui/ui.ts';
 export interface Bear {
   host: HTMLElement; root: HTMLElement; emotion: string;
   talkTimer: number; blinkTimer: number; zTimer: number; heartTimer: number;
-  lastInput: number; nextAct: number;
+  lastInput: number; nextAct: number; nextSway: number;
   asleep: boolean; busy: boolean; purring: boolean; noir: boolean; purrStop: (() => void) | null;
-  browL: Element; browR: Element; mClosed: Element; mOpen: Element; pupils: HTMLElement[]; svg: SVGElement;
+  nod: HTMLElement; browL: Element; browR: Element; mClosed: Element; mOpen: Element; pupils: HTMLElement[]; svg: SVGElement;
   react(emo: string, bounce?: boolean): void;
   rest(): void; talk(on: boolean): void; bounce(): void; blink(): void; scheduleBlink(): void;
   lookAt(r: DOMRect, x: number, y: number): void;
@@ -32,9 +32,9 @@ export const Barnaby = {
     const root = host.querySelector('.bear') as HTMLElement;
     const inst: Bear = {
       host, root, emotion: 'neutral', talkTimer: 0, blinkTimer: 0,
-      lastInput: performance.now(), nextAct: performance.now() + rand(8000, 14000),
+      lastInput: performance.now(), nextAct: performance.now() + rand(8000, 14000), nextSway: performance.now() + rand(4000, 12000),
       asleep: false, busy: false, purring: false, zTimer: 0, heartTimer: 0, purrStop: null, noir: false,
-      browL: root.querySelector('.brow-l')!, browR: root.querySelector('.brow-r')!,
+      nod: root.querySelector('.bear-nod') as HTMLElement, browL: root.querySelector('.brow-l')!, browR: root.querySelector('.brow-r')!,
       mClosed: root.querySelector('.mouth-closed')!, mOpen: root.querySelector('.mouth-open')!,
       pupils: Array.from(root.querySelectorAll<HTMLElement>('.pupil-g')), svg: root.querySelector('.bear-svg') as SVGElement,
       react(emo, bounce) {
@@ -60,7 +60,7 @@ export const Barnaby = {
       },
       scheduleBlink() {
         this.blinkTimer = setTimeout(() => {
-          if (!document.hidden && !this.asleep) {
+          if (!document.hidden && !this.asleep && this.visible()) {
             this.blink();
             if (Math.random() < 0.22) setTimeout(() => this.blink(), 260);
           }
@@ -78,6 +78,7 @@ export const Barnaby = {
       /* ---- outfit ---- */
       dress(outfit) {
         SLOTS.forEach(slot => { this.root.querySelector('.slot-' + slot)!.innerHTML = Outfit.svg(slot, outfit[slot]); });
+        this.root.querySelector('.slot-back')!.innerHTML = Outfit.back(outfit);
       },
 
       setSkin(on) {                                      // Barnaby Noir: darker coat, red eyes, fedora and cape
@@ -127,6 +128,10 @@ export const Barnaby = {
         const now = performance.now();
         if (!this.asleep && now - this.lastInput > 40000) { this.sleep(); return; }
         if (this.asleep || this.busy) return;
+        if (now > this.nextSway) {                       // the magnifying glass sways once now and then (a permanent loop would redraw him every frame)
+          this.nextSway = now + rand(20000, 35000);
+          replayClass(this.root, 'armsway');
+        }
         if (now > this.nextAct) { this.nextAct = now + rand(9000, 15000); this.act(pick(['yawn', 'look', 'hum'])); }
       },
       sleep() {
@@ -144,7 +149,8 @@ export const Barnaby = {
       },
       bob(q) {
         if (REDUCED || this.asleep) return;
-        this.svg.classList.remove('bobL', 'bobR'); void this.svg.getBoundingClientRect(); this.svg.classList.add(q % 2 ? 'bobL' : 'bobR');
+        const tilt = q % 2 ? -0.9 : 0.9;                // on its own wrapper, so the nod and the breathing both stay on the GPU
+        this.nod.animate([{ transform: 'none' }, { transform: 'translateY(-.9%) rotate(' + tilt + 'deg)', offset: 0.3 }, { transform: 'none' }], { duration: 420, easing: 'ease-out' });
       },
 
       /* ---- pokes ---- */

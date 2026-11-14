@@ -5,7 +5,9 @@
 .bear.noirskin ellipse[fill="#c99a62"]{fill:#4a3a63}
 .bear.noirskin path[fill="#b78649"]{fill:#3a2d50}
 .bear.noirskin path[fill="#fff6e8"]{fill:#e9dff3}
-.bear.noirskin .bear-svg{filter:drop-shadow(0 0 9px rgba(224,33,61,.5))}
+/* his red glow is a still halo behind him, not a drop-shadow filter (that would be re-rendered on every frame he moves) */
+.bear.noirskin::before{content:"";position:absolute;inset:-4% -8% 0;border-radius:50%;pointer-events:none;background:radial-gradient(closest-side,rgba(224,33,61,.36),rgba(224,33,61,.14) 62%,transparent)}
+.bear.noirskin .bear-svg{position:relative}
 
 body.evil{--cream2:#2d2342;--ink:#f3e8ff;--ink-soft:#b8a4d8;--sh-l:rgba(130,95,185,.22);--sh-d:rgba(0,0,0,.55);--peach:#7a3a52;--mint:#3d5a6b;--lav:#4a3a73;--butter:#7d5426;--sky:#35527a}
 body.evil,body.evil html{background:#0f0a18}
@@ -25,11 +27,11 @@ body.evil .preview{background:#3d5a6b;color:#dff6ff}
 body.evil .topmid small,body.evil .topmid b{color:#f3e8ff}
 body.evil .vcard{background:#2a2040;color:#f3e8ff;box-shadow:10px 10px 26px rgba(0,0,0,.6),inset 0 3px 0 rgba(255,255,255,.08)}
 body.evil .vcard h2{color:#ffb3c7}
-body.evil .overlay{background:rgba(15,10,24,.78)}
+body.evil .overlay{background:rgba(15,10,24,.92)}
 body.evil .unlock{background:#4a3a73;box-shadow:inset 3px 3px 7px rgba(0,0,0,.4)}
 body.evil .unlock b b{color:#ffd9a8}
 body.evil .scoreline,body.evil .scoreline b{color:#f3e8ff}
-body.evil #zLine{filter:drop-shadow(0 0 8px rgba(255,90,130,.8))}
+body.evil #zGlow{stroke:rgba(255,90,130,.34)}
 body.evil .zcp circle{fill:#2a2040;stroke:#ffb3c7}
 body.evil .zcp text{fill:#ffd9a8}
 body.evil .zcp.got circle{fill:#e0a32f}
@@ -43,7 +45,7 @@ body.evil .witem{color:#3b2f55}
 .noir-bg{position:absolute;inset:-12%;background:radial-gradient(circle at 50% 34%,rgba(78,32,110,.86) 0%,rgba(18,10,30,.95) 72%);transform:translateZ(-160px) scale(1.25)}
 .noir-fog{position:absolute;inset:0;pointer-events:none;transform:translateZ(-80px) scale(1.15);animation:fogDrift 9s ease-in-out infinite alternate;
   background:radial-gradient(40% 28% at 20% 72%,rgba(190,90,200,.3),transparent 70%),radial-gradient(45% 34% at 82% 58%,rgba(255,80,110,.22),transparent 70%)}
-.noir-stage{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));will-change:transform}
+.noir-stage{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))}
 .noir-shards{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none}
 .shard{position:absolute;transform-style:preserve-3d;will-change:transform}
 .shard .sf,.shard .sb{position:absolute;inset:0;display:grid;place-items:center;font-weight:900;backface-visibility:hidden;-webkit-backface-visibility:hidden}

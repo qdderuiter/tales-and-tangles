@@ -20,6 +20,7 @@ npm run check        # lint + typecheck + unit tests + build + browser playthrou
 | `npm test` | Vitest unit tests in `tests/unit/`: pure logic and content, **no browser or DOM** |
 | `npm run test:e2e` | Playwright playthrough of the built game (`tests/e2e/playthrough.mjs`), 4 scenarios at a time (`E2E_WORKERS=n` to change). Needs `npm run build` first and an installed Edge (or `E2E_BROWSER_CHANNEL=chrome`). `-- --dev` plays the dev server and adds scenarios E and G. `-- A C` runs only those scenarios. Screenshots land in `tests/e2e/out/` |
 | `npm run check` | all of the above, in order |
+| `npm run perf` | on demand, after `npm run build`: how much work each screen does while idle (running animations, style recalcs, CPU). Hidden screens are paused by `styles/offscreen.css`; e2e scenario AD fails when a screen has more than a handful of animations running |
 
 ## Folder map (`src/`)
 

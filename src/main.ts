@@ -26,7 +26,7 @@ function boot() {
   document.addEventListener('click', e => { const t = e.target as Element; if (t.closest('.btn') && !t.closest('.choice')) AudioFX.blip(); });
   document.addEventListener('contextmenu', e => e.preventDefault());
   document.addEventListener('gesturestart', e => e.preventDefault());
-  document.addEventListener('visibilitychange', () => { if (document.hidden) VoiceManager.stop(); Music.setHidden(document.hidden); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) VoiceManager.stop(); Music.setHidden(document.hidden); AudioFX.setHidden(document.hidden); });
 }
 
 boot();

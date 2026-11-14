@@ -33,7 +33,7 @@ export const Wardrobe = {
         const b = document.createElement('button');
         b.className = 'witem' + (isWorn ? ' worn' : '') + (owned ? '' : ' locked');
         b.dataset.id = item.id;
-        const thumb = item.svg ? '<svg class="wthumb" viewBox="' + vb + '" aria-hidden="true">' + item.svg + '</svg>' : '<svg class="wthumb" viewBox="0 0 10 5" aria-hidden="true"></svg>';
+        const thumb = item.svg ? '<svg class="wthumb" viewBox="' + vb + '" aria-hidden="true">' + (item.back || '') + item.svg + '</svg>' : '<svg class="wthumb" viewBox="0 0 10 5" aria-hidden="true"></svg>';
         b.innerHTML = thumb + '<b>' + item.name + '</b><small>' + (isWorn ? 'Wearing' : owned ? 'Tap to wear' : item.unlock ? '\uD83D\uDE08 Clear ' + item.unlock + ' evil' : '★ ' + item.cost) + '</small>';
         b.addEventListener('click', () => this.tap(item, b));
         row.appendChild(b);

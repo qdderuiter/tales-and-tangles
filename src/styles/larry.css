@@ -23,7 +23,7 @@
 
 .larry-film{position:absolute;inset:0;z-index:45;background:#05030a;overflow:hidden;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .5s ease,visibility 0s .5s}
 .larry-film.show{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .5s ease,visibility 0s}
-.lf-stage{position:absolute;top:0;bottom:0;left:0;width:170%;transform-origin:100% 100%;will-change:transform;background:linear-gradient(180deg,#0b1030 0%,#2a1a4d 55%,#4b2a5a 100%)}
+.lf-stage{position:absolute;top:0;bottom:0;left:0;width:170%;transform-origin:100% 100%;background:linear-gradient(180deg,#0b1030 0%,#2a1a4d 55%,#4b2a5a 100%)}
 .lf-moon{position:absolute;left:18%;top:9%;width:84px;height:84px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fffbe0,#f2e6a6);box-shadow:0 0 60px 20px rgba(255,240,170,.35)}
 .lf-cloud{position:absolute;height:46px;border-radius:30px;background:#1b1536;opacity:0;transform:translateX(-36px);filter:blur(2px);transition:opacity 1.2s ease,transform 1.5s ease}
 .lf-cloud.c1{left:7%;top:10%;width:250px}

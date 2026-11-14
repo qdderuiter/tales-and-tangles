@@ -33,10 +33,9 @@
 /* ----- the cinematics: the meteor over the meadow, and the stomp-launch ----- */
 .dino-film{position:absolute;inset:0;z-index:45;background:#16324a;overflow:hidden;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .5s ease,visibility 0s .5s}
 .dino-film.show{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .5s ease,visibility 0s}
-.df-stage{position:absolute;inset:0;will-change:transform;background:#7fd0f2}
+.df-stage{position:absolute;inset:0;background:#7fd0f2}
 .df-art{position:absolute;inset:0;width:100%;height:100%;overflow:hidden}
 .df-hid{opacity:0}
-#dfSky,#dfFar,#dfMid,#dfWorld{will-change:transform}
 .df-fig,.df-ball,.df-spark,.df-plank,.df-word,.df-flame,.df-tw,.df-smoke{transform-box:fill-box}
 .df-fig{transform-origin:50% 100%}
 .df-ball,.df-spark,.df-plank,.df-word,.df-tw{transform-origin:50% 50%}

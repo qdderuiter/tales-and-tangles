@@ -98,4 +98,5 @@ export interface Badge { id: string; icon: string; name: string; desc: string; t
 
 /* ---- Wardrobe ---- */
 export type Slot = 'hat' | 'face' | 'neck';
-export interface WardrobeItem { id: string; slot: Slot; name: string; cost: number; svg: string; unlock?: number }
+/* svg is drawn over Barnaby in its slot; back (optional) is drawn BEHIND his body: a cape hangs from his shoulders, it does not cover his coat */
+export interface WardrobeItem { id: string; slot: Slot; name: string; cost: number; svg: string; back?: string; unlock?: number }

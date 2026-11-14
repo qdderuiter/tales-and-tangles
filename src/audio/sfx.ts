@@ -27,6 +27,13 @@ export const AudioFX = {
     if (ctx.state === 'suspended') ctx.resume().catch(() => {});
     return ctx;
   },
+  /* the page went to the background (or came back): a running audio context keeps the phone's audio hardware awake */
+  setHidden(h: boolean) {
+    const ctx = this.ctx;
+    if (!ctx) return;
+    if (h) { if (ctx.state === 'running') ctx.suspend().catch(() => {}); }
+    else if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+  },
   unlock() {
     const ctx = this.ensure();
     if (!ctx || this._unlocked) return;

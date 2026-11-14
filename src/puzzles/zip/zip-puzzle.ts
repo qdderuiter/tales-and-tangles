@@ -19,7 +19,7 @@ import { checkpointMap, isSolvedTrail, prefixLength, zipAdjacent, zipCode, zipRC
 
 interface ZipEls {
   grid: HTMLElement; svg: SVGSVGElement; clue: HTMLElement; prog: HTMLElement; time: HTMLElement; title: HTMLElement; badge: HTMLElement;
-  sparks: SparkEmitter; theme: HTMLElement; line: SVGPolylineElement; cps: SVGGElement[];
+  sparks: SparkEmitter; theme: HTMLElement; line: SVGPolylineElement; glow: SVGPolylineElement; cps: SVGGElement[];
 }
 
 /* fields marked late() are filled by init() / load() before anything reads them */
@@ -82,8 +82,8 @@ export const ZipPuzzle = definePuzzle({
     this.z.cps.forEach(cp => {
       cps += '<g class="zcp" data-n="' + cp.num + '"><circle cx="' + (cp.c * 100 + 50) + '" cy="' + (cp.r * 100 + 50) + '" r="31"/><text x="' + (cp.c * 100 + 50) + '" y="' + (cp.r * 100 + 52) + '">' + cp.num + '</text></g>';
     });
-    svg.innerHTML = '<polyline id="zLine" points=""/><g class="zcps">' + cps + '</g><g class="zwalls">' + walls + '</g>';
-    this.els.line = svg.querySelector('#zLine') as SVGPolylineElement;
+    svg.innerHTML = '<polyline id="zGlow" points=""/><polyline id="zLine" points=""/><g class="zcps">' + cps + '</g><g class="zwalls">' + walls + '</g>';
+    this.els.line = svg.querySelector('#zLine') as SVGPolylineElement; this.els.glow = svg.querySelector('#zGlow') as SVGPolylineElement;
     this.els.cps = Array.from(svg.querySelectorAll<SVGGElement>('.zcp'));
     const color = ZIP_COLORS[(lvl.n - 1) % ZIP_COLORS.length];
     this.els.line.style.stroke = color;
@@ -185,7 +185,8 @@ export const ZipPuzzle = definePuzzle({
     this.headEl = path.length ? this.tiles[path[path.length - 1]] : null;
     if (this.headEl) this.headEl.classList.add('head');
     this.drawn = path.slice();
-    this.els.line.setAttribute('points', path.map(c => { const [r, cc] = this.rc(c); return (cc * 100 + 50) + ',' + (r * 100 + 50); }).join(' '));
+    const points = path.map(c => { const [r, cc] = this.rc(c); return (cc * 100 + 50) + ',' + (r * 100 + 50); }).join(' ');
+    this.els.line.setAttribute('points', points); this.els.glow.setAttribute('points', points);
     this.els.prog.textContent = path.length + '/' + n * n;
     const reached = this.cpsReached();
     if (reached === this.shownReached) return;

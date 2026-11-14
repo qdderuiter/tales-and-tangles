@@ -1,9 +1,15 @@
 /* ---------- Barnaby ---------- */
-.bear{position:relative;width:100%;line-height:0}
-.bear-svg{width:100%;height:auto;overflow:visible;display:block}
-.bear.bounce{animation:bounce .6s var(--spring)}
-.bear-idle{transform-origin:100px 222px;animation:breathe 3.6s ease-in-out infinite}
-.bear-arm{transform-origin:150px 165px;animation:armSway 4.2s ease-in-out infinite}
+.bear{position:relative;width:100%;line-height:0;transform-origin:50% 96.5%;animation:bearBreathe 3.6s ease-in-out infinite}
+/* He breathes as a whole (his HTML wrapper moves, which the GPU does without redrawing him). Moving the <svg> or a part inside it redraws
+   it on every frame, so the parts only move now and then (the arm, a blink), never in a permanent loop. */
+.bear-nod{transform-origin:50% 96.5%}
+.bear-svg{width:100%;height:auto;overflow:visible;display:block;transform-origin:50% 96.5%}
+.bear.bounce .bear-nod{animation:bounce .6s var(--spring)}   /* not on .bear itself: the class stays on, and would replace the breathing for good */
+/* in a film he is drawn inside the film's own <svg> (film-kit.ts dressBear: no .bear-svg class), where only the inner groups can move */
+svg:not(.bear-svg)>.bear-idle{transform-origin:100px 222px;animation:breathe 3.6s ease-in-out infinite}
+svg:not(.bear-svg)>.bear-idle .bear-arm{animation:armSway 4.2s ease-in-out infinite}
+.bear-arm{transform-origin:150px 165px}
+.bear.armsway .bear-arm{animation:armSway 3s ease-in-out}
 .eye{transition:transform .07s ease-out}
 .bear.blink .eye{transform:scaleY(.08)}
 .pupil-g{transition:transform .15s ease-out}
@@ -11,5 +17,6 @@
 .bear.open .mouth-open{display:inline}
 .bear.open .mouth-closed{display:none}
 @keyframes breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,.99) translateY(-2px)}}
+@keyframes bearBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,.99) translateY(-.87%)}}
 @keyframes armSway{0%,100%{transform:rotate(0)}50%{transform:rotate(-5deg)}}
 @keyframes bounce{0%{transform:translateY(0) scale(1)}28%{transform:translateY(-16px) scale(.96,1.06)}58%{transform:translateY(0) scale(1.05,.94)}80%{transform:scale(.99,1.01)}100%{transform:none}}

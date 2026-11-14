@@ -45,7 +45,7 @@
 /* ----- the cinematics: the night the star ball vanished, and Pippy's show ----- */
 .elephant-film{position:absolute;inset:0;z-index:45;background:#1a0b24;overflow:hidden;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .5s ease,visibility 0s .5s}
 .elephant-film.show{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .5s ease,visibility 0s}
-.ef-stage{position:absolute;inset:0;transform-origin:50% 70%;will-change:transform;background:linear-gradient(180deg,#1d0f34 0%,#4a1f55 45%,#8f3a5e 80%,#c9605f 100%)}
+.ef-stage{position:absolute;inset:0;transform-origin:50% 70%;background:linear-gradient(180deg,#1d0f34 0%,#4a1f55 45%,#8f3a5e 80%,#c9605f 100%)}
 .ef-art{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .ef-art.show .ef-intro,.ef-art:not(.show) .ef-outro{display:none}   /* which pieces belong to which scene */
 .ef-hid{opacity:0}
