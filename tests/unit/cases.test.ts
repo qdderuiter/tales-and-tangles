@@ -55,6 +55,12 @@ describe.each(LEVELS.map(lv => [lv.n, lv]))('case of chapter %i', (_n, lv) => {
     expect(earned.find(cl => cl.earned === 'zip')!.key).toBe(lv.zip.word);
   });
 
+  it('no two items or rooms share an emoji, so the notebook grid never shows the same picture twice (Chapter 11 on; cases 24 and 28 predate this rule)', () => {
+    if (lv.n < 30) return;
+    const all = [...c.items, ...c.places].map(x => x.emoji);
+    expect(new Set(all).size).toBe(all.length);
+  });
+
   it('every clue has text and a constraint', () => {
     for (const cl of c.clues) {
       expect(cl.t).toBeTruthy();

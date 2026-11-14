@@ -14,7 +14,8 @@ export const FILM_LAYERS: Record<Motif, string[]> = {
   bigtop:  ['sky', 'stars', 'tent', 'flags', 'lights', 'crowd', 'ring', 'ball', 'pippy', 'barnaby'],
   meteor:  ['sky', 'sun', 'stars', 'hills', 'dinos', 'burst', 'ball', 'barnaby'],
   underground: ['sky', 'crystals', 'rubble', 'drill', 'crew', 'house', 'lamps', 'rocky', 'barnaby'],
-  island: ['sky', 'stars', 'sea', 'island', 'palms', 'wreck', 'tiger', 'hole', 'fire', 'ship', 'crew', 'barnaby']
+  island: ['sky', 'stars', 'sea', 'island', 'palms', 'wreck', 'tiger', 'hole', 'fire', 'ship', 'crew', 'barnaby'],
+  cats: ['sky', 'sun', 'hills', 'town', 'lanterns', 'yarn', 'mice', 'cats', 'kittens', 'ship', 'barnaby']
 };
 
 export const CHAPTERS: Chapter[] = [
@@ -145,7 +146,22 @@ export const CHAPTERS: Chapter[] = [
         { caption: 'The signal climbs into the sunset, higher than any flare.', show: ['stars'], cam: { x: 6, y: -6, scale: 1.1, ms: 3400 }, cue: 'sparkle', flash: 0.3, hold: 3200 },
         { caption: 'Far out on the water, a tiny light begins to blink back.', show: ['ship'], cam: { x: -8, y: 0, scale: 1.15, ms: 3400 }, cue: 'chime', hold: 3200 },
         { caption: 'The tiger watches from the trees, and for once it only waves a tail.', show: ['tiger'], hide: ['wreck'], cam: { x: 10, y: 2, scale: 1.2, ms: 3400 }, cue: 'whoosh', hold: 3000 },
-        { caption: 'And a very strange team sails home, together. Thank you, Barnaby, Biscuit and Larry!', cam: { x: 0, y: 0, scale: 1, ms: 3600 }, cue: 'bell', flash: 0.4, hold: 3600 }
+        { caption: 'And a very strange team sails home, together. Thank you, Barnaby, Biscuit and Larry!', cam: { x: 0, y: 0, scale: 1, ms: 3600 }, cue: 'bell', flash: 0.4, hold: 3600 },
+        { caption: 'But far across the sea, a land of whiskers has lost something very dear...', cam: { x: 4, y: -4, scale: 1.04, ms: 3400 }, cue: 'whoosh', hold: 3200 }
+      ] } },
+  /* Chapter 11 plays the shared case track until public/music/cat-paradise.mp3 exists: then add track: 'cats' here (audio/music.ts has the key ready) */
+  { id: 'cats', n: 11, title: 'Whisker Isles', tagline: 'A land of cats, and not one ball of yarn.', levels: [30, 31, 32, 33], motif: 'cats',
+    palette: { a: '#ffd6e4', b: '#cdb6ec', ink: '#5a2f4a', glow: '#ffd27a' },
+    ending: {
+      start: ['sky', 'hills', 'town'],
+      reducedCaption: 'The yarn is home, the mice are warm, and the kittens are playing again.',
+      beats: [
+        { caption: 'At the far end of the map, a town of cats sits very quiet.', cam: { x: 0, y: 0, scale: 1, ms: 0 }, cue: 'swell', hold: 3000 },
+        { caption: 'A ship comes in with a bear, a notebook and a very big idea.', show: ['sun', 'ship'], cam: { x: -6, y: 0, scale: 1.08, ms: 3400 }, cue: 'whoosh', hold: 3200 },
+        { caption: 'The mice come out of the old mill, with a scarf for the queen.', show: ['mice'], cam: { x: 8, y: 2, scale: 1.12, ms: 3400 }, cue: 'chime', hold: 3000 },
+        { caption: 'And one by one, the balls of yarn roll home.', show: ['yarn', 'lanterns'], cam: { x: 2, y: -2, scale: 1.1, ms: 3400 }, cue: 'sparkle', flash: 0.3, hold: 3200 },
+        { caption: 'The cats lift their heads, and the lanterns light up the harbour.', show: ['cats', 'barnaby'], cam: { x: -8, y: 0, scale: 1.16, ms: 3400 }, cue: 'bell', flash: 0.3, hold: 3200 },
+        { caption: 'Pounce! The kittens are playing again. Thank you, Barnaby!', show: ['kittens'], cam: { x: 0, y: 0, scale: 1.04, ms: 3600 }, cue: 'chime', flash: 0.4, hold: 3600 }
       ] } }
 ];
 

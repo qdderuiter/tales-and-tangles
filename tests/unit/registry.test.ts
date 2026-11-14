@@ -39,9 +39,9 @@ describe('chapter steps', () => {
     expect(new Set(steps).size).toBe(steps.length);
   });
 
-  it('the Sketch Artist is a step of Chapter 10 only, after the Scent Trail and before the notebook', () => {
+  it('the Sketch Artist is a step of Chapters 10 and 11 only, after the Scent Trail and before the notebook', () => {
     const withSketch = LEVELS.filter(lv => (lv.steps || DEFAULT_STEPS).includes('sketch')).map(lv => lv.n);
-    expect(withSketch).toEqual([26, 27, 28, 29]);
+    expect(withSketch).toEqual([26, 27, 28, 29, 30, 31, 32, 33]);
     for (const lv of LEVELS.filter(l => withSketch.includes(l.n))) {
       const steps = lv.steps!;
       expect(steps.indexOf('sketch')).toBe(steps.indexOf('zip') + 1);

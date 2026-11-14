@@ -564,6 +564,91 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
       { who: 'Biscuit', e: 'happy', t: 'We did it! A worm, a thief and a bear, all together, and all going home.' },
       { e: 'happy', t: 'A very strange team, and the best one I have ever had. Places, everyone. The ship is coming in.' }
     ]
+  },
+  30: {
+    intro: [
+      { e: 'happy', t: 'Land ahoy! The Whisker Isles, at the very far end of the map. A letter in a bottle found me at breakfast, and I have never seen so many cushions in one harbour.' },
+      { who: 'Queen Mittens', e: 'sad', t: 'Welcome, Detective Barnaby. I am Queen Mittens. Thank you for crossing the whole sea for us.' },
+      { who: 'Queen Mittens', e: 'sad', t: 'Every ball of yarn on the islands has gone. Not one is left. We used to play with them from sunrise to supper, and now the kittens just sit and mope.' },
+      { e: 'thinking', t: 'No yarn at all? That is not a mix-up, Your Majesty. That is a mystery.' },
+      { who: 'Queen Mittens', e: 'surprised', t: 'The Harbour Ball was the biggest of them all, as red as a sunset. It sat in the lighthouse, and this morning it was gone.' },
+      { e: 'neutral', t: 'Five suspects, five spots around the harbour, and one very big ball. Let us start right here.',
+        choices: [
+          { label: 'We will find it, Your Majesty!', reply: { e: 'happy', t: 'Every ball must come home. Trace each word, and leave no letter behind.' } },
+          { label: 'Any royal advice?', gift: true, reply: { e: 'proud', t: 'A queen gives the best advice. One free hint, tied up with a bow.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Gabby Gull! She was in the lighthouse, ringing the ship\'s bell, with the Harbour Ball tucked into her nest.' },
+      { e: 'sad', t: 'Gabby says: it was so soft and so warm, and my eggs were so cold. I should have asked first. I am so sorry.' },
+      { who: 'Queen Mittens', e: 'happy', t: 'One ball home! Oh, thank you, Barnaby. Look, the kittens are lifting their heads again.' },
+      { e: 'thinking', t: 'But one gull cannot carry off every ball on the islands. Somebody else has been busy, Your Majesty.' },
+      { who: 'Queen Mittens', e: 'surprised', t: 'Barnaby, look at the town square! A long red thread, all across the cobblestones, and it leads away.' },
+      { e: 'proud', t: 'Then we follow the thread. Every mystery has an end, and this one is made of wool.' }
+    ]
+  },
+  31: {
+    intro: [
+      { e: 'surprised', t: 'The thread goes right through the middle of town. Under the arch, round the fountain, up and down the clock tower. It is the biggest tangle I have ever seen.' },
+      { who: 'Queen Mittens', e: 'sad', t: 'That was the Midsummer Ball. Every year we roll it down Cushion Hill, and the whole island chases it. Now it is gone, and look at this mess.' },
+      { e: 'thinking', t: 'A ball that big does not roll away by itself. Somebody knew where it was going.' },
+      { who: 'Queen Mittens', e: 'shy', t: 'Five of my neighbours were out and about this morning. One of them must have seen it, or lost it. Please be kind, Barnaby. Everybody is a little sad today.' },
+      { e: 'neutral', t: 'Five suspects, five places around the square, and one giant red ball. Mind where you step, partner.',
+        choices: [
+          { label: 'Let us untangle this!', reply: { e: 'happy', t: 'One loop at a time. Trace each word, and leave no letter behind.' } },
+          { label: 'A hint for the tangle?', gift: true, reply: { e: 'proud', t: 'Of course. One free hint, wound neatly into a ball.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Tess Tabby! She was in the clock tower, scissors in her paw, with the giant red ball on the floor beside her. She had chased it up the stairs and got wrapped up like a parcel.' },
+      { e: 'sad', t: 'Tess says: I only wanted one tiny pounce. Then I was tangled, and then I was too embarrassed to ask for help. I am so sorry.' },
+      { who: 'Queen Mittens', e: 'happy', t: 'The Midsummer Ball! Oh, Barnaby, it is back, and there is Tess, free at last. Nobody is cross.' },
+      { e: 'thinking', t: 'But look at the thread. It is not torn, it is cut, in tidy little lengths. Somebody was measuring, and it was not Tess.' },
+      { who: 'Queen Mittens', e: 'surprised', t: 'And what are those marks by the window? Footprints, no bigger than a button, in perfectly straight lines.' },
+      { e: 'neutral', t: 'Very small feet, and very neat work. Somebody tiny has been busy, and I think I know where to look.' }
+    ]
+  },
+  32: {
+    intro: [
+      { e: 'thinking', t: 'Tiny footprints, thread cut into tidy lengths, and a tail disappearing behind the garden wall. This is a job for a very small detective, or a very big nose.' },
+      { who: 'Queen Mittens', e: 'shy', t: 'Barnaby, those are mouse prints. The mice of the Whisker Isles have not spoken to us in a hundred years. We shooed them out of the pantry, and we said some unkind things.' },
+      { e: 'neutral', t: 'Ah. A grudge. Those are the trickiest mysteries of all.' },
+      { who: 'Queen Mittens', e: 'sad', t: 'My grandmother\'s golden ball was resting on the garden wall. Now it is gone, and the only footprints leading away are very small ones.' },
+      { e: 'thinking', t: 'Then we ask nicely, and we listen. Five suspects, five hiding places around the old mill, and one golden ball.',
+        choices: [
+          { label: 'Softly, softly!', reply: { e: 'happy', t: 'On tiptoe, then. Trace each word, and leave no letter behind.' } },
+          { label: 'A hint, please?', gift: true, reply: { e: 'proud', t: 'Always. One free hint, small enough to fit in a mouse hole.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Molly Mouse! She was at the garden wall, a tiny scarf round her neck and the golden ball tucked behind a loose brick.' },
+      { e: 'sad', t: 'Molly says: it is so cold in the old mill, and the pantry door is shut. We only wanted wool for scarves. I am so sorry.' },
+      { who: 'Queen Mittens', e: 'surprised', t: 'Scarves? All this time, the mice have been cold?' },
+      { e: 'thinking', t: 'A winter in a mill with no wool. The cats lost their yarn, and the mice lost their warmth. I do not think this is a thief, Your Majesty. I think it is one sad story with two sides.' },
+      { who: 'Queen Mittens', e: 'shy', t: 'Then I owe the mice a very big apology. Their chief is waiting at the palace gate. Will you come with me, Barnaby?' },
+      { e: 'proud', t: 'Of course. Let us go and make peace.' }
+    ]
+  },
+  33: {
+    intro: [
+      { who: 'Queen Mittens', e: 'proud', t: 'You brought us together, Barnaby. The mice are at the palace gate, and for the first time in a hundred years nobody is hissing.' },
+      { e: 'happy', t: 'That is the best news I have heard all week. And the last ball of yarn?' },
+      { who: 'Queen Mittens', e: 'sad', t: 'It was in the palace garden, and this morning it was gone. Everybody is nervous, and a few of our guests were the only ones in the garden.' },
+      { e: 'thinking', t: 'Careful. When everybody is hopeful and a little worried, a mystery gets muddy. Slow and gentle wins today.' },
+      { e: 'proud', t: 'The very last case on the Whisker Isles. Five guests, five spots around the palace, and one last ball of yarn.',
+        choices: [
+          { label: 'Let us finish this gently!', reply: { e: 'happy', t: 'Gently, and together. Trace each word, and leave no letter behind.' } },
+          { label: 'One last hint, please?', gift: true, reply: { e: 'proud', t: 'For the grand finale? Of course. One free hint, wrapped in a royal ribbon.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Marvin Mouse! He was in the palace garden, a long woolly scarf round his shoulders and the last ball of yarn in his arms. He was knitting it into one great big scarf for every mouse in the mill.' },
+      { e: 'sad', t: 'Marvin says: we were so cold, and the wool was so soft, and nobody would talk to us. I was going to bring it back. I am so sorry.' },
+      { who: 'Queen Mittens', e: 'proud', t: 'No, Marvin, I am the one who is sorry. We shut the pantry door a hundred years ago and never opened it again. Please, keep the wool for your scarves. And may we borrow a little for play?' },
+      { e: 'happy', t: 'A deal! Scarves for the mice and balls for the cats. Everybody shares, and everybody is warm.' },
+      { who: 'Queen Mittens', e: 'wiggle', t: 'Barnaby, listen! The kittens are pouncing! They are rolling! Oh, listen to them laugh.' },
+      { e: 'proud', t: 'That is the sound I came all this way to hear. Places, everyone. The Whisker Isles are about to play again.' }
+    ]
   }
 };
 
@@ -626,7 +711,15 @@ export const STORY_EXTRA: Record<number, Pick<Record<StoryPart, RawLine[]>, 'bri
   28: { bridge: [{ e: 'proud', t: 'TUNNEL! Fresh sand, and it is still warm. Now follow the shovel marks: every tile, numbers in order.' }],
         caseIntro: [{ e: 'neutral', t: 'Five diggers, five spots along the tunnel, and one lost map. Trust the notebook, partner.' }] },
   29: { bridge: [{ e: 'happy', t: 'SIGNAL! The light is blinking. Now follow the sound of the engine: every tile, numbers in order.' }],
-        caseIntro: [{ e: 'proud', t: 'The very last case. Five castaways, five spots around the lagoon, and one little flare. Trust the notebook, partner.' }] }
+        caseIntro: [{ e: 'proud', t: 'The very last case. Five castaways, five spots around the lagoon, and one little flare. Trust the notebook, partner.' }] },
+  30: { bridge: [{ e: 'surprised', t: 'KITTEN! A tiny pawprint, and the sand is still wet. Now follow the whiskers along the dock: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'thinking', t: 'Five harbour folk, five spots around the harbour, and one very big ball of yarn. Cross people off until one story fits.' }] },
+  31: { bridge: [{ e: 'happy', t: 'TANGLE! What a knot. Now follow the loose threads across the cobblestones: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'neutral', t: 'Five locals, five places around the square, and one giant red ball. Who was where, and who held what? Cross people off until one story fits.' }] },
+  32: { bridge: [{ e: 'thinking', t: 'MOUSE! A real one, and very small. Now follow the squeaks behind the wall: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'neutral', t: 'Five little suspects, five hiding places around the old mill, and one golden ball. Speak softly, and trust the notebook.' }] },
+  33: { bridge: [{ e: 'proud', t: 'POUNCE! I felt that one from here. Now follow the knitted scarf along the doorstep: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'proud', t: 'The very last case on the Whisker Isles. Five guests, five spots around the palace, and one last ball of yarn. Some clues say who stood next to whom. Trust the notebook, partner.' }] }
 };
 
 export const REACT = {

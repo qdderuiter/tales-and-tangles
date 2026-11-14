@@ -1,0 +1,25 @@
+/* ---------- Queen Mittens: portrait (characters/mittens.ts) and the Whisker Isles films ---------- */
+.story-mittens{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 250px);width:min(54%,240px);z-index:1;opacity:0;pointer-events:none;transition:opacity .25s}
+.story-mittens.on{opacity:1}
+.dlg-name.mittens{background:#f4c9a8;color:#5a2f3a}
+.story-mittens .mittens{width:100%;line-height:0}   /* the portrait wrapper only: the name tag shares the class "mittens" and must not stretch */
+.mm-svg{width:100%;height:auto;overflow:visible;display:block;transform-origin:100px 220px;animation:breathe 3.4s ease-in-out infinite}
+.mm-body,.mm-head,.mm-eyes,.mm-tail{transform-box:fill-box}
+.mm-tail{transform-origin:10% 90%;animation:mmTail 2.6s ease-in-out infinite alternate}
+.mm-eyes{transform-origin:center;animation:mmBlink 4.4s infinite;transition:transform .15s}
+.mm-brow,.mm-mouth.frown{opacity:0;transition:opacity .15s}
+.mm-blush{transition:opacity .2s}
+.mittens.b-shy .mm-blush{opacity:.95}
+.mittens.b-shy .mm-head{transform:translateY(2px) rotate(-3deg)}
+.mittens.b-sad .mm-mouth.smile,.mittens.b-surprised .mm-mouth.smile{opacity:0}
+.mittens.b-sad .mm-mouth.frown,.mittens.b-sad .mm-brow{opacity:1}
+.mittens.b-sad .mm-tail{animation:none;transform:rotate(14deg)}
+.mittens.b-sad .mm-svg{animation:none;transform:translateY(4px) scaleY(.97)}
+.mittens.b-surprised .mm-eyes{transform:scale(1.25);animation:none}
+.mittens.b-surprised .mm-svg{animation:none;transform:translateY(-5px)}
+.mittens.b-proud .mm-svg{animation:none;transform:translateY(-3px) scale(1.03)}
+.mittens.b-wiggle .mm-svg{animation:mmWiggle .5s ease-in-out infinite}
+@keyframes mmTail{from{transform:rotate(-7deg)}to{transform:rotate(9deg)}}
+@keyframes mmBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes mmWiggle{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){.mm-svg,.mm-tail,.mm-eyes{animation:none !important}}

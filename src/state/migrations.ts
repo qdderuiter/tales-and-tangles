@@ -26,7 +26,7 @@ export interface SaveData {
   daily: { lastDate: string | null; streak: number; best: number; results: Record<string, DailyResult> };
   perfect: { streak: number };
   evil: { cleared: Record<string, boolean> };
-  seen: { larry: boolean; pup: boolean; worm: boolean; elephant: boolean; dino: boolean; crash: boolean; tiger: boolean; dig: boolean; endings: Record<string, boolean> };      // endings: chapter ids whose closing film has played
+  seen: { larry: boolean; pup: boolean; worm: boolean; elephant: boolean; dino: boolean; crash: boolean; tiger: boolean; dig: boolean; harbor: boolean; yarn: boolean; mice: boolean; endings: Record<string, boolean> };      // endings: chapter ids whose closing film has played
   badges: Record<string, string>;
   bonusWords: string[];
 }
@@ -75,6 +75,9 @@ export function sanitize(saved: Json | null, d: SaveData): SaveData {
   }
   const u = parseInt(saved.unlocked, 10);
   if (u >= 1) d.unlocked = Math.min(u, LEVELS.length);
+  // `unlocked` is clamped to the level count when saved, so a player who finished the then-last level is stuck one short
+  // once new levels are added: open the level after every solved one
+  while (d.unlocked < LEVELS.length && d.levels[d.unlocked]?.solved) d.unlocked++;
   const w = saved.wardrobe;
   if (w && Array.isArray(w.owned)) {                       // keep only items that still exist; free items are always owned
     w.owned.forEach((id: string) => { const it = WARDROBE_BY_ID[id]; if (it && !it.unlock && !d.wardrobe.owned.includes(id)) d.wardrobe.owned.push(id); });   // Noir items are unlocked by evil clears, never by an old owned list
@@ -100,6 +103,9 @@ export function sanitize(saved: Json | null, d: SaveData): SaveData {
     d.seen.crash = !!saved.seen.crash;
     d.seen.tiger = !!saved.seen.tiger;
     d.seen.dig = !!saved.seen.dig;
+    d.seen.harbor = !!saved.seen.harbor;
+    d.seen.yarn = !!saved.seen.yarn;
+    d.seen.mice = !!saved.seen.mice;
     const e = saved.seen.endings;
     if (e && typeof e === 'object') CHAPTERS.forEach(c => { if (e[c.id] === true) d.seen.endings[c.id] = true; });   // only chapters that still exist
   }

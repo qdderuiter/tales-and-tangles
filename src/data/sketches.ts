@@ -1,6 +1,6 @@
 import type { RawSketch } from './types.ts';
 
-/* Sketch Artist pictures, keyed by level number (Chapter 10, Castaways: levels 26-29).
+/* Sketch Artist pictures, keyed by level number (Chapter 10, Castaways: levels 26-29; Chapter 11, Whisker Isles: levels 30-33).
    '#' is a filled cell, '.' an empty one. Level 26 is 8x8, the rest 10x10.
    Each picture must be solvable with line logic alone (tests/unit/sketches.test.ts checks it; `node scripts/check-sketch.mjs` shows the clues). */
 export const SKETCHES: Record<number, RawSketch> = {
@@ -53,5 +53,57 @@ export const SKETCHES: Record<number, RawSketch> = {
       '.#######..',
       '.#######..',
       '..######..',
-      '##########'] }
+      '##########'] },
+  30: { name: 'A cat face', color: '#e0a458',
+    witness: 'A fisherman saw a face at the lighthouse window: two pointed ears, round eyes and a nose. Draw the face.',
+    rows: [
+      '#.#....#.#',
+      '###....###',
+      '#.######.#',
+      '.########.',
+      '##.####.##',
+      '##########',
+      '###.##.###',
+      '#.######.#',
+      '..######..',
+      '...####...'] },
+  31: { name: 'A ball of yarn', color: '#d94f5c',
+    witness: 'A kitten pointed at the clock tower: a round ball, wound in crossing strands, with a loose end trailing off. Draw the yarn.',
+    rows: [
+      '...####...',
+      '..######..',
+      '.##.##.##.',
+      '##.##.####',
+      '#.##.##..#',
+      '##.##.####',
+      '#.##.##.##',
+      '.##.####.#',
+      '..######.#',
+      '...####.#.'] },
+  32: { name: 'A mouse face', color: '#9a9aa8',
+    witness: 'Tiny prints in the flour, and a little face peeked out of the wall: two round ears, bright eyes and a twitchy nose. Draw the mouse.',
+    rows: [
+      '.###..###.',
+      '####..####',
+      '####..####',
+      '.########.',
+      '..######..',
+      '.##.##.##.',
+      '.########.',
+      '..######..',
+      '...####...',
+      '....##....'] },
+  33: { name: 'A silver fish', color: '#5aa6c9',
+    witness: 'A royal treat left on the palace steps, the one thing every cat loves: a round body, a pointed head and a forked tail. Draw the fish.',
+    rows: [
+      '...###....',
+      '..#####..#',
+      '.#########',
+      '##.#######',
+      '###.######',
+      '.#########',
+      '..####..##',
+      '...###...#',
+      '....##....',
+      '.....#....'] }
 };

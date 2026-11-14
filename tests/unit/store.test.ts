@@ -157,6 +157,16 @@ describe('loading', () => {
     expect(old.seen.dino).toBe(true);
   });
 
+  it("the Whisker Isles cinematics' flags survive a load, and an older save without them reads as not seen", () => {
+    put(Store.KEY, { seen: { crash: true, tiger: true, dig: true, harbor: true, yarn: true, mice: true } });
+    const d = load();
+    expect([d.seen.harbor, d.seen.yarn, d.seen.mice]).toEqual([true, true, true]);
+    put(Store.KEY, { seen: { crash: true, tiger: true, dig: true } });
+    const old = load();
+    expect([old.seen.harbor, old.seen.yarn, old.seen.mice]).toEqual([false, false, false]);
+    expect(old.seen.dig).toBe(true);
+  });
+
   it('a save from before endings existed gets an empty endings record', () => {
     put(Store.KEY, { seen: { larry: true } });
     expect(load().seen.endings).toEqual({});
@@ -169,6 +179,20 @@ describe('loading', () => {
     expect(load().unlocked).toBe(1);
     put(Store.KEY, { unlocked: '3' });
     expect(load().unlocked).toBe(3);
+  });
+
+  it('a save stuck on a solved frontier level (the then-last level) opens the next one, so a new chapter is not locked', () => {
+    // clamped to the old level count when saved: level 3 solved, unlocked still 3
+    put(Store.KEY, { unlocked: 3, levels: { 1: solved(3, 3), 2: solved(3, 3), 3: solved(3, 3) } });
+    expect(load().unlocked).toBe(4);
+    // an unsolved frontier stays where it is
+    put(Store.KEY, { unlocked: 3, levels: { 1: solved(3, 3), 2: solved(3, 3) } });
+    expect(load().unlocked).toBe(3);
+    // never past the last level
+    const all: Record<number, ReturnType<typeof solved>> = {};
+    LEVELS.forEach(lv => { all[lv.n] = solved(3, 3); });
+    put(Store.KEY, { unlocked: 1, levels: all });
+    expect(load().unlocked).toBe(LEVELS.length);
   });
 
   it('unknown wardrobe ids are dropped, free items kept, Noir items never granted by an old list', () => {

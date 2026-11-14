@@ -101,6 +101,7 @@
     <div class="story-elephant" id="storyElephant"></div>
     <div class="story-dino" id="storyDino"></div>
     <div class="story-rocky" id="storyRocky"></div>
+    <div class="story-mittens" id="storyMittens"></div>
     <div class="dlg" id="dlg">
       <div class="dlg-name" id="dlgName">Barnaby</div>
       <div class="dlg-text" id="dlgText" aria-live="off"></div>
@@ -353,6 +354,18 @@
     <div class="if-title" id="ifTitle"><small id="ifTitleSmall"></small><b id="ifTitleMain"></b><span id="ifTitleSub"></span></div>
     <div class="if-flash" id="ifFlash"></div>
     <button class="btn small skip film if-skip" id="ifSkip">Skip</button>
+  </div>
+
+  <!-- THE WHISKER ISLES (Chapter 11): the arrival (opens Case 11.1), the red thread (11.2), the footprints (11.3) and the yarn coming home (after 11.4).
+       One stage for all four; scenes/cats-scene.ts builds the art into #kfArt and moves the pieces. Coordinates are viewBox units. -->
+  <div class="cats-film" id="catsFilm" aria-hidden="true">
+    <div class="kf-stage" id="kfStage"><svg class="kf-art" id="kfArt" viewBox="0 0 400 700" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg></div>
+    <div class="kf-dim" id="kfDim"></div>
+    <div class="kf-black" id="kfBlack"></div>
+    <div class="kf-cap" id="kfCap"></div>
+    <div class="kf-title" id="kfTitle"><small id="kfTitleSmall"></small><b id="kfTitleMain"></b><span id="kfTitleSub"></span></div>
+    <div class="kf-flash" id="kfFlash"></div>
+    <button class="btn small skip film kf-skip" id="kfSkip">Skip</button>
   </div>
 
   <!-- BISCUIT THE SAND WORM: the night he got lost (opens Case 6.1) and his homecoming (after Case 6.3). One stage for both;

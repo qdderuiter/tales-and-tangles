@@ -1,4 +1,6 @@
 import { bearMarkup } from '../characters/barnaby-svg.ts';
+import { CAT_COATS, MICE, YARN, catInner, mouseInner, yarnBall } from '../characters/cats.ts';
+import { mittensInner } from '../characters/mittens.ts';
 import { rocketInner } from '../characters/pup.ts';
 import { HERD, boingBall, dinoInner } from '../characters/dino.ts';
 import { elephantInner, starBall } from '../characters/elephant.ts';
@@ -19,7 +21,7 @@ import type { Film } from './film.ts';
 
 const VIEW = '0 0 800 1000';
 /* the crop each motif's card shows (the whole hero scene; the sky, hills and sea run past it, so a wide card has no empty sides) */
-const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440', bigtop: '110 400 580 560', meteor: '110 420 600 520', island: '110 430 600 430', underground: '110 560 640 380' };
+const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440', bigtop: '110 400 580 560', meteor: '110 420 600 520', island: '110 430 600 430', underground: '110 560 640 380', cats: '200 520 400 410' };
 
 /* how far each layer follows the camera (0 = fixed, 1 = full) */
 const DEPTH: Record<string, number> = {
@@ -29,7 +31,8 @@ const DEPTH: Record<string, number> = {
   tent: 0.7, flags: 0.72, lights: 0.75, crowd: 0.9, ring: 0.95, ball: 1, pippy: 1,
   dinos: 0.95, burst: 0.3,
   crystals: 0.35, rubble: 0.9, drill: 0.85, crew: 0.9, rocky: 1,
-  island: 0.7, wreck: 0.85, tiger: 0.95, hole: 0.9, fire: 0.95, ship: 0.55
+  island: 0.7, wreck: 0.85, tiger: 0.95, hole: 0.9, fire: 0.95, ship: 0.55,
+  yarn: 0.92, mice: 0.95, cats: 0.95, kittens: 1
 };
 
 /* what the map card shows for each motif: the finished-scene layers only */
@@ -43,7 +46,8 @@ export const BAND_LAYERS: Record<Motif, string[]> = {
   bigtop: ['sky', 'stars', 'tent', 'flags', 'lights', 'crowd', 'ring', 'ball', 'pippy'],
   meteor: ['sky', 'sun', 'stars', 'hills', 'dinos', 'burst', 'ball'],
   underground: ['sky', 'crystals', 'house', 'lamps', 'rocky'],
-  island: ['sky', 'sea', 'island', 'palms', 'wreck']
+  island: ['sky', 'sea', 'island', 'palms', 'wreck'],
+  cats: ['sky', 'sun', 'hills', 'town', 'lanterns', 'cats']
 };
 
 
@@ -417,6 +421,44 @@ const ART: Record<Motif, Record<string, LayerFn>> = {
       '<g class="cf-halo">' + glow(u + 'g', 648, 690, 70) + '</g><circle cx="648" cy="690" r="7" fill="#fff4c4"/></g>', vb),
     crew: (_u, vb) => svg('<g transform="translate(250 700) scale(.4)">' + larryInner() + '</g><g transform="translate(176 774) scale(.4)"><g class="biscuit b-happy">' + wormInner() + '</g></g>', vb),
     barnaby: () => '<div class="cf-bear is"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
+  },
+  /* ---- the Whisker Isles: pastel cushion hills, a cat town with lantern fish, a harbour, balls of yarn, cats, kittens and the mice of the old mill ----
+     A phone screen shows only the middle of the 800-wide canvas (about x 210 to 590 before the camera moves), so the tableau is composed in that window. */
+  cats: {
+    sky: (u, vb) => svg('<defs>' + grad(u + 's', [[0.1, '#c9b6f0'], [0.46, '#ffcfe0'], [0.8, '#ffe6bc']]) + '</defs>' + skyRect(u + 's') +
+      '<g fill="#fff" opacity=".6"><ellipse cx="270" cy="300" rx="92" ry="24"/><ellipse cx="334" cy="282" rx="60" ry="20"/><ellipse cx="520" cy="380" rx="104" ry="22"/><ellipse cx="584" cy="362" rx="56" ry="17"/></g>' +
+      '<g fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="6 9" opacity=".7"><path d="M200 300 H340"/><path d="M440 380 H600"/></g>', vb),
+    sun: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#fff0b8', 0.85) + '</defs><g class="cf-halo">' + glow(u + 'g', 470, 610, 280) + '</g><circle cx="470" cy="610" r="54" fill="#fff6d2"/>', vb),
+    hills: (u, vb) => svg('<defs>' + grad(u + 'w', [[0, '#8fd8e0'], [1, '#4aa8c4']]) + '</defs>' +
+      '<rect x="-300" y="720" width="1400" height="700" fill="url(#' + u + 'w)"/><g class="cf-sway" fill="none" stroke="#fff" stroke-width="3" opacity=".5" stroke-linecap="round"><path d="M180 752 q30 -8 60 0 t60 0 t60 0"/><path d="M260 778 q30 -8 60 0 t60 0"/></g>' +
+      '<path d="M200 800 Q420 690 640 760 T1100 780 V1300 H200Z" fill="#f2b6c8"/><path d="M-300 836 Q60 740 360 820 T740 800 T1100 830 V1300 H-300Z" fill="#cdb6ec"/>' +
+      '<path d="M-300 900 Q200 820 520 888 T1100 880 V1300 H-300Z" fill="#a8dcb8"/>' +
+      '<g fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="7 10" opacity=".6"><path d="M180 872 Q330 836 460 874"/><path d="M470 862 Q600 836 700 868"/></g>' +
+      '<g fill="#fff" opacity=".7"><circle cx="262" cy="862" r="7"/><circle cx="420" cy="868" r="7"/><circle cx="560" cy="856" r="7"/></g>', vb),
+    town: (_u, vb) => {
+      const house = (x: number, y: number, w: number, h: number, wall: string, roof: string, lit: boolean) =>
+        '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="6" fill="' + wall + '"/>' +
+        '<path d="M' + (x - 8) + ' ' + y + ' L' + (x + 4) + ' ' + Math.round(y - w * 0.46) + ' L' + Math.round(x + w * 0.5) + ' ' + Math.round(y - w * 0.12) + ' L' + (x + w - 4) + ' ' + Math.round(y - w * 0.46) + ' L' + (x + w + 8) + ' ' + y + 'Z" fill="' + roof + '"/>' +
+        '<circle cx="' + (x + w / 2) + '" cy="' + Math.round(y + h * 0.42) + '" r="' + Math.round(w * 0.16) + '" fill="' + (lit ? '#ffe29a' : '#fff6e0') + '" stroke="#fff" stroke-width="3"/>' +
+        '<rect x="' + (x + w / 2 - 7) + '" y="' + (y + h - 26) + '" width="14" height="26" rx="7" fill="#7a5a66"/>';
+      return svg(house(204, 744, 88, 82, '#fff0d8', '#e58fa6', true) + house(302, 712, 104, 114, '#e6f4ee', '#8fb8d8', true) + house(416, 748, 80, 78, '#ffe9e2', '#f2a07a', false) +
+        house(504, 728, 90, 98, '#f0e8ff', '#b79ae0', true) +
+        '<path d="M354 650 L354 616" stroke="#7a5a66" stroke-width="4"/><path d="M334 622 Q354 606 376 622 Q354 636 334 622Z" fill="#f5c84a" class="cf-sway"/>', vb);
+    },
+    lanterns: (u, vb) => {
+      const fish = (x: number, y: number, c: string) => '<g class="cf-peek"><circle cx="' + x + '" cy="' + y + '" r="40" fill="url(#' + u + 'g)" class="cf-halo"/><path d="M' + (x - 14) + ' ' + y + ' Q' + x + ' ' + (y - 14) + ' ' + (x + 12) + ' ' + y + ' Q' + x + ' ' + (y + 14) + ' ' + (x - 14) + ' ' + y + 'Z" fill="' + c + '"/><path d="M' + (x + 10) + ' ' + y + ' L' + (x + 22) + ' ' + (y - 8) + ' L' + (x + 22) + ' ' + (y + 8) + 'Z" fill="' + c + '"/><circle cx="' + (x - 7) + '" cy="' + (y - 2) + '" r="2" fill="#6a4a24"/></g>';
+      return svg('<defs>' + glowDef(u + 'g', '#ffd27a', 0.9) + '</defs><path d="M200 700 Q290 750 380 704 T560 700 T620 716" fill="none" stroke="#7a5a66" stroke-width="3"/>' +
+        fish(262, 736, '#ffd27a') + fish(352, 730, '#ffb0c4') + fish(446, 726, '#ffd27a') + fish(540, 728, '#b8e0f0'), vb);
+    },
+    yarn: (_u, vb) => svg(YARN.map(([c, d], i) => '<g transform="translate(' + [268, 336, 404, 472][i] + ' ' + [880, 894, 884, 896][i] + ') scale(' + [1, 1.15, 0.95, 1.05][i] + ')"><g class="cf-peek" style="animation-delay:-' + i * 0.5 + 's">' + yarnBall(c, d) + '</g></g>').join('') +
+      '<path d="M200 920 Q330 884 470 916 T640 906" fill="none" stroke="#e8527a" stroke-width="5" stroke-linecap="round" opacity=".8"/>', vb),
+    mice: (_u, vb) => svg([['grey', 470, 806], ['brown', 502, 818], ['dusk', 534, 808]].map(([k, x, y]) => '<g transform="translate(' + x + ' ' + y + ') scale(.5)"><g class="cf-peek">' + mouseInner(MICE[k as string]) + '</g></g>').join(''), vb),
+    cats: (_u, vb) => svg([['ginger', 232, 770, 0.66], ['grey', 292, 790, 0.6]].map(([k, x, y, sc]) => '<g transform="translate(' + x + ' ' + y + ') scale(' + sc + ')"><g class="cf-peek">' + catInner(CAT_COATS[k as string]) + '</g></g>').join('') +
+      '<g transform="translate(356 768) scale(.68)"><g class="cf-peek">' + mittensInner() + '</g></g>', vb),
+    kittens: (_u, vb) => svg([[304, 838, 0.38, 'cream'], [372, 846, 0.36, 'ginger'], [440, 842, 0.38, 'night']].map(([x, y, sc, k]) => '<g transform="translate(' + x + ' ' + y + ') scale(' + sc + ')"><g class="cf-peek">' + catInner(CAT_COATS[k as string]) + '</g></g>').join(''), vb),
+    ship: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#fff4c4', 0.9) + '</defs><g class="cf-sway"><path d="M236 760 L346 760 L326 786 L254 786Z" fill="#5a4a6a"/><rect x="288" y="718" width="6" height="42" fill="#7a5a66"/>' +
+      '<path d="M294 722 L336 752 L294 752Z" fill="#fff6e8"/><path d="M288 722 L288 710 L306 716Z" fill="#e8527a"/><g class="cf-halo">' + glow(u + 'g', 292, 770, 40) + '</g></g>', vb),
+    barnaby: () => '<div class="cf-bear cat"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
   }
 };
 

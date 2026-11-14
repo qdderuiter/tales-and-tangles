@@ -99,6 +99,27 @@ export const CRITTERS: Record<string, Critter> = {
   'Sasha Seagull': { color: '#dfe6ee', belly: '#ffffff', ear: 'point', acc: 'none' },
   'Bert Bandicoot': { color: '#a39080', belly: '#eee2d6', ear: 'long', acc: 'bandit' },
   'Ruby Raccoon': { color: '#8d8a94', belly: '#e9e6ee', ear: 'round', acc: 'bandit' },
+  /* Chapter 11, the Whisker Isles: cats, and the mice of the old mill */
+  'Sally Siamese': { color: '#d9c3a3', belly: '#fff3e0', ear: 'point', acc: 'none' },
+  'Percy Persian': { color: '#efe6da', belly: '#ffffff', ear: 'round', acc: 'glasses' },
+  'Rosie Ragdoll': { color: '#e8dccd', belly: '#fff8f0', ear: 'point', acc: 'hat' },
+  'Bobby Bobtail': { color: '#c98f5a', belly: '#f5dcc0', ear: 'point', acc: 'stripes' },
+  'Gabby Gull': { color: '#e4eaf0', belly: '#ffffff', ear: 'round', acc: 'hat' },
+  'Cleo Calico': { color: '#e8a860', belly: '#fdeed8', ear: 'point', acc: 'none' },
+  'Max Manx': { color: '#9a8a7a', belly: '#e6dccf', ear: 'round', acc: 'none' },
+  'Lola Lynx': { color: '#c9b08a', belly: '#f4e8d4', ear: 'point', acc: 'bandit' },
+  'Tess Tabby': { color: '#b08a5e', belly: '#f2e0c6', ear: 'point', acc: 'stripes' },
+  'Ozzy Ocelot': { color: '#d6a15a', belly: '#f8e6c8', ear: 'point', acc: 'glasses' },
+  'Hugo Hamster': { color: '#dcb88a', belly: '#fbeedb', ear: 'round', acc: 'hat' },
+  'Dinah Dormouse': { color: '#c9a88a', belly: '#f6e8d8', ear: 'round', acc: 'none' },
+  'Molly Mouse': { color: '#bdb6b0', belly: '#f6f1eb', ear: 'round', acc: 'none' },
+  'Vera Vole': { color: '#8f7d6c', belly: '#e9ddd0', ear: 'round', acc: 'glasses' },
+  'Gerry Gerbil': { color: '#d1a066', belly: '#f7e3c4', ear: 'round', acc: 'stripes' },
+  'Binky Burmese': { color: '#7d6a5c', belly: '#e0d2c4', ear: 'point', acc: 'none' },
+  'Kiki Korat': { color: '#9ba6b4', belly: '#e8edf2', ear: 'point', acc: 'hat' },
+  'Marvin Mouse': { color: '#a7a1ad', belly: '#efeaf3', ear: 'round', acc: 'glasses' },
+  'Sammy Sphynx': { color: '#e6bda4', belly: '#fbe4d6', ear: 'point', acc: 'none' },
+  'Toby Tonkinese': { color: '#a98466', belly: '#ecdac6', ear: 'point', acc: 'bandit' },
   'Evil Larry':     { color: '#3a3442', belly: '#cfc6d8', ear: 'point', acc: 'bandit' }
 };
 

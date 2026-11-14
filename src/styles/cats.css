@@ -1,0 +1,52 @@
+/* ---------- the Whisker Isles cinematics (scenes/cats-scene.ts): the arrival, the red thread, the footprints and the yarn coming home ---------- */
+.cats-film{position:absolute;inset:0;z-index:45;background:#2a1f3d;overflow:hidden;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .5s ease,visibility 0s .5s}
+.cats-film.show{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .5s ease,visibility 0s}
+.kf-stage{position:absolute;inset:0;transform-origin:50% 60%;transition:background 1.4s ease;background:linear-gradient(180deg,#b9a6e8 0%,#ffb9cf 52%,#ffd9a8 82%,#ffeccb 100%)}
+.cats-film.show .kf-stage{will-change:transform}
+.cats-film:not(.show) *{animation-play-state:paused !important}
+.kf-stage.sky-town{background:linear-gradient(180deg,#9fd0f0 0%,#cfe8f7 55%,#fff1d8 100%)}
+.kf-stage.sky-wall{background:linear-gradient(180deg,#141a3a 0%,#2a2f66 60%,#4a3f78 100%)}
+.kf-stage.sky-home{background:linear-gradient(180deg,#b9a6e8 0%,#ffc3a8 50%,#ffe0a8 100%)}
+.kf-art{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+
+/* which pieces belong to which scene */
+.kf-art .fm{display:none}
+.kf-art.m-harbor .for-harbor,.kf-art.m-town .for-town,.kf-art.m-wall .for-wall,.kf-art.m-home .for-home{display:inline}
+.kf-hid{opacity:0}
+.kf-bob{transform-box:fill-box;transform-origin:50% 0;animation:kfBob 3.2s ease-in-out infinite alternate}
+.kf-twinkle{animation:cfTwinkle 3.2s ease-in-out infinite}
+@keyframes kfBob{from{transform:translateY(-2px) rotate(-1.5deg)}to{transform:translateY(3px) rotate(1.5deg)}}
+
+/* characters on the stage (all drawn feet-down): pivot at the feet, a tail that swishes, eyes that blink */
+#kfBPos>g,#kfQPos>g,#kfShipPos>g,#kfTangle,[id^=kfC][id$=Pos]>g,[id^=kfK][id$=Pos]>g,[id^=kfM][id$=Pos]>g,[id^=kfY][id$=Pos]>g{transform-box:fill-box;transform-origin:50% 100%}
+#kfTangle,[id^=kfY][id$=Pos]>g{transform-origin:50% 50%}
+.kf-cat .cat-tail,.kf-cat .mm-tail{transform-box:fill-box;transform-origin:10% 90%;animation:kfTail 2.4s ease-in-out infinite alternate}
+.kf-cat .cat-eyes,.kf-cat .mm-eyes{transform-box:fill-box;transform-origin:center;animation:kfBlink 4.6s infinite}
+@keyframes kfTail{from{transform:rotate(-8deg)}to{transform:rotate(10deg)}}
+@keyframes kfBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+
+.kf-dim{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 62%,rgba(10,5,22,.25),rgba(10,5,22,.8));opacity:0;pointer-events:none;z-index:2;transition:opacity .35s}
+.kf-black{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:3}
+.kf-cap{position:absolute;left:8%;right:8%;bottom:13%;z-index:4;text-align:center;font-weight:800;font-size:18px;line-height:1.35;color:#fff8e8;text-shadow:0 2px 10px #000;opacity:0;transition:opacity .35s;text-wrap:balance}
+.kf-cap.on{opacity:1}
+.kf-title{position:absolute;left:50%;top:40%;z-index:4;max-width:calc(100% - 28px);transform:translate(-50%,-50%) scale(1.8);opacity:0;pointer-events:none;text-align:center;padding:16px 22px 14px;border-radius:26px;white-space:nowrap;color:#fff;
+  background:rgba(66,36,82,.55);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.3);border-top-color:rgba(255,255,255,.6);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.kf-title small{display:block;font-weight:900;letter-spacing:.3em;font-size:13px;color:#ffd98a}
+.kf-title b{display:block;font-size:clamp(26px,7.6vw,44px);font-weight:900;line-height:1.05;letter-spacing:-.02em;color:#fff6c8;text-shadow:0 2px 14px rgba(0,0,0,.4)}
+.kf-title span{display:block;font-style:italic;font-weight:800;font-size:17px;margin-top:2px;opacity:.92}
+.kf-title.on{opacity:1;transform:translate(-50%,-50%) scale(1);transition:transform .5s cubic-bezier(.2,1.4,.4,1),opacity .2s}
+.kf-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:5}
+.kf-skip{position:absolute;top:calc(var(--sat) + 12px);right:calc(var(--sar) + 14px);z-index:6;opacity:0;pointer-events:none;transition:opacity .3s}
+.kf-skip.on{opacity:1;pointer-events:auto}
+
+/* reduced motion: the finished picture, no swishing or bobbing */
+@media (prefers-reduced-motion:reduce){
+  .kf-bob,.kf-twinkle,.kf-cat .cat-tail,.kf-cat .mm-tail,.kf-cat .cat-eyes,.kf-cat .mm-eyes{animation:none !important}
+}
+@media (prefers-contrast:more){
+  .kf-title{-webkit-backdrop-filter:none;backdrop-filter:none;background:#3a1f4a;border:2px solid #fff}
+  .kf-cap{background:rgba(0,0,0,.7);padding:8px 12px;border-radius:12px}
+}
+@media (prefers-reduced-transparency:reduce){
+  .kf-title{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(66,36,82,.94)}
+}

@@ -9,7 +9,7 @@ import { scenes } from '../core/scenes.ts';
 
 interface RawLevel { n: number; title: string; blurb: string; theme: string; scene: [string, string]; words: [string, string][]; introScene?: Level['introScene']; caughtScene?: Level['caughtScene']; sceneId?: SceneId; steps?: string[] }
 
-/* Chapter 10 adds the Sketch Artist nonogram between the Scent Trail and the suspects */
+/* Chapters 10 and 11 add the Sketch Artist nonogram between the Scent Trail and the suspects */
 const SKETCH_STEPS = ['intro', 'word', 'bridge', 'zip', 'sketch', 'case', 'outro'];
 
 const RAW_LEVELS: RawLevel[] = [
@@ -83,7 +83,19 @@ const RAW_LEVELS: RawLevel[] = [
     words: [['TUNNEL','42 43 33 32 22 23'],['HOLE','13 12 02 03'],['SPADE','04 05 15 14 24'],['STEPS','21 31 30 40 41'],['SHAFT','25 35 45 44 34'],['DIRTY','00 01 11 10 20']] },
   { n: 29, title: 'Signal Fire', blurb: 'One last spark between the castaways and home.', theme: 'SIGNAL', scene: ['#ffd9a8', '#e8837a'], steps: SKETCH_STEPS,
     caughtScene: () => scenes.crash!.caught(),                                               // the rescue (a flare, a ship's light) follows the solved case
-    words: [['SIGNAL','00 01 11 10 20 21'],['FLAME','12 22 23 13 14'],['LIGHT','45 35 34 24 25'],['SMOKE','42 32 33 43 44'],['FLARE','15 05 04 03 02'],['FIRE','31 30 40 41']] }
+    words: [['SIGNAL','00 01 11 10 20 21'],['FLAME','12 22 23 13 14'],['LIGHT','45 35 34 24 25'],['SMOKE','42 32 33 43 44'],['FLARE','15 05 04 03 02'],['FIRE','31 30 40 41']] },
+  { n: 30, title: 'Whiskers Ahoy', blurb: 'A ship, a harbour, and not one ball of yarn.', theme: 'KITTEN', scene: ['#cfeaf5', '#9fd0e6'], steps: SKETCH_STEPS,
+    introScene: () => scenes.harbor!.intro(), sceneId: 'harbor',
+    words: [['KITTEN','04 03 13 12 02 01'],['SAILS','32 22 23 33 34'],['SHIPS','00 10 11 21 20'],['WHARF','42 43 44 45 35'],['TIDES','25 24 14 15 05'],['PURR','30 40 41 31']] },
+  { n: 31, title: 'The Great Tangle', blurb: 'A red thread leads all through town.', theme: 'TANGLE', scene: ['#fbd5d8', '#e8949f'], steps: SKETCH_STEPS,
+    introScene: () => scenes.yarn!.intro(), sceneId: 'yarn',
+    words: [['TANGLE','45 44 34 33 43 42'],['STRING','32 22 21 11 12 02'],['KNOTS','13 23 24 25 35'],['SPOOL','05 15 14 04 03'],['YARN','01 00 10 20'],['COIL','41 40 30 31']] },
+  { n: 32, title: 'Tiny Footprints', blurb: 'Something very small has been busy.', theme: 'MOUSE', scene: ['#efe3cf', '#cdb28a'], steps: SKETCH_STEPS,
+    introScene: () => scenes.mice!.intro(), sceneId: 'mice',
+    words: [['MOUSE','04 05 15 14 24'],['CHEESE','23 22 32 31 41 40'],['NIBBLE','00 01 02 12 13 03'],['PAWS','25 35 45 44'],['NEST','34 33 43 42'],['TAILS','30 20 21 11 10']] },
+  { n: 33, title: 'Playtime Again', blurb: 'One last ball, and a very big pounce.', theme: 'POUNCE', scene: ['#ffe6b8', '#f2b077'], steps: SKETCH_STEPS,
+    caughtScene: () => scenes.harbor!.caught(),                                              // the yarn comes home after the last case
+    words: [['POUNCE','33 34 44 45 35 25'],['CUDDLE','03 02 12 13 23 22'],['FLUFF','24 14 15 05 04'],['JOLLY','21 11 10 00 01'],['BALL','31 32 42 43'],['PLAY','20 30 40 41']] }
 ];
 
 /* parse each word path, and attach the level's trail, evil trail, case and hints (all indexed by position) */

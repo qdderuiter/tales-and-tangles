@@ -19,7 +19,7 @@
      I  declining Barnaby Noir mid-level: the dark theme stays off and the level carries on
      J  chapter 5, case 1: Pickle's crash-landing film, Pickle speaking with his own portrait, then the whole case
      K  chapter 5, case 3: the whole case, Pickle's lift-off, and the chapter's closing film (an ordinary chapter end: the story goes on)
-     L  the LAST case of the game (chapter 10, case 4): the whole case, the rescue, "Hear the ending", the last film with The End and the credits
+     L  the LAST case of the game (chapter 11, case 4): the whole case, the yarn coming home, "Hear the ending", the last film with The End and the credits
      M  chapter 6, case 1: Biscuit pops out of the dunes, speaks with his own portrait, then the whole case
      N  chapter 7, case 1: Pippy loses his star ball, speaks with his own portrait, then the whole case
      O  chapter 6, case 3: the whole case, Biscuit's homecoming, and the chapter's closing film (an ordinary chapter end: the story goes on)
@@ -34,6 +34,11 @@
      W  chapter 10, case 3: Biscuit's dig opens it
 
      X  chapter 10: Barnaby Noir remixes the Sketch Artist (replayed from its pip): no warnings, no dimmed clues, a wrong square stays, and the real picture wins
+     Y  chapter 10, case 4: the whole case, the rescue and the closing film (an ordinary chapter end: the Whisker Isles are next)
+     Z  chapter 11, case 1, from an OLD save (it stopped at case 29 when that was the last case): the new chapter is open, the arrival film, Queen Mittens speaks with her own portrait, then the whole case
+     AA chapter 11, case 2: the red thread opens it
+     AB chapter 11, case 3: the footprints open it
+     AC chapter 11, cases 1-3 with MOTION allowed: each opening cinematic animates from its first frame to its title card without a page error
 
    Answers (word paths, trail, culprit, item) are read from src/data, so the test follows the content. Anything logged with
    console.error, or any uncaught page error, fails the scenario. Screenshots go to tests/e2e/out/ (git-ignored). */
@@ -52,7 +57,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUT = resolve(ROOT, 'tests/e2e/out');
 const args = process.argv.slice(2);
 const DEV = args.includes('--dev');
-const ONLY = args.filter(a => /^[A-Z]$/.test(a));
+const ONLY = args.filter(a => /^[A-Z]{1,2}$/.test(a));
 const CHANNEL = process.env.E2E_BROWSER_CHANNEL || 'msedge';
 const PORT = 5173;
 
@@ -96,8 +101,8 @@ const solvedUpTo = n => ({ unlocked: n + 1, levels: Object.fromEntries(Array.fro
 const makeSave = over => JSON.stringify({ ...Store.defaults(), ...over });
 
 /* ---------- a browser page with error tracking ---------- */
-async function openPage(browser, target, { save, name }) {
-  const context = await browser.newContext({ viewport: { width: 430, height: 900 }, reducedMotion: 'reduce' });
+async function openPage(browser, target, { save, name, motion }) {
+  const context = await browser.newContext({ viewport: { width: 430, height: 900 }, reducedMotion: motion ? 'no-preference' : 'reduce' });
   if (save) {
     await context.addInitScript(([key, value]) => {
       try { if (!sessionStorage.getItem('e2e-seeded')) { sessionStorage.setItem('e2e-seeded', '1'); localStorage.setItem(key, value); } } catch { /* storage blocked */ }
@@ -274,7 +279,7 @@ async function expectSolved(page, n, { unlocked, ending, seen } = {}) {
 }
 
 /* each film: the overlay's element id and its id prefix (index.html) */
-const FILMS = { pup: ['pupFilm', 'pf'], worm: ['wormFilm', 'wf'], elephant: ['elephantFilm', 'ef'], dino: ['dinoFilm', 'df'], island: ['islandFilm', 'if'] };
+const FILMS = { pup: ['pupFilm', 'pf'], worm: ['wormFilm', 'wf'], elephant: ['elephantFilm', 'ef'], dino: ['dinoFilm', 'df'], island: ['islandFilm', 'if'], cats: ['catsFilm', 'kf'] };
 
 /* a film that opens a case: title card (reduced motion shows the finished scene, then the card), Skip, and the save keeps `seen` */
 async function openingFilm({ page, shot }, film, { title, titleSel, seen, shot: shotName }) {
@@ -334,7 +339,7 @@ async function chapterEndFilm({ page, shot }, { kicker, title, next, check, shot
 }
 
 /* ---------- scenarios ---------- */
-const lv1 = LEVELS[0], lv8 = LEVELS[7], lv11 = LEVELS[10], lv13 = LEVELS[12], lv14 = LEVELS[13], lv16 = LEVELS[15], lv17 = LEVELS[16], lv19 = LEVELS[18], lv20 = LEVELS[19], lv22 = LEVELS[21], lv23 = LEVELS[22], lv25 = LEVELS[24], lv26 = LEVELS[25];
+const lv1 = LEVELS[0], lv8 = LEVELS[7], lv11 = LEVELS[10], lv13 = LEVELS[12], lv14 = LEVELS[13], lv16 = LEVELS[15], lv17 = LEVELS[16], lv19 = LEVELS[18], lv20 = LEVELS[19], lv22 = LEVELS[21], lv23 = LEVELS[22], lv25 = LEVELS[24], lv26 = LEVELS[25], lv29 = LEVELS[28], lv30 = LEVELS[29];
 const lvLast = LEVELS[LEVELS.length - 1];                          // the ending always follows the last level, however many there are
 const chLast = CHAPTERS[CHAPTERS.length - 1];
 
@@ -582,15 +587,15 @@ const scenarios = {
     const { page } = s;
     await startCase(page, chLast.id, lvLast.n);
     await playCase(page, lvLast);
-    await closingFilm(s, 'island', 'island-rescue');                // the rescue plays before the victory card
+    await closingFilm(s, 'cats', 'cats-home');                      // the yarn comes home before the victory card
     await victory(page, 'Case Solved!', 'Hear the ending');
     expect(await page.textContent('#vUnlock'), 'the last case closes the whole story').toBe('Every mystery solvedYou are a true detective!');
     await pressContinue(page);
     await chapterEndFilm(s, {
-      kicker: 'The End', title: chLast.title, shot: 'castaways-film',
+      kicker: 'The End', title: chLast.title, shot: 'whisker-film',
       check: async () => {
         const credits = await page.textContent('#cfCredits');
-        for (const who of ['Pippy', 'Rexy', 'Rocky', 'castaways']) expect(credits.includes(who), `the credits thank ${who}`).toBe(true);
+        for (const who of ['Pippy', 'Rexy', 'Rocky', 'castaways', 'Mittens']) expect(credits.includes(who), `the credits thank ${who}`).toBe(true);
       }
     });
     await expectSolved(page, lvLast.n, { ending: chLast.id });
@@ -749,8 +754,69 @@ const scenarios = {
     await openingFilm(s, 'island', { title: 'DIGS IN', titleSel: '#ifTitleMain', seen: 'dig', shot: 'island-dig' });
     await onScreen(page, 'story');
     expect((await readSave(page)).seen.dig, 'the dig is marked as seen').toBe(true);
+  },
+
+  async Y(s) {
+    const { page } = s;
+    await startCase(page, 'castaways', 29);
+    await playCase(page, lv29);
+    await closingFilm(s, 'island', 'island-rescue');                // the rescue plays before the victory card
+    await victory(page, 'Case Solved!', 'Continue the story');
+    expect(await page.textContent('#vUnlock'), 'a chapter end, not the end of the game').toBe('Chapter completeCastaways');
+    await pressContinue(page);
+    await chapterEndFilm(s, { kicker: 'Chapter 10 complete', title: 'Castaways', next: 'Next: Chapter 11 · Whisker Isles', shot: 'castaways-film' });
+    await expectSolved(page, 29, { ending: 'castaways', unlocked: 30 });
+  },
+
+  async Z(s) {
+    const { page } = s;
+    await page.click('#btnPlay');
+    await onScreen(page, 'map');
+    expect(await page.evaluate(() => document.querySelector('[data-ch=cats]').closest('.chcard').classList.contains('locked')), 'the new chapter is open for a player who had finished the old last case').toBe(false);
+    expect((await readSave(page)).unlocked, 'the save is healed on load').toBe(30);
+    await openChapter(page, 'cats');
+    await caseButton(page, 30).click();
+    await openingFilm(s, 'cats', { title: 'WHISKER ISLES', titleSel: '#kfTitleMain', seen: 'harbor', shot: 'cats-harbor' });
+    await speakerAppears(s, 'Queen Mittens', 'storyMittens', 'cats-mittens-speaks');
+    await playCase(page, lv30, { probe: true, shot: s.shot });
+    await finishCase(page);
+    await expectSolved(page, 30, { unlocked: 31, seen: 'harbor' });
+  },
+
+  async AA(s) {
+    const { page } = s;
+    await startCase(page, 'cats', 31);
+    await openingFilm(s, 'cats', { title: 'THE GREAT TANGLE', titleSel: '#kfTitleMain', seen: 'yarn', shot: 'cats-thread' });
+    await speakerAppears(s, 'Queen Mittens', 'storyMittens', 'cats-thread-mittens');
+    expect((await readSave(page)).seen.yarn, 'the red thread is marked as seen').toBe(true);
+  },
+
+  async AC(s) {
+    const { page } = s;
+    for (const [n, title, seen] of [[30, 'WHISKER ISLES', 'harbor'], [31, 'THE GREAT TANGLE', 'yarn'], [32, 'TINY FOOTPRINTS', 'mice']]) {
+      if (n > 30) await page.reload();                                // a fresh load, so the case sheet starts closed
+      await startCase(page, 'cats', n);
+      await page.waitForSelector('#catsFilm.show');
+      await page.waitForSelector('#kfTitle.on', { timeout: 40000 });                // the animated film runs all the way to its title card
+      expect(await page.textContent('#kfTitleMain'), 'the title card').toBe(title);
+      await page.click('#kfSkip');
+      await page.waitForSelector('#catsFilm:not(.show)');
+      await page.waitForFunction(([key, k]) => JSON.parse(localStorage.getItem(key) || '{}').seen?.[k] === true, [Store.KEY, seen]);
+      await onScreen(page, 'story');
+    }
+  },
+
+  async AB(s) {
+    const { page } = s;
+    await startCase(page, 'cats', 32);
+    await openingFilm(s, 'cats', { title: 'TINY FOOTPRINTS', titleSel: '#kfTitleMain', seen: 'mice', shot: 'cats-footprints' });
+    await onScreen(page, 'story');
+    expect((await readSave(page)).seen.mice, 'the footprints are marked as seen').toBe(true);
   }
 };
+
+/* scenarios that play with motion allowed (every other one runs with reduced motion, which skips the animated code paths) */
+const MOTION = new Set(['AC']);
 
 /* which save each scenario starts from (none = a brand-new player) */
 const seeds = {
@@ -777,7 +843,12 @@ const seeds = {
   X: makeSave({ ...solvedUpTo(26), perfect: { streak: EVIL_STREAK - 1 } }),
   U: makeSave(solvedUpTo(25)),
   V: makeSave(solvedUpTo(26)),
-  W: makeSave(solvedUpTo(27))
+  W: makeSave(solvedUpTo(27)),
+  Y: makeSave(solvedUpTo(28)),
+  Z: makeSave({ ...solvedUpTo(29), unlocked: 29 }),   // exactly what a player who finished the old last case has on disk
+  AA: makeSave(solvedUpTo(30)),
+  AB: makeSave(solvedUpTo(31)),
+  AC: makeSave({ ...solvedUpTo(29), unlocked: 33 })
 };
 
 /* ---------- run ---------- */
@@ -801,7 +872,7 @@ async function main() {
   const runOne = async id => {
     if ((id === 'E' || id === 'G') && !target.dev) { lines[id] = `- ${id} skipped: needs the dev server (use --dev)`; return; }
     const started = Date.now();
-    const session = await openPage(browser, target, { save: seeds[id], name: id });
+    const session = await openPage(browser, target, { save: seeds[id], name: id, motion: MOTION.has(id) });
     try {
       await scenarios[id](session);
       if (session.errors.length) throw new Error('the page logged errors:\n    ' + session.errors.join('\n    '));

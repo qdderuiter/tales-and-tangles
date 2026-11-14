@@ -88,6 +88,13 @@ export const SCORES: Record<string, Score> = {
     pad: { type: 'triangle', lp: 1400, vol: 0.05 },
     melody: [[16, null, 19, null, 21, 19, 16, null], [17, null, 21, null, 24, 21, 17, null], [16, null, 19, null, 21, null, 19, 16], [14, null, 19, 17, 14, null, 12, null]],
     bell: { type: 'triangle', vol: 0.085, dur: 0.5 }
+  },
+  /* Whisker Isles: a soft, bouncy music-box waltz over a purring pad (G - Em - C - D) */
+  cats: {
+    bpm: 92, chords: [[-5, -1, 2, 7], [-8, -5, -1, 4], [0, 4, 7, 12], [2, 6, 9, 14]],
+    pad: { type: 'triangle', lp: 1500, vol: 0.05 },
+    melody: [[14, null, 19, null, 23, null, 19, null], [16, null, 19, null, 23, 21, 19, null], [12, null, 16, null, 19, null, 24, null], [18, null, 21, null, 14, null, null, null]],
+    bell: { type: 'sine', vol: 0.085, dur: 0.8 }
   }
 };
 
@@ -548,5 +555,40 @@ export const IslandScore = {
   horn() { AudioFX.note(hz(-17), { dur: 1.6, vol: 0.09, type: 'sawtooth', lp: 380, attack: 0.1 }); AudioFX.note(hz(-12), { t: 0.5, dur: 2.0, vol: 0.09, type: 'sawtooth', lp: 380, attack: 0.1 }); },
   /* the flare shoots up, and bursts */
   flare() { AudioFX.noise(0.9, 2600, 0.08); AudioFX.note(300, { dur: 0.9, vol: 0.05, type: 'triangle', slideTo: 1400 }); sparkleRun(0.9, 0.06, 0.08); },
+  title() { [0, 4, 7, 12, 16].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.06, dur: 2.4, vol: 0.06, type: 'triangle', attack: 0.03 })); sparkleRun(0.5, 0.08, 0.08); }
+};
+
+/* ---------- the Whisker Isles cinematics (scenes/cats-scene.ts): the harbour, the red thread, the little footprints and the yarn coming home ----------
+   A warm, slow pad under each scene (the only long-lived sound), then one-shot cues timed by the scene: a ship's horn, soft paw steps, a purr,
+   a meow, a twang as a thread pulls tight, a mouse's squeak, a pounce, a springy bounce and a rolling-yarn whirr. */
+export const CatScore = {
+  ...padControl([[-12, 'sine', 1], [-5, 'triangle', 0.6], [4, 'sine', 0.45], [11, 'sine', 0.3]], { lp: 900, vol: 0.05, rise: 2.5 }),
+
+  /* the ship's horn: two warm, low notes */
+  horn() { AudioFX.note(hz(-17), { dur: 1.5, vol: 0.08, type: 'sawtooth', lp: 380, attack: 0.1 }); AudioFX.note(hz(-10), { t: 0.45, dur: 1.9, vol: 0.08, type: 'sawtooth', lp: 380, attack: 0.1 }); },
+  /* waves lapping at the quay */
+  lap() { AudioFX.noise(2.6, 650, 0.05); AudioFX.noise(2.2, 2200, 0.02, 0.3); },
+  /* a sad little meow: a slide up and a longer fall */
+  meow() { AudioFX.note(520, { dur: 0.16, vol: 0.07, type: 'triangle', slideTo: 880, attack: 0.01 }); AudioFX.note(880, { t: 0.14, dur: 0.4, vol: 0.07, type: 'triangle', slideTo: 440, attack: 0.01 }); },
+  /* a happy trill of meows */
+  mew() { [0, 0.16, 0.3].forEach((t, i) => AudioFX.note(700 + i * 120, { t, dur: 0.14, vol: 0.06, type: 'triangle', slideTo: 980 + i * 120, attack: 0.008 })); },
+  /* a deep, slow purr */
+  purr() { for (let i = 0; i < 14; i++) AudioFX.note(58, { t: i * 0.11, dur: 0.08, vol: 0.05, type: 'sawtooth', lp: 220 }); },
+  /* soft padded paw steps */
+  steps(n = 4) { for (let i = 0; i < n; i++) AudioFX.note(84, { t: i * 0.36, dur: 0.14, vol: 0.06, type: 'sine', slideTo: 56, lp: 260 }); },
+  /* tiny scurrying feet */
+  scurry(n = 8) { for (let i = 0; i < n; i++) AudioFX.note(1500 + (i % 3) * 120, { t: i * 0.06, dur: 0.04, vol: 0.03, type: 'square', lp: 2600 }); },
+  /* a mouse's squeak */
+  squeak() { AudioFX.note(1500, { dur: 0.1, vol: 0.06, type: 'sine', slideTo: 2100, attack: 0.004 }); AudioFX.note(1900, { t: 0.13, dur: 0.12, vol: 0.05, type: 'sine', slideTo: 2400, attack: 0.004 }); },
+  /* a thread pulled tight: a plucked twang */
+  twang() { AudioFX.note(330, { dur: 0.7, vol: 0.07, type: 'triangle', slideTo: 300, attack: 0.004 }); AudioFX.note(660, { dur: 0.5, vol: 0.03, type: 'sine', attack: 0.004 }); },
+  /* a ball of yarn rolling: a whirr that fades */
+  roll() { AudioFX.noise(1.2, 1500, 0.04, 0); AudioFX.note(180, { dur: 1.1, vol: 0.03, type: 'triangle', slideTo: 120, lp: 600 }); },
+  /* a kitten's pounce: a quick whoosh and a soft thump */
+  pounce() { AudioFX.noise(0.4, 1800, 0.08); AudioFX.note(240, { dur: 0.3, vol: 0.05, type: 'triangle', slideTo: 540 }); AudioFX.note(90, { t: 0.32, dur: 0.2, vol: 0.08, type: 'sine', slideTo: 50, lp: 260 }); },
+  /* a springy bounce */
+  boing() { AudioFX.note(220, { dur: 0.45, vol: 0.06, type: 'sine', slideTo: 520 }); AudioFX.note(520, { t: 0.2, dur: 0.3, vol: 0.04, type: 'sine', slideTo: 300 }); },
+  /* a victory sting for the whole island */
+  hero() { [0, 4, 7, 12].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.09, dur: 0.9, vol: 0.07, type: 'triangle', attack: 0.02 })); sparkleRun(0.45, 0.07, 0.07); },
   title() { [0, 4, 7, 12, 16].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.06, dur: 2.4, vol: 0.06, type: 'triangle', attack: 0.03 })); sparkleRun(0.5, 0.08, 0.08); }
 };
