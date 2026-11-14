@@ -38,7 +38,9 @@ export type Story = Record<number, Record<StoryPart, Line[]>>
 export type StoryPart = 'intro' | 'bridge' | 'caseIntro' | 'outro';
 
 /* ---- Levels ---- */
-export type SceneId = 'larry' | 'pup' | 'worm' | 'elephant' | 'dino' | 'crash' | 'tiger' | 'dig' | 'harbor' | 'yarn' | 'mice';
+/* every cinematic a level can carry; the save keeps one `seen` flag per id (state/migrations.ts), so a new cinematic is added here and nowhere else in the save code */
+export const SCENE_IDS = ['larry', 'pup', 'worm', 'elephant', 'dino', 'crash', 'tiger', 'dig', 'harbor', 'yarn', 'mice'] as const;
+export type SceneId = (typeof SCENE_IDS)[number];
 export interface Level {
   n: number; title: string; blurb: string; theme: string; scene: [string, string];
   words: WordEntry[];

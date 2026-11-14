@@ -63,3 +63,13 @@ export function yarnBall(color: string, dark: string): string {
     '<path d="M20 16 Q40 34 62 22 Q76 14 88 24" fill="none" stroke="' + color + '" stroke-width="4.5" stroke-linecap="round"/>';
 }
 export const YARN: [string, string][] = [['#e8527a', '#a82a52'], ['#f5c84a', '#b8861a'], ['#5aa6c9', '#2a6a8f'], ['#6fc48a', '#2f8a52']];
+
+/* a pastel cat-town house: a wall, a roof with two pointed ears, a round window and a door. `k` scales the door and strokes (1 on the film
+   canvas, a little less on the smaller cinematic stage) */
+export function catHouse(x: number, y: number, w: number, h: number, wall: string, roof: string, lit: boolean, k = 1): string {
+  const r = (n: number) => Math.round(n);
+  return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + 6 * k + '" fill="' + wall + '"/>' +
+    '<path d="M' + (x - 8 * k) + ' ' + y + ' L' + (x + 4 * k) + ' ' + r(y - w * 0.46) + ' L' + r(x + w * 0.5) + ' ' + r(y - w * 0.12) + ' L' + (x + w - 4 * k) + ' ' + r(y - w * 0.46) + ' L' + (x + w + 8 * k) + ' ' + y + 'Z" fill="' + roof + '"/>' +
+    '<circle cx="' + (x + w / 2) + '" cy="' + r(y + h * 0.42) + '" r="' + r(w * 0.16) + '" fill="' + (lit ? '#ffe29a' : '#fff6e0') + '" stroke="#fff" stroke-width="' + 3 * k + '"/>' +
+    '<rect x="' + (x + w / 2 - 7 * k) + '" y="' + (y + h - 26 * k) + '" width="' + 14 * k + '" height="' + 26 * k + '" rx="' + 7 * k + '" fill="#7a5a66"/>';
+}

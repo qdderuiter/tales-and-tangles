@@ -1,6 +1,7 @@
 import { BADGES } from '../data/badges.ts';
 import { CHAPTERS } from '../data/chapters.ts';
-import type { Slot } from '../data/types.ts';
+import { SCENE_IDS } from '../data/types.ts';
+import type { SceneId, Slot } from '../data/types.ts';
 import { LEVELS } from '../data/levels.ts';
 import { OUTFIT_DEFAULT, SLOTS, WARDROBE_BY_ID } from '../data/wardrobe.ts';
 import { BONUS_DICT } from '../data/words.ts';
@@ -26,7 +27,7 @@ export interface SaveData {
   daily: { lastDate: string | null; streak: number; best: number; results: Record<string, DailyResult> };
   perfect: { streak: number };
   evil: { cleared: Record<string, boolean> };
-  seen: { larry: boolean; pup: boolean; worm: boolean; elephant: boolean; dino: boolean; crash: boolean; tiger: boolean; dig: boolean; harbor: boolean; yarn: boolean; mice: boolean; endings: Record<string, boolean> };      // endings: chapter ids whose closing film has played
+  seen: Record<SceneId, boolean> & { endings: Record<string, boolean> };      // endings: chapter ids whose closing film has played
   badges: Record<string, string>;
   bonusWords: string[];
 }
@@ -41,6 +42,15 @@ export const ownsItem = (data: SaveData, id: string): boolean => {
   const it = WARDROBE_BY_ID[id];
   return data.wardrobe.owned.includes(id) || !!(it && it.unlock && Object.keys(data.evil.cleared).length >= it.unlock);
 };
+
+/* how many levels are open for a run of solved levels: the first level, plus one for each solved level from the start (capped at the level count).
+   `unlocked` is clamped to the level count when saved, so a player who finished the then-last level is stuck one short once new levels are added:
+   sanitize raises it with this, and never lowers it (a level can be unlocked without its predecessors being solved). */
+export function unlockedFrom(levels: Record<string, LevelRecord>): number {
+  let n = 1;
+  while (n < LEVELS.length && levels[n]?.solved) n++;
+  return n;
+}
 
 export function migrate(saved: Json | null, readOld: () => Json | null): Json | null {
   if (saved) return saved;
@@ -75,9 +85,7 @@ export function sanitize(saved: Json | null, d: SaveData): SaveData {
   }
   const u = parseInt(saved.unlocked, 10);
   if (u >= 1) d.unlocked = Math.min(u, LEVELS.length);
-  // `unlocked` is clamped to the level count when saved, so a player who finished the then-last level is stuck one short
-  // once new levels are added: open the level after every solved one
-  while (d.unlocked < LEVELS.length && d.levels[d.unlocked]?.solved) d.unlocked++;
+  d.unlocked = Math.max(d.unlocked, unlockedFrom(d.levels));          // never fewer levels open than the solved ones imply
   const w = saved.wardrobe;
   if (w && Array.isArray(w.owned)) {                       // keep only items that still exist; free items are always owned
     w.owned.forEach((id: string) => { const it = WARDROBE_BY_ID[id]; if (it && !it.unlock && !d.wardrobe.owned.includes(id)) d.wardrobe.owned.push(id); });   // Noir items are unlocked by evil clears, never by an old owned list
@@ -95,17 +103,7 @@ export function sanitize(saved: Json | null, d: SaveData): SaveData {
   if (saved.perfect && typeof saved.perfect === 'object') d.perfect.streak = saved.perfect.streak | 0;
   if (saved.evil && saved.evil.cleared && typeof saved.evil.cleared === 'object') d.evil.cleared = saved.evil.cleared;
   if (saved.seen && typeof saved.seen === 'object') {
-    d.seen.larry = !!saved.seen.larry;
-    d.seen.pup = !!saved.seen.pup;
-    d.seen.worm = !!saved.seen.worm;
-    d.seen.elephant = !!saved.seen.elephant;
-    d.seen.dino = !!saved.seen.dino;
-    d.seen.crash = !!saved.seen.crash;
-    d.seen.tiger = !!saved.seen.tiger;
-    d.seen.dig = !!saved.seen.dig;
-    d.seen.harbor = !!saved.seen.harbor;
-    d.seen.yarn = !!saved.seen.yarn;
-    d.seen.mice = !!saved.seen.mice;
+    SCENE_IDS.forEach(id => { d.seen[id] = !!saved.seen[id]; });
     const e = saved.seen.endings;
     if (e && typeof e === 'object') CHAPTERS.forEach(c => { if (e[c.id] === true) d.seen.endings[c.id] = true; });   // only chapters that still exist
   }

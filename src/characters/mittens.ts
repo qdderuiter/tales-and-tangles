@@ -3,8 +3,8 @@
    `mittensInner()` is one drawing alone (a 200 x 220 box, feet at y 208), so the cat films can place her on their own stage;
    `mittensMarkup()` wraps it as the portrait for the story screen. */
 
-export interface MittensPalette { fur: string; deep: string; chest: string; pink: string; gold: string }
-export const MITTENS: MittensPalette = { fur: '#f7e1c4', deep: '#e3c196', chest: '#fff8ee', pink: '#f4a3b5', gold: '#f5c84a' };
+interface MittensPalette { fur: string; deep: string; chest: string; pink: string; gold: string }
+const MITTENS: MittensPalette = { fur: '#f7e1c4', deep: '#e3c196', chest: '#fff8ee', pink: '#f4a3b5', gold: '#f5c84a' };
 const INK = '#3a2a2e';
 
 export function mittensInner(p: MittensPalette = MITTENS): string {
@@ -13,7 +13,7 @@ export function mittensInner(p: MittensPalette = MITTENS): string {
   return '' +
     '<ellipse cx="100" cy="208" rx="62" ry="7" fill="#000" opacity=".14"/>' +
     '<g class="mm-tail"><path d="M150 196 Q198 190 190 150 Q186 128 166 134" fill="none" stroke="' + p.fur + '" stroke-width="20" stroke-linecap="round"/><path d="M150 196 Q198 190 190 150 Q186 128 166 134" fill="none" stroke="' + p.deep + '" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 14" opacity=".7"/></g>' +
-    '<g class="mm-body">' +
+    '<g>' +
       '<path d="M46 190 Q40 142 70 124 L130 124 Q160 142 154 190 Q150 208 100 208 Q50 208 46 190Z" fill="' + p.fur + '"/>' +
       '<ellipse cx="100" cy="170" rx="30" ry="34" fill="' + p.chest + '"/>' +
       '<ellipse cx="74" cy="204" rx="17" ry="9" fill="' + p.chest + '"/><ellipse cx="126" cy="204" rx="17" ry="9" fill="' + p.chest + '"/>' +
@@ -44,11 +44,12 @@ export function mittensMarkup(): string {
 
 export interface MittensPortrait { root: HTMLElement; react(e: string): void }
 
+const EMOS = ['happy', 'shy', 'wiggle', 'surprised', 'sad', 'proud'];
+
 export const Mittens = {
-  EMOS: ['happy', 'shy', 'wiggle', 'surprised', 'sad', 'proud'],
   create(host: HTMLElement): MittensPortrait {
     host.innerHTML = '<div class="mittens b-happy">' + mittensMarkup() + '</div>';
     const root = host.firstElementChild as HTMLElement;
-    return { root, react(e: string) { Mittens.EMOS.forEach(c => root.classList.remove('b-' + c)); root.classList.add('b-' + (Mittens.EMOS.includes(e) ? e : 'happy')); } };
+    return { root, react(e: string) { EMOS.forEach(c => root.classList.remove('b-' + c)); root.classList.add('b-' + (EMOS.includes(e) ? e : 'happy')); } };
   }
 };

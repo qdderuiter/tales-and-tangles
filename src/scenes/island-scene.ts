@@ -1,16 +1,15 @@
 import { IslandScore } from '../audio/film-score.ts';
 import { Haptics } from '../audio/haptics.ts';
-import { bearMarkup } from '../characters/barnaby-svg.ts';
 import { Larry, larryInner } from '../characters/larry.ts';
 import { tigerInner } from '../characters/tiger.ts';
 import { Worm, wormInner } from '../characters/worm.ts';
 import { $, svgEl } from '../core/dom.ts';
 import { scenes } from '../core/scenes.ts';
-import type { SceneDef } from '../core/scenes.ts';
 import { REDUCED, late, mulberry32 } from '../core/util.ts';
 import { Store } from '../state/store.ts';
 import { palmTree } from './film-art.ts';
 import { Film } from './film.ts';
+import { dressBear, px, wrap } from './film-kit.ts';
 
 /* ---------- Chapter 10, the island: four cinematics on one stage ----------
    The crash (opens Case 10.1)      a little plane, three windows with three passengers, a cough, a long fall, a flash, and a quiet morning on a beach
@@ -27,7 +26,6 @@ type Mode = 'flight' | 'beach' | 'jungle' | 'under' | 'rescue';
 const SKY: Record<Mode, string> = { flight: 'sky-dusk', beach: 'sky-dawn', jungle: 'sky-jungle', under: 'sky-under', rescue: 'sky-sunset' };
 
 const EASE_OUT_BACK = 'cubic-bezier(.3,1.35,.5,1)';
-const px = (x: number, y: number, extra = '') => 'translate(' + x + 'px,' + y + 'px)' + (extra ? ' ' + extra : '');
 
 /* where everybody stands, per scene (the position of each character's box; their feet are at its bottom) */
 type Pos = [number, number];
@@ -166,14 +164,7 @@ export const IslandScene = {
   },
 
   /* Barnaby, in whatever the player dressed him in */
-  dressBear() {
-    const art = this.els.ifBArt, markup = bearMarkup(Store.data.wardrobe.equipped);
-    art.innerHTML = markup.slice(markup.indexOf('<svg'), markup.lastIndexOf('</svg>') + 6);
-    const bear = art.firstElementChild;
-    if (!bear) return;
-    bear.removeAttribute('class'); bear.removeAttribute('role'); bear.removeAttribute('aria-label');
-    for (const [k, v] of Object.entries({ x: 0, y: 0, width: 104, height: 120 })) bear.setAttribute(k, String(v));
-  },
+  dressBear() { dressBear(this.els.ifBArt); },
 
   /* a puff of dust or sand at (x, y) */
   puff(x: number, y: number, n = 6, color = '#f6dcae') {
@@ -601,9 +592,6 @@ export const IslandScene = {
     await f.close();
   }
 };
-
-const none = async () => { /* this cinematic has no "case closed" part */ };
-const wrap = (intro: () => Promise<void>, caught: () => Promise<void> = none): SceneDef => ({ intro, caught });
 
 /* levels reach these cinematics through core/scenes.ts: scenes.crash opens 10.1 and its caught() is the rescue that follows 10.4 */
 scenes.crash = wrap(() => IslandScene.crash(), () => IslandScene.rescue());

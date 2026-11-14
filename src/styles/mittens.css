@@ -4,7 +4,7 @@
 .dlg-name.mittens{background:#f4c9a8;color:#5a2f3a}
 .story-mittens .mittens{width:100%;line-height:0}   /* the portrait wrapper only: the name tag shares the class "mittens" and must not stretch */
 .mm-svg{width:100%;height:auto;overflow:visible;display:block;transform-origin:100px 220px;animation:breathe 3.4s ease-in-out infinite}
-.mm-body,.mm-head,.mm-eyes,.mm-tail{transform-box:fill-box}
+.mm-head,.mm-eyes,.mm-tail{transform-box:fill-box}
 .mm-tail{transform-origin:10% 90%;animation:mmTail 2.6s ease-in-out infinite alternate}
 .mm-eyes{transform-origin:center;animation:mmBlink 4.4s infinite;transition:transform .15s}
 .mm-brow,.mm-mouth.frown{opacity:0;transition:opacity .15s}

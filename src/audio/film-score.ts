@@ -142,6 +142,9 @@ function padControl(voices: [number, OscillatorType, number][], o: Parameters<ty
 
 /* a run of rising chimes, the sparkle on a happy ending */
 const sparkleRun = (t0: number, gap: number, vol: number) => { for (let i = 0; i < 6; i++) AudioFX.chime(4 + i * 2, t0 + i * gap, vol); };
+/* the island and the Whisker Isles end their cinematics on the same two stings: a bright arpeggio for the heroes, a longer chord for the title card */
+const heroSting = () => { [0, 4, 7, 12].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.09, dur: 0.9, vol: 0.07, type: 'triangle', attack: 0.02 })); sparkleRun(0.45, 0.07, 0.07); };
+const titleSting = () => { [0, 4, 7, 12, 16].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.06, dur: 2.4, vol: 0.06, type: 'triangle', attack: 0.03 })); sparkleRun(0.5, 0.08, 0.08); };
 
 export const LarryScore = {
   /* the drone: A1 + E2 + a soft A2 an octave up, slowly swelling, the filter breathing slowly; `stop()` fades it */
@@ -541,7 +544,7 @@ export const IslandScore = {
   /* the tiger's yelp as it flees */
   yelp() { AudioFX.note(620, { dur: 0.22, vol: 0.1, type: 'triangle', slideTo: 1050, attack: 0.01 }); AudioFX.note(900, { t: 0.2, dur: 0.3, vol: 0.09, type: 'triangle', slideTo: 380 }); },
   /* a little victory sting for the three heroes */
-  hero() { [0, 4, 7, 12].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.09, dur: 0.9, vol: 0.07, type: 'triangle', attack: 0.02 })); sparkleRun(0.45, 0.07, 0.07); },
+  hero() { heroSting(); },
   /* Biscuit's dive and tunnelling, as in the desert */
   dive() { AudioFX.note(420, { dur: 0.22, vol: 0.08, type: 'triangle', slideTo: 150, lp: 1400 }); AudioFX.noise(0.4, 1800, 0.06, 0.05); },
   dig() { [0, 0.28, 0.52, 0.9, 1.15, 1.5, 1.8].forEach(t => { AudioFX.note(105, { t, dur: 0.2, vol: 0.06, type: 'sine', slideTo: 70, lp: 300 }); AudioFX.noise(0.2, 700, 0.04, t); }); },
@@ -555,7 +558,7 @@ export const IslandScore = {
   horn() { AudioFX.note(hz(-17), { dur: 1.6, vol: 0.09, type: 'sawtooth', lp: 380, attack: 0.1 }); AudioFX.note(hz(-12), { t: 0.5, dur: 2.0, vol: 0.09, type: 'sawtooth', lp: 380, attack: 0.1 }); },
   /* the flare shoots up, and bursts */
   flare() { AudioFX.noise(0.9, 2600, 0.08); AudioFX.note(300, { dur: 0.9, vol: 0.05, type: 'triangle', slideTo: 1400 }); sparkleRun(0.9, 0.06, 0.08); },
-  title() { [0, 4, 7, 12, 16].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.06, dur: 2.4, vol: 0.06, type: 'triangle', attack: 0.03 })); sparkleRun(0.5, 0.08, 0.08); }
+  title() { titleSting(); }
 };
 
 /* ---------- the Whisker Isles cinematics (scenes/cats-scene.ts): the harbour, the red thread, the little footprints and the yarn coming home ----------
@@ -589,6 +592,6 @@ export const CatScore = {
   /* a springy bounce */
   boing() { AudioFX.note(220, { dur: 0.45, vol: 0.06, type: 'sine', slideTo: 520 }); AudioFX.note(520, { t: 0.2, dur: 0.3, vol: 0.04, type: 'sine', slideTo: 300 }); },
   /* a victory sting for the whole island */
-  hero() { [0, 4, 7, 12].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.09, dur: 0.9, vol: 0.07, type: 'triangle', attack: 0.02 })); sparkleRun(0.45, 0.07, 0.07); },
-  title() { [0, 4, 7, 12, 16].forEach((s, i) => AudioFX.note(hz(s), { t: i * 0.06, dur: 2.4, vol: 0.06, type: 'triangle', attack: 0.03 })); sparkleRun(0.5, 0.08, 0.08); }
+  hero() { heroSting(); },
+  title() { titleSting(); }
 };

@@ -188,6 +188,9 @@ describe('loading', () => {
     // an unsolved frontier stays where it is
     put(Store.KEY, { unlocked: 3, levels: { 1: solved(3, 3), 2: solved(3, 3) } });
     expect(load().unlocked).toBe(3);
+    // solved levels from the start open the level after them, even when the stored number is lower; a gap stops it
+    put(Store.KEY, { unlocked: 1, levels: { 1: solved(3, 3), 2: solved(3, 3), 4: solved(3, 3) } });
+    expect(load().unlocked).toBe(3);
     // never past the last level
     const all: Record<number, ReturnType<typeof solved>> = {};
     LEVELS.forEach(lv => { all[lv.n] = solved(3, 3); });

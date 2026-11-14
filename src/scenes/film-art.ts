@@ -1,5 +1,5 @@
 import { bearMarkup } from '../characters/barnaby-svg.ts';
-import { CAT_COATS, MICE, YARN, catInner, mouseInner, yarnBall } from '../characters/cats.ts';
+import { CAT_COATS, MICE, YARN, catHouse, catInner, mouseInner, yarnBall } from '../characters/cats.ts';
 import { mittensInner } from '../characters/mittens.ts';
 import { rocketInner } from '../characters/pup.ts';
 import { HERD, boingBall, dinoInner } from '../characters/dino.ts';
@@ -436,13 +436,8 @@ const ART: Record<Motif, Record<string, LayerFn>> = {
       '<g fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="7 10" opacity=".6"><path d="M180 872 Q330 836 460 874"/><path d="M470 862 Q600 836 700 868"/></g>' +
       '<g fill="#fff" opacity=".7"><circle cx="262" cy="862" r="7"/><circle cx="420" cy="868" r="7"/><circle cx="560" cy="856" r="7"/></g>', vb),
     town: (_u, vb) => {
-      const house = (x: number, y: number, w: number, h: number, wall: string, roof: string, lit: boolean) =>
-        '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="6" fill="' + wall + '"/>' +
-        '<path d="M' + (x - 8) + ' ' + y + ' L' + (x + 4) + ' ' + Math.round(y - w * 0.46) + ' L' + Math.round(x + w * 0.5) + ' ' + Math.round(y - w * 0.12) + ' L' + (x + w - 4) + ' ' + Math.round(y - w * 0.46) + ' L' + (x + w + 8) + ' ' + y + 'Z" fill="' + roof + '"/>' +
-        '<circle cx="' + (x + w / 2) + '" cy="' + Math.round(y + h * 0.42) + '" r="' + Math.round(w * 0.16) + '" fill="' + (lit ? '#ffe29a' : '#fff6e0') + '" stroke="#fff" stroke-width="3"/>' +
-        '<rect x="' + (x + w / 2 - 7) + '" y="' + (y + h - 26) + '" width="14" height="26" rx="7" fill="#7a5a66"/>';
-      return svg(house(204, 744, 88, 82, '#fff0d8', '#e58fa6', true) + house(302, 712, 104, 114, '#e6f4ee', '#8fb8d8', true) + house(416, 748, 80, 78, '#ffe9e2', '#f2a07a', false) +
-        house(504, 728, 90, 98, '#f0e8ff', '#b79ae0', true) +
+      return svg(catHouse(204, 744, 88, 82, '#fff0d8', '#e58fa6', true) + catHouse(302, 712, 104, 114, '#e6f4ee', '#8fb8d8', true) + catHouse(416, 748, 80, 78, '#ffe9e2', '#f2a07a', false) +
+        catHouse(504, 728, 90, 98, '#f0e8ff', '#b79ae0', true) +
         '<path d="M354 650 L354 616" stroke="#7a5a66" stroke-width="4"/><path d="M334 622 Q354 606 376 622 Q354 636 334 622Z" fill="#f5c84a" class="cf-sway"/>', vb);
     },
     lanterns: (u, vb) => {
@@ -483,12 +478,13 @@ export class Stage {
     this.root.className = 'cf-stage' + (opts.band ? ' band' : '');
     this.root.setAttribute('aria-hidden', 'true');
     FILM_LAYERS[motif].forEach(id => {
+      if (opts.band && !BAND_LAYERS[motif].includes(id)) return;                       // a card shows only its finished-scene layers: do not build the rest
       const layer = document.createElement('div');
       layer.className = 'cf-layer';
       layer.dataset.layer = id;
       layer.innerHTML = ART[motif][id](u + id, vb);
       this.layers[id] = layer;
-      if (opts.band && BAND_LAYERS[motif].includes(id)) layer.classList.add('on');
+      if (opts.band) layer.classList.add('on');
       if (!opts.band) layer.style.transform = layerTransform(DEPTH[id] ?? 1, this.cam);
       this.root.appendChild(layer);
     });

@@ -1,14 +1,13 @@
 import { CatScore } from '../audio/film-score.ts';
 import { Haptics } from '../audio/haptics.ts';
-import { bearMarkup } from '../characters/barnaby-svg.ts';
-import { CAT_COATS, MICE, YARN, catInner, mouseInner, yarnBall } from '../characters/cats.ts';
+import { CAT_COATS, MICE, YARN, catHouse, catInner, mouseInner, yarnBall } from '../characters/cats.ts';
 import { mittensInner } from '../characters/mittens.ts';
 import { $, svgEl } from '../core/dom.ts';
 import { scenes } from '../core/scenes.ts';
-import type { SceneDef } from '../core/scenes.ts';
 import { REDUCED, late, mulberry32 } from '../core/util.ts';
 import { Store } from '../state/store.ts';
 import { Film } from './film.ts';
+import { dressBear, px, wrap } from './film-kit.ts';
 
 /* ---------- Chapter 11, the Whisker Isles: four cinematics on one stage ----------
    The arrival (opens Case 11.1)    a ship noses into a harbour of very sad cats; Queen Mittens waits on the quay
@@ -27,7 +26,6 @@ const GLIDE = 'cubic-bezier(.22,1,.36,1)';
 const SPRING = 'cubic-bezier(.3,1.35,.5,1)';
 const TANGLE_AT = 232;                                               // the giant ball's centre x, by the fountain (Barnaby stands to its left)
 const SHIP_DOCKED = 34;                                              // where the ship's top-left rests at the quay
-const px = (x: number, y: number, extra = '') => 'translate(' + x + 'px,' + y + 'px)' + (extra ? ' ' + extra : '');
 type Pos = [number, number];
 
 /* where everybody stands, per scene: the top-left of each character's box (their feet are at its bottom) */
@@ -44,16 +42,15 @@ const HOME_AT: Record<string, Pos> = {
 /* the garden party after the last case: the cats on the left, the queen in front of the door, the mice in front of the bear, yarn along the bottom */
 const HOME_SPOTS: Record<string, Pos> = { kfC0: [34, 458], kfC1: [86, 484], kfC2: [296, 494], kfM0: [150, 540], kfM1: [196, 548], kfM2: [242, 542], kfK0: [34, 562], kfK1: [262, 564], kfK2: [316, 560] };
 const YARN_SPOTS: Pos[] = [[68, 600], [148, 608], [228, 602], [308, 610]];
+/* the three mice at the hole in the wall */
+const MICE_SPOTS: Pos[] = [[232, 484], [272, 492], [312, 486]];
+const HOME_CAST = ['kfB', 'kfQ', 'kfC0', 'kfC1', 'kfC2', 'kfK0', 'kfK1', 'kfK2', 'kfM0', 'kfM1', 'kfM2', 'kfY0', 'kfY1', 'kfY2', 'kfY3'];
 
 function artMarkup(): string {
   const rng = mulberry32(11);
   let stars = '';
   for (let i = 0; i < 34; i++) stars += '<circle class="kf-twinkle" cx="' + (rng() * 400).toFixed(1) + '" cy="' + (rng() * 300).toFixed(1) + '" r="' + (0.7 + rng() * 1.3).toFixed(1) + '" fill="#fff6d0" style="animation-delay:-' + (rng() * 3).toFixed(2) + 's;opacity:' + (0.4 + (i % 3) * 0.25) + '"/>';
-  const house = (x: number, y: number, w: number, h: number, wall: string, roof: string, lit: boolean) =>
-    '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="5" fill="' + wall + '"/>' +
-    '<path d="M' + (x - 6) + ' ' + y + ' L' + (x + 3) + ' ' + Math.round(y - w * 0.45) + ' L' + Math.round(x + w / 2) + ' ' + Math.round(y - w * 0.12) + ' L' + (x + w - 3) + ' ' + Math.round(y - w * 0.45) + ' L' + (x + w + 6) + ' ' + y + 'Z" fill="' + roof + '"/>' +
-    '<circle cx="' + (x + w / 2) + '" cy="' + Math.round(y + h * 0.4) + '" r="' + Math.round(w * 0.15) + '" fill="' + (lit ? '#ffe29a' : '#fff6e0') + '" stroke="#fff" stroke-width="2.5"/>' +
-    '<rect x="' + (x + w / 2 - 6) + '" y="' + (y + h - 22) + '" width="12" height="22" rx="6" fill="#7a5a66"/>';
+  const house = (x: number, y: number, w: number, h: number, wall: string, roof: string, lit: boolean) => catHouse(x, y, w, h, wall, roof, lit, 0.85);
   const fish = (x: number, y: number, c: string, d: number) => '<g class="kf-bob" style="animation-delay:-' + d + 's"><circle cx="' + x + '" cy="' + y + '" r="30" fill="url(#kfLamp)"/><path d="M' + (x - 11) + ' ' + y + ' Q' + x + ' ' + (y - 11) + ' ' + (x + 9) + ' ' + y + ' Q' + x + ' ' + (y + 11) + ' ' + (x - 11) + ' ' + y + 'Z" fill="' + c + '"/><path d="M' + (x + 8) + ' ' + y + ' L' + (x + 18) + ' ' + (y - 7) + ' L' + (x + 18) + ' ' + (y + 7) + 'Z" fill="' + c + '"/><circle cx="' + (x - 5) + '" cy="' + (y - 2) + '" r="1.6" fill="#6a4a24"/></g>';
   let prints = '';
   for (let i = 0; i < 9; i++) {
@@ -130,7 +127,7 @@ export const CatsScene = {
 
   init() {
     const e = this.els;
-    ['catsFilm', 'kfStage', 'kfArt', 'kfDim', 'kfBlack', 'kfCap', 'kfTitle', 'kfTitleSmall', 'kfTitleMain', 'kfTitleSub', 'kfFlash', 'kfSkip'].forEach(id => { e[id] = $('#' + id); });
+    ['catsFilm', 'kfStage', 'kfArt', 'kfCap', 'kfTitle', 'kfTitleSmall', 'kfTitleMain', 'kfTitleSub', 'kfFlash', 'kfSkip'].forEach(id => { e[id] = $('#' + id); });
     this.film = new Film({ root: e.catsFilm, skip: e.kfSkip, cap: e.kfCap, flash: e.kfFlash });
   },
 
@@ -154,19 +151,16 @@ export const CatsScene = {
     if (last.opacity !== undefined && last.opacity !== null) s.opacity = String(last.opacity);
     return this.film.anim(el, frames, { fill: 'backwards', ...opts });
   },
+  /* fade a character in, rising a little from below */
+  rise(id: string, delay = 0, duration = 800, dy = 10) {
+    this.move(this.els[id], [{ opacity: 0, transform: 'translateY(' + dy + 'px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration, delay, easing: GLIDE });
+  },
   show(id: string, on = true) { this.els[id].style.opacity = on ? '1' : '0'; },
   place(id: string, at: Pos) { this.els[id].style.transform = px(at[0], at[1]); },
   title(small: string, main: string, sub: string) { const e = this.els; e.kfTitleSmall.textContent = small; e.kfTitleMain.textContent = main; e.kfTitleSub.textContent = sub; e.kfTitle.classList.add('on'); },
 
   /* Barnaby, in whatever the player dressed him in */
-  dressBear() {
-    const art = this.els.kfBArt, markup = bearMarkup(Store.data.wardrobe.equipped);
-    art.innerHTML = markup.slice(markup.indexOf('<svg'), markup.lastIndexOf('</svg>') + 6);
-    const bear = art.firstElementChild;
-    if (!bear) return;
-    bear.removeAttribute('class'); bear.removeAttribute('role'); bear.removeAttribute('aria-label');
-    for (const [k, v] of Object.entries({ x: 0, y: 0, width: 104, height: 120 })) bear.setAttribute(k, String(v));
-  },
+  dressBear() { dressBear(this.els.kfBArt); },
 
   /* a puff of dust, or a few hearts-and-sparkles in `color`, at (x, y) */
   puff(x: number, y: number, n = 6, color = '#fff1d6') {
@@ -188,7 +182,7 @@ export const CatsScene = {
     this.film.clearAnimations();
     e.kfArt.setAttribute('class', 'kf-art m-' + mode);
     e.kfStage.className = 'kf-stage ' + SKY[mode];
-    ['kfStage', 'kfArt', 'kfShip', 'kfBlack', 'kfDim', 'kfB', 'kfQ', 'kfTangle', 'kfPrints', 'kfEyes',
+    ['kfStage', 'kfArt', 'kfShip', 'kfB', 'kfQ', 'kfTangle', 'kfPrints', 'kfEyes',
       ...[0, 1, 2].flatMap(i => ['kfC' + i, 'kfK' + i, 'kfM' + i]), ...[0, 1, 2, 3].map(i => 'kfY' + i)]
       .forEach(id => { e[id].style.transform = ''; e[id].style.opacity = ''; });
     const thread = e.kfThread as unknown as SVGElement;
@@ -223,7 +217,7 @@ export const CatsScene = {
       f.snd(() => CatScore.lap());
       f.anim(e.kfStage, [{ transform: 'scale(1.18) translate(0,3%)' }, { transform: 'scale(1)' }], { duration: 12000, easing: GLIDE, fill: 'backwards' });
       f.anim(e.kfWave, [{ transform: 'translateX(0)' }, { transform: 'translateX(-20px)' }], { duration: 2800, iterations: 8, direction: 'alternate', easing: 'ease-in-out' });
-      ['kfC0', 'kfC1'].forEach((id, i) => this.move(e[id], [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 900, delay: i * 350, easing: GLIDE }));
+      ['kfC0', 'kfC1'].forEach((id, i) => this.rise(id, i * 350, 900));
       await f.wait(2400);
       f.snd(() => CatScore.meow());
       await f.wait(1400);
@@ -242,7 +236,7 @@ export const CatsScene = {
       f.caption('Barnaby stepped ashore, and every ear turned his way.');
       await f.wait(3000);
       // 4. Queen Mittens
-      this.move(e.kfQ, [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 1000, easing: GLIDE });
+      this.rise('kfQ', 0, 1000, 14);
       f.snd(() => CatScore.purr());
       f.caption('Queen Mittens waited at the end of the quay. Her ball of yarn was gone, and so was everybody else\'s.');
       await f.wait(3800);
@@ -290,8 +284,7 @@ export const CatsScene = {
       await f.wait(3600);
       // 2. the kittens look on
       f.caption('It went under the arch, round the fountain, and up and down the clock tower.');
-      this.move(e.kfK0, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 800, easing: GLIDE });
-      this.move(e.kfK1, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 800, delay: 260, easing: GLIDE });
+      this.rise('kfK0'); this.rise('kfK1', 260);
       f.snd(() => CatScore.mew());
       this.move(e.kfBPos, [{ transform: px(30, 444) }, { transform: px(...SPOT.bear.town) }], { duration: 3000, easing: GLIDE });
       f.anim(e.kfStage, [{ transform: 'scale(1)' }, { transform: 'scale(1.14) translate(-4%,0)' }], { duration: 4600, easing: 'ease-in-out', fill: 'forwards' });
@@ -323,7 +316,7 @@ export const CatsScene = {
     this.reset('wall');
     ['kfB', 'kfPrints', 'kfEyes', 'kfM0', 'kfM1', 'kfM2'].forEach(id => this.show(id));
     this.place('kfBPos', SPOT.bear.wall);
-    this.place('kfM0Pos', [232, 484]); this.place('kfM1Pos', [272, 492]); this.place('kfM2Pos', [312, 486]);
+    MICE_SPOTS.forEach((at, i) => this.place('kfM' + i + 'Pos', at));
   },
 
   async mice(): Promise<void> {
@@ -335,7 +328,7 @@ export const CatsScene = {
       this.settleMice(); this.title('CASE 11.3', 'TINY FOOTPRINTS', 'a very small thief'); await f.wait(2800); await f.close();
     } else {
       CatScore.start();
-      this.place('kfM0Pos', [232, 484]); this.place('kfM1Pos', [272, 492]); this.place('kfM2Pos', [312, 486]);
+      MICE_SPOTS.forEach((at, i) => this.place('kfM' + i + 'Pos', at));
       // 1. night, and a garden wall
       this.show('kfB');
       f.caption('Night fell over the garden wall.');
@@ -376,11 +369,14 @@ export const CatsScene = {
   },
 
   /* ============================================ 4. THE YARN COMES HOME (after Case 11.4) ============================================ */
-  settleHome() {
-    this.reset('home');
-    ['kfB', 'kfQ', 'kfC0', 'kfC1', 'kfC2', 'kfK0', 'kfK1', 'kfK2', 'kfM0', 'kfM1', 'kfM2', 'kfY0', 'kfY1', 'kfY2', 'kfY3'].forEach(id => this.show(id));
+  /* everyone stands where the garden party ends (hidden until shown) */
+  placeHome() {
     Object.entries(HOME_SPOTS).forEach(([id, at]) => this.place(id + 'Pos', at));
-    YARN_SPOTS.forEach(([x, y], i) => this.place('kfY' + i + 'Pos', [x, y]));
+    YARN_SPOTS.forEach((at, i) => this.place('kfY' + i + 'Pos', at));
+  },
+  settleHome() {
+    this.reset('home'); this.placeHome();
+    HOME_CAST.forEach(id => this.show(id));
   },
 
   async home(): Promise<void> {
@@ -388,20 +384,18 @@ export const CatsScene = {
     if (f.running) return;
     const e = this.els;
     this.reset('home'); this.dressBear(); f.open(false);
-    this.settleHome();
-    ['kfB', 'kfQ', 'kfC0', 'kfC1', 'kfC2', 'kfK0', 'kfK1', 'kfK2', 'kfM0', 'kfM1', 'kfM2', 'kfY0', 'kfY1', 'kfY2', 'kfY3'].forEach(id => this.show(id, false));
     if (REDUCED) {
       this.settleHome(); f.caption('Scarves for the mice, and balls of yarn for the cats.'); await f.wait(2800); await f.close(); return;
     }
+    this.placeHome();
     CatScore.start();
     // 1. the garden, and a royal welcome
     f.caption('In the palace garden, at golden hour, everybody waited.');
     f.anim(e.kfStage, [{ transform: 'scale(1.18) translateY(3%)' }, { transform: 'scale(1)' }], { duration: 12000, easing: GLIDE, fill: 'backwards' });
     f.snd(() => CatScore.purr());
-    this.move(e.kfB, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 800, easing: GLIDE });
+    this.rise('kfB');
     [0, 1, 2].forEach(i => {
-      this.move(e['kfC' + i], [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 800, delay: i * 240, easing: GLIDE });
-      this.move(e['kfM' + i], [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 800, delay: 500 + i * 240, easing: GLIDE });
+      this.rise('kfC' + i, i * 240); this.rise('kfM' + i, 500 + i * 240);
     });
     await f.wait(3000);
     // 2. the yarn rolls in
@@ -415,7 +409,7 @@ export const CatsScene = {
     // 3. the kittens pounce
     f.caption('POUNCE! The kittens remembered how to play.');
     [0, 1, 2].forEach(i => {
-      this.move(e['kfK' + i], [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 400, easing: GLIDE });
+      this.rise('kfK' + i, 0, 400);
       f.anim(e['kfK' + i], [{ transform: 'translateY(0)' }, { transform: 'translateY(-34px) rotate(-8deg)', offset: 0.45 }, { transform: 'translateY(0)' }, { transform: 'translateY(-16px)', offset: 0.78 }, { transform: 'translateY(0)' }], { duration: 1100, delay: 400 + i * 260, easing: SPRING, iterations: 2 });
     });
     f.snd(() => { CatScore.pounce(); Haptics.win(); });
@@ -424,7 +418,7 @@ export const CatsScene = {
     f.snd(() => CatScore.mew());
     await f.wait(3400);
     // 4. the queen, and the deal
-    this.move(e.kfQ, [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 900, easing: GLIDE });
+    this.rise('kfQ', 0, 900, 14);
     f.caption('Scarves for the mice, and balls of yarn for the cats. Everybody shares.');
     f.snd(() => CatScore.hero());
     f.anim(e.kfStage, [{ transform: 'scale(1)' }, { transform: 'scale(1.1) translate(-2%,0)' }], { duration: 8000, easing: 'ease-in-out', fill: 'forwards' });
@@ -436,9 +430,6 @@ export const CatsScene = {
     await f.close();
   }
 };
-
-const none = async () => { /* this cinematic has no "case closed" part */ };
-const wrap = (intro: () => Promise<void>, caught: () => Promise<void> = none): SceneDef => ({ intro, caught });
 
 /* levels reach these cinematics through core/scenes.ts: scenes.harbor opens 11.1 and its caught() is the yarn coming home after 11.4 */
 scenes.harbor = wrap(() => CatsScene.harbor(), () => CatsScene.home());

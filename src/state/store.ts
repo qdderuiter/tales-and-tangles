@@ -1,4 +1,6 @@
 import { LEVELS } from '../data/levels.ts';
+import { SCENE_IDS } from '../data/types.ts';
+import type { SceneId } from '../data/types.ts';
 import { OUTFIT_DEFAULT, WARDROBE, WARDROBE_BY_ID } from '../data/wardrobe.ts';
 import { blankLevel, migrate, ownsItem, sanitize } from './migrations.ts';
 import type { Json, PuzzleKey, SaveData } from './migrations.ts';
@@ -13,7 +15,7 @@ export const Store = {
       unlocked: 1, levels: {}, settings: { sound: true, voice: true, music: true, speech: 1 },
       wardrobe: { owned: WARDROBE.filter(i => i.cost === 0 && !i.unlock).map(i => i.id), equipped: Object.assign({}, OUTFIT_DEFAULT) },
       daily: { lastDate: null, streak: 0, best: 0, results: {} },
-      perfect: { streak: 0 }, evil: { cleared: {} }, seen: { larry: false, pup: false, worm: false, elephant: false, dino: false, crash: false, tiger: false, dig: false, harbor: false, yarn: false, mice: false, endings: {} },
+      perfect: { streak: 0 }, evil: { cleared: {} }, seen: { ...(Object.fromEntries(SCENE_IDS.map(id => [id, false])) as Record<SceneId, boolean>), endings: {} },
       badges: {}, bonusWords: []
     };
   },

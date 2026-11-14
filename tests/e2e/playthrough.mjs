@@ -788,7 +788,6 @@ const scenarios = {
     await startCase(page, 'cats', 31);
     await openingFilm(s, 'cats', { title: 'THE GREAT TANGLE', titleSel: '#kfTitleMain', seen: 'yarn', shot: 'cats-thread' });
     await speakerAppears(s, 'Queen Mittens', 'storyMittens', 'cats-thread-mittens');
-    expect((await readSave(page)).seen.yarn, 'the red thread is marked as seen').toBe(true);
   },
 
   async AC(s) {
@@ -811,7 +810,6 @@ const scenarios = {
     await startCase(page, 'cats', 32);
     await openingFilm(s, 'cats', { title: 'TINY FOOTPRINTS', titleSel: '#kfTitleMain', seen: 'mice', shot: 'cats-footprints' });
     await onScreen(page, 'story');
-    expect((await readSave(page)).seen.mice, 'the footprints are marked as seen').toBe(true);
   }
 };
 

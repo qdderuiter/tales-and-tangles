@@ -149,8 +149,7 @@ export const CHAPTERS: Chapter[] = [
         { caption: 'And a very strange team sails home, together. Thank you, Barnaby, Biscuit and Larry!', cam: { x: 0, y: 0, scale: 1, ms: 3600 }, cue: 'bell', flash: 0.4, hold: 3600 },
         { caption: 'But far across the sea, a land of whiskers has lost something very dear...', cam: { x: 4, y: -4, scale: 1.04, ms: 3400 }, cue: 'whoosh', hold: 3200 }
       ] } },
-  /* Chapter 11 plays the shared case track until public/music/cat-paradise.mp3 exists: then add track: 'cats' here (audio/music.ts has the key ready) */
-  { id: 'cats', n: 11, title: 'Whisker Isles', tagline: 'A land of cats, and not one ball of yarn.', levels: [30, 31, 32, 33], motif: 'cats',
+  { id: 'cats', n: 11, title: 'Whisker Isles', tagline: 'A land of cats, and not one ball of yarn.', levels: [30, 31, 32, 33], motif: 'cats', track: 'cats',
     palette: { a: '#ffd6e4', b: '#cdb6ec', ink: '#5a2f4a', glow: '#ffd27a' },
     ending: {
       start: ['sky', 'hills', 'town'],
