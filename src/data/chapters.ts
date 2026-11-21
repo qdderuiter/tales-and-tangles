@@ -164,7 +164,7 @@ export const CHAPTERS: Chapter[] = [
         { caption: 'Pounce! The kittens are playing again. Thank you, Barnaby!', show: ['kittens'], cam: { x: 0, y: 0, scale: 1.04, ms: 3600 }, cue: 'chime', flash: 0.4, hold: 3600 },
         { caption: 'But far across the desert, a smell of tomatoes drifts over three great pyramids...', cam: { x: 4, y: -4, scale: 1.04, ms: 3400 }, cue: 'whoosh', hold: 3200 }
       ] } },
-  { id: 'spaghetti', n: 12, title: 'Spaghetti Chronicles', tagline: 'A lost recipe, a masked detective and a very old tomb.', levels: [34, 35, 36, 37], motif: 'pyramids',
+  { id: 'spaghetti', n: 12, title: 'Spaghetti Chronicles', tagline: 'A lost recipe, a masked detective and a very old tomb.', levels: [34, 35, 36, 37], motif: 'pyramids', track: 'pyramids',
     palette: { a: '#f6e3b4', b: '#e9a86a', ink: '#5a3a24', glow: '#ffd27a' },
     ending: {
       start: ['sky', 'stars', 'moon', 'dunes', 'pyramids'],
