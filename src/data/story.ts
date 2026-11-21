@@ -649,6 +649,104 @@ export const STORY_RAW: Record<number, Pick<Record<StoryPart, RawLine[]>, 'intro
       { who: 'Queen Mittens', e: 'wiggle', t: 'Barnaby, listen! The kittens are pouncing! They are rolling! Oh, listen to them laugh.' },
       { e: 'proud', t: 'That is the sound I came all this way to hear. Places, everyone. The Whisker Isles are about to play again.' }
     ]
+  },
+  34: {
+    intro: [
+      { e: 'happy', t: 'Egypt! Golden sand, a river of blue, and three great pyramids standing in a row. Partner, I have never seen anything so grand.' },
+      { who: 'Chef Pasquale', e: 'sad', t: 'Mamma mia, detectives, please help! I am Pasquale, the best spaghetti chef in all of Italy, and someone has stolen my secret recipe!' },
+      { who: 'Chef Pasquale', e: 'surprised', t: 'Three pages, my grandmother\'s sauce, a secret no one has ever tasted. Now the first page is gone from my camp kitchen, and I cannot cook a single noodle!' },
+      { e: 'thinking', t: 'Hmm. A theft at the foot of a pyramid. And that striped fellow over there, hiding behind the palm tree... Is that Evil Larry? A known thief, chef. I would keep an eye on him.' },
+      { who: 'Evil Larry', e: 'sad', t: 'Me? I steal lanterns, not noodles! I was napping under this palm tree, and nobody here ever believes me.' },
+      { who: 'Evil Larry', e: 'smug', t: 'Fine. I will help you search, just to prove it. Somebody in this camp is a much better thief than I am.' },
+      { e: 'neutral', t: 'Five suspects, five spots around the camp, and one missing page. Keep your eyes open, everyone.',
+        choices: [
+          { label: 'We will find the recipe!', reply: { e: 'happy', t: 'That is the spirit. Trace each word, and leave no letter behind.' } },
+          { label: 'Any tips first?', gift: true, reply: { e: 'proud', t: 'Of course. One free hint, wrapped in a napkin.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Cleo Camel! She was in the camp kitchen with the wooden spoon in her mouth, and a forged note in her hoof that pointed straight at Larry.' },
+      { e: 'sad', t: 'Cleo says: somebody in a long coat gave me a bag of dates to leave the note there. I did not know it was stealing. I am so sorry.' },
+      { who: 'Chef Pasquale', e: 'happy', t: 'Page one! Grazie, grazie! But there are still two pages out there somewhere.' },
+      { who: 'Evil Larry', e: 'angry', t: 'A long coat? I do not even own one. I told you, somebody is setting me up.' },
+      { e: 'thinking', t: 'Or you are very good at looking innocent, Larry. I will be watching you, all the same.' },
+      { e: 'proud', t: 'To the Sphinx! She guards the desert, and I have a feeling she has seen something.' }
+    ]
+  },
+  35: {
+    intro: [
+      { e: 'happy', t: 'The Great Sphinx! Half cat, half lion, all stone, and she has been guarding the sand for four thousand years.' },
+      { who: 'Chef Pasquale', e: 'surprised', t: 'The second page was stolen from between her paws, right under her stone nose! She did not even blink!' },
+      { who: 'Evil Larry', e: 'thinking', t: 'Look at this lantern. It has my name painted on the side, in very neat letters, right beside the empty spot. Nobody that tidy ever stole anything.' },
+      { e: 'surprised', t: 'Or a very tidy thief dropped it, Larry. Do not worry, we will check the notebook.' },
+      { who: 'Evil Larry', e: 'sad', t: 'Funny. You always have an answer ready, bear, and it is always about me.' },
+      { e: 'neutral', t: 'Five suspects, five spots around the Sphinx, and one missing page.',
+        choices: [
+          { label: 'Riddle me this!', reply: { e: 'happy', t: 'Ha! Trace each word, and leave no letter behind.' } },
+          { label: 'A hint, please?', gift: true, reply: { e: 'proud', t: 'Always. One free hint, carved in stone.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Nadia Naja! She was curled between the sphinx paws with the hourglass in her coils, and the second page tucked under her scales.' },
+      { e: 'sad', t: 'Nadia says: a stranger with a hat pulled low gave me a gold coin to leave a lantern with Larry\'s name on it. I only wanted the coin. I am so sorry.' },
+      { who: 'Evil Larry', e: 'angry', t: 'A hat pulled low! A stranger who painted my name, in very neat letters. I knew it. I was framed!' },
+      { who: 'Chef Pasquale', e: 'shy', t: 'Larry, forgive me for shouting. Page two is safe, and I think I was unfair to you.' },
+      { e: 'thinking', t: 'Let us not rush, chef. Larry may only look innocent. Come, the tombs are next, and one page is still missing.' },
+      { who: 'Evil Larry', e: 'thinking', t: 'Hm. Awfully keen to move on, bear. Awfully keen to move on.' }
+    ]
+  },
+  36: {
+    intro: [
+      { e: 'surprised', t: 'A tomb under the pyramid, wall to wall with bandages. Who knew a mummy could sleep so soundly?' },
+      { who: 'Chef Pasquale', e: 'sad', t: 'The third page was taken from the mummy chamber. It is dark, it is dusty, and I am a chef, not a hero!' },
+      { who: 'Evil Larry', e: 'thinking', t: 'Wait. Look at the floor. Footprints in the dust, bear-sized, with a pawprint that is very hard to place.' },
+      { e: 'surprised', t: 'Footprints? How odd, Larry. I do not see anything. Let us go on with the case.' },
+      { who: 'Evil Larry', e: 'smug', t: 'Of course you do not.' },
+      { e: 'neutral', t: 'Five suspects, five spots around the tomb, and one very dusty page.',
+        choices: [
+          { label: 'Light the torches!', reply: { e: 'happy', t: 'Bravely done. Trace each word, and leave no letter behind.' } },
+          { label: 'Any tips first?', gift: true, reply: { e: 'proud', t: 'Certainly. One free hint, wrapped in linen.' } }
+        ] }
+    ],
+    outro: [
+      { e: 'happy', t: 'Ptolemy Parrot! He was in the mummy chamber with the golden amulet round his neck, and the third page folded inside it.' },
+      { e: 'sad', t: 'Ptolemy says: a bear in a fedora gave me this amulet to hide the page here. He said it was a game. I am so sorry.' },
+      { who: 'Evil Larry', e: 'surprised', t: 'A bear. In a fedora.' },
+      { who: 'Chef Pasquale', e: 'surprised', t: 'But, detective... you are a bear!' },
+      { e: 'sneaky', t: 'Many bears wear hats, chef. Do not let a parrot confuse you. Quickly now, one page to go.' },
+      { who: 'Evil Larry', e: 'thinking', t: 'Many bears wear hats. I will be keeping my eyes on this particular one.' }
+    ]
+  },
+  37: {
+    intro: [
+      { who: 'Chef Pasquale', e: 'sad', t: 'The last page, the secret ingredient, taken from my tent before sunrise. If it is gone, my family recipe dies with me.' },
+      { who: 'Evil Larry', e: 'thinking', t: 'Chef, I have a very strange feeling. Look at the names in the notebook this time. There is one that was never there before.' },
+      { e: 'sneaky', t: 'Larry, enough! There are five suspects and one case. Open the notebook, and cross people off like a good detective.' },
+      { who: 'Evil Larry', e: 'proud', t: 'Gladly, bear. If I am wrong, I will wash every pot in this camp myself.' },
+      { who: 'Chef Pasquale', e: 'surprised', t: 'Let the notebook decide. I want to know the truth.',
+        choices: [
+          { label: 'Open the notebook!', reply: { e: 'sneaky', t: 'Fine. Trace each word, and leave no letter behind.' } },
+          { label: 'Hint, please?', gift: true, reply: { e: 'proud', t: 'One free hint. Do not say I never gave you anything.' } }
+        ] }
+    ],
+    outro: [
+      { who: 'Evil Larry', e: 'surprised', t: 'Barnaby! He was in the chef\'s tent, the fedora on his head and the last page of the recipe tucked in his coat.' },
+      { who: 'Chef Pasquale', e: 'surprised', t: 'Mamma mia! The detective? But he has helped us all week!' },
+      { who: 'Barnaby Noir', e: 'smug', t: 'Bravo, Larry. Nobody ever listens to the thief. It was my favourite part of the game.' },
+      { who: 'Barnaby Noir', e: 'sneaky', t: 'The real Barnaby? Locked away in the dark, where nobody will ever find him. And the last page is mine, little chef. The secret ingredient is mine!' },
+      { who: 'Chef Pasquale', e: 'angry', t: 'Nobody steals my sauce!' },
+      { who: 'Evil Larry', e: 'proud', t: 'Hold him, chef! I have been following this bear all week for exactly this moment!' },
+      { who: 'Barnaby Noir', e: 'caught', t: 'Impossible! Beaten by a thief and a cook with a wooden spoon! This is not over!' },
+      { who: 'Evil Larry', e: 'happy', t: 'There he goes, running over the dunes. I told you I did not take it.' },
+      { who: 'Chef Pasquale', e: 'sad', t: 'Larry, I am so sorry I ever doubted you. But where is the real Barnaby?' },
+      { who: 'Chef Pasquale', e: 'surprised', t: 'Listen! Is that... purring? A tiny cat with a gold tag that says Nefi, and he wants us to follow him!' },
+      { who: 'Evil Larry', e: 'thinking', t: 'Cream-coloured, with a tail like a question mark. Down the steps, past the sleeping mummy, round the golden pillars... And what is that smell?' },
+      { who: 'Chef Pasquale', e: 'surprised', t: 'Tomatoes! Garlic! Basil! It cannot be. That is my secret sauce!' },
+      { e: 'happy', t: 'Ah, there you are. I hope you are hungry. I was locked in a tomb with a big pot and a stack of recipe pages, and a calm detective only has one sensible thing to do.' },
+      { who: 'Chef Pasquale', e: 'happy', t: 'Perfetto! You cooked it, from the pages! Come, everybody, sit. Mangiamo!' },
+      { who: 'Evil Larry', e: 'smug', t: 'I will say this once, bear. Pass the cheese.' },
+      { e: 'proud', t: 'A chef, a thief, a tiny cat and a bear, all at one table in the tomb of a pharaoh. The best spaghetti in Egypt.' }
+    ]
   }
 };
 
@@ -719,7 +817,15 @@ export const STORY_EXTRA: Record<number, Pick<Record<StoryPart, RawLine[]>, 'bri
   32: { bridge: [{ e: 'thinking', t: 'MOUSE! A real one, and very small. Now follow the squeaks behind the wall: every tile, numbers in order.' }],
         caseIntro: [{ e: 'neutral', t: 'Five little suspects, five hiding places around the old mill, and one golden ball. Speak softly, and trust the notebook.' }] },
   33: { bridge: [{ e: 'proud', t: 'POUNCE! I felt that one from here. Now follow the knitted scarf along the doorstep: every tile, numbers in order.' }],
-        caseIntro: [{ e: 'proud', t: 'The very last case on the Whisker Isles. Five guests, five spots around the palace, and one last ball of yarn. Some clues say who stood next to whom. Trust the notebook, partner.' }] }
+        caseIntro: [{ e: 'proud', t: 'The very last case on the Whisker Isles. Five guests, five spots around the palace, and one last ball of yarn. Some clues say who stood next to whom. Trust the notebook, partner.' }] },
+  34: { bridge: [{ e: 'happy', t: 'PASTA! Flour on the doorstep, and a very hungry camel. Now follow the sprinkled basil across the sand: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'thinking', t: 'Five camp folk, five spots around the camp, and one missing page. Cross people off until one story fits.' }] },
+  35: { bridge: [{ e: 'surprised', t: 'SPHINX! A riddle in the sand, and it points to the dunes. Now follow the glittering scarabs: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'neutral', t: 'Five suspects, five spots around the Sphinx, and one stolen page. Who was where, and who held what? Trust the notebook.' }] },
+  36: { bridge: [{ e: 'proud', t: 'MUMMY! Linen threads on the floor. Now follow the glow of the torches: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'thinking', t: 'Five tomb guests, five spots around the chambers, and one dusty page. Cross people off until one story fits.' }] },
+  37: { bridge: [{ e: 'sneaky', t: 'MASKED! Who is hiding behind it? Now follow the prints in the sand: every tile, numbers in order.' }],
+        caseIntro: [{ e: 'proud', t: 'The very last case. Five suspects, five spots around the camp, and one last page. Trust the notebook, even when you do not like the answer.' }] }
 };
 
 export const REACT = {

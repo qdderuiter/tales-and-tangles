@@ -128,3 +128,11 @@
   .cf-card{-webkit-backdrop-filter:none;backdrop-filter:none;background:#1c1438;border:2px solid #fff}
   .cf-cap{background:rgba(0,0,0,.7);padding:8px 12px;border-radius:12px}
 }
+
+/* a tap moment in a film (Film.tap): the target's .film-hit shape gets a pulsing dashed ring */
+.film-tap{cursor:pointer;outline:none}
+.film-tap .film-hit{stroke:#fff6c8;stroke-width:3;stroke-dasharray:7 6;animation:filmHit .9s ease-in-out infinite alternate}
+.film-tap:focus-visible .film-hit{stroke:#fff;stroke-width:5}
+@keyframes filmHit{from{opacity:.45;transform:scale(.94)}to{opacity:1;transform:scale(1.06)}}
+.film-hit{transform-box:fill-box;transform-origin:center}
+@media (prefers-reduced-motion:reduce){.film-tap .film-hit{animation:none}}

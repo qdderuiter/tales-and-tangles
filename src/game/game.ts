@@ -14,6 +14,7 @@ import { LarryScene } from '../scenes/larry-scene.ts';
 import { PupScene } from '../scenes/pup-scene.ts';
 import { DinoScene } from '../scenes/dino-scene.ts';
 import { CatsScene } from '../scenes/cats-scene.ts';
+import { PyramidsScene } from '../scenes/pyramids-scene.ts';
 import { IslandScene } from '../scenes/island-scene.ts';
 import { ElephantScene } from '../scenes/elephant-scene.ts';
 import { WormScene } from '../scenes/worm-scene.ts';
@@ -55,8 +56,9 @@ export function initGame() {
   DinoScene.init();
   IslandScene.init();
   CatsScene.init();
+  PyramidsScene.init();
   ChapterFilm.init();
-  StoryScreen.init(cast.story, { larry: { host: $('#storyLarry'), portrait: cast.larry }, pup: { host: $('#storyPup'), portrait: cast.pup }, worm: { host: $('#storyWorm'), portrait: cast.worm }, elephant: { host: $('#storyElephant'), portrait: cast.elephant }, dino: { host: $('#storyDino'), portrait: cast.dino }, rocky: { host: $('#storyRocky'), portrait: cast.rocky }, mittens: { host: $('#storyMittens'), portrait: cast.mittens } });
+  StoryScreen.init(cast.story, { larry: { host: $('#storyLarry'), portrait: cast.larry }, pup: { host: $('#storyPup'), portrait: cast.pup }, worm: { host: $('#storyWorm'), portrait: cast.worm }, elephant: { host: $('#storyElephant'), portrait: cast.elephant }, dino: { host: $('#storyDino'), portrait: cast.dino }, rocky: { host: $('#storyRocky'), portrait: cast.rocky }, mittens: { host: $('#storyMittens'), portrait: cast.mittens }, pasquale: { host: $('#storyPasquale'), portrait: cast.pasquale } });
 
   // title
   $('#btnPlay').addEventListener('click', () => {

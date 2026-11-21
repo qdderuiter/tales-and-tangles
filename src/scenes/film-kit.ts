@@ -1,5 +1,6 @@
 import { bearMarkup } from '../characters/barnaby-svg.ts';
 import type { SceneDef } from '../core/scenes.ts';
+import type { Slot } from '../data/types.ts';
 import { Store } from '../state/store.ts';
 
 /* ---------- small pieces every character cinematic (island-scene, cats-scene) needs ---------- */
@@ -7,9 +8,9 @@ import { Store } from '../state/store.ts';
 /* a CSS translate in px, with optional extra transform functions after it */
 export const px = (x: number, y: number, extra = '') => 'translate(' + x + 'px,' + y + 'px)' + (extra ? ' ' + extra : '');
 
-/* put Barnaby, in whatever the player dressed him in, into `art` as a 104 x 120 drawing */
-export function dressBear(art: Element) {
-  const markup = bearMarkup(Store.data.wardrobe.equipped);
+/* put Barnaby, in whatever the player dressed him in (or in `outfit`), into `art` as a 104 x 120 drawing */
+export function dressBear(art: Element, outfit: Record<Slot, string> = Store.data.wardrobe.equipped) {
+  const markup = bearMarkup(outfit);
   art.innerHTML = markup.slice(markup.indexOf('<svg'), markup.lastIndexOf('</svg>') + 6);
   const bear = art.firstElementChild;
   if (!bear) return;

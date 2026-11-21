@@ -169,6 +169,7 @@ async function main() {
     if (await has(page, '#dinoFilm.show')) { log('  Rexy cinematic'); await watchFilm(page, '#dinoFilm'); continue; }
     if (await has(page, '#islandFilm.show')) { log('  Island cinematic'); await watchFilm(page, '#islandFilm'); continue; }
     if (await has(page, '#catsFilm.show')) { log('  Whisker Isles cinematic'); await watchFilm(page, '#catsFilm'); continue; }
+    if (await has(page, '#spaghettiFilm.show')) { log('  Spaghetti Chronicles cinematic'); await watchFilm(page, '#spaghettiFilm'); continue; }
     if (await has(page, '#noir.show')) { log('  Barnaby Noir interrupts'); await playNoir(page); continue; }
 
     if (await has(page, '#victory.show')) {

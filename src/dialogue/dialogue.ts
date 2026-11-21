@@ -12,6 +12,7 @@ export class Dialogue {
   nameEl: HTMLElement; choicesEl: HTMLElement; caret: HTMLElement; bear: Bear; typer: Typer;
   lines: Line[] = []; i = -1; active = false; waiting = false;
   onChoice: ((ch: Choice) => void) | null = null; onDone: (() => void) | null = null; onSpeaker: OnSpeaker | null = null;
+  skinBefore: boolean | null = null;            // the bear's own skin, kept while Barnaby Noir speaks in his dark one
   defaultSpeaker: OnSpeaker | null = null;      // set by the owner screen; used when play() is not given its own onSpeaker
   constructor(o: DialogueOpts) {
     this.nameEl = o.nameEl; this.choicesEl = o.choicesEl; this.caret = o.caret; this.bear = o.bear;
@@ -35,11 +36,17 @@ export class Dialogue {
     this.caret.classList.remove('on');
     const who = line.who || DEFAULT_SPEAKER, sp: Partial<(typeof SPEAKERS)[string]> = SPEAKERS[who] || {};
     this.nameEl.textContent = who;
+    this.noirSkin(who === 'Barnaby Noir');
     SPEAKER_CLASSES.forEach(c => this.nameEl.classList.toggle(c, c === sp.nameClass));
     if (this.onSpeaker) this.onSpeaker(who, line.e || 'neutral');
     if (!sp.portrait) this.bear.react(line.e || 'neutral');
     VoiceManager.play(line.id);
     this.typer.start(line.t, { ms: lineMs(line, 26), voice: voiceFor(who), onDone: () => this.afterType(line) });
+  }
+  /* Barnaby Noir's lines show the bear in his dark look (the disguise coming off); any other line puts the bear's own look back */
+  noirSkin(on: boolean) {
+    if (on) { this.skinBefore ??= this.bear.noir; this.bear.setSkin(true); }
+    else if (this.skinBefore !== null) { this.bear.setSkin(this.skinBefore); this.skinBefore = null; }
   }
   afterType(line: Line) {
     if (line.choices) {
@@ -73,6 +80,7 @@ export class Dialogue {
     if (!this.active) return;
     this.active = false; this.waiting = false;
     this.typer.cancel();
+    this.noirSkin(false);
     VoiceManager.stop();
     this.choicesEl.innerHTML = '';
     this.caret.classList.remove('on');

@@ -24,7 +24,7 @@ export class Film {
   constructor(els: FilmEls) {
     this.els = els;
     els.skip.addEventListener('click', () => this.skip());
-    els.root.addEventListener('pointerdown', ev => { if (this.canSkip && !(ev.target as Element).closest('button')) this.skip(); });
+    els.root.addEventListener('pointerdown', ev => { if (this.canSkip && !(ev.target as Element).closest('button, .film-tap')) this.skip(); });
   }
 
   skip() {
@@ -41,6 +41,30 @@ export class Film {
   }
   snd(fn: () => void) { if (!this.fast) { try { fn(); } catch { /* audio is optional */ } } }
   anim(el: Element, frames: Keyframe[], opts: KeyframeAnimationOptions) { return (this.fast || REDUCED) ? null : el.animate(frames, opts); }
+  /* a tap moment: `el` glows and waits for a tap (or Enter / Space) for up to `ms`; resolves true when tapped, false when it ran out, was skipped or motion is reduced.
+     The scene carries on either way, so nobody is ever stuck. The tapped target must hold a .film-hit shape (film.css draws its ring) */
+  tap(el: Element, ms = 6000): Promise<boolean> {
+    if (this.fast || REDUCED) return Promise.resolve(false);
+    return new Promise(res => {
+      let done = false;
+      const end = (tapped: boolean) => {
+        if (done) return;
+        done = true; clearTimeout(timer);
+        el.classList.remove('film-tap'); el.removeAttribute('role'); el.removeAttribute('tabindex');
+        el.removeEventListener('click', onClick); el.removeEventListener('keydown', onKey);
+        if (this.pending === cut) this.pending = null;
+        res(tapped);
+      };
+      const onClick = () => end(true);
+      const onKey = (ev: Event) => { const k = (ev as KeyboardEvent).key; if (k === 'Enter' || k === ' ') { ev.preventDefault(); end(true); } };
+      const cut = () => end(false);
+      const timer = setTimeout(cut, ms);
+      this.pending = cut;                                           // Skip cuts the wait short, like any other wait
+      el.classList.add('film-tap'); el.setAttribute('role', 'button'); el.setAttribute('tabindex', '0');
+      el.addEventListener('click', onClick); el.addEventListener('keydown', onKey);
+      (el as HTMLElement | SVGElement).focus({ preventScroll: true });
+    });
+  }
   caption(text: string) { const c = this.els.cap; c.textContent = text; c.classList.toggle('on', !!text); }
   /* rise: how far into the flash the peak lands (0.2 = a sharp lightning flash, 0.4 = a gentler glow) */
   flashScreen(peak: number, ms: number, rise = 0.2) { if (!this.fast && !REDUCED) this.els.flash.animate([{ opacity: 0 }, { opacity: peak, offset: rise }, { opacity: 0 }], { duration: ms, easing: 'ease-out' }); }

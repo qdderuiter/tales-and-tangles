@@ -39,7 +39,7 @@ export type StoryPart = 'intro' | 'bridge' | 'caseIntro' | 'outro';
 
 /* ---- Levels ---- */
 /* every cinematic a level can carry; the save keeps one `seen` flag per id (state/migrations.ts), so a new cinematic is added here and nowhere else in the save code */
-export const SCENE_IDS = ['larry', 'pup', 'worm', 'elephant', 'dino', 'crash', 'tiger', 'dig', 'harbor', 'yarn', 'mice'] as const;
+export const SCENE_IDS = ['larry', 'pup', 'worm', 'elephant', 'dino', 'crash', 'tiger', 'dig', 'harbor', 'yarn', 'mice', 'camp', 'sphinx', 'tomb'] as const;
 export type SceneId = (typeof SCENE_IDS)[number];
 export interface Level {
   n: number; title: string; blurb: string; theme: string; scene: [string, string];
@@ -66,7 +66,7 @@ export interface TempLevel {
    A chapter groups several levels ("cases") under one theme and ends with a short film (scenes/chapter-film.ts plays it).
    The film is data: a list of beats. Each beat can move the camera, show / hide stage layers (named in FILM_LAYERS), set a caption,
    fire an audio cue and flash the screen, then holds. The chapter's id is also the key of its synthesized score (audio/film-score.ts). */
-export type Motif = 'meadow' | 'night' | 'sea' | 'lantern' | 'space' | 'desert' | 'bigtop' | 'meteor' | 'underground' | 'island' | 'cats';
+export type Motif = 'meadow' | 'night' | 'sea' | 'lantern' | 'space' | 'desert' | 'bigtop' | 'meteor' | 'underground' | 'island' | 'cats' | 'pyramids';
 export type FilmCue = 'swell' | 'sparkle' | 'chime' | 'whoosh' | 'bell' | 'finale';
 export interface FilmBeat {
   caption?: string;

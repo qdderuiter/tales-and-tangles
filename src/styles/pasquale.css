@@ -1,0 +1,26 @@
+/* ---------- Chef Pasquale, the chef rat: portrait (characters/pasquale.ts) ---------- */
+.story-pasquale{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 250px);width:min(54%,240px);z-index:1;opacity:0;pointer-events:none;transition:opacity .25s}
+.story-pasquale.on{opacity:1}
+.story-pasquale .pasquale{width:100%;line-height:0}
+.pq-svg{width:100%;height:auto;overflow:visible;display:block;transform-origin:100px 220px;animation:breathe 3.4s ease-in-out infinite}
+.pq-head,.pq-eyes,.pq-tail,.pq-spoon{transform-box:fill-box}
+.pq-tail{transform-origin:10% 90%;animation:pqTail 2.4s ease-in-out infinite alternate}
+.pq-spoon{transform-origin:90% 90%;animation:pqSpoon 3s ease-in-out infinite alternate}
+.pq-eyes{transform-origin:center;animation:pqBlink 4.2s infinite;transition:transform .15s}
+.pq-brow,.pq-mouth.frown,.pq-mouth.oh{opacity:0;transition:opacity .15s}
+.pq-blush{transition:opacity .2s}
+.pasquale.b-shy .pq-blush{opacity:.95}
+.pasquale.b-shy .pq-head{transform:translateY(2px) rotate(-3deg)}
+.pasquale.b-sad .pq-mouth.smile,.pasquale.b-surprised .pq-mouth.smile{opacity:0}
+.pasquale.b-sad .pq-mouth.frown,.pasquale.b-sad .pq-brow,.pasquale.b-surprised .pq-mouth.oh{opacity:1}
+.pasquale.b-sad .pq-tail{animation:none;transform:rotate(14deg)}
+.pasquale.b-sad .pq-svg{animation:none;transform:translateY(4px) scaleY(.97)}
+.pasquale.b-surprised .pq-eyes{transform:scale(1.25);animation:none}
+.pasquale.b-surprised .pq-svg{animation:none;transform:translateY(-5px)}
+.pasquale.b-proud .pq-svg{animation:none;transform:translateY(-3px) scale(1.03)}
+.pasquale.b-wiggle .pq-svg{animation:pqWiggle .5s ease-in-out infinite}
+@keyframes pqTail{from{transform:rotate(-8deg)}to{transform:rotate(10deg)}}
+@keyframes pqSpoon{from{transform:rotate(-5deg)}to{transform:rotate(6deg)}}
+@keyframes pqBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes pqWiggle{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){.pq-svg,.pq-tail,.pq-spoon,.pq-eyes{animation:none !important}}

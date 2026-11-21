@@ -1,6 +1,6 @@
 import type { RawSketch } from './types.ts';
 
-/* Sketch Artist pictures, keyed by level number (Chapter 10, Castaways: levels 26-29; Chapter 11, Whisker Isles: levels 30-33).
+/* Sketch Artist pictures, keyed by level number (Chapter 10, Castaways: levels 26-29; Chapter 11, Whisker Isles: levels 30-33; Chapter 12, Pyramids: levels 34-37).
    '#' is a filled cell, '.' an empty one. Level 26 is 8x8, the rest 10x10.
    Each picture must be solvable with line logic alone (tests/unit/sketches.test.ts checks it; `node scripts/check-sketch.mjs` shows the clues). */
 export const SKETCHES: Record<number, RawSketch> = {
@@ -105,5 +105,57 @@ export const SKETCHES: Record<number, RawSketch> = {
       '..####..##',
       '...###...#',
       '....##....',
-      '.....#....'] }
+      '.....#....'] },
+  34: { name: "A chef's hat", color: '#f3e6c4',
+    witness: "Chef Pasquale's lost recipe page was last seen beside his tall, puffy white hat. Draw the toque.",
+    rows: [
+      '.###..###.',
+      '##########',
+      '##########',
+      '#.######.#',
+      '.########.',
+      '..######..',
+      '..#.##.#..',
+      '..######..',
+      '..#.##.#..',
+      '..######..'] },
+  35: { name: 'The Sphinx', color: '#d9b36a',
+    witness: 'A tourist sketched the riddler in the moonlight: a head-dress, a calm profile and long paws stretched out in front. Draw the Sphinx.',
+    rows: [
+      '..####....',
+      '.######...',
+      '.########.',
+      '.##.####..',
+      '.#####.##.',
+      '..####....',
+      '..#####...',
+      '.#########',
+      '##########',
+      '##########'] },
+  36: { name: 'A fedora', color: '#8a6a4a',
+    witness: 'The parrot swears the thief wore a hat with a pinched crown and a wide brim. Draw the fedora.',
+    rows: [
+      '...####...',
+      '..##..##..',
+      '..######..',
+      '..######..',
+      '..######..',
+      '..######..',
+      '.########.',
+      '##########',
+      '##########',
+      '.########.'] },
+  37: { name: "A bear's face", color: '#7a5230',
+    witness: 'The masked figure left one clear shape on the wall: two round ears, two eyes and a wide snout. Draw the face.',
+    rows: [
+      '.##....##.',
+      '####..####',
+      '.########.',
+      '##.####.##',
+      '#...##...#',
+      '##..##..##',
+      '##.####.##',
+      '.###..###.',
+      '..######..',
+      '...####...'] }
 };

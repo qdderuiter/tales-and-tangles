@@ -15,7 +15,8 @@ export const FILM_LAYERS: Record<Motif, string[]> = {
   meteor:  ['sky', 'sun', 'stars', 'hills', 'dinos', 'burst', 'ball', 'barnaby'],
   underground: ['sky', 'crystals', 'rubble', 'drill', 'crew', 'house', 'lamps', 'rocky', 'barnaby'],
   island: ['sky', 'stars', 'sea', 'island', 'palms', 'wreck', 'tiger', 'hole', 'fire', 'ship', 'crew', 'barnaby'],
-  cats: ['sky', 'sun', 'hills', 'town', 'lanterns', 'yarn', 'mice', 'cats', 'kittens', 'ship', 'barnaby']
+  cats: ['sky', 'sun', 'hills', 'town', 'lanterns', 'yarn', 'mice', 'cats', 'kittens', 'ship', 'barnaby'],
+  pyramids: ['sky', 'stars', 'moon', 'dunes', 'pyramids', 'tomb', 'cat', 'crew', 'spaghetti', 'barnaby']
 };
 
 export const CHAPTERS: Chapter[] = [
@@ -160,7 +161,20 @@ export const CHAPTERS: Chapter[] = [
         { caption: 'The mice come out of the old mill, with a scarf for the queen.', show: ['mice'], cam: { x: 8, y: 2, scale: 1.12, ms: 3400 }, cue: 'chime', hold: 3000 },
         { caption: 'And one by one, the balls of yarn roll home.', show: ['yarn', 'lanterns'], cam: { x: 2, y: -2, scale: 1.1, ms: 3400 }, cue: 'sparkle', flash: 0.3, hold: 3200 },
         { caption: 'The cats lift their heads, and the lanterns light up the harbour.', show: ['cats', 'barnaby'], cam: { x: -8, y: 0, scale: 1.16, ms: 3400 }, cue: 'bell', flash: 0.3, hold: 3200 },
-        { caption: 'Pounce! The kittens are playing again. Thank you, Barnaby!', show: ['kittens'], cam: { x: 0, y: 0, scale: 1.04, ms: 3600 }, cue: 'chime', flash: 0.4, hold: 3600 }
+        { caption: 'Pounce! The kittens are playing again. Thank you, Barnaby!', show: ['kittens'], cam: { x: 0, y: 0, scale: 1.04, ms: 3600 }, cue: 'chime', flash: 0.4, hold: 3600 },
+        { caption: 'But far across the desert, a smell of tomatoes drifts over three great pyramids...', cam: { x: 4, y: -4, scale: 1.04, ms: 3400 }, cue: 'whoosh', hold: 3200 }
+      ] } },
+  { id: 'spaghetti', n: 12, title: 'Spaghetti Chronicles', tagline: 'A lost recipe, a masked detective and a very old tomb.', levels: [34, 35, 36, 37], motif: 'pyramids',
+    palette: { a: '#f6e3b4', b: '#e9a86a', ink: '#5a3a24', glow: '#ffd27a' },
+    ending: {
+      start: ['sky', 'stars', 'moon', 'dunes', 'pyramids'],
+      reducedCaption: 'The sauce is simmering, the tomb is glowing, and everyone shares the best spaghetti in Egypt.',
+      beats: [
+        { caption: 'Under the desert moon, three great pyramids keep a very old secret.', cam: { x: 0, y: 0, scale: 1, ms: 0 }, cue: 'swell', hold: 3000 },
+        { caption: 'In the sand, two little eyes glow. A tiny cat is purring.', show: ['cat'], cam: { x: 6, y: 0, scale: 1.1, ms: 3400 }, cue: 'sparkle', hold: 3000 },
+        { caption: 'He leads the way, down to a door that glows in the dark.', show: ['tomb'], cam: { x: -6, y: -2, scale: 1.16, ms: 3400 }, cue: 'whoosh', flash: 0.3, hold: 3200 },
+        { caption: 'And there, by a bubbling pot, the real Barnaby is stirring the secret sauce.', show: ['barnaby', 'spaghetti'], cam: { x: -4, y: 2, scale: 1.2, ms: 3400 }, cue: 'bell', flash: 0.3, hold: 3400 },
+        { caption: 'A chef, a thief, a cat and a bear sit down to the best spaghetti in Egypt.', show: ['crew'], cam: { x: 0, y: 0, scale: 1.06, ms: 3600 }, cue: 'chime', flash: 0.4, hold: 3600 }
       ] } }
 ];
 

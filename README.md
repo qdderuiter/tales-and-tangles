@@ -1,6 +1,6 @@
 # Tales & Tangles
 
-A cosy detective game: Barnaby Bear solves thirty-three cases with a word-search, a scent trail and a murdle-style notebook (and, in Chapters 10 and 11, a Sketch Artist nonogram). The cases are grouped into eleven themed **chapters**, and each chapter ends with a short film. Strict TypeScript ES modules under `src/` (no framework); Vite builds them into **one self-contained `dist/index.html`**.
+A cosy detective game: Barnaby Bear solves thirty-three cases with a word-search, a scent trail and a murdle-style notebook (and, in Chapters 10 to 12, a Sketch Artist nonogram). The cases are grouped into eleven themed **chapters**, and each chapter ends with a short film. Strict TypeScript ES modules under `src/` (no framework); Vite builds them into **one self-contained `dist/index.html`**.
 
 **Words used in the code:** a *level* is one case (`LEVELS`, `Store.level(n)`, shown to players as "Case 1.2"); a *chapter* is a group of levels with a theme and an ending film (`data/chapters.ts`). Story line ids keep the old `ch<n>_...` prefix because voice clips attach to them by file name.
 
@@ -54,7 +54,7 @@ A level (case) *n* is spread over a few data files, all indexed by position (so 
 4. `data/hints.ts`: a `THEME_HINTS` entry, and a `TRAIL_HINTS` entry keyed by the trail word.
 5. `data/story.ts`: a `STORY_RAW` entry (`intro`, `outro`) and a `STORY_EXTRA` entry (`bridge`, `caseIntro`).
 
-**Sketch Artist (optional).** A level gets a nonogram by listing `sketch` in its `steps` (`data/levels.ts`: chapters 10 and 11 use `SKETCH_STEPS`) and adding a `SKETCHES` entry keyed by its level number in `data/sketches.ts` (a name, a witness line, a colour, and `#`/`.` rows: 8x8 or 10x10). It unlocks no clue, so `cases.ts` is untouched. The picture must be solvable by line logic alone: `node scripts/check-sketch.mjs` shows the clues and the solver's verdict, and `sketches.test.ts` enforces it.
+**Sketch Artist (optional).** A level gets a nonogram by listing `sketch` in its `steps` (`data/levels.ts`: chapters 10 to 12 use `SKETCH_STEPS`) and adding a `SKETCHES` entry keyed by its level number in `data/sketches.ts` (a name, a witness line, a colour, and `#`/`.` rows: 8x8 or 10x10). It unlocks no clue, so `cases.ts` is untouched. The picture must be solvable by line logic alone: `node scripts/check-sketch.mjs` shows the clues and the solver's verdict, and `sketches.test.ts` enforces it.
 
 Then `npm test`: `levels`, `zips`, `sketches`, `cases`, `case-hints` and `story` tell you which rule you broke. Run `npm run test:e2e` to see it play.
 

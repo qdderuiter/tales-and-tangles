@@ -21,7 +21,7 @@ import type { Film } from './film.ts';
 
 const VIEW = '0 0 800 1000';
 /* the crop each motif's card shows (the whole hero scene; the sky, hills and sea run past it, so a wide card has no empty sides) */
-const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440', bigtop: '110 400 580 560', meteor: '110 420 600 520', island: '110 430 600 430', underground: '110 560 640 380', cats: '200 520 400 410' };
+const BAND_VIEWS: Record<Motif, string> = { meadow: '120 470 600 330', night: '150 400 600 400', sea: '150 360 600 420', lantern: '120 450 600 360', space: '130 380 600 400', desert: '110 400 620 440', bigtop: '110 400 580 560', meteor: '110 420 600 520', island: '110 430 600 430', underground: '110 560 640 380', cats: '200 520 400 410', pyramids: '170 480 460 380' };
 
 /* how far each layer follows the camera (0 = fixed, 1 = full) */
 const DEPTH: Record<string, number> = {
@@ -32,7 +32,8 @@ const DEPTH: Record<string, number> = {
   dinos: 0.95, burst: 0.3,
   crystals: 0.35, rubble: 0.9, drill: 0.85, crew: 0.9, rocky: 1,
   island: 0.7, wreck: 0.85, tiger: 0.95, hole: 0.9, fire: 0.95, ship: 0.55,
-  yarn: 0.92, mice: 0.95, cats: 0.95, kittens: 1
+  yarn: 0.92, mice: 0.95, cats: 0.95, kittens: 1,
+  pyramids: 0.7, tomb: 0.75, spaghetti: 1
 };
 
 /* what the map card shows for each motif: the finished-scene layers only */
@@ -47,7 +48,8 @@ export const BAND_LAYERS: Record<Motif, string[]> = {
   meteor: ['sky', 'sun', 'stars', 'hills', 'dinos', 'burst', 'ball'],
   underground: ['sky', 'crystals', 'house', 'lamps', 'rocky'],
   island: ['sky', 'sea', 'island', 'palms', 'wreck'],
-  cats: ['sky', 'sun', 'hills', 'town', 'lanterns', 'cats']
+  cats: ['sky', 'sun', 'hills', 'town', 'lanterns', 'cats'],
+  pyramids: ['sky', 'stars', 'moon', 'dunes', 'pyramids', 'tomb']
 };
 
 
@@ -454,6 +456,23 @@ const ART: Record<Motif, Record<string, LayerFn>> = {
     ship: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#fff4c4', 0.9) + '</defs><g class="cf-sway"><path d="M236 760 L346 760 L326 786 L254 786Z" fill="#5a4a6a"/><rect x="288" y="718" width="6" height="42" fill="#7a5a66"/>' +
       '<path d="M294 722 L336 752 L294 752Z" fill="#fff6e8"/><path d="M288 722 L288 710 L306 716Z" fill="#e8527a"/><g class="cf-halo">' + glow(u + 'g', 292, 770, 40) + '</g></g>', vb),
     barnaby: () => '<div class="cf-bear cat"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
+  },
+  /* ---- the pyramids: the desert sky and dunes again, three pyramids with a glowing tomb door, a tiny cat, the crew and a bowl of spaghetti ---- */
+  pyramids: {
+    sky: (u, vb) => ART.desert.sky(u, vb),
+    stars: (u, vb) => ART.desert.stars(u, vb),
+    moon: (u, vb) => ART.desert.moon(u, vb),
+    dunes: (u, vb) => ART.desert.dunes(u, vb),
+    pyramids: (_u, vb) => svg([[290, 750, 410, 548, '#e8b878', '#c98a5a'], [200, 756, 250, 668, '#d9a066', '#b97a48'], [470, 756, 540, 620, '#d9a066', '#b97a48']].map(([l, b, x, y, lit, dark]) =>
+      '<path d="M' + l + ' ' + b + ' L' + x + ' ' + y + ' L' + (Number(x) * 2 - Number(l)) + ' ' + b + 'Z" fill="' + lit + '"/><path d="M' + x + ' ' + y + ' L' + (Number(x) * 2 - Number(l)) + ' ' + b + ' L' + x + ' ' + b + 'Z" fill="' + dark + '"/>').join(''), vb),
+    tomb: (u, vb) => svg('<defs>' + glowDef(u + 'g', '#ffb866', 0.9) + '</defs><path d="M386 754 V722 Q410 692 434 722 V754Z" fill="#2a1a2e"/><g class="cf-halo">' + glow(u + 'g', 410, 738, 62) + '</g>' +
+      '<path class="cf-flame" d="M368 740 Q361 728 368 716 Q375 728 368 740Z" fill="#ffc45a"/><path class="cf-flame" d="M452 740 Q445 728 452 716 Q459 728 452 740Z" fill="#ffc45a"/>', vb),
+    cat: (_u, vb) => svg('<g transform="translate(236 792) scale(.5)"><g class="cf-peek">' + catInner(CAT_COATS.cream) + '</g></g>', vb),
+    crew: (_u, vb) => svg('<g transform="translate(470 770) scale(.38)">' + larryInner() + '</g><g transform="translate(548 800)"><ellipse cx="0" cy="26" rx="18" ry="24" fill="#fff"/><circle cx="0" cy="0" r="15" fill="#f6c8a0"/>' +
+      '<path d="M-14 -8 Q-18 -30 -4 -28 Q0 -42 10 -30 Q22 -30 14 -8Z" fill="#fff"/><path d="M-9 5 Q0 0 9 5 Q4 11 0 7 Q-4 11 -9 5Z" fill="#4a3426"/><circle cx="-5" cy="-2" r="2" fill="#2b1a10"/><circle cx="5" cy="-2" r="2" fill="#2b1a10"/></g>', vb),
+    spaghetti: (_u, vb) => svg('<ellipse cx="420" cy="868" rx="70" ry="14" fill="#8a5a3a"/><path d="M382 836 Q420 884 458 836Z" fill="#fff"/><path d="M388 836 Q402 818 416 836 T444 836" fill="none" stroke="#f2d27a" stroke-width="6" stroke-linecap="round"/>' +
+      '<circle cx="420" cy="826" r="9" fill="#d8402a"/><g class="cf-sway" fill="none" stroke="#fff" stroke-width="3" opacity=".6" stroke-linecap="round"><path d="M404 808 q-6 -14 0 -26"/><path d="M426 808 q6 -14 0 -26"/></g>', vb),
+    barnaby: () => '<div class="cf-bear is"><div class="cf-bear-glow"></div>' + bearMarkup(Store.data.wardrobe.equipped) + '</div>'
   }
 };
 

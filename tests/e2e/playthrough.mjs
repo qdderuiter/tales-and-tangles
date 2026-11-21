@@ -19,7 +19,7 @@
      I  declining Barnaby Noir mid-level: the dark theme stays off and the level carries on
      J  chapter 5, case 1: Pickle's crash-landing film, Pickle speaking with his own portrait, then the whole case
      K  chapter 5, case 3: the whole case, Pickle's lift-off, and the chapter's closing film (an ordinary chapter end: the story goes on)
-     L  the LAST case of the game (chapter 11, case 4): the whole case, the yarn coming home, "Hear the ending", the last film with The End and the credits
+     L  the LAST case of the game (chapter 12, case 4): the whole case, "Hear the ending", the last film with The End and the credits
      M  chapter 6, case 1: Biscuit pops out of the dunes, speaks with his own portrait, then the whole case
      N  chapter 7, case 1: Pippy loses his star ball, speaks with his own portrait, then the whole case
      O  chapter 6, case 3: the whole case, Biscuit's homecoming, and the chapter's closing film (an ordinary chapter end: the story goes on)
@@ -39,6 +39,7 @@
      AA chapter 11, case 2: the red thread opens it
      AB chapter 11, case 3: the footprints open it
      AC chapter 11, cases 1-3 with MOTION allowed: each opening cinematic animates from its first frame to its title card without a page error
+     AF chapter 12, cases 1-3 with MOTION allowed: each opening cinematic shows its tap moment, a tap moves it on, and it runs to its title card
      AD the idle budget, with MOTION allowed: on the title, the story, a puzzle, the victory card and the map only a handful of animations run
         (hidden screens are paused: styles/offscreen.css). `npm run perf` prints the full numbers
 
@@ -281,7 +282,7 @@ async function expectSolved(page, n, { unlocked, ending, seen } = {}) {
 }
 
 /* each film: the overlay's element id and its id prefix (index.html) */
-const FILMS = { pup: ['pupFilm', 'pf'], worm: ['wormFilm', 'wf'], elephant: ['elephantFilm', 'ef'], dino: ['dinoFilm', 'df'], island: ['islandFilm', 'if'], cats: ['catsFilm', 'kf'] };
+const FILMS = { pup: ['pupFilm', 'pf'], worm: ['wormFilm', 'wf'], elephant: ['elephantFilm', 'ef'], dino: ['dinoFilm', 'df'], island: ['islandFilm', 'if'], cats: ['catsFilm', 'kf'], spaghetti: ['spaghettiFilm', 'sp'] };
 
 /* a film that opens a case: title card (reduced motion shows the finished scene, then the card), Skip, and the save keeps `seen` */
 async function openingFilm({ page, shot }, film, { title, titleSel, seen, shot: shotName }) {
@@ -589,15 +590,17 @@ const scenarios = {
     const { page } = s;
     await startCase(page, chLast.id, lvLast.n);
     await playCase(page, lvLast);
-    await closingFilm(s, 'cats', 'cats-home');                      // the yarn comes home before the victory card
+    await closingFilm(s, 'spaghetti', 'spaghetti-unmask');            // the unmasking plays before the victory card
     await victory(page, 'Case Solved!', 'Hear the ending');
     expect(await page.textContent('#vUnlock'), 'the last case closes the whole story').toBe('Every mystery solvedYou are a true detective!');
     await pressContinue(page);
+    await speakerAppears(s, 'Barnaby Noir', null, 'noir-unmasked');             // the disguise comes off: the bear turns dark for Noir's lines
+    expect(await page.evaluate(() => document.querySelector('#storyBear .bear').classList.contains('noirskin')), 'the bear shows Noir\'s look').toBe(true);
     await chapterEndFilm(s, {
-      kicker: 'The End', title: chLast.title, shot: 'whisker-film',
+      kicker: 'The End', title: chLast.title, shot: 'spaghetti-film',
       check: async () => {
         const credits = await page.textContent('#cfCredits');
-        for (const who of ['Pippy', 'Rexy', 'Rocky', 'castaways', 'Mittens']) expect(credits.includes(who), `the credits thank ${who}`).toBe(true);
+        expect(credits, 'the credits are one simple thank-you').toBe('Thank you for playing!');
       }
     });
     await expectSolved(page, lvLast.n, { ending: chLast.id });
@@ -829,6 +832,43 @@ const scenarios = {
     await idle('map', 6);
   },
 
+  async AE(s) {                                                       // chapter 12, cases 1-3: Chef Pasquale speaks, and each whole case plays
+    const { page } = s;
+    await startCase(page, 'spaghetti', 34);
+    await openingFilm(s, 'spaghetti', { title: 'SPAGHETTI', titleSel: '#spTitleMain', seen: 'camp', shot: 'spaghetti-camp' });
+    await speakerAppears(s, 'Chef Pasquale', 'storyPasquale', 'pasquale-speaks');
+    await speakerAppears(s, 'Evil Larry', 'storyLarry', 'larry-accused');
+    for (const n of [34, 35, 36]) {
+      if (n > 34) {                                                  // a fresh load, so the case sheet starts closed
+        await page.reload(); await startCase(page, 'spaghetti', n);
+        await openingFilm(s, 'spaghetti', n === 35 ? { title: 'THE SPHINX', titleSel: '#spTitleMain', seen: 'sphinx', shot: 'spaghetti-sphinx' } : { title: 'WRAPPED IN MYSTERY', titleSel: '#spTitleMain', seen: 'tomb', shot: 'spaghetti-tomb' });
+      }
+      await playCase(page, LEVELS[n - 1]);
+      await finishCase(page);
+      await expectSolved(page, n, { unlocked: n + 1 });
+    }
+  },
+
+  async AF(s) {                                                       // chapter 12, cases 1-3 with MOTION: each opening cinematic runs to its title card, and a tap moment moves it on
+    const { page } = s;
+    for (const [n, title, seen, tap] of [[34, 'SPAGHETTI', 'camp', '#spPot'], [35, 'THE SPHINX', 'sphinx', '#spEye'], [36, 'WRAPPED IN MYSTERY', 'tomb', '#spT0']]) {
+      if (n > 34) await page.reload();
+      await startCase(page, 'spaghetti', n);
+      await page.waitForSelector('#spaghettiFilm.show');
+      await page.waitForSelector(`${tap}.film-tap`, { timeout: 30000 });            // the tap moment opens, with its ring
+      await s.shot(`spaghetti-tap-${n}`);
+      await page.click(tap + ' .film-hit', { force: true });                // the ring pulses, so skip Playwright's wait-until-still check
+      await page.waitForSelector(`${tap}:not(.film-tap)`);
+      expect(await page.evaluate(() => document.getElementById('spaghettiFilm').classList.contains('show')), `a tap does not skip the film (case ${n})`).toBe(true);
+      await page.waitForSelector('#spTitle.on', { timeout: 40000 });
+      expect(await page.textContent('#spTitleMain'), 'the title card').toBe(title);
+      await page.click('#spSkip');
+      await page.waitForSelector('#spaghettiFilm:not(.show)');
+      await page.waitForFunction(([key, k]) => JSON.parse(localStorage.getItem(key) || '{}').seen?.[k] === true, [Store.KEY, seen]);
+      await onScreen(page, 'story');
+    }
+  },
+
   async AB(s) {
     const { page } = s;
     await startCase(page, 'cats', 32);
@@ -838,7 +878,7 @@ const scenarios = {
 };
 
 /* scenarios that play with motion allowed (every other one runs with reduced motion, which skips the animated code paths) */
-const MOTION = new Set(['AC', 'AD']);
+const MOTION = new Set(['AC', 'AD', 'AF']);
 
 /* which save each scenario starts from (none = a brand-new player) */
 const seeds = {
@@ -871,6 +911,8 @@ const seeds = {
   AA: makeSave(solvedUpTo(30)),
   AB: makeSave(solvedUpTo(31)),
   AC: makeSave({ ...solvedUpTo(29), unlocked: 33 }),
+  AE: makeSave(solvedUpTo(33)),
+  AF: makeSave({ ...solvedUpTo(33), unlocked: 37 }),
   AD: null
 };
 

@@ -102,6 +102,7 @@
     <div class="story-dino" id="storyDino"></div>
     <div class="story-rocky" id="storyRocky"></div>
     <div class="story-mittens" id="storyMittens"></div>
+    <div class="story-pasquale" id="storyPasquale"></div>
     <div class="dlg" id="dlg">
       <div class="dlg-name" id="dlgName">Barnaby</div>
       <div class="dlg-text" id="dlgText" aria-live="off"></div>
@@ -364,6 +365,16 @@
     <div class="kf-title" id="kfTitle"><small id="kfTitleSmall"></small><b id="kfTitleMain"></b><span id="kfTitleSub"></span></div>
     <div class="kf-flash" id="kfFlash"></div>
     <button class="btn small skip film kf-skip" id="kfSkip">Skip</button>
+  </div>
+
+  <!-- SPAGHETTI CHRONICLES (Chapter 12): the camp kitchen (opens Case 12.1), the Sphinx (12.2), the tomb (12.3) and the unmasking (after 12.4).
+       One stage for all four; scenes/pyramids-scene.ts builds the art into #spArt and moves the pieces. Coordinates are viewBox units. -->
+  <div class="spaghetti-film" id="spaghettiFilm" aria-hidden="true">
+    <div class="sp-stage" id="spStage"><svg class="sp-art" id="spArt" viewBox="0 0 400 700" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg></div>
+    <div class="sp-cap" id="spCap"></div>
+    <div class="sp-title" id="spTitle"><small id="spTitleSmall"></small><b id="spTitleMain"></b><span id="spTitleSub"></span></div>
+    <div class="sp-flash" id="spFlash"></div>
+    <button class="btn small skip film sp-skip" id="spSkip">Skip</button>
   </div>
 
   <!-- BISCUIT THE SAND WORM: the night he got lost (opens Case 6.1) and his homecoming (after Case 6.3). One stage for both;

@@ -32,7 +32,11 @@ export const THEME_HINTS: string[] = [
   'a harbour for cats - kittens, sails and fishy smells',
   'a runaway ball of wool - tangles, knots and loops',
   'a very small thief - mice, cheese and tiny nibbles',
-  'playtime at last - pouncing, cuddles and a bouncy ball'
+  'playtime at last - pouncing, cuddles and a bouncy ball',
+  'a favourite Italian dish - noodles, sauce and a big sprinkle of cheese',
+  'a riddling stone cat - sand, secrets and a very big question',
+  'a very old wrapped-up sleeper - bandages, tombs and a curse',
+  'someone who is not who they seem - a mask, a disguise and a twist'
 ];
 
 export const TRAIL_HINTS: Record<string, string> = { HIVE: 'where bees live', NIGHT: 'when the owls come out', MOLE: 'a tunnelling garden digger', CLOCK: 'it chimes the hours', PARTY: 'a birthday celebration',
@@ -43,4 +47,5 @@ export const TRAIL_HINTS: Record<string, string> = { HIVE: 'where bees live', NI
   DRUM: 'it goes boom when you hit it', BOUNCE: 'what a rubber ball does', GLITTER: 'it sparkles on everything',
   TREMBLE: 'what the ground does in an earthquake', MORTAR: 'the sticky stuff between the bricks', WINDOW: 'you look through it to see outside',
   COCONUT: 'a hairy brown nut with milk inside', STRIPES: 'what a tiger wears', SHOVEL: 'you scoop sand with it', RESCUE: 'being brought safely home',
-  WHISKER: 'the long stiff hairs on a cat face', THREADS: 'thin strands that wool is spun from', SQUEAKS: 'the tiny sounds a mouse makes', KNITTED: 'made with two needles and a ball of wool' };
+  WHISKER: 'the long stiff hairs on a cat face', THREADS: 'thin strands that wool is spun from', SQUEAKS: 'the tiny sounds a mouse makes', KNITTED: 'made with two needles and a ball of wool',
+  BASIL: 'a green herb that goes with tomatoes', SCARAB: 'a shiny beetle, sacred in ancient Egypt', TORCH: 'a flame on a stick to light a dark tomb', FEDORA: 'a soft hat with a pinched crown' };

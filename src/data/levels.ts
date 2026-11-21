@@ -9,7 +9,7 @@ import { scenes } from '../core/scenes.ts';
 
 interface RawLevel { n: number; title: string; blurb: string; theme: string; scene: [string, string]; words: [string, string][]; introScene?: Level['introScene']; caughtScene?: Level['caughtScene']; sceneId?: SceneId; steps?: string[] }
 
-/* Chapters 10 and 11 add the Sketch Artist nonogram between the Scent Trail and the suspects */
+/* Chapters 10 to 12 add the Sketch Artist nonogram between the Scent Trail and the suspects */
 const SKETCH_STEPS = ['intro', 'word', 'bridge', 'zip', 'sketch', 'case', 'outro'];
 
 const RAW_LEVELS: RawLevel[] = [
@@ -95,7 +95,19 @@ const RAW_LEVELS: RawLevel[] = [
     words: [['MOUSE','04 05 15 14 24'],['CHEESE','23 22 32 31 41 40'],['NIBBLE','00 01 02 12 13 03'],['PAWS','25 35 45 44'],['NEST','34 33 43 42'],['TAILS','30 20 21 11 10']] },
   { n: 33, title: 'Playtime Again', blurb: 'One last ball, and a very big pounce.', theme: 'POUNCE', scene: ['#ffe6b8', '#f2b077'], steps: SKETCH_STEPS,
     caughtScene: () => scenes.harbor!.caught(),                                              // the yarn comes home after the last case
-    words: [['POUNCE','33 34 44 45 35 25'],['CUDDLE','03 02 12 13 23 22'],['FLUFF','24 14 15 05 04'],['JOLLY','21 11 10 00 01'],['BALL','31 32 42 43'],['PLAY','20 30 40 41']] }
+    words: [['POUNCE','33 34 44 45 35 25'],['CUDDLE','03 02 12 13 23 22'],['FLUFF','24 14 15 05 04'],['JOLLY','21 11 10 00 01'],['BALL','31 32 42 43'],['PLAY','20 30 40 41']] },
+  { n: 34, title: 'A Recipe Gone Missing', blurb: 'Chef Pasquale has lost the one page that matters.', theme: 'PASTA', scene: ['#f9e6c0', '#e8b878'], steps: SKETCH_STEPS,
+    introScene: () => scenes.camp!.intro(), sceneId: 'camp',                                // the camp kitchen opens Chapter 12
+    words: [['PASTA','43 33 34 44 45'],['PYRAMID','35 25 24 14 15 05 04'],['SAUCE','20 30 40 41 42'],['SANDS','03 02 12 13 23'],['CHEF','11 01 00 10'],['NILE','31 32 22 21']] },
+  { n: 35, title: 'The Riddle of the Sphinx', blurb: 'A very old cat asks a very old question.', theme: 'SPHINX', scene: ['#f5dfb0', '#d9a86a'], steps: SKETCH_STEPS,
+    introScene: () => scenes.sphinx!.intro(), sceneId: 'sphinx',
+    words: [['SPHINX','15 05 04 14 13 03'],['RIDDLE','02 12 11 01 00 10'],['PAPYRUS','43 44 45 35 34 24 25'],['TEMPLE','20 30 40 41 31 21'],['CAIRO','22 23 33 32 42']] },
+  { n: 36, title: 'Wrapped in Mystery', blurb: 'Something in the tomb is not as sleepy as it looks.', theme: 'MUMMY', scene: ['#e0d2b8', '#a8946e'], steps: SKETCH_STEPS,
+    introScene: () => scenes.tomb!.intro(), sceneId: 'tomb',
+    words: [['MUMMY','04 05 15 25 24'],['RUINS','21 31 30 40 41'],['TEMPLE','43 42 32 33 23 22'],['SAND','02 03 13 14'],['AMULET','20 10 00 01 11 12'],['TOMB','34 35 45 44']] },
+  { n: 37, title: 'The Grand Unmasking', blurb: 'Under the pyramids, the last disguise comes off.', theme: 'MASKED', scene: ['#f2d9a8', '#c98a5a'], steps: SKETCH_STEPS,
+    caughtScene: () => scenes.camp!.caught(),                                               // the unmasking follows the last case
+    words: [['MASKED','22 23 33 32 42 43'],['UNMASK','24 25 15 05 04 14'],['FEAST','01 02 03 13 12'],['NOIR','44 45 35 34'],['TWIST','40 41 31 30 20'],['BEAR','21 11 10 00']] }
 ];
 
 /* parse each word path, and attach the level's trail, evil trail, case and hints (all indexed by position) */

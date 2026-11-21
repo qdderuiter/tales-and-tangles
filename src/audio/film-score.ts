@@ -95,6 +95,13 @@ export const SCORES: Record<string, Score> = {
     pad: { type: 'triangle', lp: 1500, vol: 0.05 },
     melody: [[14, null, 19, null, 23, null, 19, null], [16, null, 19, null, 23, 21, 19, null], [12, null, 16, null, 19, null, 24, null], [18, null, 21, null, 14, null, null, null]],
     bell: { type: 'sine', vol: 0.085, dur: 0.8 }
+  },
+  /* Spaghetti Chronicles: a bouncy tarantella-ish mandolin over a warm pad (Am - Dm - E - Am) */
+  spaghetti: {
+    bpm: 116, chords: [[-3, 0, 4, 9], [2, 5, 9, 14], [-1, 4, 8, 11], [-3, 0, 4, 9]],
+    pad: { type: 'triangle', lp: 1500, vol: 0.05 },
+    melody: [[16, 19, 21, 19, 16, null, 12, null], [17, 21, 24, 21, 17, null, 14, null], [16, 20, 23, 20, 16, null, 11, null], [12, 16, 21, 16, 19, 16, 12, null]],
+    bell: { type: 'triangle', vol: 0.085, dur: 0.4 }
   }
 };
 
@@ -592,6 +599,38 @@ export const CatScore = {
   /* a springy bounce */
   boing() { AudioFX.note(220, { dur: 0.45, vol: 0.06, type: 'sine', slideTo: 520 }); AudioFX.note(520, { t: 0.2, dur: 0.3, vol: 0.04, type: 'sine', slideTo: 300 }); },
   /* a victory sting for the whole island */
+  hero() { heroSting(); },
+  title() { titleSting(); }
+};
+
+/* ---------- the Spaghetti Chronicles cinematics (scenes/pyramids-scene.ts): the camp kitchen, the Sphinx, the tomb and the unmasking ----------
+   A warm, slightly spooky pad under each scene (the only long-lived sound), then one-shot cues timed by the scene: a plucked mandolin, a bubbling pot,
+   a lid popping, stone rumbling, a torch catching, soft steps, a fedora's zing, a low Noir sting and a small "tap" blip when the player taps. */
+export const SpaghettiScore = {
+  ...padControl([[-15, 'sine', 1], [-8, 'triangle', 0.6], [-3, 'sine', 0.45], [4, 'sine', 0.3]], { lp: 800, vol: 0.05, rise: 2.5 }),
+
+  /* a plucked mandolin run: a little tarantella */
+  pluck() { [0, 4, 7, 9, 7, 4].forEach((s, i) => AudioFX.note(hz(s + 7), { t: i * 0.11, dur: 0.22, vol: 0.06, type: 'triangle', attack: 0.004 })); },
+  /* a pot bubbling */
+  bubble() { for (let i = 0; i < 7; i++) AudioFX.note(220 + (i % 3) * 70, { t: i * 0.16, dur: 0.08, vol: 0.04, type: 'sine', slideTo: 420 + (i % 3) * 90, attack: 0.004 }); AudioFX.noise(1.2, 900, 0.025); },
+  /* the lid pops off in a gush of steam */
+  pop() { AudioFX.note(180, { dur: 0.16, vol: 0.09, type: 'sine', slideTo: 520 }); AudioFX.noise(0.9, 3200, 0.07, 0.04); },
+  /* stone grinding: the sand slides off the sphinx's paws */
+  rumble() { AudioFX.noise(1.8, 420, 0.09); AudioFX.note(62, { dur: 1.6, vol: 0.08, type: 'sawtooth', lp: 200, slideTo: 48 }); },
+  /* an eye of stone opens: a low glow */
+  glow() { AudioFX.note(hz(-5), { dur: 1.3, vol: 0.07, type: 'sine', attack: 0.15 }); AudioFX.note(hz(7), { t: 0.12, dur: 1.2, vol: 0.05, type: 'sine', attack: 0.15 }); },
+  /* a torch catches */
+  torch() { AudioFX.noise(0.7, 2600, 0.07); AudioFX.note(130, { dur: 0.5, vol: 0.05, type: 'triangle', slideTo: 210 }); },
+  /* soft steps on sand */
+  steps(n = 4) { for (let i = 0; i < n; i++) AudioFX.noise(0.12, 1100, 0.05, i * 0.34); },
+  /* a cat's purr */
+  purr() { for (let i = 0; i < 12; i++) AudioFX.note(58, { t: i * 0.11, dur: 0.08, vol: 0.045, type: 'sawtooth', lp: 220 }); },
+  /* the fedora flies off */
+  zing() { AudioFX.note(400, { dur: 0.5, vol: 0.07, type: 'triangle', slideTo: 1500, attack: 0.01 }); AudioFX.noise(0.4, 3000, 0.05); },
+  /* the disguise comes off: a low, minor sting */
+  noir() { [0, 3, 6].forEach((s, i) => AudioFX.note(hz(s - 12), { t: i * 0.05, dur: 1.8, vol: 0.07, type: 'sawtooth', lp: 700, attack: 0.03 })); AudioFX.note(hz(-24), { dur: 2.2, vol: 0.09, type: 'sine' }); },
+  /* the player's tap */
+  tap() { AudioFX.note(880, { dur: 0.12, vol: 0.06, type: 'sine', slideTo: 1320, attack: 0.004 }); },
   hero() { heroSting(); },
   title() { titleSting(); }
 };

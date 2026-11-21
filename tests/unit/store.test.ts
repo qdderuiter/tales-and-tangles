@@ -116,6 +116,14 @@ describe('loading', () => {
     expect(d.seen.endings).toEqual({ village: true });
   });
 
+  it('the Chapter 12 cinematic flags survive a load, and an older save without them reads as not seen', () => {
+    put(Store.KEY, { seen: { larry: true, camp: true, tomb: true } });
+    const d = load();
+    expect([d.seen.camp, d.seen.sphinx, d.seen.tomb]).toEqual([true, false, true]);
+    put(Store.KEY, { seen: { larry: true, mice: true } });
+    expect([load().seen.camp, load().seen.sphinx, load().seen.tomb]).toEqual([false, false, false]);
+  });
+
   it('the Pickle cinematic flag survives a load, and an older save without it reads as not seen', () => {
     put(Store.KEY, { seen: { larry: true, pup: true } });
     expect(load().seen.pup).toBe(true);
